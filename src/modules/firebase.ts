@@ -12,5 +12,10 @@ firebase.initializeApp({
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 });
 
+export const provider = new firebase.auth.TwitterAuthProvider();
+provider.setCustomParameters({
+  lang: 'ja',
+});
+
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();

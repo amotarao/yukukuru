@@ -6,7 +6,7 @@ import { My, MyProps } from './';
 interface Props extends RouteComponentProps, Partial<MyProps> {}
 
 const MyInner: React.FC<Props> = ({ history }) => {
-  const { isLoading: userIsLoading, signedIn } = UserContainer.useContainer();
+  const { isLoading: userIsLoading, signedIn, signOut } = UserContainer.useContainer();
 
   useEffect(() => {
     if (!userIsLoading && !signedIn) {
@@ -20,6 +20,7 @@ const MyInner: React.FC<Props> = ({ history }) => {
     <My
       {...{
         isLoading,
+        signOut,
       }}
     />
   );

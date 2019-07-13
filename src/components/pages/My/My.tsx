@@ -5,8 +5,13 @@ import React from 'react';
 export interface MyProps {
   className?: string;
   isLoading: boolean;
+  signOut: () => Promise<void>;
 }
 
-export const My: React.FC<MyProps> = ({ className }) => {
-  return <div className={className}></div>;
+export const My: React.FC<MyProps> = ({ className, signOut }) => {
+  return (
+    <div className={className}>
+      <button onClick={signOut}>ログアウト</button>
+    </div>
+  );
 };

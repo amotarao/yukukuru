@@ -5,13 +5,14 @@ import React from 'react';
 export interface TopProps {
   className?: string;
   isLoading: boolean;
+  signIn: () => Promise<void>;
 }
 
-export const Top: React.FC<TopProps> = ({ className }) => {
+export const Top: React.FC<TopProps> = ({ className, signIn }) => {
   return (
     <div className={className}>
       <h1>Follower Manager</h1>
-      <a href="">ログイン</a>
+      <button onClick={signIn}>ログイン</button>
     </div>
   );
 };

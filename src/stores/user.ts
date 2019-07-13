@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
-import { auth } from '../modules/firebase';
+import { auth, provider } from '../modules/firebase';
 
 const useUser = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -15,8 +15,8 @@ const useUser = () => {
     });
   }, []);
 
-  const signIn = async (token: string) => await auth.signInWithCustomToken(token);
-  const signOut = async () => await auth.signOut();
+  const signIn = () => auth.signInWithRedirect(provider);
+  const signOut = () => auth.signOut();
 
   return {
     isLoading,

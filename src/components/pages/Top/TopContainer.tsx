@@ -6,11 +6,11 @@ import { Top, TopProps } from './';
 interface Props extends RouteComponentProps, Partial<TopProps> {}
 
 const TopContainer: React.FC<Props> = ({ history }) => {
-  const { isLoading, signedIn } = UserContainer.useContainer();
+  const { isLoading, signedIn, signIn } = UserContainer.useContainer();
 
   useEffect(() => {
     if (!isLoading && signedIn) {
-      history.replace('/dashboard');
+      history.replace('/my');
     }
   }, [history, signedIn, isLoading]);
 
@@ -18,6 +18,7 @@ const TopContainer: React.FC<Props> = ({ history }) => {
     <Top
       {...{
         isLoading,
+        signIn,
       }}
     />
   );
