@@ -2,13 +2,15 @@ import React, { useEffect } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { UserContainer } from '../../../stores/user';
 import { RecordsContainer } from '../../../stores/database/records';
+import { TokenContainer } from '../../../stores/database/token';
 import { My, MyProps } from './';
 
 interface Props extends RouteComponentProps, Partial<MyProps> {}
 
 const MyInner: React.FC<Props> = ({ history }) => {
   const { isLoading: userIsLoading, signedIn, user, signOut } = UserContainer.useContainer();
-  const { isLoading: recordsIsLoading, setUid, items } = RecordsContainer.useContainer();
+  const { isLoading: recordsIsLoading, setUid: setRecordsUid, items } = RecordsContainer.useContainer();
+  const { isLoading: tokenIsLoading, setUid: setTokenUid, hasToken } = TokenContainer.useContainer();
 
   useEffect(() => {
     if (!userIsLoading && !signedIn) {
@@ -16,18 +18,20 @@ const MyInner: React.FC<Props> = ({ history }) => {
     }
   }, [history, signedIn, userIsLoading]);
 
-  const isLoading = userIsLoading || recordsIsLoading;
+  const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
   if (user) {
-    setUid(user.uid);
+    setRecordsUid(user.uid);
+    setTokenUid(user.uid);
   }
 
   return (
     <My
       {...{
         isLoading,
-        signOut,
         items,
+        hasToken,
+        signOut,
       }}
     />
   );
@@ -36,7 +40,9 @@ const MyInner: React.FC<Props> = ({ history }) => {
 const MyContainer: React.FC<Props> = (props) => {
   return (
     <RecordsContainer.Provider>
-      <MyInner {...props} />
+      <TokenContainer.Provider>
+        <MyInner {...props} />
+      </TokenContainer.Provider>
     </RecordsContainer.Provider>
   );
 };

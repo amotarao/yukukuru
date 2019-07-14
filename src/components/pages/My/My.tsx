@@ -8,10 +8,11 @@ import { WrapperStyle, HeaderStyle, SignOutButtonStyle, RecordHeadStyle, Duratio
 export interface MyProps {
   isLoading: boolean;
   items: RecordInterface[];
+  hasToken: boolean;
   signOut: () => Promise<void>;
 }
 
-export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
+export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) => {
   return (
     <div css={WrapperStyle}>
       <header css={HeaderStyle}>
@@ -19,6 +20,22 @@ export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
           ログアウト
         </button>
       </header>
+      {!isLoading && !hasToken ? (
+        <p
+          style={{
+            fontSize: '0.8em',
+            color: '#f33',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            margin: '16px 0',
+            padding: 4,
+            border: '1px solid #f33',
+          }}
+        >
+          <span style={{ whiteSpace: 'nowrap' }}>ログアウトし、再度ログインしてください</span>
+        </p>
+      ) : null}
       {isLoading ? (
         <p>読み込み中</p>
       ) : items.length ? (
@@ -70,7 +87,7 @@ export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
           </p>
           <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
             <span style={{ whiteSpace: 'nowrap' }}>※ フォロワーの増減が分かり次第、</span>
-            <span style={{ whiteSpace: 'nowrap' }}>リストが表示されます</span>
+            <span style={{ whiteSpace: 'nowrap' }}>リストが表示されます。</span>
           </p>
         </div>
       )}
