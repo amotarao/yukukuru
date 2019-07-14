@@ -13,6 +13,7 @@ export const HeaderStyle = css`
     height: 48px;
     justify-content: flex-end;
     margin-bottom: 16px;
+    padding: 0 16px;
   }
 `;
 
@@ -23,6 +24,7 @@ export const SignOutButtonStyle = css`
     border: none;
     border-radius: 4px;
     color: #fff;
+    cursor: pointer;
     font-size: 0.8rem;
     line-height: 1;
     padding: 8px 16px;
