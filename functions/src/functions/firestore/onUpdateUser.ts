@@ -45,6 +45,10 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const left = _.difference(oldFollowers, newFollowers);
   console.log(came, left);
 
+  if (!came.length && !left.length) {
+    return;
+  }
+
   const client = new Twitter({
     consumer_key: env.twitter_api_key,
     consumer_secret: env.twitter_api_secret_key,
