@@ -16,7 +16,7 @@ export interface RecordDataInterface {
   durationEnd: firebase.firestore.Timestamp;
 }
 
-interface RecordItemUserInterface {
+export interface RecordItemUserInterface {
   id: string;
   name?: string;
   screenName?: string;
