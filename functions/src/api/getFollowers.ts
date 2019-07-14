@@ -22,13 +22,22 @@ export default async () => {
       access_token_secret: twitterAccessTokenSecret,
     });
 
-    const result = await client.get('followers/list', {
-      userId: twitterId,
-      cursor: nextCursor,
-      count: 200,
-      skip_status: true,
-      include_user_entities: false,
-    });
+    const result = await client
+      .get('followers/list', {
+        userId: twitterId,
+        cursor: nextCursor,
+        count: 200,
+        skip_status: true,
+        include_user_entities: false,
+      })
+      .catch((error) => {
+        return { error: true, message: error };
+      });
+
+    if ('error' in result) {
+      console.error(result);
+      return null;
+    }
 
     const newFollowers = result.users.map(({ id_str }: { id_str: string }) => id_str);
     const newNextCursor = result.next_cursor_str;
