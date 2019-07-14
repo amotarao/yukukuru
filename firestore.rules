@@ -9,7 +9,10 @@ service cloud.firestore {
     }
 
     match /users/{userID} {
-      allow write: if isMe(userID);
+      allow write: if request.resource.data.keys().hasAll(["twitterAccessToken", "twitterAccessTokenSecret", "twitterId"])
+                   && request.resource.data.twitterAccessToken is string
+                   && request.resource.data.twitterAccessTokenSecret is string
+                   && request.resource.data.twitterId is string;
     }
   }
 }
