@@ -8,7 +8,7 @@ export default async (user: admin.auth.UserRecord) => {
 
   await usersCollection.doc(uid).set(
     {
-      photoURL,
+      photoUrl: photoURL,
       displayName,
       currentWatchesId: '',
       lastUpdated: new Date(),
