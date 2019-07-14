@@ -18,7 +18,8 @@ export interface RecordDataInterface {
 
 interface RecordItemUserInterface {
   id: string;
-  screen_name?: string;
+  name?: string;
+  screenName?: string;
   photoUrl?: string;
   detail: boolean;
 }

@@ -55,7 +55,8 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const cameAndLeft = _.union(came, left);
   const users: {
     id: string;
-    screen_name: string;
+    name: string;
+    screenName: string;
     photoUrl: string;
     detail: boolean;
   }[] = [];
@@ -74,14 +75,17 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       return null;
     }
 
-    (result as { id_str: string; screen_name: string; profile_image_url_https: string }[]).map(({ id_str, screen_name, profile_image_url_https }) => {
-      users.push({
-        id: id_str,
-        screen_name,
-        photoUrl: profile_image_url_https,
-        detail: true,
-      });
-    });
+    (result as { id_str: string; name: string; screen_name: string; profile_image_url_https: string }[]).forEach(
+      ({ id_str, name, screen_name, profile_image_url_https }) => {
+        users.push({
+          id: id_str,
+          name,
+          screenName: screen_name,
+          photoUrl: profile_image_url_https,
+          detail: true,
+        });
+      }
+    );
 
     return null;
   });
