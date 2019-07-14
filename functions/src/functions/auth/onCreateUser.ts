@@ -12,7 +12,7 @@ export default async (user: admin.auth.UserRecord) => {
       displayName,
       currentWatchesId: '',
       lastUpdated: new Date(),
-      nextCursor: '',
+      nextCursor: '-1',
       newUser: true,
     },
     { merge: true }
