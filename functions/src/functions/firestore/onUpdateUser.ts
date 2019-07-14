@@ -63,6 +63,11 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     .get();
   const { twitterAccessToken, twitterAccessTokenSecret } = tokenRef.data() as TokenData;
 
+  if (!twitterAccessToken || !twitterAccessTokenSecret) {
+    console.log(after.id, 'no-token');
+    return;
+  }
+
   const client = new Twitter({
     consumer_key: env.twitter_api_key,
     consumer_secret: env.twitter_api_secret_key,
@@ -89,7 +94,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       });
 
     if ('error' in result) {
-      console.error(afterData.id, result.message);
+      console.error(after.id, result.message);
       return null;
     }
 

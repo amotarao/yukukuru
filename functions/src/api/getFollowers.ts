@@ -19,7 +19,16 @@ export default async () => {
       .collection('tokens')
       .doc(snapshot.id)
       .get();
-    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenRef.data();
+    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenRef.data() as {
+      twitterAccessToken: string;
+      twitterAccessTokenSecret: string;
+      twitterId: string;
+    };
+
+    if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
+      console.log(snapshot.id, 'no-token');
+      return;
+    }
 
     const client = new Twitter({
       consumer_key: env.twitter_api_key,
@@ -41,8 +50,8 @@ export default async () => {
       });
 
     if ('error' in result) {
-      console.error(result);
-      return null;
+      console.error(snapshot.id, result.message);
+      return;
     }
 
     const newFollowers = result.users.map(({ id_str }: { id_str: string }) => id_str);
