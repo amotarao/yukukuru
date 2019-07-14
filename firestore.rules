@@ -15,6 +15,15 @@ service cloud.firestore {
                    && request.resource.data.twitterAccessTokenSecret is string
                    && request.resource.data.twitterId is string;
       allow read: if false;
+
+      match /records/{recordID} {
+        allow write: if false;
+        allow read: if isMe(userID);
+      }
+
+      match /watches/{watchID} {
+        allow write, read: if false;
+      }
     }
   }
 }
