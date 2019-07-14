@@ -43,9 +43,9 @@ const useUser = () => {
     (async () => {
       if (data && user) {
         await firestore
-          .collection('users')
+          .collection('tokens')
           .doc(user.uid)
-          .set(data, { merge: true });
+          .set(data);
       }
     })();
   }, [data, user]);

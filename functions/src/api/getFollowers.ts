@@ -13,7 +13,12 @@ export default async () => {
     .get();
 
   const requests = querySnapshot.docs.map(async (snapshot) => {
-    const { nextCursor, currentWatchesId, twitterAccessToken, twitterAccessTokenSecret, twitterId } = snapshot.data();
+    const { nextCursor, currentWatchesId } = snapshot.data();
+    const tokenRef = await firestore
+      .collection('tokens')
+      .doc(snapshot.id)
+      .get();
+    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenRef.data();
 
     const client = new Twitter({
       consumer_key: env.twitter_api_key,

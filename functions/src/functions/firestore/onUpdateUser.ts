@@ -1,16 +1,22 @@
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
+import { firestore } from '../../modules/firebase';
 import { env } from '../../utils/env';
 
 interface UserData {
-  id: string;
   currentWatchesId: string;
+  displayName: string;
   lastUpdated: FirebaseFirestore.Timestamp | null;
   nextCursor: string;
   newUser: boolean;
+  photoUrl: string;
+}
+
+interface TokenData {
   twitterAccessToken: string;
   twitterAccessTokenSecret: string;
+  twitterId: string;
 }
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
@@ -50,11 +56,17 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
 
+  const tokenRef = await firestore
+    .collection('tokens')
+    .doc(after.id)
+    .get();
+  const { twitterAccessToken, twitterAccessTokenSecret } = tokenRef.data() as TokenData;
+
   const client = new Twitter({
     consumer_key: env.twitter_api_key,
     consumer_secret: env.twitter_api_secret_key,
-    access_token_key: afterData.twitterAccessToken,
-    access_token_secret: afterData.twitterAccessTokenSecret,
+    access_token_key: twitterAccessToken,
+    access_token_secret: twitterAccessTokenSecret,
   });
 
   const cameAndLeft = _.union(came, left);
