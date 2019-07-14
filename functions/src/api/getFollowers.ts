@@ -61,6 +61,7 @@ export default async () => {
           nextCursor: '-1',
           currentWatchesId: '',
           lastUpdated: now,
+          newUser: false,
         },
         { merge: true }
       );
@@ -70,6 +71,7 @@ export default async () => {
           nextCursor: newNextCursor,
           currentWatchesId: id,
           lastUpdated: now,
+          newUser: false,
         },
         { merge: true }
       );

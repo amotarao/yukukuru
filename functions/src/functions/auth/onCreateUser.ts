@@ -10,6 +10,10 @@ export default async (user: admin.auth.UserRecord) => {
     {
       photoURL,
       displayName,
+      currentWatchesId: '',
+      lastUpdated: new Date(),
+      nextCursor: '',
+      newUser: true,
     },
     { merge: true }
   );
