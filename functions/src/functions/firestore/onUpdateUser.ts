@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { env } from '../../utils/env';
 
 interface UserData {
+  id: string;
   currentWatchesId: string;
   lastUpdated: FirebaseFirestore.Timestamp | null;
   nextCursor: string;
@@ -75,7 +76,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       });
 
     if ('error' in result) {
-      console.error(result);
+      console.error(afterData.id, result.message);
       return null;
     }
 
