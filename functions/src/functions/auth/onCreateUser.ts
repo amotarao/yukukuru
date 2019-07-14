@@ -10,6 +10,7 @@ export default async (user: admin.auth.UserRecord) => {
     {
       photoUrl: photoURL,
       displayName,
+      active: true,
       currentWatchesId: '',
       lastUpdated: new Date(),
       nextCursor: '-1',

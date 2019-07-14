@@ -7,6 +7,7 @@ export default async () => {
 
   const querySnapshot = await firestore
     .collection('users')
+    .where('active', '==', true)
     .orderBy('lastUpdated')
     .orderBy('nextCursor')
     .limit(10)

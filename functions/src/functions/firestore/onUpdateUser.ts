@@ -5,6 +5,7 @@ import { firestore } from '../../modules/firebase';
 import { env } from '../../utils/env';
 
 interface UserData {
+  active: boolean;
   currentWatchesId: string;
   displayName: string;
   lastUpdated: FirebaseFirestore.Timestamp | null;
