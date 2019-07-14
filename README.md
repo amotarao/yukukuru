@@ -1,1 +1,1 @@
-# follower-manager (仮)
+# follower-manager

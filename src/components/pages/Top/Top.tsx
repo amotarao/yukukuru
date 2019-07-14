@@ -15,7 +15,7 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
   ) : (
     <div css={WrapperStyle}>
       <section css={InnerStyle}>
-        <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: 16 }}>Follower Manager (仮) alpha</h1>
+        <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: 16 }}>ゆくひとくるひと alpha</h1>
         <p style={{ fontSize: '0.8em', marginBottom: 16 }}>あなたのフォロワーを管理します</p>
         <img src={image} alt="利用イメージ" style={{ width: 120, marginBottom: 16, borderRadius: 4, boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.19)' }} />
         <button css={SignInButtonStyle} onClick={signIn}>

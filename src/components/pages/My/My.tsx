@@ -30,21 +30,7 @@ export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
                 {durationStart.toDate().toLocaleString()} 〜 {durationEnd.toDate().toLocaleString()}
               </p>
               <section>
-                <h3 css={CameHeadStyle}>フォローされた ({cameUsers.length})</h3>
-                {cameUsers.length ? (
-                  <ul style={{ listStyle: 'none' }}>
-                    {cameUsers.map((user, j) => (
-                      <li key={`item-${i}-cameuser-${j}`}>
-                        <UserCard item={user} />
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p css={EmptyTextStyle}>なし</p>
-                )}
-              </section>
-              <section>
-                <h3 css={LeftHeadStyle}>フォロー解除された ({leftUsers.length})</h3>
+                <h3 css={LeftHeadStyle}>ゆくひと ({leftUsers.length})</h3>
                 <ul>
                   {leftUsers.length ? (
                     <ul style={{ listStyle: 'none' }}>
@@ -58,6 +44,20 @@ export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
                     <p css={EmptyTextStyle}>なし</p>
                   )}
                 </ul>
+              </section>
+              <section>
+                <h3 css={CameHeadStyle}>くるひと ({cameUsers.length})</h3>
+                {cameUsers.length ? (
+                  <ul style={{ listStyle: 'none' }}>
+                    {cameUsers.map((user, j) => (
+                      <li key={`item-${i}-cameuser-${j}`}>
+                        <UserCard item={user} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p css={EmptyTextStyle}>なし</p>
+                )}
               </section>
             </section>
           )
