@@ -3,51 +3,60 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { RecordInterface } from '../../../stores/database/records';
 import { UserCard } from '../../organisms/UserCard';
+import { WrapperStyle, HeaderStyle, SignOutButtonStyle, RecordHeadStyle, DurationStyle, CameHeadStyle, LeftHeadStyle, EmptyTextStyle } from './styled';
 
 export interface MyProps {
-  className?: string;
   isLoading: boolean;
   items: RecordInterface[];
   signOut: () => Promise<void>;
 }
 
-export const My: React.FC<MyProps> = ({ className, isLoading, items, signOut }) => {
+export const My: React.FC<MyProps> = ({ isLoading, items, signOut }) => {
   return (
-    <div className={className}>
+    <div css={WrapperStyle}>
+      <header css={HeaderStyle}>
+        <button css={SignOutButtonStyle} onClick={signOut}>
+          ログアウト
+        </button>
+      </header>
       {isLoading && <p>読み込み中</p>}
-      <button onClick={signOut}>ログアウト</button>
       {items.map(({ data: { durationStart, durationEnd, cameUsers, leftUsers } }, i) =>
         !cameUsers.length && !leftUsers.length ? null : (
-          <section key={`item-${i}`} style={{ marginBottom: 40 }}>
-            <h2>
+          <section key={`item-${i}`} style={{ marginBottom: 64 }}>
+            <h2 css={RecordHeadStyle}>ある期間の記録</h2>
+            <p css={DurationStyle}>
               {durationStart.toDate().toLocaleString()} 〜 {durationEnd.toDate().toLocaleString()}
-            </h2>
-            <h3>きたひと</h3>
-            {cameUsers.length ? (
-              <ul>
-                {cameUsers.map((user, j) => (
-                  <li key={`item-${i}-cameuser-${j}`}>
-                    <UserCard item={user} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>なし</p>
-            )}
-            <h3>きえたひと</h3>
-            <ul>
-              {leftUsers.length ? (
-                <ul>
-                  {leftUsers.map((user, j) => (
-                    <li key={`item-${i}-leftuser-${j}`}>
+            </p>
+            <section>
+              <h3 css={CameHeadStyle}>フォローされた ({cameUsers.length})</h3>
+              {cameUsers.length ? (
+                <ul style={{ listStyle: 'none' }}>
+                  {cameUsers.map((user, j) => (
+                    <li key={`item-${i}-cameuser-${j}`}>
                       <UserCard item={user} />
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p>なし</p>
+                <p css={EmptyTextStyle}>なし</p>
               )}
-            </ul>
+            </section>
+            <section>
+              <h3 css={LeftHeadStyle}>フォロー解除された ({leftUsers.length})</h3>
+              <ul>
+                {leftUsers.length ? (
+                  <ul style={{ listStyle: 'none' }}>
+                    {leftUsers.map((user, j) => (
+                      <li key={`item-${i}-leftuser-${j}`}>
+                        <UserCard item={user} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p css={EmptyTextStyle}>なし</p>
+                )}
+              </ul>
+            </section>
           </section>
         )
       ) || <p>記録なし</p>}
