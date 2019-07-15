@@ -1,7 +1,7 @@
 {
   "name": "yukukuru-app",
   "version": "0.1.0",
-  "private": true,
+  "homepage" : "https://yukukuru.app",
   "dependencies": {
     "@emotion/core": "^10.0.14",
     "firebase": "^6.3.0",
