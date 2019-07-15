@@ -14,6 +14,10 @@ export const HeaderStyle = css`
     justify-content: flex-end;
     margin-bottom: 16px;
     padding: 0 16px;
+
+    & > *:first-child {
+      flex: 1 0 auto;
+    }
   }
 `;
 

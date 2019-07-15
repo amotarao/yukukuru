@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { RecordInterface } from '../../../stores/database/records';
+import { TweetButton } from '../../organisms/TweetButton';
 import { UserCard } from '../../organisms/UserCard';
 import { WrapperStyle, HeaderStyle, SignOutButtonStyle, RecordHeadStyle, DurationStyle, CameHeadStyle, LeftHeadStyle, EmptyTextStyle } from './styled';
 
@@ -16,6 +17,7 @@ export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) =
   return (
     <div css={WrapperStyle}>
       <header css={HeaderStyle}>
+        <TweetButton size="large" />
         <button css={SignOutButtonStyle} onClick={signOut}>
           ログアウト
         </button>
