@@ -1,32 +1,17 @@
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
-import { firestore } from '../../modules/firebase';
 import { env } from '../../utils/env';
-import { twitterClientErrorHandler } from '../../utils/error';
-
-interface UserData {
-  active: boolean;
-  currentWatchesId: string;
-  displayName: string;
-  invalid: boolean;
-  lastUpdated: FirebaseFirestore.Timestamp | null;
-  nextCursor: string;
-  newUser: boolean;
-  photoUrl: string;
-}
-
-interface TokenData {
-  twitterAccessToken: string;
-  twitterAccessTokenSecret: string;
-  twitterId: string;
-}
+import { checkInvalidToken, setTokenInvalid, getToken } from '../../utils/firestore';
+import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
+import { getUsersLookup } from '../../utils/twitter';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as UserData;
   const beforeData = before.data() as UserData;
 
   if (afterData.nextCursor !== '-1' || afterData.newUser) {
+    // フォロワー取得途中 か 新規ユーザー
     return;
   }
 
@@ -34,6 +19,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   console.log('diff', diff);
 
   if (!('lastUpdated' in diff && diff.lastUpdated)) {
+    // フォロワー取得更新なし
     return;
   }
 
@@ -46,8 +32,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
   const watches = querySnapshot.docs.map((doc) => {
-    const { followers, getEndDate } = doc.data() as { followers: string[]; getEndDate: FirebaseFirestore.Timestamp };
-    return { followers, getEndDate };
+    return doc.data() as UserWatchData;
   });
 
   const [newFollowers, oldFollowers] = watches.map((e) => e.followers);
@@ -56,17 +41,17 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   console.log(came, left);
 
   if (!came.length && !left.length) {
+    // 差分なし
     return;
   }
 
-  const tokenRef = firestore.collection('tokens').doc(after.id);
-  const tokenDoc = await tokenRef.get();
-  const { twitterAccessToken, twitterAccessTokenSecret } = tokenDoc.data() as TokenData;
-
-  if (!twitterAccessToken || !twitterAccessTokenSecret) {
+  const token = await getToken(after.id);
+  if (!token) {
     console.log(after.id, 'no-token');
+    await setTokenInvalid(after.id);
     return;
   }
+  const { twitterAccessToken, twitterAccessTokenSecret } = token;
 
   const client = new Twitter({
     consumer_key: env.twitter_api_key,
@@ -75,86 +60,41 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     access_token_secret: twitterAccessTokenSecret,
   });
 
-  const cameAndLeft = _.union(came, left);
-  const users: {
-    id: string;
-    name: string;
-    screenName: string;
-    photoUrl: string;
-    detail: boolean;
-  }[] = [];
+  const result = await getUsersLookup(client, { usersId: [...came, ...left] });
 
-  const lookupResult = _.chunk(cameAndLeft, 100).map(async (lookups) => {
-    const result = await client
-      .get('users/lookup', {
-        user_id: lookups.join(','),
-      })
-      .catch(twitterClientErrorHandler);
-
-    if ('error' in result) {
-      console.error(after.id, result.details);
-      if (result.details.find((e: { code: number }) => e.code === 89)) {
-        await Promise.all([
-          after.ref.set(
-            {
-              invalid: true,
-            },
-            { merge: true }
-          ),
-          tokenRef.set(
-            {
-              twitterAccessToken: '',
-              twitterAccessTokenSecret: '',
-            },
-            { merge: true }
-          ),
-        ]);
-      }
-      return null;
+  if ('errors' in result) {
+    console.error(after.id, result);
+    if (checkInvalidToken(result.errors)) {
+      await setTokenInvalid(after.id);
     }
+    return;
+  }
 
-    (result as { id_str: string; name: string; screen_name: string; profile_image_url_https: string }[]).forEach(
-      ({ id_str, name, screen_name, profile_image_url_https }) => {
-        users.push({
-          id: id_str,
-          name,
-          screenName: screen_name,
-          photoUrl: profile_image_url_https,
-          detail: true,
-        });
-      }
-    );
-
-    return null;
+  const users = result.response.map(({ id_str, name, screen_name, profile_image_url_https }) => {
+    const convertedUser: UserRecordUserItemData = {
+      id: id_str,
+      name: name,
+      screenName: screen_name,
+      photoUrl: profile_image_url_https,
+    };
+    return convertedUser;
   });
 
-  await Promise.all(lookupResult);
-
-  const cameUsers = came.map((user) => {
+  const findUser = (user: string): UserRecordUserItemData => {
     const obj = users.find((e) => e.id === user);
-
     if (!obj) {
-      return {
+      const response: UserRecordUserItemData = {
         id: user,
-        detail: false,
       };
+      return response;
     }
     return obj;
-  });
+  };
 
-  const leftUsers = left.map((user) => {
-    const obj = users.find((e) => e.id === user);
+  const cameUsers = came.map(findUser);
+  const leftUsers = left.map(findUser);
 
-    if (!obj) {
-      return {
-        id: user,
-        detail: false,
-      };
-    }
-    return obj;
-  });
-
-  const data = {
+  const data: UserRecordData = {
     cameUsers,
     leftUsers,
     durationStart: watches[1].getEndDate,

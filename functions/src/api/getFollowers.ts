@@ -1,40 +1,35 @@
 import * as Twitter from 'twitter';
-import { firestore, admin } from '../modules/firebase';
+import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { twitterClientErrorHandler } from '../utils/error';
+import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult } from '../utils/firestore';
+import { UserData } from '../utils/interfaces';
+import { getFollowersList } from '../utils/twitter';
 
 export default async () => {
   const now = new Date();
+  const time15 = new Date();
+  time15.setMinutes(now.getMinutes() - 15);
 
   const querySnapshot = await firestore
     .collection('users')
     .where('active', '==', true)
     .where('invalid', '==', false)
+    .where('lastUpdated', '<', time15)
     .orderBy('lastUpdated')
     .orderBy('nextCursor')
     .limit(10)
     .get();
 
   const requests = querySnapshot.docs.map(async (snapshot) => {
-    const { nextCursor, currentWatchesId } = snapshot.data();
-    const tokenRef = firestore.collection('tokens').doc(snapshot.id);
-    const tokenDoc = await tokenRef.get();
+    const { nextCursor, currentWatchesId } = snapshot.data() as UserData;
 
-    if (!tokenDoc.exists) {
-      console.error(snapshot.id, 'no-token-doc');
-      return;
-    }
-
-    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenDoc.data() as {
-      twitterAccessToken: string;
-      twitterAccessTokenSecret: string;
-      twitterId: string;
-    };
-
-    if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
+    const token = await getToken(snapshot.id);
+    if (!token) {
       console.log(snapshot.id, 'no-token');
+      await setTokenInvalid(snapshot.id);
       return;
     }
+    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
 
     const client = new Twitter({
       consumer_key: env.twitter_api_key,
@@ -43,87 +38,29 @@ export default async () => {
       access_token_secret: twitterAccessTokenSecret,
     });
 
-    const result = await client
-      .get('followers/list', {
-        userId: twitterId,
-        cursor: nextCursor,
-        count: 200,
-        skip_status: true,
-        include_user_entities: false,
-      })
-      .catch(twitterClientErrorHandler);
+    const result = await getFollowersList(client, {
+      userId: twitterId,
+      cursor: nextCursor,
+    });
 
-    if ('error' in result) {
-      console.error(snapshot.id, result.details);
-      if (result.details.find((e: { code: number }) => e.code === 89)) {
-        await Promise.all([
-          snapshot.ref.set(
-            {
-              invalid: true,
-            },
-            { merge: true }
-          ),
-          tokenRef.set(
-            {
-              twitterAccessToken: '',
-              twitterAccessTokenSecret: '',
-            },
-            { merge: true }
-          ),
-        ]);
+    if ('errors' in result) {
+      console.error(snapshot.id, result);
+      if (checkInvalidToken(result.errors)) {
+        await setTokenInvalid(snapshot.id);
       }
       return;
     }
 
-    const newFollowers = result.users.map(({ id_str }: { id_str: string }) => id_str);
-    const newNextCursor = result.next_cursor_str;
+    const followers = result.response.users.map(({ id_str }) => id_str);
+    const newNextCursor = result.response.next_cursor_str;
 
-    let id = '';
-
-    if (currentWatchesId === '') {
-      const ref = await snapshot.ref.collection('watches').add({
-        followers: newFollowers,
-        getStartDate: now,
-        getEndDate: now,
-      });
-      id = ref.id;
-    } else {
-      const ref = await snapshot.ref.collection('watches').doc(currentWatchesId);
-      await ref.set(
-        {
-          followers: admin.firestore.FieldValue.arrayUnion(...newFollowers),
-          getEndDate: now,
-        },
-        { merge: true }
-      );
-      id = ref.id;
-    }
-
-    if (newNextCursor === '0') {
-      await snapshot.ref.set(
-        {
-          nextCursor: '-1',
-          currentWatchesId: '',
-          lastUpdated: now,
-          newUser: false,
-        },
-        { merge: true }
-      );
-    } else {
-      await snapshot.ref.set(
-        {
-          nextCursor: newNextCursor,
-          currentWatchesId: id,
-          lastUpdated: now,
-          newUser: false,
-        },
-        { merge: true }
-      );
-    }
+    const watchId = await setWatch(snapshot.id, followers, now, currentWatchesId);
+    await setUserResult(snapshot.id, watchId, newNextCursor, now);
 
     return {
-      users: result.users.map(({ id_str }: { id_str: string }) => id_str),
-      nextCursor: result.next_cursor_str,
+      userId: snapshot.id,
+      watchId,
+      newNextCursor,
     };
   });
 

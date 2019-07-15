@@ -1,3 +1,8 @@
-export const twitterClientErrorHandler = (error: { code: number; message: string }[]) => {
-  return { error: true, details: error };
+export interface TwitterClientErrorData {
+  code: number;
+  message: string;
+}
+
+export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { errors: TwitterClientErrorData[] } => {
+  return { errors };
 };

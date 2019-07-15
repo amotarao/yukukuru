@@ -1,14 +1,9 @@
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
-
-interface TokenData {
-  twitterAccessToken: string;
-  twitterAccessTokenSecret: string;
-  twitterId: string;
-}
+import { TokenData } from '../../utils/interfaces';
 
 export default async ({ after }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
-  const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = after.data() as TokenData;
+  const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = after.data() as TokenData;
 
   const invalid = !twitterAccessToken || !twitterAccessTokenSecret || !twitterId;
 
