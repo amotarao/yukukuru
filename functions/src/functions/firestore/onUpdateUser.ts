@@ -3,6 +3,7 @@ import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
 import { env } from '../../utils/env';
+import { twitterClientErrorHandler } from '../../utils/error';
 
 interface UserData {
   active: boolean;
@@ -89,12 +90,10 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       .get('users/lookup', {
         user_id: lookups.join(','),
       })
-      .catch((error) => {
-        return { error: true, message: error };
-      });
+      .catch(twitterClientErrorHandler);
 
     if ('error' in result) {
-      console.error(after.id, result.message);
+      console.error(after.id, result.details);
       return null;
     }
 

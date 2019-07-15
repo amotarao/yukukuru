@@ -1,6 +1,7 @@
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
+import { twitterClientErrorHandler } from '../utils/error';
 
 export default async () => {
   const now = new Date();
@@ -45,12 +46,10 @@ export default async () => {
         skip_status: true,
         include_user_entities: false,
       })
-      .catch((error) => {
-        return { error: true, message: error };
-      });
+      .catch(twitterClientErrorHandler);
 
     if ('error' in result) {
-      console.error(snapshot.id, result.message);
+      console.error(snapshot.id, result.details);
       return;
     }
 
