@@ -4,13 +4,20 @@ import React from 'react';
 import { Share } from 'react-twitter-widgets';
 import { ButtonStyle } from './styled';
 
-export const TweetButton: React.FC = () => {
+interface TweetButtonProps {
+  size?: 'normal' | 'large';
+}
+
+export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => {
+  const isNormal = size === 'normal';
+
   return (
-    <div css={ButtonStyle}>
+    <div css={ButtonStyle} data-size={isNormal ? undefined : size}>
       <Share
         url="https://yukukuru.app"
         options={{
           text: 'ゆくひとくるひと - フォロワー管理アプリ',
+          size: isNormal ? undefined : size,
           via: 'yukukuru',
           hashtags: 'ゆくくる',
           lang: 'ja',
