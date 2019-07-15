@@ -17,11 +17,9 @@ export default async () => {
 
   const requests = querySnapshot.docs.map(async (snapshot) => {
     const { nextCursor, currentWatchesId } = snapshot.data();
-    const tokenRef = await firestore
-      .collection('tokens')
-      .doc(snapshot.id)
-      .get();
-    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenRef.data() as {
+    const tokenRef = firestore.collection('tokens').doc(snapshot.id);
+    const tokenDoc = await tokenRef.get();
+    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenDoc.data() as {
       twitterAccessToken: string;
       twitterAccessTokenSecret: string;
       twitterId: string;
@@ -52,12 +50,21 @@ export default async () => {
     if ('error' in result) {
       console.error(snapshot.id, result.details);
       if (result.details.find((e: { code: number }) => e.code === 89)) {
-        await snapshot.ref.set(
-          {
-            invalid: true,
-          },
-          { merge: true }
-        );
+        await Promise.all([
+          snapshot.ref.set(
+            {
+              invalid: true,
+            },
+            { merge: true }
+          ),
+          tokenRef.set(
+            {
+              twitterAccessToken: '',
+              twitterAccessTokenSecret: '',
+            },
+            { merge: true }
+          ),
+        ]);
       }
       return;
     }

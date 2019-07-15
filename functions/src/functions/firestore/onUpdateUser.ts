@@ -59,11 +59,9 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
 
-  const tokenRef = await firestore
-    .collection('tokens')
-    .doc(after.id)
-    .get();
-  const { twitterAccessToken, twitterAccessTokenSecret } = tokenRef.data() as TokenData;
+  const tokenRef = firestore.collection('tokens').doc(after.id);
+  const tokenDoc = await tokenRef.get();
+  const { twitterAccessToken, twitterAccessTokenSecret } = tokenDoc.data() as TokenData;
 
   if (!twitterAccessToken || !twitterAccessTokenSecret) {
     console.log(after.id, 'no-token');
@@ -96,12 +94,21 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     if ('error' in result) {
       console.error(after.id, result.details);
       if (result.details.find((e: { code: number }) => e.code === 89)) {
-        await after.ref.set(
-          {
-            invalid: true,
-          },
-          { merge: true }
-        );
+        await Promise.all([
+          after.ref.set(
+            {
+              invalid: true,
+            },
+            { merge: true }
+          ),
+          tokenRef.set(
+            {
+              twitterAccessToken: '',
+              twitterAccessTokenSecret: '',
+            },
+            { merge: true }
+          ),
+        ]);
       }
       return null;
     }
