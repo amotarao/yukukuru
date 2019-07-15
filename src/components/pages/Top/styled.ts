@@ -45,3 +45,14 @@ export const SignInButtonStyle = css`
     padding: 8px 16px;
   }
 `;
+
+export const SocialButtonsStyle = css`
+  && {
+    display: flex;
+    margin: 16px 0 0;
+
+    > * {
+      margin: 0 8px;
+    }
+  }
+`;

@@ -2,7 +2,7 @@ import { css } from '@emotion/core';
 
 export const ButtonStyle = css`
   && {
-    height: 20px;
+    height: 28px;
 
     iframe {
       display: block;

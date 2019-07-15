@@ -10,7 +10,6 @@ export const TweetButton: React.FC = () => {
       <Share
         url="https://yukukuru.app"
         options={{
-          size: 'large',
           text: 'ゆくひとくるひと - フォロワー管理アプリ',
           via: 'yukukuru',
           hashtags: 'ゆくくる',

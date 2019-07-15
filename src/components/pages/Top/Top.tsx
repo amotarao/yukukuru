@@ -2,7 +2,8 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import image from '../../../assets/image.png';
-import { WrapperStyle, InnerStyle, SignInButtonStyle } from './styled';
+import { WrapperStyle, InnerStyle, SignInButtonStyle, SocialButtonsStyle } from './styled';
+import { GitHubButton } from '../../organisms/GitHubButton';
 import { TweetButton } from '../../organisms/TweetButton';
 
 export interface TopProps {
@@ -22,11 +23,6 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
         <button css={SignInButtonStyle} onClick={signIn}>
           Twitter連携してはじめる
         </button>
-        <p style={{ fontSize: '0.6em', marginTop: 32 }}>
-          <a href="https://github.com/amotarao/yukukuru-app" target="_blank" rel="noopener noreferrer" style={{ color: '#2196f3' }}>
-            GitHub
-          </a>
-        </p>
         <p style={{ fontSize: '0.6em', marginTop: 16, color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span style={{ whiteSpace: 'nowrap' }}>※ 現在テスト版のため不具合が発生する場合や、</span>
           <span style={{ whiteSpace: 'nowrap' }}>サービスを終了する場合があります。</span>
@@ -35,7 +31,10 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
           <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
           <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
         </p>
-        <TweetButton />
+        <div css={SocialButtonsStyle}>
+          <TweetButton />
+          <GitHubButton />
+        </div>
       </section>
     </div>
   );
