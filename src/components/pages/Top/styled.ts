@@ -20,8 +20,7 @@ export const InnerStyle = css`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 32px 0;
-    min-height: 60vh;
+    min-height: 560px;
     padding: 16px;
     text-align: center;
     width: 100%;
@@ -35,7 +34,7 @@ export const InnerStyle = css`
 export const SignInButtonStyle = css`
   && {
     appearance: none;
-    background: #55acee;
+    background: #2196f3;
     border: none;
     border-radius: 4px;
     color: #fff;

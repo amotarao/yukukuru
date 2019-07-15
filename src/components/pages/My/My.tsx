@@ -35,7 +35,7 @@ export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) =
             border: '1px solid #f33',
           }}
         >
-          <span style={{ whiteSpace: 'nowrap' }}>ログアウトし、再度ログインしてください</span>
+          <span style={{ whiteSpace: 'nowrap' }}>ログアウトし、再度ログインしてください。</span>
         </p>
       ) : null}
       {isLoading ? (

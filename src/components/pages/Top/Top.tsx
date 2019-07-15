@@ -28,8 +28,7 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
           Twitter連携してはじめる
         </button>
         <p style={{ fontSize: '0.6em', marginTop: 16, color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <span style={{ whiteSpace: 'nowrap' }}>※ 現在テスト版のため不具合が発生する場合や、</span>
-          <span style={{ whiteSpace: 'nowrap' }}>サービスを終了する場合があります。</span>
+          <span style={{ whiteSpace: 'nowrap' }}>※ 現在テスト版のため不具合が発生する場合があります。</span>
         </p>
         <p style={{ fontSize: '0.6em', marginTop: 4, marginBottom: 8, color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>

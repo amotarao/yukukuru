@@ -24,7 +24,7 @@ export const HeaderStyle = css`
 export const SignOutButtonStyle = css`
   && {
     appearance: none;
-    background: #55acee;
+    background: #ef5350;
     border: none;
     border-radius: 4px;
     color: #fff;
