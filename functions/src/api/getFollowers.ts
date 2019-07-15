@@ -19,6 +19,12 @@ export default async () => {
     const { nextCursor, currentWatchesId } = snapshot.data();
     const tokenRef = firestore.collection('tokens').doc(snapshot.id);
     const tokenDoc = await tokenRef.get();
+
+    if (!tokenDoc.exists) {
+      console.error(snapshot.id, 'no-token-doc');
+      return;
+    }
+
     const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = tokenDoc.data() as {
       twitterAccessToken: string;
       twitterAccessTokenSecret: string;

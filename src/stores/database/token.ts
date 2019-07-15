@@ -27,8 +27,12 @@ const useToken = () => {
 
     tokensCollection.doc(uid).onSnapshot((doc) => {
       setLoading(false);
-      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenDataInterface;
+      if (!doc.exists) {
+        setHasToken(false);
+        return;
+      }
 
+      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenDataInterface;
       if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
         setHasToken(false);
         return;
