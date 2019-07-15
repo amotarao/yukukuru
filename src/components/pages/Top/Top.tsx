@@ -1,8 +1,9 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { WrapperStyle, InnerStyle, SignInButtonStyle } from './styled';
 import image from '../../../assets/image.png';
+import { WrapperStyle, InnerStyle, SignInButtonStyle } from './styled';
+import { TweetButton } from '../../organisms/TweetButton';
 
 export interface TopProps {
   isLoading: boolean;
@@ -30,10 +31,11 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
           <span style={{ whiteSpace: 'nowrap' }}>※ 現在テスト版のため不具合が発生する場合や、</span>
           <span style={{ whiteSpace: 'nowrap' }}>サービスを終了する場合があります。</span>
         </p>
-        <p style={{ fontSize: '0.6em', marginTop: 8, color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <p style={{ fontSize: '0.6em', marginTop: 4, marginBottom: 8, color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
           <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
         </p>
+        <TweetButton />
       </section>
     </div>
   );
