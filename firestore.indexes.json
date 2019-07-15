@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "invalid",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "lastUpdated",
           "order": "ASCENDING"
         },
@@ -22,6 +26,10 @@
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "lastUpdated",
           "order": "ASCENDING"

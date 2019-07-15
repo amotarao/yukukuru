@@ -9,6 +9,7 @@ export default async () => {
   const querySnapshot = await firestore
     .collection('users')
     .where('active', '==', true)
+    .where('invalid', '==', false)
     .orderBy('lastUpdated')
     .orderBy('nextCursor')
     .limit(10)
@@ -50,6 +51,14 @@ export default async () => {
 
     if ('error' in result) {
       console.error(snapshot.id, result.details);
+      if (result.details.find((e: { code: number }) => e.code === 89)) {
+        await snapshot.ref.set(
+          {
+            invalid: true,
+          },
+          { merge: true }
+        );
+      }
       return;
     }
 

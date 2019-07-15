@@ -9,6 +9,7 @@ interface UserData {
   active: boolean;
   currentWatchesId: string;
   displayName: string;
+  invalid: boolean;
   lastUpdated: FirebaseFirestore.Timestamp | null;
   nextCursor: string;
   newUser: boolean;
@@ -94,6 +95,14 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
     if ('error' in result) {
       console.error(after.id, result.details);
+      if (result.details.find((e: { code: number }) => e.code === 89)) {
+        await after.ref.set(
+          {
+            invalid: true,
+          },
+          { merge: true }
+        );
+      }
       return null;
     }
 

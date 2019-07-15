@@ -12,6 +12,7 @@ export default async (user: admin.auth.UserRecord) => {
       displayName,
       active: true,
       currentWatchesId: '',
+      invalid: false,
       lastUpdated: new Date(),
       nextCursor: '-1',
       newUser: true,

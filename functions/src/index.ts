@@ -3,6 +3,7 @@ import getFollowersHandler from './api/getFollowers';
 import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
+import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 
 export const getFollowers = functions.region('asia-northeast1').https.onRequest(async (_, res) => {
   await getFollowersHandler();
@@ -23,3 +24,8 @@ export const onFirestoreUpdateUser = functions
   .region('asia-northeast1')
   .firestore.document('users/{userId}')
   .onUpdate(onFirestoreUpdateUserHandler);
+
+export const onFirestoreUpdateToken = functions
+  .region('asia-northeast1')
+  .firestore.document('tokens/{userId}')
+  .onUpdate(onFirestoreUpdateTokenHandler);
