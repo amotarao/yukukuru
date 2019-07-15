@@ -22,7 +22,7 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
           Twitter連携してはじめる
         </button>
         <p style={{ fontSize: '0.6em', marginTop: 32 }}>
-          <a href="https://github.com/amotarao/follower-manager" target="_blank" rel="noopener noreferrer" style={{ color: '#2196f3' }}>
+          <a href="https://github.com/amotarao/yukukuru-app" target="_blank" rel="noopener noreferrer" style={{ color: '#2196f3' }}>
             GitHub
           </a>
         </p>

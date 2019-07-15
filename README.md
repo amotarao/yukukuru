@@ -1,1 +1,1 @@
-# follower-manager
+# yukukuru-app
