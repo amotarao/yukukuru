@@ -1,5 +1,5 @@
 import * as Twitter from 'twitter';
-import { firestore } from '../modules/firebase';
+import { firestore, admin } from '../modules/firebase';
 import { env } from '../utils/env';
 import { twitterClientErrorHandler } from '../utils/error';
 
@@ -67,10 +67,9 @@ export default async () => {
       id = ref.id;
     } else {
       const ref = await snapshot.ref.collection('watches').doc(currentWatchesId);
-      const { followers } = (await ref.get()).data() as { followers: string[] };
       await ref.set(
         {
-          followers: [...followers, ...newFollowers],
+          followers: admin.firestore.FieldValue.arrayUnion(...newFollowers),
           getEndDate: now,
         },
         { merge: true }
