@@ -3,9 +3,11 @@ import { css } from '@emotion/core';
 export const ButtonStyle = css`
   && {
     height: 20px;
+    width: 75px;
 
     &[data-size='large'] {
       height: 28px;
+      width: 93px;
     }
 
     iframe {
