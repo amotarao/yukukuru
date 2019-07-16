@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { twitterClientErrorHandler, TwitterClientErrorData } from '../utils/error';
+import { checkRateLimitExceeded } from './firestore';
 
 export interface GetFollowersListProps {
   userId: string;
@@ -55,6 +56,10 @@ export const getFollowersList = async (
     };
     const result = await getFollowersListSingle(client, obj);
     if ('errors' in result) {
+      if (checkRateLimitExceeded(result.errors)) {
+        console.error({ summary: 'rateLimitExceeded', userId, count });
+        break;
+      }
       return result;
     }
     users.push(...result.response.users);

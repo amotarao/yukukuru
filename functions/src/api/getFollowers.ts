@@ -7,16 +7,17 @@ import { getFollowersList } from '../utils/twitter';
 
 export default async () => {
   const now = new Date();
-  const time15 = new Date();
-  time15.setMinutes(now.getMinutes() - 15);
+  const time18 = new Date();
+  // Twitter API は 15分制限があるが、余裕を持って 18分にした
+  time18.setMinutes(now.getMinutes() - 18);
 
   const querySnapshot = await firestore
     .collection('users')
     .where('active', '==', true)
     .where('invalid', '==', false)
-    .where('lastUpdated', '<', time15)
+    .where('lastUpdated', '<', time18)
     .orderBy('lastUpdated')
-    .orderBy('nextCursor')
+    .orderBy('nextCursor', 'desc')
     .limit(10)
     .get();
 
