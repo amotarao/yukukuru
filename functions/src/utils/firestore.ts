@@ -83,6 +83,7 @@ export const setUserResult = async (userId: string, watchId: string, nextCursor:
     {
       nextCursor: ended ? '-1' : nextCursor,
       currentWatchesId: ended ? '' : watchId,
+      pausedGetFollower: !ended,
       lastUpdated: date,
       newUser: false,
     },

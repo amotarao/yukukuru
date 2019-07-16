@@ -4,8 +4,13 @@ import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
+import { env } from './utils/env';
 
-export const getFollowers = functions.region('asia-northeast1').https.onRequest(async (_, res) => {
+export const getFollowers = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  if (req.query.key !== env.http_functions_key) {
+    res.status(403).end();
+    return;
+  }
   await getFollowersHandler();
   res.status(200).end();
 });
