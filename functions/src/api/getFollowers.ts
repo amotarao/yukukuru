@@ -21,7 +21,6 @@ export default async (type: 'allUsers' | 'pausedUsers') => {
           .where('pausedGetFollower', '==', true)
           .where('lastUpdated', '<', time18)
           .orderBy('lastUpdated')
-          .orderBy('nextCursor', 'desc')
           .limit(10)
           .get();
       }
@@ -33,7 +32,6 @@ export default async (type: 'allUsers' | 'pausedUsers') => {
           .where('invalid', '==', false)
           .where('lastUpdated', '<', time18)
           .orderBy('lastUpdated')
-          .orderBy('nextCursor', 'desc')
           .limit(10)
           .get();
       }
