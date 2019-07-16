@@ -21,6 +21,32 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "invalid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdated",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextCursor",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "pausedGetFollower",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

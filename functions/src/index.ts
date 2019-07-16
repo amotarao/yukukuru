@@ -11,7 +11,8 @@ export const getFollowers = functions.region('asia-northeast1').https.onRequest(
     res.status(403).end();
     return;
   }
-  await getFollowersHandler();
+  await getFollowersHandler('allUsers');
+  await getFollowersHandler('pausedUsers');
   res.status(200).end();
 });
 

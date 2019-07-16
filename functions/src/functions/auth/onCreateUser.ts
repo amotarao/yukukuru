@@ -16,6 +16,7 @@ export default async (user: admin.auth.UserRecord) => {
       lastUpdated: new Date(),
       nextCursor: '-1',
       newUser: true,
+      pausedGetFollower: false,
     },
     { merge: true }
   );

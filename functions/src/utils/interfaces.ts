@@ -6,6 +6,7 @@ export interface UserData {
   lastUpdated: FirebaseFirestore.Timestamp | null;
   nextCursor: string;
   newUser: boolean;
+  pausedGetFollower: boolean;
   photoUrl: string;
 }
 

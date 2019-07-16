@@ -5,21 +5,40 @@ import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult }
 import { UserData } from '../utils/interfaces';
 import { getFollowersList } from '../utils/twitter';
 
-export default async () => {
+export default async (type: 'allUsers' | 'pausedUsers') => {
   const now = new Date();
   const time18 = new Date();
   // Twitter API は 15分制限があるが、余裕を持って 18分にした
   time18.setMinutes(now.getMinutes() - 18);
 
-  const querySnapshot = await firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('invalid', '==', false)
-    .where('lastUpdated', '<', time18)
-    .orderBy('lastUpdated')
-    .orderBy('nextCursor', 'desc')
-    .limit(10)
-    .get();
+  const querySnapshot = await ((type) => {
+    switch (type) {
+      case 'pausedUsers': {
+        return firestore
+          .collection('users')
+          .where('active', '==', true)
+          .where('invalid', '==', false)
+          .where('pausedGetFollower', '==', true)
+          .where('lastUpdated', '<', time18)
+          .orderBy('lastUpdated')
+          .orderBy('nextCursor', 'desc')
+          .limit(10)
+          .get();
+      }
+      case 'allUsers':
+      default: {
+        return firestore
+          .collection('users')
+          .where('active', '==', true)
+          .where('invalid', '==', false)
+          .where('lastUpdated', '<', time18)
+          .orderBy('lastUpdated')
+          .orderBy('nextCursor', 'desc')
+          .limit(10)
+          .get();
+      }
+    }
+  })(type);
 
   const requests = querySnapshot.docs.map(async (snapshot) => {
     const { nextCursor, currentWatchesId } = snapshot.data() as UserData;
