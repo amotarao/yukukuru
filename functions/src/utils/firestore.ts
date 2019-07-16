@@ -7,6 +7,11 @@ export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => 
   return error ? true : false;
 };
 
+export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
+  const error = errors.find(({ code }) => code === 88);
+  return error ? true : false;
+};
+
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = firestore
     .collection('users')
