@@ -18,7 +18,7 @@ export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => 
         options={{
           text: 'ゆくひとくるひと - フォロワー管理アプリ',
           size: isNormal ? undefined : size,
-          via: 'yukukuru',
+          via: 'yukukuruapp',
           hashtags: 'ゆくくる',
           lang: 'ja',
           showCount: false,
