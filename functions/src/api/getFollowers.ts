@@ -5,40 +5,36 @@ import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult }
 import { UserData } from '../utils/interfaces';
 import { getFollowersList } from '../utils/twitter';
 
-export default async (type: 'allUsers' | 'pausedUsers') => {
+export default async () => {
   const now = new Date();
   const time18 = new Date();
   // Twitter API は 15分制限があるが、余裕を持って 18分にした
   time18.setMinutes(now.getMinutes() - 18);
 
-  const querySnapshot = await ((type) => {
-    switch (type) {
-      case 'pausedUsers': {
-        return firestore
-          .collection('users')
-          .where('active', '==', true)
-          .where('invalid', '==', false)
-          .where('pausedGetFollower', '==', true)
-          .where('lastUpdated', '<', time18)
-          .orderBy('lastUpdated')
-          .limit(10)
-          .get();
-      }
-      case 'allUsers':
-      default: {
-        return firestore
-          .collection('users')
-          .where('active', '==', true)
-          .where('invalid', '==', false)
-          .where('lastUpdated', '<', time18)
-          .orderBy('lastUpdated')
-          .limit(10)
-          .get();
-      }
-    }
-  })(type);
+  const allUsers = firestore
+    .collection('users')
+    .where('active', '==', true)
+    .where('invalid', '==', false)
+    .where('lastUpdated', '<', time18)
+    .orderBy('lastUpdated')
+    .limit(30)
+    .get();
 
-  const requests = querySnapshot.docs.map(async (snapshot) => {
+  const pausedUsers = firestore
+    .collection('users')
+    .where('active', '==', true)
+    .where('invalid', '==', false)
+    .where('pausedGetFollower', '==', true)
+    .where('lastUpdated', '<', time18)
+    .orderBy('lastUpdated')
+    .limit(10)
+    .get();
+
+  const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
+  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs].filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i);
+  console.log(docs.map((doc) => doc.id), docs.length);
+
+  const requests = docs.map(async (snapshot) => {
     const { nextCursor, currentWatchesId } = snapshot.data() as UserData;
 
     const token = await getToken(snapshot.id);
