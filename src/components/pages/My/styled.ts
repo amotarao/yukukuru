@@ -79,3 +79,16 @@ export const EmptyTextStyle = css`
     margin: 16px;
   }
 `;
+
+export const ErrorWrapperStyle = css`
+  && {
+    border: 1px solid #f33;
+    color: #f33;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.8em;
+    justify-content: center;
+    margin: 16px;
+    padding: 4;
+  }
+`;
