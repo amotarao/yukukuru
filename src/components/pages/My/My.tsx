@@ -39,7 +39,7 @@ export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) =
         </p>
       ) : null}
       {isLoading ? (
-        <p>読み込み中</p>
+        <p style={{ margin: 16 }}>読み込み中</p>
       ) : items.length ? (
         items.map(({ data: { durationStart, durationEnd, cameUsers, leftUsers } }, i) =>
           !cameUsers.length && !leftUsers.length ? null : (
