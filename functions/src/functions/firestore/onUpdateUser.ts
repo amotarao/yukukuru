@@ -2,13 +2,14 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken } from '../../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords } from '../../utils/firestore';
 import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as UserData;
   const beforeData = before.data() as UserData;
+  const uid = after.id;
 
   if (afterData.nextCursor !== '-1' || afterData.newUser) {
     // フォロワー取得途中 か 新規ユーザー
@@ -42,13 +43,26 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   if (!came.length && !left.length) {
     // 差分なし
+
+    const exists = await existsRecords(uid);
+
+    if (!exists) {
+      const data: UserRecordData = {
+        cameUsers: [],
+        leftUsers: [],
+        durationStart: watches[1].getEndDate,
+        durationEnd: watches[0].getEndDate,
+      };
+      await setRecord(uid, data);
+    }
+
     return;
   }
 
-  const token = await getToken(after.id);
+  const token = await getToken(uid);
   if (!token) {
-    console.log(after.id, 'no-token');
-    await setTokenInvalid(after.id);
+    console.log(uid, 'no-token');
+    await setTokenInvalid(uid);
     return;
   }
   const { twitterAccessToken, twitterAccessTokenSecret } = token;
@@ -63,9 +77,9 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const result = await getUsersLookup(client, { usersId: [...came, ...left] });
 
   if ('errors' in result) {
-    console.error(after.id, result);
+    console.error(uid, result);
     if (checkInvalidToken(result.errors)) {
-      await setTokenInvalid(after.id);
+      await setTokenInvalid(uid);
     }
     return;
   }
@@ -100,8 +114,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationStart: watches[1].getEndDate,
     durationEnd: watches[0].getEndDate,
   };
-
-  await after.ref.collection('records').add(data);
+  await setRecord(uid, data);
 
   console.log(data);
 };

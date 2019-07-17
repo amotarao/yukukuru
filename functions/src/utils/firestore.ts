@@ -1,6 +1,6 @@
 import { admin, firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
-import { TokenData } from '../utils/interfaces';
+import { TokenData, UserRecordData } from '../utils/interfaces';
 
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
   const error = errors.find(({ code }) => code === 89);
@@ -90,5 +90,24 @@ export const setUserResult = async (userId: string, watchId: string, nextCursor:
     { merge: true }
   );
 
+  return;
+};
+
+export const existsRecords = async (userId: string): Promise<boolean> => {
+  const snapshot = await firestore
+    .collection('users')
+    .doc(userId)
+    .collection('records')
+    .limit(1)
+    .get();
+  return !snapshot.empty;
+};
+
+export const setRecord = async (userId: string, data: UserRecordData): Promise<void> => {
+  await firestore
+    .collection('users')
+    .doc(userId)
+    .collection('records')
+    .add(data);
   return;
 };
