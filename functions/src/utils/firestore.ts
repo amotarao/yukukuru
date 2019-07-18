@@ -12,6 +12,11 @@ export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolea
   return error ? true : false;
 };
 
+export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
+  const error = errors.find(({ code }) => code === 326);
+  return error ? true : false;
+};
+
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = firestore
     .collection('users')
@@ -84,6 +89,20 @@ export const setUserResult = async (userId: string, watchId: string, nextCursor:
       nextCursor: ended ? '-1' : nextCursor,
       currentWatchesId: ended ? '' : watchId,
       pausedGetFollower: !ended,
+      lastUpdated: date,
+      newUser: false,
+    },
+    { merge: true }
+  );
+
+  return;
+};
+
+export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
+  const collection = firestore.collection('users').doc(userId);
+
+  await collection.set(
+    {
       lastUpdated: date,
       newUser: false,
     },

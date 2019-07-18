@@ -1,7 +1,7 @@
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult } from '../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult, checkProtectedUser, setUserResultWithNoChange } from '../utils/firestore';
 import { UserData } from '../utils/interfaces';
 import { getFollowersList } from '../utils/twitter';
 
@@ -61,6 +61,10 @@ export default async () => {
       console.error(snapshot.id, result);
       if (checkInvalidToken(result.errors)) {
         await setTokenInvalid(snapshot.id);
+      }
+      if (checkProtectedUser(result.errors)) {
+        await setUserResultWithNoChange(snapshot.id, now);
+        return;
       }
       return;
     }
