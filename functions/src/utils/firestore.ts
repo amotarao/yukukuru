@@ -62,7 +62,7 @@ export const setWatch = async (userId: string, followers: string[], date: Date, 
 
   if (!watchId) {
     const { id } = await collection.add({
-      followers: followers,
+      followers,
       getStartDate: date,
       getEndDate: date,
     });
@@ -70,9 +70,20 @@ export const setWatch = async (userId: string, followers: string[], date: Date, 
   }
 
   const ref = await collection.doc(watchId);
+
+  if (followers.length > 0) {
+    await ref.set(
+      {
+        followers: admin.firestore.FieldValue.arrayUnion(...followers),
+        getEndDate: date,
+      },
+      { merge: true }
+    );
+    return ref.id;
+  }
+
   await ref.set(
     {
-      followers: admin.firestore.FieldValue.arrayUnion(...followers),
       getEndDate: date,
     },
     { merge: true }
