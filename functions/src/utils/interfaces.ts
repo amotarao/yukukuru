@@ -3,7 +3,8 @@ export interface UserData {
   currentWatchesId: string;
   displayName: string;
   invalid: boolean;
-  lastUpdated: FirebaseFirestore.Timestamp | null;
+  lastUpdated?: FirebaseFirestore.Timestamp;
+  lastUpdatedTwUsers?: FirebaseFirestore.Timestamp;
   nextCursor: string;
   newUser: boolean;
   pausedGetFollower: boolean;

@@ -125,6 +125,19 @@ export const setUserResultWithNoChange = async (userId: string, date: Date): Pro
   return;
 };
 
+export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
+  const collection = firestore.collection('users').doc(userId);
+
+  await collection.set(
+    {
+      lastUpdatedTwUsers: date,
+    },
+    { merge: true }
+  );
+
+  return;
+};
+
 export const existsRecords = async (userId: string): Promise<boolean> => {
   const snapshot = await firestore
     .collection('users')

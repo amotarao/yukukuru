@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers } from '../../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers, setTwUsers } from '../../utils/firestore';
 import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
@@ -13,14 +13,35 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   if (afterData.nextCursor !== '-1' || afterData.newUser) {
     // フォロワー取得途中 か 新規ユーザー
+    console.log('afterData.nextCursor !== "-1" || afterData.newUser');
     return;
   }
 
-  const diff = _.omitBy(afterData, (value, key) => beforeData[key as keyof UserData] === value);
-  console.log('diff', diff);
+  if (!afterData.lastUpdated || !beforeData.lastUpdated) {
+    // lastUpdated が存在しない
+    console.log('!afterData.lastUpdated || !beforeData.lastUpdated');
+    return;
+  }
 
-  if (!('lastUpdated' in diff && diff.lastUpdated)) {
+  const afterLastUpdated = afterData.lastUpdated.toDate().toString();
+  const beforeLastUpdated = beforeData.lastUpdated.toDate().toString();
+  if (afterLastUpdated === beforeLastUpdated) {
     // フォロワー取得更新なし
+    console.log('afterLastUpdated === beforeLastUpdated');
+    return;
+  }
+
+  if (!afterData.lastUpdatedTwUsers || !beforeData.lastUpdatedTwUsers) {
+    // lastUpdatedTwUsers が存在しない
+    console.log('!afterData.lastUpdatedTwUsers || !beforeData.lastUpdatedTwUsers');
+    return;
+  }
+
+  const afterLastUpdatedTwUsers = afterData.lastUpdatedTwUsers.toDate().toString();
+  const beforeLastUpdatedTwUsers = beforeData.lastUpdatedTwUsers.toDate().toString();
+  if (afterLastUpdatedTwUsers !== beforeLastUpdatedTwUsers) {
+    // TwUsers のみの更新なので、アップデートされていない
+    console.log('afterLastUpdatedTwUsers !== beforeLastUpdatedTwUsers');
     return;
   }
 
@@ -39,7 +60,6 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const [newFollowers, oldFollowers] = watches.map((e) => e.followers);
   const came = _.difference(newFollowers, oldFollowers);
   const left = _.difference(oldFollowers, newFollowers);
-  console.log(came, left);
 
   if (!came.length && !left.length) {
     // 差分なし
@@ -126,7 +146,10 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationStart: watches[1].getEndDate,
     durationEnd: watches[0].getEndDate,
   };
-  await setRecord(uid, data);
+  const setRecordPromise = setRecord(uid, data);
+  const setTwUsersPromise = setTwUsers(lookupedUsers);
+
+  await Promise.all([setRecordPromise, setTwUsersPromise]);
 
   console.log(data);
 };
