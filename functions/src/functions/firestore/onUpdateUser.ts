@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords } from '../../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers } from '../../utils/firestore';
 import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
@@ -90,23 +90,34 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       name: name,
       screenName: screen_name,
       photoUrl: profile_image_url_https,
+      notFounded: false,
     };
     return convertedUser;
   });
 
-  const findUser = (user: string): UserRecordUserItemData => {
-    const obj = users.find((e) => e.id === user);
-    if (!obj) {
-      const response: UserRecordUserItemData = {
-        id: user,
-      };
-      return response;
+  const findUser = async (userId: string): Promise<UserRecordUserItemData> => {
+    const obj = users.find((e) => e.id === userId);
+    if (obj) {
+      return obj;
     }
-    return obj;
+
+    const user = await getTwUsers([userId]);
+    if (user.length === 0) {
+      const item: UserRecordUserItemData = {
+        id: userId,
+        notFounded: true,
+      };
+      return item;
+    }
+
+    const item: UserRecordUserItemData = {
+      ...user[0],
+      notFounded: true,
+    };
+    return item;
   };
 
-  const cameUsers = came.map(findUser);
-  const leftUsers = left.map(findUser);
+  const [cameUsers, leftUsers] = await Promise.all([Promise.all(came.map(findUser)), Promise.all(left.map(findUser))]);
 
   const data: UserRecordData = {
     cameUsers,

@@ -168,3 +168,19 @@ export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> =
   await Promise.all(requests);
   return;
 };
+
+export const getTwUsers = async (users: string[]): Promise<TwUserData[]> => {
+  const collection = firestore.collection('twUsers');
+  const requests = users.map(async (user) => {
+    const snapshot = await collection.doc(user).get();
+    return snapshot;
+  });
+  const results = await Promise.all(requests);
+  return results
+    .filter((result) => {
+      return result.exists;
+    })
+    .map((result) => {
+      return result.data() as TwUserData;
+    });
+};
