@@ -80,11 +80,13 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     console.error(uid, result);
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
+      return;
     }
-    return;
   }
 
-  const users = result.response.map(({ id_str, name, screen_name, profile_image_url_https }) => {
+  const usersRecord = 'errors' in result ? [] : result.response;
+
+  const users = usersRecord.map(({ id_str, name, screen_name, profile_image_url_https }) => {
     const convertedUser: UserRecordUserItemData = {
       id: id_str,
       name: name,
