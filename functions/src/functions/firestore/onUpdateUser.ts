@@ -83,9 +83,9 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     }
   }
 
-  const usersRecord = 'errors' in result ? [] : result.response;
+  const lookupedUsers = 'errors' in result ? [] : result.response;
 
-  const users = usersRecord.map(({ id_str, name, screen_name, profile_image_url_https }) => {
+  const users = lookupedUsers.map(({ id_str, name, screen_name, profile_image_url_https }) => {
     const convertedUser: UserRecordUserItemData = {
       id: id_str,
       name: name,
