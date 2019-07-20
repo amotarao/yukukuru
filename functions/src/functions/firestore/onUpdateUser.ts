@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers } from '../../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers, setTwUsers } from '../../utils/firestore';
 import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
@@ -126,7 +126,10 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationStart: watches[1].getEndDate,
     durationEnd: watches[0].getEndDate,
   };
-  await setRecord(uid, data);
+  const setRecordPromise = setRecord(uid, data);
+  const setTwUsersPromise = setTwUsers(lookupedUsers);
+
+  await Promise.all([setRecordPromise, setTwUsersPromise]);
 
   console.log(data);
 };
