@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import getFollowersHandler from './api/getFollowers';
+import updateTwUsersHandler from './api/updateTwUsers';
 import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
@@ -20,6 +21,18 @@ export const getFollowers = functions
       return;
     }
     await getFollowersHandler();
+    res.status(200).end();
+  });
+
+export const updateTwUsers = functions
+  .runWith(runtimeOptions)
+  .region('asia-northeast1')
+  .https.onRequest(async (req, res) => {
+    if (req.query.key !== env.http_functions_key) {
+      res.status(403).end();
+      return;
+    }
+    await updateTwUsersHandler();
     res.status(200).end();
   });
 

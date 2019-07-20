@@ -110,7 +110,7 @@ export const getUsersLookupSingle = (
 
 /**
  * ユーザー情報を取得
- * 15分につき 90,000人まで 取得可能
+ * 15分につき 30,000人まで 取得可能
  */
 export const getUsersLookup = async (
   client: Twitter,
