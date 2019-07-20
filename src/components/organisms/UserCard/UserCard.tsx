@@ -2,13 +2,13 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { RecordItemUserInterface } from '../../../stores/database/records';
-import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NoDetailWrapperStyle } from './styled';
+import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NotFoundedTextStyle, NoDetailWrapperStyle } from './styled';
 
 export interface UserCardProps {
   item: RecordItemUserInterface;
 }
 
-export const UserCard: React.FC<UserCardProps> = ({ item: { name, screenName, photoUrl } }) => {
+export const UserCard: React.FC<UserCardProps> = ({ item: { name, screenName, photoUrl, notFounded = false } }) => {
   const hasDetail = name && screenName && photoUrl;
 
   return hasDetail ? (
@@ -18,11 +18,12 @@ export const UserCard: React.FC<UserCardProps> = ({ item: { name, screenName, ph
       </div>
       <p css={NameStyle}>{name}</p>
       <p css={ScreenNameStyle}>@{screenName}</p>
+      {notFounded && <p css={NotFoundedTextStyle}>アカウントが削除、凍結された可能性があります</p>}
     </a>
   ) : (
     <div css={NoDetailWrapperStyle}>
-      <p className="head">情報が取得できないユーザー</p>
-      <p className="text">ユーザーが削除された可能性があります</p>
+      <p className="head">情報の取得ができないユーザー</p>
+      <p className="text">アカウントが削除、凍結された可能性があります</p>
     </div>
   );
 };

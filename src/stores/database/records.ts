@@ -18,10 +18,10 @@ export interface RecordDataInterface {
 
 export interface RecordItemUserInterface {
   id: string;
-  name?: string;
   screenName?: string;
+  name?: string;
   photoUrl?: string;
-  detail: boolean;
+  notFounded?: boolean;
 }
 
 const useRecords = () => {
