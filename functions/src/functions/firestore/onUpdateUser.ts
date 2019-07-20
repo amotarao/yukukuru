@@ -16,11 +16,31 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
 
-  const diff = _.omitBy(afterData, (value, key) => beforeData[key as keyof UserData] === value);
-  console.log('diff', diff);
+  if (!afterData.lastUpdated || !beforeData.lastUpdated) {
+    // lastUpdated が存在しない
+    console.log('!afterData.lastUpdated || !beforeData.lastUpdated');
+    return;
+  }
 
-  if (!('lastUpdated' in diff && diff.lastUpdated)) {
+  const afterLastUpdated = afterData.lastUpdated.toDate().toString();
+  const beforeLastUpdated = beforeData.lastUpdated.toDate().toString();
+  if (afterLastUpdated === beforeLastUpdated) {
     // フォロワー取得更新なし
+    console.log('afterLastUpdated === beforeLastUpdated');
+    return;
+  }
+
+  if (!afterData.lastUpdatedTwUsers || !beforeData.lastUpdatedTwUsers) {
+    // lastUpdatedTwUsers が存在しない
+    console.log('!afterData.lastUpdatedTwUsers || !beforeData.lastUpdatedTwUsers');
+    return;
+  }
+
+  const afterLastUpdatedTwUsers = afterData.lastUpdatedTwUsers.toDate().toString();
+  const beforeLastUpdatedTwUsers = beforeData.lastUpdatedTwUsers.toDate().toString();
+  if (afterLastUpdatedTwUsers !== beforeLastUpdatedTwUsers) {
+    // TwUsers のみの更新なので、アップデートされていない
+    console.log('afterLastUpdatedTwUsers !== beforeLastUpdatedTwUsers');
     return;
   }
 
