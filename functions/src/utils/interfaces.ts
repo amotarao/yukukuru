@@ -36,3 +36,10 @@ export interface TokenData {
   twitterAccessTokenSecret: string;
   twitterId: string;
 }
+
+export interface TwUserData {
+  id: string;
+  screenName: string;
+  name: string;
+  photoUrl: string;
+}

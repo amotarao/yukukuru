@@ -3,6 +3,13 @@ import * as Twitter from 'twitter';
 import { twitterClientErrorHandler, TwitterClientErrorData } from '../utils/error';
 import { checkRateLimitExceeded } from './firestore';
 
+export interface TwitterUserInterface {
+  id_str: string;
+  screen_name: string;
+  name: string;
+  profile_image_url_https: string;
+}
+
 export interface GetFollowersListProps {
   userId: string;
   cursor?: string;
@@ -10,7 +17,7 @@ export interface GetFollowersListProps {
 }
 
 export interface GetFollowersListResponseData {
-  users: { id_str: string }[];
+  users: TwitterUserInterface[];
   next_cursor_str: string;
 }
 
@@ -45,7 +52,7 @@ export const getFollowersList = async (
   client: Twitter,
   { userId, cursor = '-1' }: GetFollowersListProps
 ): Promise<{ response: GetFollowersListResponseData } | { errors: TwitterClientErrorData[] }> => {
-  const users: { id_str: string }[] = [];
+  const users: TwitterUserInterface[] = [];
   let nextCursor = cursor;
   let count = 0;
 
@@ -82,13 +89,6 @@ export interface GetUsersLookupProps {
   usersId: string[];
 }
 
-export interface GetUsersLookupResponseData {
-  id_str: string;
-  name: string;
-  screen_name: string;
-  profile_image_url_https: string;
-}
-
 /**
  * ユーザー情報を取得
  * 100人まで 取得可能
@@ -97,13 +97,13 @@ export interface GetUsersLookupResponseData {
 export const getUsersLookupSingle = (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: GetUsersLookupResponseData[] } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
   return client
     .get('users/lookup', {
       user_id: usersId.join(','),
     })
     .then((response) => {
-      return { response: response as GetUsersLookupResponseData[] };
+      return { response: response as TwitterUserInterface[] };
     })
     .catch(twitterClientErrorHandler);
 };
@@ -115,8 +115,8 @@ export const getUsersLookupSingle = (
 export const getUsersLookup = async (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: GetUsersLookupResponseData[] } | { errors: TwitterClientErrorData[] }> => {
-  const users: GetUsersLookupResponseData[] = [];
+): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
+  const users: TwitterUserInterface[] = [];
   const errors: TwitterClientErrorData[] = [];
 
   const lookup = _.chunk(_.uniq(usersId), 100).map(async (usersId) => {
@@ -127,11 +127,11 @@ export const getUsersLookup = async (
       return;
     }
 
-    result.response.forEach(({ id_str, name, screen_name, profile_image_url_https }) => {
-      const data: GetUsersLookupResponseData = {
+    result.response.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
+      const data: TwitterUserInterface = {
         id_str,
-        name,
         screen_name,
+        name,
         profile_image_url_https,
       };
       users.push(data);
