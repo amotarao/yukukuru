@@ -13,6 +13,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   if (afterData.nextCursor !== '-1' || afterData.newUser) {
     // フォロワー取得途中 か 新規ユーザー
+    console.log('afterData.nextCursor !== "-1" || afterData.newUser');
     return;
   }
 
@@ -59,7 +60,6 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const [newFollowers, oldFollowers] = watches.map((e) => e.followers);
   const came = _.difference(newFollowers, oldFollowers);
   const left = _.difference(oldFollowers, newFollowers);
-  console.log(came, left);
 
   if (!came.length && !left.length) {
     // 差分なし
