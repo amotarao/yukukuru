@@ -19,10 +19,10 @@ export interface UserRecordData {
 
 export interface UserRecordUserItemData {
   id: string;
+  screenName?: string;
   name?: string;
   photoUrl?: string;
-  screenName?: string;
-  detail?: boolean;
+  notFounded?: boolean;
 }
 
 export interface UserWatchData {
@@ -35,4 +35,11 @@ export interface TokenData {
   twitterAccessToken: string;
   twitterAccessTokenSecret: string;
   twitterId: string;
+}
+
+export interface TwUserData {
+  id: string;
+  screenName: string;
+  name: string;
+  photoUrl: string;
 }

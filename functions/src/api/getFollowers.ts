@@ -1,7 +1,16 @@
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult, checkProtectedUser, setUserResultWithNoChange } from '../utils/firestore';
+import {
+  checkInvalidToken,
+  setTokenInvalid,
+  getToken,
+  setWatch,
+  setUserResult,
+  checkProtectedUser,
+  setUserResultWithNoChange,
+  setTwUsers,
+} from '../utils/firestore';
 import { UserData } from '../utils/interfaces';
 import { getFollowersList } from '../utils/twitter';
 
@@ -69,11 +78,21 @@ export default async () => {
       return;
     }
 
-    const followers = result.response.users.map(({ id_str }) => id_str);
-    const newNextCursor = result.response.next_cursor_str;
+    const { users, next_cursor_str: newNextCursor } = result.response;
+    const followers = users.map(({ id_str }) => id_str);
 
-    const watchId = await setWatch(snapshot.id, followers, now, currentWatchesId);
-    await setUserResult(snapshot.id, watchId, newNextCursor, now);
+    const setWatchAndUserPromise = async () => {
+      const watchId = await setWatch(snapshot.id, followers, now, currentWatchesId);
+      await setUserResult(snapshot.id, watchId, newNextCursor, now);
+      return watchId;
+    };
+
+    const setTwUsersPromise = async () => {
+      await setTwUsers(users);
+      return;
+    };
+
+    const [watchId] = await Promise.all([setWatchAndUserPromise(), setTwUsersPromise()]);
 
     return {
       userId: snapshot.id,

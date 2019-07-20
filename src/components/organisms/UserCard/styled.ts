@@ -50,6 +50,14 @@ export const ScreenNameStyle = css`
   }
 `;
 
+export const NotFoundedTextStyle = css`
+  && {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    margin-left: 64px;
+  }
+`;
+
 export const NoDetailWrapperStyle = css`
   && {
     border-radius: 8px;
