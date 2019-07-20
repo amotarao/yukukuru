@@ -80,7 +80,6 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     console.error(uid, result);
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
-      return;
     }
   }
 
