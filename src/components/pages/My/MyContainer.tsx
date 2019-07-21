@@ -9,7 +9,7 @@ interface Props extends RouteComponentProps, Partial<MyProps> {}
 
 const MyInner: React.FC<Props> = ({ history }) => {
   const { isLoading: userIsLoading, signedIn, user, signOut } = UserContainer.useContainer();
-  const { isLoading: recordsIsLoading, setUid: setRecordsUid, items } = RecordsContainer.useContainer();
+  const { isLoading: recordsIsLoading, isNextLoading, items, hasNext, setUid: setRecordsUid, getNextRecords } = RecordsContainer.useContainer();
   const { isLoading: tokenIsLoading, setUid: setTokenUid, hasToken } = TokenContainer.useContainer();
 
   useEffect(() => {
@@ -29,8 +29,11 @@ const MyInner: React.FC<Props> = ({ history }) => {
     <My
       {...{
         isLoading,
+        isNextLoading,
         items,
+        hasNext,
         hasToken,
+        getNextRecords,
         signOut,
       }}
     />

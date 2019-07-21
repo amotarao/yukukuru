@@ -14,12 +14,16 @@ import {
   LeftHeadStyle,
   EmptyTextStyle,
   ErrorWrapperStyle,
+  GetNextButtonStyle,
 } from './styled';
 
 export interface MyProps {
   isLoading: boolean;
+  isNextLoading: boolean;
   items: RecordInterface[];
+  hasNext: boolean;
   hasToken: boolean;
+  getNextRecords: () => void;
   signOut: () => Promise<void>;
 }
 
@@ -105,7 +109,7 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
   );
 };
 
-export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) => (
+export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
@@ -115,5 +119,11 @@ export const My: React.FC<MyProps> = ({ isLoading, items, hasToken, signOut }) =
       </button>
     </header>
     {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Inner items={items} />}
+    {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
+    {!isLoading && hasNext && (
+      <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>
+        続きを取得
+      </button>
+    )}
   </div>
 );
