@@ -24,54 +24,80 @@ export interface RecordItemUserInterface {
   notFounded?: boolean;
 }
 
+const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
+  const item: RecordInterface = {
+    id: snapshot.id,
+    data: snapshot.data() as RecordDataInterface,
+  };
+  return item;
+};
+
 const useRecords = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [isNextLoading, setNextLoading] = useState<boolean>(true);
+  const [hasNext, setHasNext] = useState<boolean>(true);
   const [items, setItems] = useState<RecordInterface[]>([]);
   const [uid, setUid] = useState<string | null>(null);
 
-  useEffect(() => {
-    const tmpItems: RecordInterface[] = [];
+  const getNextRecords = () => {
+    if (isNextLoading || !uid) {
+      return;
+    }
+    setNextLoading(true);
 
+    (async () => {
+      const lastDurationEnd = items[items.length - 1].data.durationEnd;
+      const query = await usersCollection
+        .doc(uid)
+        .collection('records')
+        .orderBy('durationEnd', 'desc')
+        .startAfter(lastDurationEnd)
+        .limit(20)
+        .get();
+
+      const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
+      setItems([...items, ...tmpItems]);
+
+      if (query.size < 20) {
+        setHasNext(false);
+      }
+
+      setNextLoading(false);
+    })();
+  };
+
+  useEffect(() => {
     if (!uid) {
       return;
     }
 
-    usersCollection
-      .doc(uid)
-      .collection('records')
-      .orderBy('durationEnd', 'desc')
-      .onSnapshot((snapshot) => {
-        setLoading(false);
+    (async () => {
+      const query = await usersCollection
+        .doc(uid)
+        .collection('records')
+        .orderBy('durationEnd', 'desc')
+        .limit(20)
+        .get();
 
-        snapshot.docChanges().forEach(({ type, doc }) => {
-          const item = {
-            id: doc.id,
-            data: doc.data() as RecordDataInterface,
-          };
-          const index = tmpItems.findIndex((e) => e.id === item.id);
+      const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
+      setItems(tmpItems);
 
-          switch (type) {
-            case 'added':
-              tmpItems.push(item);
-              break;
-            case 'modified':
-              tmpItems.splice(index, 1, item);
-              break;
-            case 'removed':
-              tmpItems.splice(index, 1);
-              break;
-            default:
-              break;
-          }
-          setItems([...tmpItems]);
-        });
-      });
+      if (query.size < 20) {
+        setHasNext(false);
+      }
+
+      setLoading(false);
+      setNextLoading(false);
+    })();
   }, [uid]);
 
   return {
     isLoading,
+    isNextLoading,
     items,
+    hasNext,
     setUid,
+    getNextRecords,
   };
 };
 

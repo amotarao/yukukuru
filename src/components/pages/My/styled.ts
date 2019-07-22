@@ -92,3 +92,23 @@ export const ErrorWrapperStyle = css`
     padding: 4;
   }
 `;
+
+export const GetNextButtonStyle = css`
+  && {
+    appearance: none;
+    background: #2196f3;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    height: 48px;
+    margin: 40px 16px 80px;
+    width: calc(100% - 32px);
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+`;
