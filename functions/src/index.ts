@@ -7,13 +7,18 @@ import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { env } from './utils/env';
 
-const runtimeOptions: functions.RuntimeOptions = {
+const httpsRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 90,
   memory: '1GB',
 };
 
+const functionsRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 60,
+  memory: '1GB',
+};
+
 export const getFollowers = functions
-  .runWith(runtimeOptions)
+  .runWith(httpsRuntimeOptions)
   .region('asia-northeast1')
   .https.onRequest(async (req, res) => {
     if (req.query.key !== env.http_functions_key) {
@@ -25,7 +30,7 @@ export const getFollowers = functions
   });
 
 export const updateTwUsers = functions
-  .runWith(runtimeOptions)
+  .runWith(httpsRuntimeOptions)
   .region('asia-northeast1')
   .https.onRequest(async (req, res) => {
     if (req.query.key !== env.http_functions_key) {
@@ -47,6 +52,7 @@ export const onDeleteUser = functions
   .onDelete(onDeleteUserHandler);
 
 export const onFirestoreUpdateUser = functions
+  .runWith(functionsRuntimeOptions)
   .region('asia-northeast1')
   .firestore.document('users/{userId}')
   .onUpdate(onFirestoreUpdateUserHandler);
