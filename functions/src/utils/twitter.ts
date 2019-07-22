@@ -92,7 +92,7 @@ export interface GetUsersLookupProps {
 /**
  * ユーザー情報を取得
  * 100人まで 取得可能
- * 15分につき 900回 実行可能
+ * 15分につき 300回 実行可能
  */
 export const getUsersLookupSingle = (
   client: Twitter,
