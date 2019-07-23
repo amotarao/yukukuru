@@ -52,6 +52,11 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
           <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
           <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
         </p>
+        <p style={{ fontSize: '0.8em', color: '#f33', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
+          <span style={{ whiteSpace: 'nowrap' }}>※ 現在、フォロワーが約5万人以上の方の</span>
+          <span style={{ whiteSpace: 'nowrap' }}>データの取得ができません。</span>
+          <span style={{ whiteSpace: 'nowrap' }}>対応完了までしばらくお待ちください。</span>
+        </p>
       </div>
     );
   }
