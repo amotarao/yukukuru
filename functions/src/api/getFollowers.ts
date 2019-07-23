@@ -35,7 +35,7 @@ export default async () => {
   console.log(docs.map((doc) => doc.id), docs.length);
 
   const requests = docs.map(async (snapshot) => {
-    const { nextCursor, currentWatchesId } = snapshot.data() as UserData;
+    const { nextCursor } = snapshot.data() as UserData;
 
     const token = await getToken(snapshot.id);
     if (!token) {
@@ -55,6 +55,7 @@ export default async () => {
     const result = await getFollowersIdList(client, {
       userId: twitterId,
       cursor: nextCursor,
+      count: 40000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
     if ('errors' in result) {
@@ -70,7 +71,7 @@ export default async () => {
     }
 
     const { ids, next_cursor_str: newNextCursor } = result.response;
-    const watchId = await setWatch(snapshot.id, ids, now, currentWatchesId);
+    const watchId = await setWatch(snapshot.id, ids, now, newNextCursor === '0');
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
 
     return {
