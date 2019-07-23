@@ -124,13 +124,14 @@ export const getFollowersIdListSingle = (
  */
 export const getFollowersIdList = async (
   client: Twitter,
-  { userId, cursor = '-1' }: GetFollowersIdListProps
+  { userId, cursor = '-1', count = 75000 }: GetFollowersIdListProps
 ): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientErrorData[] }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
-  let count = 0;
+  let getCount = 0;
+  const maxGetCount = Math.min(Math.floor(count / 5000), 15);
 
-  while (count < 15) {
+  while (getCount < maxGetCount) {
     const obj: GetFollowersIdListProps = {
       userId,
       cursor: nextCursor,
@@ -138,7 +139,7 @@ export const getFollowersIdList = async (
     const result = await getFollowersIdListSingle(client, obj);
     if ('errors' in result) {
       if (checkRateLimitExceeded(result.errors)) {
-        console.error({ summary: 'rateLimitExceeded', userId, count });
+        console.error({ summary: 'rateLimitExceeded', userId, count: getCount });
         break;
       }
       return result;
@@ -148,7 +149,7 @@ export const getFollowersIdList = async (
     if (result.response.next_cursor_str === '0') {
       break;
     }
-    count++;
+    getCount++;
   }
 
   const response: GetFollowersIdListResponseData = {
