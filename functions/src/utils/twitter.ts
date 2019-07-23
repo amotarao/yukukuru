@@ -85,6 +85,80 @@ export const getFollowersList = async (
   return { response };
 };
 
+export interface GetFollowersIdListProps {
+  userId: string;
+  cursor?: string;
+  count?: number;
+}
+
+export interface GetFollowersIdListResponseData {
+  ids: string[];
+  next_cursor_str: string;
+}
+
+/**
+ * userId のフォロワーの IDリストを取得
+ * 5,000人まで 取得可能
+ * 15分につき 15回取得可能
+ */
+export const getFollowersIdListSingle = (
+  client: Twitter,
+  { userId, cursor = '-1', count = 5000 }: GetFollowersIdListProps
+): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientErrorData[] }> => {
+  return client
+    .get('followers/ids', {
+      user_id: userId,
+      cursor,
+      count,
+      stringify_ids: true,
+    })
+    .then((response) => {
+      return { response: response as GetFollowersIdListResponseData };
+    })
+    .catch(twitterClientErrorHandler);
+};
+
+/**
+ * userId のフォロワーの IDリストを取得
+ * 15分につき 75,000人まで 取得可能
+ */
+export const getFollowersIdList = async (
+  client: Twitter,
+  { userId, cursor = '-1' }: GetFollowersIdListProps
+): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientErrorData[] }> => {
+  const ids: string[] = [];
+  let nextCursor = cursor;
+  let count = 0;
+
+  while (count < 15) {
+    const obj: GetFollowersIdListProps = {
+      userId,
+      cursor: nextCursor,
+    };
+    const result = await getFollowersIdListSingle(client, obj);
+    if ('errors' in result) {
+      if (checkRateLimitExceeded(result.errors)) {
+        console.error({ summary: 'rateLimitExceeded', userId, count });
+        break;
+      }
+      return result;
+    }
+    ids.push(...result.response.ids);
+    nextCursor = result.response.next_cursor_str;
+    if (result.response.next_cursor_str === '0') {
+      break;
+    }
+    count++;
+  }
+
+  const response: GetFollowersIdListResponseData = {
+    ids,
+    next_cursor_str: nextCursor,
+  };
+
+  return { response };
+};
+
 export interface GetUsersLookupProps {
   usersId: string[];
 }

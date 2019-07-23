@@ -3,7 +3,7 @@ import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult, checkProtectedUser, setUserResultWithNoChange } from '../utils/firestore';
 import { UserData } from '../utils/interfaces';
-import { getFollowersList } from '../utils/twitter';
+import { getFollowersIdList } from '../utils/twitter';
 
 export default async () => {
   const now = new Date();
@@ -52,7 +52,7 @@ export default async () => {
       access_token_secret: twitterAccessTokenSecret,
     });
 
-    const result = await getFollowersList(client, {
+    const result = await getFollowersIdList(client, {
       userId: twitterId,
       cursor: nextCursor,
     });
@@ -69,10 +69,8 @@ export default async () => {
       return;
     }
 
-    const { users, next_cursor_str: newNextCursor } = result.response;
-    const followers = users.map(({ id_str }) => id_str);
-
-    const watchId = await setWatch(snapshot.id, followers, now, currentWatchesId);
+    const { ids, next_cursor_str: newNextCursor } = result.response;
+    const watchId = await setWatch(snapshot.id, ids, now, currentWatchesId);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
 
     return {
