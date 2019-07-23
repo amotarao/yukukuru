@@ -7,17 +7,22 @@ import { getFollowersIdList } from '../utils/twitter';
 
 export default async () => {
   const now = new Date();
-  const time18 = new Date();
-  // Twitter API は 15分制限があるが、余裕を持って 18分にした
-  time18.setMinutes(now.getMinutes() - 18);
+  // API は 15分で 75000人 の取得制限がある
+  // 1回で 10000人 まで取れるので、2.5分間隔
+  // 余裕を見て 3分間隔
+  const time3 = new Date();
+  time3.setMinutes(now.getMinutes() - 3);
+
+  const time15 = new Date();
+  time15.setMinutes(now.getMinutes() - 15);
 
   const allUsers = firestore
     .collection('users')
     .where('active', '==', true)
     .where('invalid', '==', false)
-    .where('lastUpdated', '<', time18)
+    .where('lastUpdated', '<', time15)
     .orderBy('lastUpdated')
-    .limit(30)
+    .limit(100)
     .get();
 
   const pausedUsers = firestore
@@ -25,13 +30,19 @@ export default async () => {
     .where('active', '==', true)
     .where('invalid', '==', false)
     .where('pausedGetFollower', '==', true)
-    .where('lastUpdated', '<', time18)
+    .where('lastUpdated', '<', time3)
     .orderBy('lastUpdated')
     .limit(10)
     .get();
 
-  const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
-  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs].filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i);
+  const newUsers = firestore
+    .collection('users')
+    .where('newUser', '==', true)
+    .limit(10)
+    .get();
+
+  const [allUsersSnap, pausedUsersSnap, newUsersSnap] = await Promise.all([allUsers, pausedUsers, newUsers]);
+  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i);
   console.log(docs.map((doc) => doc.id), docs.length);
 
   const requests = docs.map(async (snapshot) => {
@@ -55,7 +66,7 @@ export default async () => {
     const result = await getFollowersIdList(client, {
       userId: twitterId,
       cursor: nextCursor,
-      count: 40000, // Firestore ドキュメント データサイズ制限を考慮した数値
+      count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
     if ('errors' in result) {
