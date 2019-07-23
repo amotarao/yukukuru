@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { admin, firestore } from '../modules/firebase';
+import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 import { TokenData, UserRecordData, TwUserData } from '../utils/interfaces';
 import { TwitterUserInterface } from './twitter';
@@ -56,41 +56,19 @@ export const getToken = async (userId: string): Promise<TokenData | null> => {
   return { twitterAccessToken, twitterAccessTokenSecret, twitterId };
 };
 
-export const setWatch = async (userId: string, followers: string[], date: Date, watchId?: string): Promise<string> => {
+export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {
   const collection = firestore
     .collection('users')
     .doc(userId)
     .collection('watches');
 
-  if (!watchId) {
-    const { id } = await collection.add({
-      followers,
-      getStartDate: date,
-      getEndDate: date,
-    });
-    return id;
-  }
-
-  const ref = await collection.doc(watchId);
-
-  if (followers.length > 0) {
-    await ref.set(
-      {
-        followers: admin.firestore.FieldValue.arrayUnion(...followers),
-        getEndDate: date,
-      },
-      { merge: true }
-    );
-    return ref.id;
-  }
-
-  await ref.set(
-    {
-      getEndDate: date,
-    },
-    { merge: true }
-  );
-  return ref.id;
+  const { id } = await collection.add({
+    followers,
+    getStartDate: date,
+    getEndDate: date,
+    ended,
+  });
+  return id;
 };
 
 export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
