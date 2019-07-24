@@ -45,19 +45,38 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
 
-  const querySnapshot = await after.ref
+  const endedQuery = await after.ref
     .collection('watches')
+    .where('ended', '==', true)
     .orderBy('getEndDate', 'desc')
-    .limit(2)
+    .limit(3)
     .get();
-  if (querySnapshot.size !== 2) {
+  if (endedQuery.size < 2) {
+    console.log('endedQuery.size < 2');
     return;
   }
-  const watches = querySnapshot.docs.map((doc) => {
-    return doc.data() as UserWatchData;
+  const endDates = endedQuery.docs.map((snap) => (snap.data() as UserWatchData).getEndDate);
+
+  const startAfter: FirebaseFirestore.Timestamp | Date = endedQuery.size === 3 ? endDates[2] : new Date('2000/1/1');
+  const targetQuery = await after.ref
+    .collection('watches')
+    .orderBy('getEndDate')
+    .startAfter(startAfter)
+    .get();
+
+  const oldFollowers: string[] = [];
+  const newFollowers: string[] = [];
+
+  targetQuery.docs.map((doc) => {
+    const { followers, getEndDate } = doc.data() as UserWatchData;
+    if (getEndDate.seconds <= endDates[1].seconds) {
+      oldFollowers.push(...followers);
+      return;
+    }
+    newFollowers.push(...followers);
+    return;
   });
 
-  const [newFollowers, oldFollowers] = watches.map((e) => e.followers);
   const came = _.difference(newFollowers, oldFollowers);
   const left = _.difference(oldFollowers, newFollowers);
 
@@ -70,8 +89,8 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
       const data: UserRecordData = {
         cameUsers: [],
         leftUsers: [],
-        durationStart: watches[1].getEndDate,
-        durationEnd: watches[0].getEndDate,
+        durationStart: endDates[1],
+        durationEnd: endDates[0],
       };
       await setRecord(uid, data);
     }
@@ -143,8 +162,8 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const data: UserRecordData = {
     cameUsers,
     leftUsers,
-    durationStart: watches[1].getEndDate,
-    durationEnd: watches[0].getEndDate,
+    durationStart: endDates[1],
+    durationEnd: endDates[0],
   };
   const setRecordPromise = setRecord(uid, data);
   const setTwUsersPromise = setTwUsers(lookupedUsers);
