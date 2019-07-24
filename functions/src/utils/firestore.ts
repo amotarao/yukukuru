@@ -73,7 +73,7 @@ export const setWatch = async (userId: string, followers: string[], date: Date, 
 
 export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
   const collection = firestore.collection('users').doc(userId);
-  const ended = nextCursor === '0';
+  const ended = nextCursor === '0' || nextCursor === '-1';
 
   await collection.set(
     {

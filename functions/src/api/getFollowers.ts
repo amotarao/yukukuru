@@ -71,7 +71,8 @@ export default async () => {
     }
 
     const { ids, next_cursor_str: newNextCursor } = result.response;
-    const watchId = await setWatch(snapshot.id, ids, now, newNextCursor === '0');
+    const ended = newNextCursor === '0' || newNextCursor === '-1';
+    const watchId = await setWatch(snapshot.id, ids, now, ended);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
 
     return {
