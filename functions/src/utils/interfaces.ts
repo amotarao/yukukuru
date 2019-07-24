@@ -30,6 +30,7 @@ export interface UserWatchData {
   followers: string[];
   getStartDate: FirebaseFirestore.Timestamp;
   getEndDate: FirebaseFirestore.Timestamp;
+  ended?: boolean;
 }
 
 export interface TokenData {
