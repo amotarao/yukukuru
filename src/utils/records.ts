@@ -14,7 +14,7 @@ const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: fir
   );
 };
 
-export const convertRecords = (items: RecordInterface[]): RecordViewInterface[] => {
+export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
   const newItems: RecordViewInterface[] = [];
 
   items.forEach(({ data: { cameUsers, leftUsers, durationStart, durationEnd } }) => {
@@ -37,5 +37,7 @@ export const convertRecords = (items: RecordInterface[]): RecordViewInterface[] 
     newItem.leftUsers.push(...newLeftUsers);
   });
 
-  return newItems;
+  const lastDurationEnd = items.sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds)[items.length - 1].data.durationEnd;
+
+  return [newItems, lastDurationEnd];
 };

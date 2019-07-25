@@ -53,6 +53,7 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [items, setItems] = useState<RecordViewInterface[]>([]);
   const [uid, setUid] = useState<string | null>(null);
+  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp | null>(null);
 
   const getNextRecords = () => {
     if (isNextLoading || !uid) {
@@ -61,7 +62,6 @@ const useRecords = () => {
     setNextLoading(true);
 
     (async () => {
-      const lastDurationEnd = items[items.length - 1].data.durationEnd;
       const query = await usersCollection
         .doc(uid)
         .collection('records')
@@ -71,7 +71,9 @@ const useRecords = () => {
         .get();
 
       const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-      setItems(convertRecords([...items, ...tmpItems]));
+      const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
+      setItems([...items, ...newItems]);
+      setLastDurationEnd(newLastDurationEnd);
 
       if (query.size < 20) {
         setHasNext(false);
@@ -95,7 +97,9 @@ const useRecords = () => {
         .get();
 
       const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-      setItems(convertRecords(tmpItems));
+      const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
+      setItems(newItems);
+      setLastDurationEnd(newLastDurationEnd);
 
       if (query.size < 20) {
         setHasNext(false);
