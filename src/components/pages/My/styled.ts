@@ -45,14 +45,6 @@ export const RecordHeadStyle = css`
   }
 `;
 
-export const DurationStyle = css`
-  && {
-    color: #999;
-    font-size: 0.8rem;
-    margin: 8px 16px;
-  }
-`;
-
 export const CameHeadStyle = css`
   && {
     background: linear-gradient(to bottom, transparent 0%, transparent 60%, #bbdefb 60%, #bbdefb 100%);
