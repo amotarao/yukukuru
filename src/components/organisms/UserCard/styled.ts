@@ -58,6 +58,15 @@ export const NotFoundedTextStyle = css`
   }
 `;
 
+export const DurationTextStyle = css`
+  && {
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 8px;
+    margin-left: 64px;
+  }
+`;
+
 export const NoDetailWrapperStyle = css`
   && {
     border-radius: 8px;
@@ -76,6 +85,12 @@ export const NoDetailWrapperStyle = css`
       color: #999;
       font-size: 0.8rem;
       line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .duration {
+      color: #999;
+      font-size: 0.8rem;
       margin-top: 4px;
     }
   }

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { RecordInterface } from '../../../stores/database/records';
+import { RecordViewInterface } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { UserCard } from '../../organisms/UserCard';
 import {
@@ -9,7 +9,6 @@ import {
   HeaderStyle,
   SignOutButtonStyle,
   RecordHeadStyle,
-  DurationStyle,
   CameHeadStyle,
   LeftHeadStyle,
   EmptyTextStyle,
@@ -20,7 +19,7 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: RecordInterface[];
+  items: RecordViewInterface[];
   hasNext: boolean;
   hasToken: boolean;
   getNextRecords: () => void;
@@ -40,7 +39,7 @@ const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
 
 const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
   const existsItems = items.length > 0;
-  const filteredItems = items.filter(({ data: { cameUsers, leftUsers } }) => {
+  const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
     return cameUsers.length > 0 || leftUsers.length > 0;
   });
   const existsFilteredItems = filteredItems.length > 0;
@@ -65,46 +64,46 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
       </div>
     );
   }
+
   return (
     <React.Fragment>
-      {filteredItems.map(({ data: { durationStart, durationEnd, cameUsers, leftUsers } }, i) => (
-        <section key={`item-${i}`} style={{ marginBottom: 64 }}>
-          <h2 css={RecordHeadStyle}>ある期間の記録</h2>
-          <p css={DurationStyle}>
-            {durationStart.toDate().toLocaleString()} 〜 {durationEnd.toDate().toLocaleString()}
-          </p>
-          <section>
-            <h3 css={LeftHeadStyle}>ゆくひと ({leftUsers.length})</h3>
-            <ul>
-              {leftUsers.length ? (
-                <ul style={{ listStyle: 'none' }}>
-                  {leftUsers.map((user, j) => (
+      {items.map((item, i) => {
+        const date = new Date(item.date * 24 * 60 * 60 * 1000);
+        const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
+        return (
+          <section key={`item-${i}`} style={{ marginBottom: 64 }}>
+            <h2 css={RecordHeadStyle}>{dateText}の記録</h2>
+            <section>
+              <h3 css={LeftHeadStyle}>ゆくひと ({item.leftUsers.filter((user) => user).length})</h3>
+              {item.leftUsers.length ? (
+                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
+                  {item.leftUsers.map((user, j) => (
                     <li key={`item-${i}-leftuser-${j}`}>
-                      <UserCard item={user} />
+                      <UserCard {...user} />
                     </li>
                   ))}
                 </ul>
               ) : (
                 <p css={EmptyTextStyle}>なし</p>
               )}
-            </ul>
+            </section>
+            <section>
+              <h3 css={CameHeadStyle}>くるひと ({item.cameUsers.filter((user) => user).length})</h3>
+              {item.cameUsers.length ? (
+                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
+                  {item.cameUsers.map((user, j) => (
+                    <li key={`item-${i}-cameuser-${j}`}>
+                      <UserCard {...user} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p css={EmptyTextStyle}>なし</p>
+              )}
+            </section>
           </section>
-          <section>
-            <h3 css={CameHeadStyle}>くるひと ({cameUsers.length})</h3>
-            {cameUsers.length ? (
-              <ul style={{ listStyle: 'none' }}>
-                {cameUsers.map((user, j) => (
-                  <li key={`item-${i}-cameuser-${j}`}>
-                    <UserCard item={user} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p css={EmptyTextStyle}>なし</p>
-            )}
-          </section>
-        </section>
-      ))}
+        );
+      })}
     </React.Fragment>
   );
 };
