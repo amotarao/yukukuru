@@ -7,15 +7,15 @@ import { getUsersLookup } from '../utils/twitter';
 
 export default async () => {
   const now = new Date();
-  const time1day = new Date();
-  time1day.setDate(now.getDate() - 1);
+  const time1week = new Date();
+  time1week.setDate(now.getDate() - 7);
 
   const querySnapshot = await firestore
     .collection('users')
     .where('active', '==', true)
     .where('invalid', '==', false)
     .where('newUser', '==', false)
-    .where('lastUpdatedTwUsers', '<', time1day)
+    .where('lastUpdatedTwUsers', '<', time1week)
     .orderBy('lastUpdatedTwUsers')
     .limit(50)
     .get();
