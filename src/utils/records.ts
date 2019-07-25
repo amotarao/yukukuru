@@ -14,7 +14,7 @@ const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: fir
   );
 };
 
-export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
+export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp | null] => {
   const newItems: RecordViewInterface[] = [];
   const timeZoneOffset = 9;
 
@@ -38,7 +38,9 @@ export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[]
     newItem.leftUsers.push(...newLeftUsers);
   });
 
-  const lastDurationEnd = items.sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds)[items.length - 1].data.durationEnd;
+  const lastDurationEnd = items.length
+    ? items.sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds)[items.length - 1].data.durationEnd
+    : null;
 
   return [newItems, lastDurationEnd];
 };
