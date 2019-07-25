@@ -37,6 +37,8 @@ export default async () => {
 
   const newUsers = firestore
     .collection('users')
+    .where('active', '==', true)
+    .where('invalid', '==', false)
     .where('newUser', '==', true)
     .limit(10)
     .get();
