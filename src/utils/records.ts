@@ -16,9 +16,10 @@ const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: fir
 
 export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
   const newItems: RecordViewInterface[] = [];
+  const timeZoneOffset = 9;
 
   items.forEach(({ data: { cameUsers, leftUsers, durationStart, durationEnd } }) => {
-    const date = Math.floor(durationEnd.seconds / 60 / 60 / 24);
+    const date = Math.floor((durationEnd.seconds / 60 / 60 + timeZoneOffset) / 24);
     const newItem = newItems.find((newItem) => newItem.date === date);
 
     const newCameUsers = convertRecordUsers(cameUsers, durationStart, durationEnd);
