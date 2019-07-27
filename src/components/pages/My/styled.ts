@@ -3,6 +3,10 @@ import { css } from '@emotion/core';
 export const WrapperStyle = css`
   && {
     padding: 0 calc(50% - 240px);
+
+    @media screen and (min-width: 720px) {
+      padding: 0 calc(50% - 480px);
+    }
   }
 `;
 
@@ -35,13 +39,32 @@ export const SignOutButtonStyle = css`
   }
 `;
 
+export const RecordSectionStyle = css`
+  && {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 64px;
+  }
+`;
+
 export const RecordHeadStyle = css`
   && {
     background: linear-gradient(to bottom, transparent 0%, transparent 60%, #eee 60%, #eee 100%);
     font-size: 1.2rem;
     font-weight: normal;
+    margin: 8px 32px 8px 0;
     padding: 0 16px;
-    margin: 8px 0;
+    flex: 0 0 100%;
+  }
+`;
+
+export const CameSectionStyle = css`
+  && {
+    flex: 1 0 300px;
+
+    @media screen and (min-width: 640px) {
+      margin-right: 32px;
+    }
   }
 `;
 
@@ -55,12 +78,18 @@ export const CameHeadStyle = css`
   }
 `;
 
+export const LeftSectionStyle = css`
+  && {
+    flex: 1 0 300px;
+  }
+`;
+
 export const LeftHeadStyle = css`
   && {
     background: linear-gradient(to bottom, transparent 0%, transparent 60%, #ffcdd2 60%, #ffcdd2 100%);
     font-size: 0.8rem;
     font-weight: normal;
-    margin: 24px 0 16px;
+    margin: 16px 0;
     padding: 0 16px;
   }
 `;

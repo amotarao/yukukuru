@@ -8,8 +8,11 @@ import {
   WrapperStyle,
   HeaderStyle,
   SignOutButtonStyle,
+  RecordSectionStyle,
   RecordHeadStyle,
+  CameSectionStyle,
   CameHeadStyle,
+  LeftSectionStyle,
   LeftHeadStyle,
   EmptyTextStyle,
   ErrorWrapperStyle,
@@ -71,9 +74,9 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
         const date = new Date(item.date * 24 * 60 * 60 * 1000);
         const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
         return (
-          <section key={`item-${i}`} style={{ marginBottom: 64 }}>
+          <section css={RecordSectionStyle} key={`item-${i}`}>
             <h2 css={RecordHeadStyle}>{dateText}の記録</h2>
-            <section>
+            <section css={CameSectionStyle}>
               <h3 css={LeftHeadStyle}>ゆくひと ({item.leftUsers.filter((user) => user).length})</h3>
               {item.leftUsers.length ? (
                 <ul style={{ listStyle: 'none', marginBottom: 64 }}>
@@ -87,7 +90,7 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
                 <p css={EmptyTextStyle}>なし</p>
               )}
             </section>
-            <section>
+            <section css={LeftSectionStyle}>
               <h3 css={CameHeadStyle}>くるひと ({item.cameUsers.filter((user) => user).length})</h3>
               {item.cameUsers.length ? (
                 <ul style={{ listStyle: 'none', marginBottom: 64 }}>
