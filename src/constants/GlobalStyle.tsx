@@ -17,7 +17,7 @@ const GlobalCSS = css`
     --back-2: #eee;
     --shadow: rgba(0, 0, 0, 0.19);
     --back-shadow: rgba(255, 255, 255, 0.8);
-    --primay: #2196f3;
+    --primary: #2196f3;
     --yuku: #ffcdd2;
     --kuru: #bbdefb;
     --danger: #ef5350;
@@ -30,7 +30,7 @@ const GlobalCSS = css`
     --back-2: #222;
     --shadow: rgba(255, 255, 255, 0.4);
     --back-shadow: rgba(0, 0, 0, 0.8);
-    --primay: #2196f3;
+    --primary: #2196f3;
     --yuku: #b71c1c;
     --kuru: #0d47a1;
     --danger: #e53935;

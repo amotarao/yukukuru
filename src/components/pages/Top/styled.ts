@@ -34,7 +34,7 @@ export const InnerStyle = css`
 export const SignInButtonStyle = css`
   && {
     appearance: none;
-    background: var(--primay);
+    background: var(--primary);
     border: none;
     border-radius: 4px;
     color: var(--back);

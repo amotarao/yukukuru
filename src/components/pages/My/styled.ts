@@ -117,7 +117,7 @@ export const ErrorWrapperStyle = css`
 export const GetNextButtonStyle = css`
   && {
     appearance: none;
-    background: var(--primay);
+    background: var(--primary);
     border: none;
     border-radius: 4px;
     color: var(--back);
