@@ -24,7 +24,7 @@ const GlobalCSS = css`
     --danger: #ef5350;
   }
 
-  html[data-dark='true'] {
+  html[data-theme='dark'] {
     --main: #ccc;
     --sub: #999;
     --back: #111;
