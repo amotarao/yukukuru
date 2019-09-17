@@ -10,6 +10,17 @@ const GlobalCSS = css`
     padding: 0;
   }
 
+  :root {
+    --main: #333;
+    --sub: #999;
+    --back: #fff;
+    --back-2: #eee;
+    --primay: #2196f3;
+    --yuku: #ffcdd2;
+    --kuru: #bbdefb;
+    --danger: #ef5350;
+  }
+
   html {
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Yu Gothic', YuGothic, Verdana, Meiryo, 'M+ 1p', sans-serif;
     font-size: 16px;

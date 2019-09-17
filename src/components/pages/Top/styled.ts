@@ -34,10 +34,10 @@ export const InnerStyle = css`
 export const SignInButtonStyle = css`
   && {
     appearance: none;
-    background: #2196f3;
+    background: var(--primay);
     border: none;
     border-radius: 4px;
-    color: #fff;
+    color: var(--back);
     cursor: pointer;
     font-size: 0.8rem;
     line-height: 1;

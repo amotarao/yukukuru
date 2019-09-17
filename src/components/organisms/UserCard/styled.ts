@@ -60,7 +60,7 @@ export const NotFoundedTextStyle = css`
 
 export const DurationTextStyle = css`
   && {
-    color: #999;
+    color: var(--sub);
     font-size: 0.8rem;
     margin-top: 8px;
     margin-left: 64px;
@@ -76,20 +76,20 @@ export const NoDetailWrapperStyle = css`
     padding: 16px;
 
     .head {
-      color: #333;
+      color: var(--main);
       font-size: 1rem;
       line-height: 1.5;
     }
 
     .text {
-      color: #999;
+      color: var(--sub);
       font-size: 0.8rem;
       line-height: 1.5;
       margin-top: 4px;
     }
 
     .duration {
-      color: #999;
+      color: var(--sub);
       font-size: 0.8rem;
       margin-top: 4px;
     }
