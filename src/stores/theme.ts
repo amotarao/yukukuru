@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 
-type Theme = 'default' | 'dark';
+export type ThemeType = 'default' | 'dark';
 
 const useTheme = () => {
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const init: Theme = isDark ? 'dark' : 'default';
-  const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme | null) || init);
+  const init: ThemeType = isDark ? 'dark' : 'default';
+  const [theme, setTheme] = useState<ThemeType>((localStorage.getItem('theme') as ThemeType | null) || init);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -14,6 +14,7 @@ const useTheme = () => {
   }, [theme]);
 
   return {
+    theme,
     setTheme,
   };
 };

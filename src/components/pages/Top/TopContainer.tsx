@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
+import { ThemeContainer } from '../../../stores/theme';
 import { UserContainer } from '../../../stores/user';
 import { Top, TopProps } from './';
 
 interface Props extends RouteComponentProps, Partial<TopProps> {}
 
 const TopContainer: React.FC<Props> = ({ history }) => {
+  const { theme } = ThemeContainer.useContainer();
   const { isLoading, signedIn, signIn } = UserContainer.useContainer();
 
   useEffect(() => {
@@ -19,6 +21,7 @@ const TopContainer: React.FC<Props> = ({ history }) => {
       {...{
         isLoading,
         signIn,
+        theme,
       }}
     />
   );

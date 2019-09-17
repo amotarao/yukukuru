@@ -31,6 +31,22 @@ export const InnerStyle = css`
   }
 `;
 
+export const ImageStyle = css`
+  && {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 var(--shadow);
+    height: 240px;
+    margin-bottom: 16px;
+    width: 180px;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+      vertical-align: bottom;
+    }
+  }
+`;
+
 export const SignInButtonStyle = css`
   && {
     appearance: none;
