@@ -15,6 +15,8 @@ const GlobalCSS = css`
     --sub: #999;
     --back: #fff;
     --back-2: #eee;
+    --shadow: rgba(0, 0, 0, 0.19);
+    --back-shadow: rgba(255, 255, 255, 0.8);
     --primay: #2196f3;
     --yuku: #ffcdd2;
     --kuru: #bbdefb;
@@ -24,8 +26,10 @@ const GlobalCSS = css`
   html[data-dark='true'] {
     --main: #ccc;
     --sub: #999;
-    --back: #000;
+    --back: #111;
     --back-2: #222;
+    --shadow: rgba(255, 255, 255, 0.4);
+    --back-shadow: rgba(0, 0, 0, 0.8);
     --primay: #2196f3;
     --yuku: #b71c1c;
     --kuru: #0d47a1;

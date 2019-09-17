@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 export const WrapperStyle = css`
   && {
     border-radius: 8px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 2px 4px 0 var(--shadow);
     color: inherit;
     display: block;
     margin: 16px;
@@ -12,7 +12,7 @@ export const WrapperStyle = css`
     transition: box-shadow 0.3s ease-out;
 
     &:hover {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.19);
+      box-shadow: 0 4px 8px 0 var(--shadow);
     }
   }
 `;
@@ -70,7 +70,7 @@ export const DurationTextStyle = css`
 export const NoDetailWrapperStyle = css`
   && {
     border-radius: 8px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 2px 4px 0 var(--shadow);
     display: block;
     margin: 16px;
     padding: 16px;

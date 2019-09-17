@@ -15,7 +15,7 @@ export const WrapperStyle = css`
 export const InnerStyle = css`
   && {
     align-items: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--back-shadow);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
