@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 export const WrapperStyle = css`
   && {
     align-items: center;
-    background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+    background-image: var(--primary-gradient);
     display: flex;
     min-height: 100vh;
     min-width: 100vw;

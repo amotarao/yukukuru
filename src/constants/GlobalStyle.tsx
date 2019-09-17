@@ -18,6 +18,7 @@ const GlobalCSS = css`
     --shadow: rgba(0, 0, 0, 0.19);
     --back-shadow: rgba(255, 255, 255, 0.8);
     --primary: #2196f3;
+    --primary-gradient: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
     --yuku: #ffcdd2;
     --kuru: #bbdefb;
     --danger: #ef5350;
@@ -31,6 +32,7 @@ const GlobalCSS = css`
     --shadow: rgba(255, 255, 255, 0.4);
     --back-shadow: rgba(0, 0, 0, 0.8);
     --primary: #2196f3;
+    --primary-gradient: linear-gradient(120deg, #006d75 0%, #004099 100%);
     --yuku: #b71c1c;
     --kuru: #0d47a1;
     --danger: #e53935;
