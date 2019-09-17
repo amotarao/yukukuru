@@ -21,6 +21,17 @@ const GlobalCSS = css`
     --danger: #ef5350;
   }
 
+  html[data-dark='true'] {
+    --main: #ccc;
+    --sub: #999;
+    --back: #000;
+    --back-2: #222;
+    --primay: #2196f3;
+    --yuku: #b71c1c;
+    --kuru: #0d47a1;
+    --danger: #e53935;
+  }
+
   html {
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Yu Gothic', YuGothic, Verdana, Meiryo, 'M+ 1p', sans-serif;
     font-size: 16px;
@@ -28,6 +39,8 @@ const GlobalCSS = css`
 
   html,
   body {
+    background: var(--back);
+    color: var(--main);
     height: 100%;
     width: 100%;
   }
