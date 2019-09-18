@@ -28,10 +28,10 @@ export const HeaderStyle = css`
 export const SignOutButtonStyle = css`
   && {
     appearance: none;
-    background: #ef5350;
+    background: var(--danger);
     border: none;
     border-radius: 4px;
-    color: #fff;
+    color: var(--back);
     cursor: pointer;
     font-size: 0.8rem;
     line-height: 1;
@@ -49,7 +49,7 @@ export const RecordSectionStyle = css`
 
 export const RecordHeadStyle = css`
   && {
-    background: linear-gradient(to bottom, transparent 0%, transparent 60%, #eee 60%, #eee 100%);
+    background: linear-gradient(to bottom, transparent 0%, transparent 60%, var(--back-2) 60%, var(--back-2) 100%);
     font-size: 1.2rem;
     font-weight: normal;
     margin: 8px 32px 8px 0;
@@ -70,7 +70,7 @@ export const CameSectionStyle = css`
 
 export const CameHeadStyle = css`
   && {
-    background: linear-gradient(to bottom, transparent 0%, transparent 60%, #bbdefb 60%, #bbdefb 100%);
+    background: linear-gradient(to bottom, transparent 0%, transparent 60%, var(--kuru) 60%, var(--kuru) 100%);
     font-size: 0.8rem;
     font-weight: normal;
     margin: 16px 0;
@@ -86,7 +86,7 @@ export const LeftSectionStyle = css`
 
 export const LeftHeadStyle = css`
   && {
-    background: linear-gradient(to bottom, transparent 0%, transparent 60%, #ffcdd2 60%, #ffcdd2 100%);
+    background: linear-gradient(to bottom, transparent 0%, transparent 60%, var(--yuku) 60%, var(--yuku) 100%);
     font-size: 0.8rem;
     font-weight: normal;
     margin: 16px 0;
@@ -103,8 +103,8 @@ export const EmptyTextStyle = css`
 
 export const ErrorWrapperStyle = css`
   && {
-    border: 1px solid #f33;
-    color: #f33;
+    border: 1px solid var(--danger);
+    color: var(--danger);
     display: flex;
     flex-wrap: wrap;
     font-size: 0.8em;
@@ -117,10 +117,10 @@ export const ErrorWrapperStyle = css`
 export const GetNextButtonStyle = css`
   && {
     appearance: none;
-    background: #2196f3;
+    background: var(--primary);
     border: none;
     border-radius: 4px;
-    color: #fff;
+    color: var(--back);
     cursor: pointer;
     font-size: 1rem;
     height: 48px;

@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 export const WrapperStyle = css`
   && {
     align-items: center;
-    background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+    background-image: var(--primary-gradient);
     display: flex;
     min-height: 100vh;
     min-width: 100vw;
@@ -15,7 +15,7 @@ export const WrapperStyle = css`
 export const InnerStyle = css`
   && {
     align-items: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--back-shadow);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -31,13 +31,29 @@ export const InnerStyle = css`
   }
 `;
 
+export const ImageStyle = css`
+  && {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 var(--shadow);
+    height: 240px;
+    margin-bottom: 16px;
+    width: 180px;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+      vertical-align: bottom;
+    }
+  }
+`;
+
 export const SignInButtonStyle = css`
   && {
     appearance: none;
-    background: #2196f3;
+    background: var(--primary);
     border: none;
     border-radius: 4px;
-    color: #fff;
+    color: var(--back);
     cursor: pointer;
     font-size: 0.8rem;
     line-height: 1;

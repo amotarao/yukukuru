@@ -1,7 +1,7 @@
 {
   "name": "yukukuru-app",
   "version": "0.1.0",
-  "homepage" : "https://yukukuru.app",
+  "homepage": "https://yukukuru.app",
   "license": "MIT",
   "dependencies": {
     "@emotion/core": "^10.0.14",

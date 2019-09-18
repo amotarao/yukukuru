@@ -1,17 +1,20 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import image from '../../../assets/image.png';
-import { WrapperStyle, InnerStyle, SignInButtonStyle, SocialButtonsStyle } from './styled';
+import imageDefault from '../../../assets/image_default.jpg';
+import imageDark from '../../../assets/image_dark.jpg';
+import { ThemeType } from '../../../stores/theme';
 import { GitHubButton } from '../../organisms/GitHubButton';
 import { TweetButton } from '../../organisms/TweetButton';
+import { WrapperStyle, InnerStyle, ImageStyle, SignInButtonStyle, SocialButtonsStyle } from './styled';
 
 export interface TopProps {
   isLoading: boolean;
   signIn: () => Promise<void>;
+  theme: ThemeType;
 }
 
-export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
+export const Top: React.FC<TopProps> = ({ isLoading, signIn, theme }) => {
   return isLoading ? (
     <p>読み込み中</p>
   ) : (
@@ -19,11 +22,7 @@ export const Top: React.FC<TopProps> = ({ isLoading, signIn }) => {
       <section css={InnerStyle}>
         <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: 16 }}>ゆくひとくるひと alpha</h1>
         <p style={{ fontSize: '0.8em', marginBottom: 16 }}>あなたのフォロワーを管理します</p>
-        <img
-          src={image}
-          alt="利用イメージ"
-          style={{ width: 128, height: 227, marginBottom: 16, borderRadius: 4, boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.19)' }}
-        />
+        <div css={ImageStyle}>{theme !== 'dark' ? <img src={imageDefault} alt="利用イメージ" /> : <img src={imageDark} alt="利用イメージ" />}</div>
         <button css={SignInButtonStyle} onClick={signIn}>
           Twitter連携してはじめる
         </button>
