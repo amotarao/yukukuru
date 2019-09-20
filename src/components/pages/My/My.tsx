@@ -3,6 +3,7 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { RecordViewInterface } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
+import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
 import {
   WrapperStyle,
@@ -116,6 +117,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasNext
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
       <TweetButton size="large" />
+      <ThemeSwitchButtonContainer />
       <button css={SignOutButtonStyle} onClick={signOut}>
         ログアウト
       </button>

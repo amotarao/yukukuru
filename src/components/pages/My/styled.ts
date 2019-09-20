@@ -19,8 +19,11 @@ export const HeaderStyle = css`
     margin-bottom: 16px;
     padding: 0 16px;
 
-    & > *:first-child {
+    & > :first-child {
       flex: 1 0 auto;
+    }
+    & > :nth-child(2) {
+      margin-right: 8px;
     }
   }
 `;
