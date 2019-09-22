@@ -1,8 +1,10 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
+import MediaQuery from 'react-responsive';
 import { RecordViewInterface } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
+import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
 import {
   WrapperStyle,
@@ -116,6 +118,9 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasNext
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
       <TweetButton size="large" />
+      <ThemeSwitchButtonContainer>
+        <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
+      </ThemeSwitchButtonContainer>
       <button css={SignOutButtonStyle} onClick={signOut}>
         ログアウト
       </button>
