@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { RecordViewUserInterface } from '../../../stores/database/records';
+import { ProfileImage } from '../../atoms/ProfileImage';
 import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NotFoundedTextStyle, DurationTextStyle, NoDetailWrapperStyle } from './styled';
 
 const convertDateText = (date: firebase.firestore.Timestamp) => {
@@ -20,7 +21,7 @@ export const UserCard: React.FC<UserCardProps> = ({ data: { name, screenName, ph
   return hasDetail ? (
     <a css={WrapperStyle} href={`https://twitter.com/${screenName}`} target="_blank" rel="noopener noreferrer">
       <div css={IconWrapperStyle}>
-        <img src={photoUrl} alt={name} />
+        <ProfileImage src={photoUrl} alt={name} />
       </div>
       <p css={NameStyle}>{name}</p>
       <p css={ScreenNameStyle}>@{screenName}</p>
