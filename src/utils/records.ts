@@ -31,12 +31,12 @@ export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[]
     const newLeftUsers = convertRecordUsers(leftUsers, durationStart, durationEnd);
 
     if (!newItem) {
-      const newData: RecordViewInterface = {
+      const newItem: RecordViewInterface = {
         date,
         cameUsers: newCameUsers,
         leftUsers: newLeftUsers,
       };
-      newItems.push(newData);
+      newItems.push(newItem);
       return;
     }
     newItem.cameUsers.push(...newCameUsers);
