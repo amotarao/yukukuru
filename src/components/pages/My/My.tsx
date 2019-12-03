@@ -25,6 +25,7 @@ export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordViewInterface[];
+  hasItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
   getNextRecords: () => void;
@@ -42,14 +43,13 @@ const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   return null;
 };
 
-const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
-  const existsItems = items.length > 0;
+const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
   const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
     return cameUsers.length > 0 || leftUsers.length > 0;
   });
   const existsFilteredItems = filteredItems.length > 0;
 
-  if (!existsItems) {
+  if (!hasItems) {
     return (
       <div>
         <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
@@ -113,7 +113,7 @@ const Inner: React.FC<Pick<MyProps, 'items'>> = ({ items }) => {
   );
 };
 
-export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasNext, hasToken, signOut, getNextRecords }) => (
+export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
@@ -125,7 +125,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasNext
         ログアウト
       </button>
     </header>
-    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Inner items={items} />}
+    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Inner items={items} hasItems={hasItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
       <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>
