@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
-import { firestore } from '../../modules/firebase';
+import firebase, { firestore } from '../../modules/firebase';
 import { convertRecords } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
@@ -53,7 +53,7 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [items, setItems] = useState<RecordViewInterface[]>([]);
   const [uid, setUid] = useState<string | null>(null);
-  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp | null>(null);
+  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp>(firebase.firestore.Timestamp.now());
 
   const getNextRecords = () => {
     if (isNextLoading || !uid) {
