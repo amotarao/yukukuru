@@ -1,0 +1,50 @@
+name: Build and Deploy with master
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - src/**
+      - public/**
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - uses: borales/actions-yarn@master
+        with:
+          cmd: install # yarn install
+      - uses: borales/actions-yarn@master
+        with:
+          cmd: build # yarn build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: dist
+          path: build
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: dist
+      - name: Apply target
+        uses: w9jds/firebase-action@master
+        with:
+          args: target:apply hosting master ${{ secrets.FIREBASE_TARGET_MASTER }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:master
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
