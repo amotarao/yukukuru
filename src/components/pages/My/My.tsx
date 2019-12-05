@@ -80,18 +80,18 @@ const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems 
 
   return (
     <React.Fragment>
-      {items.map((item, i) => {
+      {items.map((item, itemIndex) => {
         const date = new Date(item.date * 24 * 60 * 60 * 1000);
         const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
         return (
-          <section css={RecordSectionStyle} key={`item-${i}`}>
+          <section css={RecordSectionStyle} key={itemIndex}>
             <h2 css={RecordHeadStyle}>{dateText}の記録</h2>
             <section css={CameSectionStyle}>
               <h3 css={LeftHeadStyle}>ゆくひと ({item.leftUsers.filter((user) => user).length})</h3>
               {item.leftUsers.length ? (
                 <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.leftUsers.map((user, j) => (
-                    <li key={`item-${i}-leftuser-${j}`}>
+                  {item.leftUsers.map((user, userIndex) => (
+                    <li key={userIndex}>
                       <UserCard {...user} />
                     </li>
                   ))}
@@ -104,8 +104,8 @@ const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems 
               <h3 css={CameHeadStyle}>くるひと ({item.cameUsers.filter((user) => user).length})</h3>
               {item.cameUsers.length ? (
                 <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.cameUsers.map((user, j) => (
-                    <li key={`item-${i}-cameuser-${j}`}>
+                  {item.cameUsers.map((user, userIndex) => (
+                    <li key={userIndex}>
                       <UserCard {...user} />
                     </li>
                   ))}
