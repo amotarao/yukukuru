@@ -43,6 +43,28 @@ const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   return null;
 };
 
+const NoItem: React.FC = () => {
+  return (
+    <div>
+      <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
+        <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
+        <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
+      </p>
+    </div>
+  );
+};
+
+const NoViewItem: React.FC = () => {
+  return (
+    <div>
+      <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
+        <span style={{ whiteSpace: 'nowrap' }}>データの取得は完了していますが、</span>
+        <span style={{ whiteSpace: 'nowrap' }}>今のところフォロワーの増減がありません。</span>
+      </p>
+    </div>
+  );
+};
+
 const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
   const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
     return cameUsers.length > 0 || leftUsers.length > 0;
@@ -50,24 +72,10 @@ const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems 
   const existsFilteredItems = filteredItems.length > 0;
 
   if (!hasItems) {
-    return (
-      <div>
-        <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
-          <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
-          <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
-        </p>
-      </div>
-    );
+    return <NoItem />;
   }
   if (!existsFilteredItems) {
-    return (
-      <div>
-        <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
-          <span style={{ whiteSpace: 'nowrap' }}>データの取得は完了していますが、</span>
-          <span style={{ whiteSpace: 'nowrap' }}>今のところフォロワーの増減がありません。</span>
-        </p>
-      </div>
-    );
+    return <NoViewItem />;
   }
 
   return (
