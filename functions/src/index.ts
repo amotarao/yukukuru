@@ -7,6 +7,8 @@ import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { env } from './utils/env';
 
+const builder = functions.region('asia-northeast1');
+
 const httpsRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 90,
   memory: '1GB',
@@ -17,47 +19,31 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
   memory: '1GB',
 };
 
-export const getFollowers = functions
-  .runWith(httpsRuntimeOptions)
-  .region('asia-northeast1')
-  .https.onRequest(async (req, res) => {
-    if (req.query.key !== env.http_functions_key) {
-      res.status(403).end();
-      return;
-    }
-    await getFollowersHandler();
-    res.status(200).end();
-  });
+export const getFollowers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
+  if (req.query.key !== env.http_functions_key) {
+    res.status(403).end();
+    return;
+  }
+  await getFollowersHandler();
+  res.status(200).end();
+});
 
-export const updateTwUsers = functions
-  .runWith(httpsRuntimeOptions)
-  .region('asia-northeast1')
-  .https.onRequest(async (req, res) => {
-    if (req.query.key !== env.http_functions_key) {
-      res.status(403).end();
-      return;
-    }
-    await updateTwUsersHandler();
-    res.status(200).end();
-  });
+export const updateTwUsers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
+  if (req.query.key !== env.http_functions_key) {
+    res.status(403).end();
+    return;
+  }
+  await updateTwUsersHandler();
+  res.status(200).end();
+});
 
-export const onCreateUser = functions
-  .region('asia-northeast1')
-  .auth.user()
-  .onCreate(onCreateUserHandler);
+export const onCreateUser = builder.auth.user().onCreate(onCreateUserHandler);
 
-export const onDeleteUser = functions
-  .region('asia-northeast1')
-  .auth.user()
-  .onDelete(onDeleteUserHandler);
+export const onDeleteUser = builder.auth.user().onDelete(onDeleteUserHandler);
 
-export const onFirestoreUpdateUser = functions
+export const onFirestoreUpdateUser = builder
   .runWith(functionsRuntimeOptions)
-  .region('asia-northeast1')
   .firestore.document('users/{userId}')
   .onUpdate(onFirestoreUpdateUserHandler);
 
-export const onFirestoreUpdateToken = functions
-  .region('asia-northeast1')
-  .firestore.document('tokens/{userId}')
-  .onUpdate(onFirestoreUpdateTokenHandler);
+export const onFirestoreUpdateToken = builder.firestore.document('tokens/{userId}').onUpdate(onFirestoreUpdateTokenHandler);
