@@ -1,6 +1,5 @@
 import { firestore, admin } from '../../modules/firebase';
-
-type DateLike = Date | FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
+import { DateLike } from './types';
 
 const collection = firestore.collection('users');
 

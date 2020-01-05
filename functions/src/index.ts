@@ -1,10 +1,12 @@
 import * as functions from 'firebase-functions';
 import getFollowersHandler from './api/getFollowers';
 import updateTwUsersHandler from './api/updateTwUsers';
+import runQueuesHandler from './api/runQueues';
 import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
+import onFirestoreUpdateQueueHandler from './functions/firestore/onUpdateQueue';
 import { env } from './utils/env';
 
 const builder = functions.region('asia-northeast1');
@@ -49,3 +51,28 @@ export const onFirestoreUpdateUser = builder
 export const onFirestoreUpdateToken = builder.firestore
   .document('tokens/{userId}')
   .onUpdate(onFirestoreUpdateTokenHandler);
+
+/**
+ * キューを動作させる cron
+ */
+export const runQueues = builder
+  .runWith({
+    timeoutSeconds: 20,
+    memory: '512MB',
+  })
+  .https.onRequest(async (req, res) => {
+    if (req.query.key !== env.http_functions_key) {
+      res.status(403).end();
+      return;
+    }
+    await runQueuesHandler();
+    res.status(200).end();
+  });
+
+/**
+ * キューを処理する
+ */
+export const onUpdateQueue = builder
+  .runWith(functionsRuntimeOptions)
+  .firestore.document('queues/{queueId}')
+  .onUpdate(onFirestoreUpdateQueueHandler);
