@@ -59,12 +59,25 @@ const getRecords = async (uid: string, end: firebase.firestore.Timestamp): Promi
 };
 
 const useRecords = () => {
+  /** 読み込み中かどうか */
   const [isLoading, setLoading] = useState<boolean>(true);
+
+  /** 続きのデータが読み込み中かどうか */
   const [isNextLoading, setNextLoading] = useState<boolean>(true);
+
+  /** 続きのデータがあるかどうか */
   const [hasNext, setHasNext] = useState<boolean>(true);
+
+  /** アイテム */
   const [items, setItems] = useState<RecordViewInterface[]>([]);
+
+  /** アテムがあるかどうか */
   const [hasItems, setHasItems] = useState<boolean>(false);
+
+  /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);
+
+  /** アイテムの読み込みのカーソル代わり */
   const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp>(firebase.firestore.Timestamp.now());
 
   const getNextRecords = () => {
