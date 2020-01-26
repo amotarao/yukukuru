@@ -46,4 +46,6 @@ export const onFirestoreUpdateUser = builder
   .firestore.document('users/{userId}')
   .onUpdate(onFirestoreUpdateUserHandler);
 
-export const onFirestoreUpdateToken = builder.firestore.document('tokens/{userId}').onUpdate(onFirestoreUpdateTokenHandler);
+export const onFirestoreUpdateToken = builder.firestore
+  .document('tokens/{userId}')
+  .onUpdate(onFirestoreUpdateTokenHandler);
