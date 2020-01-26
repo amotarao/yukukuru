@@ -139,6 +139,21 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
    * キュー(type: compareFollowers)を作成する
    */
   async function createCompareFollowersQueue() {
+    // フォロワー取得処理が初回の場合は実行しない
+    if (currentState.latestQueueId === null || currentState.latestDurationStart === null) {
+      console.error(
+        'Failed: add createCompareFollowersQueue\nlatestQueueId or latestDurationStart is null',
+        currentQueueId
+      );
+      return;
+    }
+
+    // データの整合性をチェック
+    if (currentState.durationEnd === null) {
+      console.error('Failed: add createCompareFollowersQueue\ndurationEnd is null', currentQueueId);
+      return;
+    }
+
     type Props = Parameters<typeof queues.addQueueTypeCompareFollowers>[0];
 
     const params: Props['params'] = {
@@ -154,7 +169,7 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
       params,
       state: {},
     };
-    await queues.addQueueTypeGetFollowers(props);
+    await queues.addQueueTypeCompareFollowers(props);
   }
 
   await Promise.all([createNextQueue(), createCompareFollowersQueue()]);
