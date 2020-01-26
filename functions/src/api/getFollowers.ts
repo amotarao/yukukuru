@@ -1,7 +1,15 @@
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setWatch, setUserResult, checkProtectedUser, setUserResultWithNoChange } from '../utils/firestore';
+import {
+  checkInvalidToken,
+  setTokenInvalid,
+  getToken,
+  setWatch,
+  setUserResult,
+  checkProtectedUser,
+  setUserResultWithNoChange,
+} from '../utils/firestore';
 import { UserData } from '../utils/interfaces';
 import { getFollowersIdList } from '../utils/twitter';
 
@@ -44,7 +52,9 @@ export default async () => {
     .get();
 
   const [allUsersSnap, pausedUsersSnap, newUsersSnap] = await Promise.all([allUsers, pausedUsers, newUsers]);
-  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i);
+  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter(
+    (x, i, self) => self.findIndex((y) => x.id === y.id) === i
+  );
   console.log(docs.map((doc) => doc.id), docs.length);
 
   const requests = docs.map(async (snapshot) => {

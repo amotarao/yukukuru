@@ -2,7 +2,15 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords, getTwUsers, setTwUsers } from '../../utils/firestore';
+import {
+  checkInvalidToken,
+  setTokenInvalid,
+  getToken,
+  setRecord,
+  existsRecords,
+  getTwUsers,
+  setTwUsers,
+} from '../../utils/firestore';
 import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
