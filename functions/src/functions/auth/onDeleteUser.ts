@@ -1,14 +1,6 @@
-import * as admin from 'firebase-admin';
-import { firestore } from '../../modules/firebase';
-
-const usersCollection = firestore.collection('users');
+import { admin } from '../../modules/firebase';
+import { setUserToNotActive } from '../../utils/firestore/users';
 
 export default async ({ uid }: admin.auth.UserRecord) => {
-  await usersCollection.doc(uid).set(
-    {
-      active: false,
-    },
-    { merge: true }
-  );
-  return;
+  await setUserToNotActive(uid);
 };

@@ -1,26 +1,13 @@
-import * as admin from 'firebase-admin';
-import { firestore } from '../../modules/firebase';
+import { admin } from '../../modules/firebase';
+import { initializeUser } from '../../utils/firestore/users';
 
-const usersCollection = firestore.collection('users');
+type Data = Parameters<typeof initializeUser>[1];
 
 export default async (user: admin.auth.UserRecord) => {
   const { photoURL, displayName, uid } = user;
-  const now = new Date();
-
-  await usersCollection.doc(uid).set(
-    {
-      photoUrl: photoURL,
-      displayName,
-      active: true,
-      currentWatchesId: '',
-      invalid: false,
-      lastUpdated: now,
-      lastUpdatedTwUsers: now,
-      nextCursor: '-1',
-      newUser: true,
-      pausedGetFollower: false,
-    },
-    { merge: true }
-  );
-  return;
+  const data: Data = {
+    displayName: displayName || '',
+    photoUrl: photoURL || '',
+  };
+  await initializeUser(uid, data);
 };
