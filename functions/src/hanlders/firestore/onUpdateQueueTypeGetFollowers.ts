@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import { admin } from '../../modules/firebase';
 import * as queues from '../../utils/firestore/queues';
 import * as followersStorage from '../../utils/storage/followers';
 import { getFollowersIds } from '../../utils/twitter/getFollowersIds';
@@ -8,6 +7,9 @@ import * as twitterError from '../../utils/twitter/error';
 type Props = functions.Change<FirebaseFirestore.DocumentSnapshot>;
 type Context = functions.EventContext;
 
+/**
+ * キュー(type: getFollowers)を処理する
+ */
 export async function onUpdateQueueTypeGetFollowers(props: Props, context: Context): Promise<void> {
   const beforeStatus = props.before.get('status') as queues.QueueStatus;
   const afterStatus = props.after.get('status') as queues.QueueStatus;
@@ -22,13 +24,13 @@ export async function onUpdateQueueTypeGetFollowers(props: Props, context: Conte
   // before が working / after が completed で terminate
   if (beforeStatus === 'working' && afterStatus === 'completed') {
     console.log('run: onUpdateQueueTypeGetFollowers/terminate');
-    await terminate(props);
+    await terminate(props, context);
     return;
   }
 }
 
 /**
- * フォロワー一覧取得処理を実行
+ * キュー(type: getFollowers)の、フォロワー一覧取得処理を実行
  */
 async function run({ after }: Props, context: Context): Promise<void> {
   const now = new Date(context.timestamp);
@@ -36,8 +38,11 @@ async function run({ after }: Props, context: Context): Promise<void> {
   const { uid, twId, twToken, twSecret } = after.get('params') as queues.QueueTypeGetFollowersParams;
   const { cursor } = after.get('state') as queues.QueueTypeGetFollowersState;
 
-  /** フォロワー一覧取得 */
-  const { response, errors } = await getFollowersIds({ key: twToken, secret: twSecret }, { userId: twId, cursor, count: 75000 });
+  /** TwitterからフォロワーIDリストを取得 */
+  const { response, errors } = await getFollowersIds(
+    { key: twToken, secret: twSecret },
+    { userId: twId, cursor, count: 75000 }
+  );
   const { ids, next_cursor_str: nextCursor } = response;
   const completed = nextCursor === '-1' || nextCursor === '0';
 
@@ -57,11 +62,10 @@ async function run({ after }: Props, context: Context): Promise<void> {
     }
   }
 
-  /** フォロワー一覧を保存 */
-  const storagePath = [uid, queueId, cursor || '-1'].join('/');
-  await followersStorage.saveFollowers(storagePath, ids);
+  /** ストレージにフォロワーIDリストを保存 */
+  await followersStorage.saveFollowers(uid, queueId, cursor, ids);
 
-  /** キューを更新 */
+  /** 現在のキューを更新 */
   type UpdateData = Parameters<typeof queues.updateQueueTypeGetFollowersState>[1];
   // status
   const status: UpdateData['status'] = completed ? 'completed' : 'pending';
@@ -72,7 +76,8 @@ async function run({ after }: Props, context: Context): Promise<void> {
   // state
   const state: UpdateData['state'] = {
     cursor: nextCursor,
-    storagePaths: admin.firestore.FieldValue.arrayUnion(storagePath),
+    durationStart: cursor === '' ? now : undefined,
+    durationEnd: now,
   };
 
   const data: UpdateData = {
@@ -82,13 +87,14 @@ async function run({ after }: Props, context: Context): Promise<void> {
   };
   await queues.updateQueueTypeGetFollowersState(queueId, data);
 
-  /** ログを追加 */
+  /** 現在のキューにログを追加 */
   type Log = Parameters<typeof queues.addQueueTypeGetFollowersLog>[1];
   const log: Log = {
     success: true,
     text: '',
     runAt: now,
-    storagePath,
+    beforeCursor: cursor,
+    afterCursor: nextCursor,
   };
   await queues.addQueueTypeGetFollowersLog(queueId, log);
 }
@@ -98,22 +104,38 @@ async function run({ after }: Props, context: Context): Promise<void> {
  * 新規キューを作成
  * Todo: フォロワー比較 キュー追加
  */
-async function terminate({ after }: Props): Promise<void> {
-  type Props = Parameters<typeof queues.addQueueTypeGetFollowers>[0];
+async function terminate({ after }: Props, context: Context): Promise<void> {
+  const now = new Date(context.timestamp);
+  console.log(now);
 
-  const runAt: Props['runAt'] = after.get('runAt') as FirebaseFirestore.Timestamp;
-  const params: Props['params'] = after.get('params') as queues.QueueTypeGetFollowersParams;
-  const latestQueueStoragePaths = after.get('state.storagePaths') as string[];
-  const state: Props['state'] = {
-    cursor: '',
-    latestQueueStoragePaths,
-    storagePaths: [],
-  };
+  const currentQueueId = after.id;
+  const currentRunAt = after.get('runAt') as FirebaseFirestore.Timestamp;
+  const currentParams = after.get('params') as queues.QueueTypeGetFollowersParams;
+  const currentState = after.get('state') as queues.QueueTypeGetFollowersState;
 
-  const props: Props = {
-    runAt,
-    params,
-    state,
-  };
-  await queues.addQueueTypeGetFollowers(props);
+  /**
+   * 次回のキューを作成する
+   */
+  async function createNextQueue() {
+    type Props = Parameters<typeof queues.addQueueTypeGetFollowers>[0];
+
+    // 次の state
+    const state: Props['state'] = {
+      cursor: '',
+      durationStart: null, // run で更新
+      durationEnd: null, // run で更新
+      latestQueueId: currentQueueId,
+      latestDurationStart: currentState.durationStart,
+    };
+
+    // 次の props
+    const props: Props = {
+      runAt: currentRunAt,
+      params: currentParams,
+      state,
+    };
+    await queues.addQueueTypeGetFollowers(props);
+  }
+
+  await Promise.all([createNextQueue()]);
 }

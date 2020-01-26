@@ -17,14 +17,30 @@ export interface QueueTypeGetFollowersParams {
 }
 
 export interface QueueTypeGetFollowersState {
-  /** API's cursor */
+  /** Twitter API cursor */
   cursor: string;
 
-  /** 前回のキュー参照 */
-  latestQueueStoragePaths: string[];
+  /** キューの開始日時 */
+  durationStart: DateLike | null;
 
-  /** ストレージのパスリスト */
-  storagePaths: string[] | FirebaseFirestore.FieldValue;
+  /** キューの終了日時 */
+  durationEnd: DateLike | null;
+
+  /**
+   * 前回のキューID
+   *
+   * キュー完了後のフォロワー比較処理に用いる
+   * このキューが初回の場合は null をいれる
+   */
+  latestQueueId: string | null;
+
+  /**
+   * 前回のキューの開始日時
+   *
+   * キュー完了後のフォロワー比較の期間の記録に用いる
+   * このキューが初回の場合は null をいれる
+   */
+  latestDurationStart: DateLike | null;
 }
 
 export interface QueueTypeGetFollowersLog {
@@ -37,8 +53,11 @@ export interface QueueTypeGetFollowersLog {
   /** 実行日時 */
   runAt: DateLike;
 
-  /** ストレージのパス */
-  storagePath: string;
+  /** 実行前のカーソル */
+  beforeCursor: string;
+
+  /** 実行後のカーソル */
+  afterCursor: string;
 }
 
 export interface QueueTypeGetFollowers extends QueueBase {
@@ -50,7 +69,9 @@ export interface QueueTypeGetFollowers extends QueueBase {
 /**
  * フォロワー一覧取得処理のキューを追加
  */
-export async function addQueueTypeGetFollowers(props: Pick<QueueTypeGetFollowers, 'runAt' | 'params' | 'state'>): Promise<void> {
+export async function addQueueTypeGetFollowers(
+  props: Pick<QueueTypeGetFollowers, 'runAt' | 'params' | 'state'>
+): Promise<void> {
   const data: QueueTypeGetFollowers = {
     type: 'getFollowers',
     status: 'waiting',
@@ -63,9 +84,14 @@ export async function addQueueTypeGetFollowers(props: Pick<QueueTypeGetFollowers
 /**
  * フォロワー一覧取得処理の状態を変更
  */
-type UpdateQueueTypeGetFollowersStateProps = Pick<QueueTypeGetFollowers, 'status' | 'runAt'> & { state: Partial<QueueTypeGetFollowers['state']> };
+type UpdateQueueTypeGetFollowersStateProps = Pick<QueueTypeGetFollowers, 'status' | 'runAt'> & {
+  state: Partial<QueueTypeGetFollowers['state']>;
+};
 
-export async function updateQueueTypeGetFollowersState(id: string, props: UpdateQueueTypeGetFollowersStateProps): Promise<void> {
+export async function updateQueueTypeGetFollowersState(
+  id: string,
+  props: UpdateQueueTypeGetFollowersStateProps
+): Promise<void> {
   const flatState: { [key: string]: any } = {};
   Object.entries(props.state).forEach(([key, value]) => {
     flatState[`state.${key}`] = value;
@@ -81,7 +107,10 @@ export async function updateQueueTypeGetFollowersState(id: string, props: Update
 /**
  * フォロワー一覧取得処理のパラメータを変更
  */
-export async function updateQueueTypeGetFollowersParams(id: string, params: Partial<QueueTypeGetFollowersParams>): Promise<void> {
+export async function updateQueueTypeGetFollowersParams(
+  id: string,
+  params: Partial<QueueTypeGetFollowersParams>
+): Promise<void> {
   const flatParams: { [key: string]: any } = {};
   Object.entries(params).forEach(([key, value]) => {
     flatParams[`params.${key}`] = value;
