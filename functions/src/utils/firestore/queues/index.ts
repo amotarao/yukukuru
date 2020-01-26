@@ -3,7 +3,7 @@ import { DateLike } from '../types';
 
 export const collection = firestore.collection('queues');
 
-export type QueueType = 'getFollowers' | 'getTwUsersProfile' | 'checkUnsuspended';
+export type QueueType = 'getFollowers' | 'compareFollowers' | 'getTwUsersProfile' | 'checkUnsuspended';
 
 export type QueueStatus = 'waiting' | 'pending' | 'discontinued' | 'working' | 'completed';
 
@@ -33,3 +33,4 @@ export async function runRunnableQueues(): Promise<void> {
 }
 
 export * from './getFollowers';
+export * from './compareFollowers';

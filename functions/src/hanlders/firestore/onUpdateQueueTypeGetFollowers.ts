@@ -17,13 +17,13 @@ export async function onUpdateQueueTypeGetFollowers(props: Props, context: Conte
   /** 動作条件 */
   // before が waiting, pending / after が working で run
   if ((beforeStatus === 'waiting' || beforeStatus === 'pending') && afterStatus === 'working') {
-    console.log('run: onUpdateQueueTypeGetFollowers/run');
+    console.log('run: onUpdateQueueTypeGetFollowers/run', props.after.id);
     await run(props, context);
     return;
   }
   // before が working / after が completed で terminate
   if (beforeStatus === 'working' && afterStatus === 'completed') {
-    console.log('run: onUpdateQueueTypeGetFollowers/terminate');
+    console.log('run: onUpdateQueueTypeGetFollowers/terminate', props.after.id);
     await terminate(props, context);
     return;
   }
@@ -65,7 +65,7 @@ async function run({ after }: Props, context: Context): Promise<void> {
   /** ストレージにフォロワーIDリストを保存 */
   await followersStorage.saveFollowers(uid, queueId, cursor, ids);
 
-  /** 現在のキューを更新 */
+  /** 現在のキューのステートを更新 */
   type UpdateData = Parameters<typeof queues.updateQueueTypeGetFollowersState>[1];
   // status
   const status: UpdateData['status'] = completed ? 'completed' : 'pending';
@@ -102,11 +102,9 @@ async function run({ after }: Props, context: Context): Promise<void> {
 /**
  * フォロワー一覧取得処理を終了
  * 新規キューを作成
- * Todo: フォロワー比較 キュー追加
  */
 async function terminate({ after }: Props, context: Context): Promise<void> {
   const now = new Date(context.timestamp);
-  console.log(now);
 
   const currentQueueId = after.id;
   const currentRunAt = after.get('runAt') as FirebaseFirestore.Timestamp;
@@ -137,5 +135,27 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
     await queues.addQueueTypeGetFollowers(props);
   }
 
-  await Promise.all([createNextQueue()]);
+  /**
+   * キュー(type: compareFollowers)を作成する
+   */
+  async function createCompareFollowersQueue() {
+    type Props = Parameters<typeof queues.addQueueTypeCompareFollowers>[0];
+
+    const params: Props['params'] = {
+      uid: currentParams.uid,
+      beforeQueueId: currentState.latestQueueId,
+      afterQueueId: currentQueueId,
+      durationStart: currentState.latestDurationStart,
+      durationEnd: currentState.durationEnd,
+    };
+
+    const props: Props = {
+      runAt: now,
+      params,
+      state: {},
+    };
+    await queues.addQueueTypeGetFollowers(props);
+  }
+
+  await Promise.all([createNextQueue(), createCompareFollowersQueue()]);
 }
