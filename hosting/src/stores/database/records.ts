@@ -7,17 +7,40 @@ const usersCollection = firestore.collection('users');
 
 export interface RecordIdData {
   id: string;
-  data: Record;
+  data: Record | RecordOld;
 }
 
 export interface Record {
-  cameUsers: RecordUser[];
-  leftUsers: RecordUser[];
+  user: RecordUser;
+  type: 'yuku' | 'kuru';
   durationStart: firebase.firestore.Timestamp;
   durationEnd: firebase.firestore.Timestamp;
 }
 
 export interface RecordUser {
+  id: string;
+  displayName?: string;
+  screenName?: string;
+  photoUrl?: string;
+  maybeDeletedOrSuspended: boolean;
+}
+
+/**
+ * 古い Interface の Record
+ * データが存在するため、残している
+ */
+export interface RecordOld {
+  cameUsers: RecordUserOld[];
+  leftUsers: RecordUserOld[];
+  durationStart: firebase.firestore.Timestamp;
+  durationEnd: firebase.firestore.Timestamp;
+}
+
+/**
+ * 古い Interface の Record User
+ * データが存在するため、残している
+ */
+export interface RecordUserOld {
   id: string;
   screenName?: string;
   name?: string;
@@ -25,24 +48,10 @@ export interface RecordUser {
   notFounded?: boolean;
 }
 
-export interface RecordForView {
-  date: number;
-  cameUsers: RecordUserForView[];
-  leftUsers: RecordUserForView[];
-}
-
-export interface RecordUserForView {
-  data: RecordUser;
-  duration: {
-    start: firebase.firestore.Timestamp;
-    end: firebase.firestore.Timestamp;
-  };
-}
-
 const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
   const item: RecordIdData = {
     id: snapshot.id,
-    data: snapshot.data() as Record,
+    data: snapshot.data() as Record | RecordOld,
   };
   return item;
 };
@@ -83,7 +92,7 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
 
   /** アイテム */
-  const [items, setItems] = useState<RecordForView[]>([]);
+  const [items, setItems] = useState<Record[]>([]);
 
   /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);
