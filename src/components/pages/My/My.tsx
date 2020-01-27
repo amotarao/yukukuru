@@ -32,6 +32,9 @@ export interface MyProps {
   signOut: () => Promise<void>;
 }
 
+/**
+ * エラー表示をするコンポーネント
+ */
 const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   if (!hasToken) {
     return (
@@ -43,6 +46,9 @@ const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   return null;
 };
 
+/**
+ * アイテムがないことを表示するコンポーネント
+ */
 const NoItem: React.FC = () => {
   return (
     <div>
@@ -54,6 +60,9 @@ const NoItem: React.FC = () => {
   );
 };
 
+/**
+ * 表示するデータがないことを表示するコンポーネント
+ */
 const NoViewItem: React.FC = () => {
   return (
     <div>
@@ -65,7 +74,10 @@ const NoViewItem: React.FC = () => {
   );
 };
 
-const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
+/**
+ * メインエリア
+ */
+const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
   const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
     return cameUsers.length > 0 || leftUsers.length > 0;
   });
@@ -121,6 +133,9 @@ const Inner: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems 
   );
 };
 
+/**
+ * マイページ全体のコンポーネント
+ */
 export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
@@ -133,7 +148,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItem
         ログアウト
       </button>
     </header>
-    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Inner items={items} hasItems={hasItems} />}
+    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
       <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>
