@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import MediaQuery from 'react-responsive';
-import { RecordViewInterface } from '../../../stores/database/records';
+import { RecordForView } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
@@ -24,7 +24,7 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: RecordViewInterface[];
+  items: RecordForView[];
   hasItems: boolean;
   hasNext: boolean;
   hasToken: boolean;

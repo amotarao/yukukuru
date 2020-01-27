@@ -1,9 +1,9 @@
 import firebase, { firestore } from '../modules/firebase';
-import { RecordInterface, RecordItemUserInterface, RecordViewInterface, RecordViewUserInterface } from '../stores/database/records';
+import { RecordIdData, RecordUser, RecordForView, RecordUserForView } from '../stores/database/records';
 
-const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
+const convertRecordUsers = (users: RecordUser[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
   return users.map(
-    (user): RecordViewUserInterface => {
+    (user): RecordUserForView => {
       return {
         data: user,
         duration: {
@@ -15,12 +15,12 @@ const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: fir
   );
 };
 
-export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
+export const convertRecords = (items: RecordIdData[]): [RecordForView[], firebase.firestore.Timestamp] => {
   if (!items.length) {
     return [[], firebase.firestore.Timestamp.now()];
   }
 
-  const newItems: RecordViewInterface[] = [];
+  const newItems: RecordForView[] = [];
   const timeZoneOffset = 9;
 
   items.forEach(({ data: { cameUsers, leftUsers, durationStart, durationEnd } }) => {
@@ -31,7 +31,7 @@ export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[]
     const newLeftUsers = convertRecordUsers(leftUsers, durationStart, durationEnd);
 
     if (!newItem) {
-      const newItem: RecordViewInterface = {
+      const newItem: RecordForView = {
         date,
         cameUsers: newCameUsers,
         leftUsers: newLeftUsers,

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { RecordViewUserInterface } from '../../../stores/database/records';
+import { RecordUserForView } from '../../../stores/database/records';
 import { ProfileImage } from '../../atoms/ProfileImage';
 import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NotFoundedTextStyle, DurationTextStyle, NoDetailWrapperStyle } from './styled';
 
@@ -12,7 +12,7 @@ const convertDateText = (date: firebase.firestore.Timestamp) => {
   return `${h}:${m}`;
 };
 
-export interface UserCardProps extends RecordViewUserInterface {}
+export interface UserCardProps extends RecordUserForView {}
 
 export const UserCard: React.FC<UserCardProps> = ({ data: { name, screenName, photoUrl, notFounded = false }, duration: { start, end } }) => {
   const hasDetail = name && screenName && photoUrl;

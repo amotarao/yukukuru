@@ -5,19 +5,19 @@ import { convertRecords } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
 
-export interface RecordInterface {
+export interface RecordIdData {
   id: string;
-  data: RecordDataInterface;
+  data: Record;
 }
 
-export interface RecordDataInterface {
-  cameUsers: RecordItemUserInterface[];
-  leftUsers: RecordItemUserInterface[];
+export interface Record {
+  cameUsers: RecordUser[];
+  leftUsers: RecordUser[];
   durationStart: firebase.firestore.Timestamp;
   durationEnd: firebase.firestore.Timestamp;
 }
 
-export interface RecordItemUserInterface {
+export interface RecordUser {
   id: string;
   screenName?: string;
   name?: string;
@@ -25,14 +25,14 @@ export interface RecordItemUserInterface {
   notFounded?: boolean;
 }
 
-export interface RecordViewInterface {
+export interface RecordForView {
   date: number;
-  cameUsers: RecordViewUserInterface[];
-  leftUsers: RecordViewUserInterface[];
+  cameUsers: RecordUserForView[];
+  leftUsers: RecordUserForView[];
 }
 
-export interface RecordViewUserInterface {
-  data: RecordItemUserInterface;
+export interface RecordUserForView {
+  data: RecordUser;
   duration: {
     start: firebase.firestore.Timestamp;
     end: firebase.firestore.Timestamp;
@@ -40,9 +40,9 @@ export interface RecordViewUserInterface {
 }
 
 const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
-  const item: RecordInterface = {
+  const item: RecordIdData = {
     id: snapshot.id,
-    data: snapshot.data() as RecordDataInterface,
+    data: snapshot.data() as Record,
   };
   return item;
 };
@@ -72,7 +72,7 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
 
   /** アイテム */
-  const [items, setItems] = useState<RecordViewInterface[]>([]);
+  const [items, setItems] = useState<RecordForView[]>([]);
 
   /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);
