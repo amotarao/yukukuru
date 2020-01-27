@@ -59,11 +59,14 @@ const getRecordsFromFirestore = async (uid: string, end: firebase.firestore.Time
 };
 
 const useRecords = () => {
-  /** 読み込み中かどうか */
-  const [isLoading, setLoading] = useState<boolean>(true);
+  /** 最初のデータが読み込み中かどうか */
+  const [isFirstLoading, setFirstLoading] = useState<boolean>(false);
+
+  /** 最初のデータの読み込みが完了しているかどうか */
+  const [isFirstLoaded, setFirstLoaded] = useState<boolean>(false);
 
   /** 続きのデータが読み込み中かどうか */
-  const [isNextLoading, setNextLoading] = useState<boolean>(true);
+  const [isNextLoading, setNextLoading] = useState<boolean>(false);
 
   /** 続きのデータがあるかどうか */
   const [hasNext, setHasNext] = useState<boolean>(true);
@@ -88,23 +91,26 @@ const useRecords = () => {
     const tmpItems = docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
     const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
 
-    setItems([...items, ...newItems]);
+    setItems((items) => [...items, ...newItems]);
     setLastDurationEnd(newLastDurationEnd);
     setHasNext(size >= 20);
 
-    setLoading(false);
+    // この順番でないと初回Records取得が再始動する
+    setFirstLoaded(true);
+    setFirstLoading(false);
     setNextLoading(false);
-  }, [items, lastDurationEnd, uid]);
+  }, [lastDurationEnd, uid]);
 
   /**
    * 初回 Records を取得する
    */
   useEffect(() => {
-    if (isLoading || !uid) {
+    if (isFirstLoading || isFirstLoaded || !uid) {
       return;
     }
+    setFirstLoading(true);
     getRecords();
-  }, [getRecords, isLoading, uid]);
+  }, [getRecords, isFirstLoading, isFirstLoaded, uid]);
 
   /**
    * 続きの Records を取得する
@@ -117,15 +123,8 @@ const useRecords = () => {
     getRecords();
   };
 
-  useEffect(() => {
-    if (!isLoading || !uid) {
-      return;
-    }
-    getRecords();
-  }, [getRecords, isLoading, uid]);
-
   return {
-    isLoading,
+    isLoading: isFirstLoading || !isFirstLoaded,
     isNextLoading,
     items,
     hasItems: items.length > 0,
