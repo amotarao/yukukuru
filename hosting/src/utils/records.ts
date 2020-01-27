@@ -25,9 +25,9 @@ const convertRecordUsersForView = (users: RecordUser[], durationStart: firebase.
 /**
  * Records を 表示用のデータに変換
  */
-export const convertRecordsForView = (items: RecordIdData[]): [RecordForView[], firebase.firestore.Timestamp] => {
+export const convertRecordsForView = (items: RecordIdData[]): RecordForView[] => {
   if (!items.length) {
-    return [[], firebase.firestore.Timestamp.now()];
+    return [];
   }
 
   const newItems: RecordForView[] = [];
@@ -53,7 +53,5 @@ export const convertRecordsForView = (items: RecordIdData[]): [RecordForView[], 
     newItem.leftUsers.push(...newLeftUsers);
   });
 
-  const lastDurationEnd = items.sort((a, b) => a.data.durationEnd.seconds - b.data.durationEnd.seconds)[0].data.durationEnd;
-
-  return [newItems, lastDurationEnd];
+  return newItems;
 };

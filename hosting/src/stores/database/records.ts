@@ -47,14 +47,25 @@ const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) 
   return item;
 };
 
-const getRecordsFromFirestore = async (uid: string, end: firebase.firestore.Timestamp): Promise<firebase.firestore.QuerySnapshot> => {
-  const qs = await usersCollection
+/**
+ * Firestore から Records を取得
+ *
+ * @param uid 取得対象ユーザーのUID
+ * @param startAfter cursor
+ */
+const getRecordsFromFirestore = async (uid: string, startAfter: firebase.firestore.QueryDocumentSnapshot | null): Promise<firebase.firestore.QuerySnapshot> => {
+  let query = usersCollection
     .doc(uid)
     .collection('records')
-    .orderBy('durationEnd', 'desc')
-    .startAfter(end)
-    .limit(20)
-    .get();
+    .orderBy('durationEnd', 'desc');
+
+  if (startAfter) {
+    query = query.startAfter(startAfter);
+  }
+
+  query = query.limit(20);
+
+  const qs = await query.get();
   return qs;
 };
 
@@ -77,8 +88,8 @@ const useRecords = () => {
   /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);
 
-  /** アイテムの読み込みのカーソル代わり */
-  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp>(firebase.firestore.Timestamp.now());
+  /** データ追加読み込み用のカーソル */
+  const [cursor, setCursor] = useState<firebase.firestore.QueryDocumentSnapshot | null>(null);
 
   /**
    * Records を取得し処理する
@@ -87,19 +98,19 @@ const useRecords = () => {
     if (!uid) {
       return;
     }
-    const { docs, size } = await getRecordsFromFirestore(uid, lastDurationEnd);
+    const { docs, size } = await getRecordsFromFirestore(uid, cursor);
     const tmpItems = docs.map(convertRecordItems);
-    const [newItems, newLastDurationEnd] = convertRecordsForView(tmpItems);
+    const newItems = convertRecordsForView(tmpItems);
 
     setItems((items) => [...items, ...newItems]);
-    setLastDurationEnd(newLastDurationEnd);
     setHasNext(size >= 20);
+    setCursor(docs[size - 1]);
 
     // この順番でないと初回Records取得が再始動する
     setFirstLoaded(true);
     setFirstLoading(false);
     setNextLoading(false);
-  }, [lastDurationEnd, uid]);
+  }, [cursor, uid]);
 
   /**
    * 初回 Records を取得する
