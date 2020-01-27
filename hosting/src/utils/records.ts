@@ -1,6 +1,13 @@
 import firebase, { firestore } from '../modules/firebase';
 import { RecordIdData, RecordUser, RecordForView, RecordUserForView } from '../stores/database/records';
 
+/**
+ * Records の users を 表示用のデータに変換
+ *
+ * @param users ユーザーデータの配列
+ * @param durationStart 期間開始日時
+ * @param durationEnd 期間終了日時
+ */
 const convertRecordUsersForView = (users: RecordUser[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
   return users.map(
     (user): RecordUserForView => {
@@ -15,6 +22,9 @@ const convertRecordUsersForView = (users: RecordUser[], durationStart: firebase.
   );
 };
 
+/**
+ * Records を 表示用のデータに変換
+ */
 export const convertRecordsForView = (items: RecordIdData[]): [RecordForView[], firebase.firestore.Timestamp] => {
   if (!items.length) {
     return [[], firebase.firestore.Timestamp.now()];
