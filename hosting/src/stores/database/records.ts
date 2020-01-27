@@ -88,7 +88,7 @@ const useRecords = () => {
       return;
     }
     const { docs, size } = await getRecordsFromFirestore(uid, lastDurationEnd);
-    const tmpItems = docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
+    const tmpItems = docs.map(convertRecordItems);
     const [newItems, newLastDurationEnd] = convertRecordsForView(tmpItems);
 
     setItems((items) => [...items, ...newItems]);
