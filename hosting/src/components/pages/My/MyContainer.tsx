@@ -3,7 +3,7 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import { UserContainer } from '../../../stores/user';
 import { RecordsContainer } from '../../../stores/database/records';
 import { TokenContainer } from '../../../stores/database/token';
-import { My, MyProps } from './';
+import { My, MyProps } from '.';
 
 interface Props extends RouteComponentProps, Partial<MyProps> {}
 

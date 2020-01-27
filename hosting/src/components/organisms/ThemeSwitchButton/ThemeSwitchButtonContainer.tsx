@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { ThemeContainer } from '../../../stores/theme';
-import { ThemeSwitchButton } from './';
+import { ThemeSwitchButton } from '.';
 
 export const ThemeSwitchButtonContainer: React.FC = ({ children }) => {
   const { theme, setTheme } = ThemeContainer.useContainer();
