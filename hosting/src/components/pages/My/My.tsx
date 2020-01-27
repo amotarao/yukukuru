@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import MediaQuery from 'react-responsive';
-import { RecordForView } from '../../../stores/database/records';
+import { Record } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
@@ -10,13 +10,9 @@ import {
   WrapperStyle,
   HeaderStyle,
   SignOutButtonStyle,
-  RecordSectionStyle,
   RecordHeadStyle,
   CameSectionStyle,
-  CameHeadStyle,
   LeftSectionStyle,
-  LeftHeadStyle,
-  EmptyTextStyle,
   ErrorWrapperStyle,
   GetNextButtonStyle,
 } from './styled';
@@ -24,7 +20,7 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: RecordForView[];
+  items: Record[];
   hasItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
@@ -78,10 +74,9 @@ const NoViewItem: React.FC = () => {
  * メインエリア
  */
 const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
-  const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
-    return cameUsers.length > 0 || leftUsers.length > 0;
-  });
-  const existsFilteredItems = filteredItems.length > 0;
+  // Todo: 処置
+  const existsFilteredItems = hasItems;
+  let currentDate: string = '';
 
   if (!hasItems) {
     return <NoItem />;
@@ -93,40 +88,18 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }
   return (
     <React.Fragment>
       {items.map((item, itemIndex) => {
-        const date = new Date(item.date * 24 * 60 * 60 * 1000);
+        const date = item.durationEnd.toDate();
         const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
+        const showDate = currentDate !== dateText;
+        currentDate = dateText;
+
         return (
-          <section css={RecordSectionStyle} key={itemIndex}>
-            <h2 css={RecordHeadStyle}>{dateText}の記録</h2>
-            <section css={CameSectionStyle}>
-              <h3 css={LeftHeadStyle}>ゆくひと ({item.leftUsers.filter((user) => user).length})</h3>
-              {item.leftUsers.length ? (
-                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.leftUsers.map((user, userIndex) => (
-                    <li key={userIndex}>
-                      <UserCard {...user} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p css={EmptyTextStyle}>なし</p>
-              )}
+          <React.Fragment key={itemIndex}>
+            {showDate && <h2 css={RecordHeadStyle}>{dateText}</h2>}
+            <section css={item.type === 'yuku' ? LeftSectionStyle : CameSectionStyle}>
+              <UserCard {...item} />
             </section>
-            <section css={LeftSectionStyle}>
-              <h3 css={CameHeadStyle}>くるひと ({item.cameUsers.filter((user) => user).length})</h3>
-              {item.cameUsers.length ? (
-                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.cameUsers.map((user, userIndex) => (
-                    <li key={userIndex}>
-                      <UserCard {...user} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p css={EmptyTextStyle}>なし</p>
-              )}
-            </section>
-          </section>
+          </React.Fragment>
         );
       })}
     </React.Fragment>
