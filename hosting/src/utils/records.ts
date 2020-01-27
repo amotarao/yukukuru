@@ -1,7 +1,7 @@
 import firebase, { firestore } from '../modules/firebase';
 import { RecordIdData, RecordUser, RecordForView, RecordUserForView } from '../stores/database/records';
 
-const convertRecordUsers = (users: RecordUser[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
+const convertRecordUsersForView = (users: RecordUser[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
   return users.map(
     (user): RecordUserForView => {
       return {
@@ -15,7 +15,7 @@ const convertRecordUsers = (users: RecordUser[], durationStart: firebase.firesto
   );
 };
 
-export const convertRecords = (items: RecordIdData[]): [RecordForView[], firebase.firestore.Timestamp] => {
+export const convertRecordsForView = (items: RecordIdData[]): [RecordForView[], firebase.firestore.Timestamp] => {
   if (!items.length) {
     return [[], firebase.firestore.Timestamp.now()];
   }
@@ -27,8 +27,8 @@ export const convertRecords = (items: RecordIdData[]): [RecordForView[], firebas
     const date = Math.floor((durationEnd.seconds / 60 / 60 + timeZoneOffset) / 24);
     const newItem = newItems.find((newItem) => newItem.date === date);
 
-    const newCameUsers = convertRecordUsers(cameUsers, durationStart, durationEnd);
-    const newLeftUsers = convertRecordUsers(leftUsers, durationStart, durationEnd);
+    const newCameUsers = convertRecordUsersForView(cameUsers, durationStart, durationEnd);
+    const newLeftUsers = convertRecordUsersForView(leftUsers, durationStart, durationEnd);
 
     if (!newItem) {
       const newItem: RecordForView = {

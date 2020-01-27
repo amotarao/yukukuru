@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createContainer } from 'unstated-next';
 import firebase, { firestore } from '../../modules/firebase';
-import { convertRecords } from '../../utils/records';
+import { convertRecordsForView } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
 
@@ -89,7 +89,7 @@ const useRecords = () => {
     }
     const { docs, size } = await getRecordsFromFirestore(uid, lastDurationEnd);
     const tmpItems = docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-    const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
+    const [newItems, newLastDurationEnd] = convertRecordsForView(tmpItems);
 
     setItems((items) => [...items, ...newItems]);
     setLastDurationEnd(newLastDurationEnd);
