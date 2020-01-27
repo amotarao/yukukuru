@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createContainer } from 'unstated-next';
-import { firestore } from '../../modules/firebase';
+import firebase, { firestore } from '../../modules/firebase';
 import { convertRecords } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
@@ -47,73 +47,88 @@ const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) 
   return item;
 };
 
-const useRecords = () => {
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [isNextLoading, setNextLoading] = useState<boolean>(true);
-  const [hasNext, setHasNext] = useState<boolean>(true);
-  const [items, setItems] = useState<RecordViewInterface[]>([]);
-  const [uid, setUid] = useState<string | null>(null);
-  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp | null>(null);
+const getRecordsFromFirestore = async (uid: string, end: firebase.firestore.Timestamp): Promise<firebase.firestore.QuerySnapshot> => {
+  const qs = await usersCollection
+    .doc(uid)
+    .collection('records')
+    .orderBy('durationEnd', 'desc')
+    .startAfter(end)
+    .limit(20)
+    .get();
+  return qs;
+};
 
+const useRecords = () => {
+  /** 読み込み中かどうか */
+  const [isLoading, setLoading] = useState<boolean>(true);
+
+  /** 続きのデータが読み込み中かどうか */
+  const [isNextLoading, setNextLoading] = useState<boolean>(true);
+
+  /** 続きのデータがあるかどうか */
+  const [hasNext, setHasNext] = useState<boolean>(true);
+
+  /** アイテム */
+  const [items, setItems] = useState<RecordViewInterface[]>([]);
+
+  /** Firebase UID */
+  const [uid, setUid] = useState<string | null>(null);
+
+  /** アイテムの読み込みのカーソル代わり */
+  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp>(firebase.firestore.Timestamp.now());
+
+  /**
+   * Records を取得し処理する
+   */
+  const getRecords = useCallback(async () => {
+    if (!uid) {
+      return;
+    }
+    const { docs, size } = await getRecordsFromFirestore(uid, lastDurationEnd);
+    const tmpItems = docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
+    const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
+
+    setItems([...items, ...newItems]);
+    setLastDurationEnd(newLastDurationEnd);
+    setHasNext(size >= 20);
+
+    setLoading(false);
+    setNextLoading(false);
+  }, [items, lastDurationEnd, uid]);
+
+  /**
+   * 初回 Records を取得する
+   */
+  useEffect(() => {
+    if (isLoading || !uid) {
+      return;
+    }
+    getRecords();
+  }, [getRecords, isLoading, uid]);
+
+  /**
+   * 続きの Records を取得する
+   */
   const getNextRecords = () => {
     if (isNextLoading || !uid) {
       return;
     }
     setNextLoading(true);
-
-    (async () => {
-      const query = await usersCollection
-        .doc(uid)
-        .collection('records')
-        .orderBy('durationEnd', 'desc')
-        .startAfter(lastDurationEnd)
-        .limit(20)
-        .get();
-
-      const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-      const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
-      setItems([...items, ...newItems]);
-      setLastDurationEnd(newLastDurationEnd);
-
-      if (query.size < 20) {
-        setHasNext(false);
-      }
-
-      setNextLoading(false);
-    })();
+    getRecords();
   };
 
   useEffect(() => {
-    if (!uid) {
+    if (!isLoading || !uid) {
       return;
     }
-
-    (async () => {
-      const query = await usersCollection
-        .doc(uid)
-        .collection('records')
-        .orderBy('durationEnd', 'desc')
-        .limit(20)
-        .get();
-
-      const tmpItems = query.docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-      const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
-      setItems(newItems);
-      setLastDurationEnd(newLastDurationEnd);
-
-      if (query.size < 20) {
-        setHasNext(false);
-      }
-
-      setLoading(false);
-      setNextLoading(false);
-    })();
-  }, [uid]);
+    getRecords();
+  }, [getRecords, isLoading, uid]);
 
   return {
     isLoading,
     isNextLoading,
     items,
+    hasItems: items.length > 0,
     hasNext,
     setUid,
     getNextRecords,
