@@ -1,11 +1,8 @@
 import * as functions from 'firebase-functions';
 import { firestore } from '../modules/firebase';
+import { TokenData } from '../utils/interfaces';
 
-interface Props {
-  twitterAccessToken: string;
-  twitterAccessTokenSecret: string;
-  twitterId: string;
-}
+type Props = TokenData;
 
 function isObject(data: any): data is Object {
   return typeof data === 'object' && data !== null && !Array.isArray(data);
