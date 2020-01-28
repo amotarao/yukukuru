@@ -5,6 +5,7 @@ import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
+import { updateTokenHandler } from './handlers/updateToken';
 import { env } from './utils/env';
 
 const builder = functions.region('asia-northeast1');
@@ -49,3 +50,5 @@ export const onFirestoreUpdateUser = builder
 export const onFirestoreUpdateToken = builder.firestore
   .document('tokens/{userId}')
   .onUpdate(onFirestoreUpdateTokenHandler);
+
+export const updateToken = builder.runWith({ timeoutSeconds: 10, memory: '256MB' }).https.onCall(updateTokenHandler);
