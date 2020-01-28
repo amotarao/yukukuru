@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/functions';
 
 firebase.initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -20,3 +21,4 @@ provider.setCustomParameters({
 export default firebase;
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+export const functions = firebase.app().functions('asia-northeast1');

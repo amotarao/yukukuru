@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
-import { auth, firestore, provider } from '../modules/firebase';
+import { auth, provider } from '../modules/firebase';
+import { updateToken } from '../utils/functions';
 import { TokenDataInterface } from './database/token';
-
-const tokensCollection = firestore.collection('tokens');
 
 const useUser = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -33,7 +32,7 @@ const useUser = () => {
     if (!token || !user) {
       return;
     }
-    tokensCollection.doc(user.uid).set(token);
+    updateToken(token);
   }, [token, user]);
 
   const signIn = () => auth.signInWithRedirect(provider);
