@@ -10,9 +10,9 @@ import {
   WrapperStyle,
   HeaderStyle,
   SignOutButtonStyle,
+  MainAreaStyle,
   RecordHeadStyle,
-  CameSectionStyle,
-  LeftSectionStyle,
+  UserSectionStyle,
   ErrorWrapperStyle,
   GetNextButtonStyle,
 } from './styled';
@@ -86,23 +86,23 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }
   }
 
   return (
-    <React.Fragment>
+    <main css={MainAreaStyle}>
       {items.map((item, itemIndex) => {
         const date = item.durationEnd.toDate();
-        const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
+        const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         const showDate = currentDate !== dateText;
         currentDate = dateText;
 
         return (
           <React.Fragment key={itemIndex}>
             {showDate && <h2 css={RecordHeadStyle}>{dateText}</h2>}
-            <section css={item.type === 'yuku' ? LeftSectionStyle : CameSectionStyle}>
+            <section css={UserSectionStyle} data-type={item.type}>
               <UserCard {...item} />
             </section>
           </React.Fragment>
         );
       })}
-    </React.Fragment>
+    </main>
   );
 };
 

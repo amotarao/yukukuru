@@ -14,12 +14,12 @@ const convertDateText = (date: firebase.firestore.Timestamp) => {
 
 export type UserCardProps = Record;
 
-export const UserCard: React.FC<UserCardProps> = ({ user, durationStart, durationEnd }) => {
+export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, durationEnd }) => {
   const hasDetail = user.displayName && user.screenName && user.photoUrl;
   const duration = `${convertDateText(durationStart)} から ${convertDateText(durationEnd)} までの間`;
 
   return hasDetail ? (
-    <a css={WrapperStyle} href={`https://twitter.com/${user.screenName}`} target="_blank" rel="noopener noreferrer">
+    <a css={WrapperStyle} data-type={type} href={`https://twitter.com/${user.screenName}`} target="_blank" rel="noopener noreferrer">
       <div css={IconWrapperStyle}>
         <ProfileImage src={user.photoUrl} alt={user.displayName} />
       </div>
@@ -29,7 +29,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user, durationStart, duratio
       <p css={DurationTextStyle}>{duration}</p>
     </a>
   ) : (
-    <div css={NoDetailWrapperStyle}>
+    <div css={NoDetailWrapperStyle} data-type={type}>
       <p className="head">情報の取得ができないユーザー</p>
       <p className="text">アカウントが削除、凍結された可能性があります</p>
       <p className="duration">{duration}</p>
