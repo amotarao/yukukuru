@@ -70,7 +70,7 @@ export const LabelNavStyle = css`
 
       > li {
         border-radius: 8px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 1px 2px 0 var(--shadow);
         display: inline-block;
         font-size: 0.8rem;
         padding: 4px 16px;
