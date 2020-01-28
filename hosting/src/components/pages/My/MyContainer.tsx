@@ -3,13 +3,13 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import { UserContainer } from '../../../stores/user';
 import { RecordsContainer } from '../../../stores/database/records';
 import { TokenContainer } from '../../../stores/database/token';
-import { My, MyProps } from './';
+import { My, MyProps } from '.';
 
 interface Props extends RouteComponentProps, Partial<MyProps> {}
 
 const MyInner: React.FC<Props> = ({ history }) => {
   const { isLoading: userIsLoading, signedIn, user, signOut } = UserContainer.useContainer();
-  const { isLoading: recordsIsLoading, isNextLoading, items, hasNext, setUid: setRecordsUid, getNextRecords } = RecordsContainer.useContainer();
+  const { isLoading: recordsIsLoading, isNextLoading, items, hasItems, hasNext, setUid: setRecordsUid, getNextRecords } = RecordsContainer.useContainer();
   const { isLoading: tokenIsLoading, setUid: setTokenUid, hasToken } = TokenContainer.useContainer();
 
   useEffect(() => {
@@ -31,6 +31,7 @@ const MyInner: React.FC<Props> = ({ history }) => {
         isLoading,
         isNextLoading,
         items,
+        hasItems,
         hasNext,
         hasToken,
         getNextRecords,

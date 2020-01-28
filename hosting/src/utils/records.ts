@@ -1,3 +1,4 @@
+import firebase, { firestore } from '../modules/firebase';
 import { RecordInterface, RecordItemUserInterface, RecordViewInterface, RecordViewUserInterface } from '../stores/database/records';
 
 const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
@@ -14,7 +15,11 @@ const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: fir
   );
 };
 
-export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp | null] => {
+export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
+  if (!items.length) {
+    return [[], firebase.firestore.Timestamp.now()];
+  }
+
   const newItems: RecordViewInterface[] = [];
   const timeZoneOffset = 9;
 
@@ -26,21 +31,19 @@ export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[]
     const newLeftUsers = convertRecordUsers(leftUsers, durationStart, durationEnd);
 
     if (!newItem) {
-      const newData: RecordViewInterface = {
+      const newItem: RecordViewInterface = {
         date,
         cameUsers: newCameUsers,
         leftUsers: newLeftUsers,
       };
-      newItems.push(newData);
+      newItems.push(newItem);
       return;
     }
     newItem.cameUsers.push(...newCameUsers);
     newItem.leftUsers.push(...newLeftUsers);
   });
 
-  const lastDurationEnd = items.length
-    ? items.sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds)[items.length - 1].data.durationEnd
-    : null;
+  const lastDurationEnd = items.sort((a, b) => a.data.durationEnd.seconds - b.data.durationEnd.seconds)[0].data.durationEnd;
 
   return [newItems, lastDurationEnd];
 };
