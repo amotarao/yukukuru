@@ -54,6 +54,59 @@ export const MainAreaStyle = css`
   }
 `;
 
+export const LabelNavStyle = css`
+  & {
+    margin: 0 16px 16px;
+    pointer-events: none;
+    position: sticky;
+    top: 16px;
+    width: auto;
+    z-index: 100;
+
+    > ul {
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+
+      > li {
+        border-radius: 8px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        font-size: 0.8rem;
+        padding: 4px 16px;
+
+        &[data-type='yuku'] {
+          background: linear-gradient(to right, var(--yuku) 0%, var(--yuku) 100%) left/8px 1px repeat-y var(--back);
+        }
+        &[data-type='kuru'] {
+          background: linear-gradient(to right, var(--kuru) 0%, var(--kuru) 100%) right/8px 1px repeat-y var(--back);
+        }
+      }
+    }
+
+    @media screen and (min-width: 640px) {
+      margin-bottom: 24px;
+
+      > ul {
+        justify-content: space-around;
+
+        > li {
+          border-radius: 9999px;
+
+          &[data-type='yuku'] {
+            background: var(--yuku);
+            margin-right: 32px;
+          }
+          &[data-type='kuru'] {
+            background: var(--kuru);
+            margin-left: 32px;
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const RecordHeadStyle = css`
   & {
     background: var(--primary);
@@ -68,7 +121,7 @@ export const RecordHeadStyle = css`
     border-radius: 9999px;
     letter-spacing: 0.1em;
 
-    * + & {
+    *:not(nav) + & {
       margin-top: 40px;
 
       @media screen and (min-width: 640px) {

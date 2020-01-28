@@ -11,6 +11,7 @@ import {
   HeaderStyle,
   SignOutButtonStyle,
   MainAreaStyle,
+  LabelNavStyle,
   RecordHeadStyle,
   UserSectionStyle,
   ErrorWrapperStyle,
@@ -87,6 +88,12 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }
 
   return (
     <main css={MainAreaStyle}>
+      <nav css={LabelNavStyle}>
+        <ul>
+          <li data-type="yuku">ゆくひと</li>
+          <li data-type="kuru">くるひと</li>
+        </ul>
+      </nav>
       {items.map((item, itemIndex) => {
         const date = item.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
