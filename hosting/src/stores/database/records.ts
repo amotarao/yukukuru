@@ -108,12 +108,11 @@ const useRecords = () => {
       return;
     }
     const { docs, size } = await getRecordsFromFirestore(uid, cursor);
-    const tmpItems = docs.map(convertRecordItems);
-    const newItems = convertRecordsForView(tmpItems);
+    const newItems = convertRecordsForView(docs.map(convertRecordItems));
 
     setItems((items) => [...items, ...newItems]);
     setHasNext(size >= 20);
-    setCursor(docs[size - 1]);
+    setCursor(size > 0 ? docs[size - 1] : null);
 
     // この順番でないと初回Records取得が再始動する
     setFirstLoaded(true);
@@ -144,13 +143,28 @@ const useRecords = () => {
   };
 
   return {
+    /** 最初のデータが読み込み中かどうか */
     isLoading: isFirstLoading || !isFirstLoaded,
+
+    /** 続きのデータが読み込み中かどうか */
     isNextLoading,
+
+    /** アイテム */
     items,
+
+    /** アイテムがあるかどうか */
     hasItems: items.length > 0,
+
+    /** 続きのデータがあるかどうか */
     hasNext,
-    setUid,
+
+    /** 続きのデータを取得する */
     getNextRecords,
+
+    /** uid をセットする */
+    setUid: (uid: string) => {
+      setUid(uid);
+    },
   };
 };
 
