@@ -92,6 +92,17 @@ export const NoDetailWrapperStyle = css`
     display: block;
     margin: 16px;
     padding: 16px;
+    max-width: 400px;
+    width: 80%;
+
+    @media screen and (max-width: 639px) {
+      &[data-type='yuku'] {
+        background: linear-gradient(to right, var(--yuku) 0%, var(--yuku) 100%) left/8px 1px repeat-y var(--back);
+      }
+      &[data-type='kuru'] {
+        background: linear-gradient(to right, var(--kuru) 0%, var(--kuru) 100%) right/8px 1px repeat-y var(--back);
+      }
+    }
 
     @media screen and (min-width: 640px) {
       max-width: calc(50% - 40px);
