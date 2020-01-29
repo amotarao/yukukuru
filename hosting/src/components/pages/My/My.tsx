@@ -1,22 +1,10 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import MediaQuery from 'react-responsive';
 import { Record } from '../../../stores/database/records';
-import { TweetButton } from '../../organisms/TweetButton';
-import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
+import { SiteNav } from '../../organisms/SiteNav';
 import { UserCard } from '../../organisms/UserCard';
-import {
-  WrapperStyle,
-  NavStyle,
-  SignOutButtonStyle,
-  MainAreaStyle,
-  LabelNavStyle,
-  RecordHeadStyle,
-  UserSectionStyle,
-  ErrorWrapperStyle,
-  GetNextButtonStyle,
-} from './styled';
+import { WrapperStyle, MainAreaStyle, LabelNavStyle, RecordHeadStyle, UserSectionStyle, ErrorWrapperStyle, GetNextButtonStyle } from './styled';
 
 export interface MyProps {
   isLoading: boolean;
@@ -118,15 +106,7 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
 export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasOnlyEmptyItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
-    <nav css={NavStyle}>
-      <TweetButton size="large" />
-      <ThemeSwitchButtonContainer>
-        <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
-      </ThemeSwitchButtonContainer>
-      <button css={SignOutButtonStyle} onClick={signOut}>
-        ログアウト
-      </button>
-    </nav>
+    <SiteNav signOut={signOut} />
     {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
