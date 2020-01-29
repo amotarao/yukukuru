@@ -23,6 +23,7 @@ export interface MyProps {
   isNextLoading: boolean;
   items: Record[];
   hasItems: boolean;
+  hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
   getNextRecords: () => void;
@@ -74,17 +75,15 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
-  // Todo: 処置
-  const existsFilteredItems = hasItems;
-  let currentDate: string = '';
-
+const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({ items, hasItems, hasOnlyEmptyItems }) => {
+  if (hasOnlyEmptyItems) {
+    return <NoViewItem />;
+  }
   if (!hasItems) {
     return <NoItem />;
   }
-  if (!existsFilteredItems) {
-    return <NoViewItem />;
-  }
+
+  let currentDate: string = '';
 
   return (
     <main css={MainAreaStyle}>
@@ -116,7 +115,7 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }
 /**
  * マイページ全体のコンポーネント
  */
-export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasNext, hasToken, signOut, getNextRecords }) => (
+export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasOnlyEmptyItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
@@ -128,7 +127,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItem
         ログアウト
       </button>
     </header>
-    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} />}
+    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
       <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>

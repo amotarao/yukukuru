@@ -155,6 +155,9 @@ const useRecords = () => {
     /** アイテムがあるかどうか */
     hasItems: items.length > 0,
 
+    /** 空のアイテムだけがあるかどうか */
+    hasOnlyEmptyItems: items.length === 0 && cursor !== null,
+
     /** 続きのデータがあるかどうか */
     hasNext,
 
