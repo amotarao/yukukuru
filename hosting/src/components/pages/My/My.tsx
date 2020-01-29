@@ -8,7 +8,7 @@ import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
 import {
   WrapperStyle,
-  HeaderStyle,
+  NavStyle,
   SignOutButtonStyle,
   MainAreaStyle,
   LabelNavStyle,
@@ -118,7 +118,7 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
 export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasOnlyEmptyItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
-    <header css={HeaderStyle}>
+    <nav css={NavStyle}>
       <TweetButton size="large" />
       <ThemeSwitchButtonContainer>
         <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
@@ -126,7 +126,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItem
       <button css={SignOutButtonStyle} onClick={signOut}>
         ログアウト
       </button>
-    </header>
+    </nav>
     {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (

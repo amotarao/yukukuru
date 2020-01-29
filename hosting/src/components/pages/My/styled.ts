@@ -10,7 +10,7 @@ export const WrapperStyle = css`
   }
 `;
 
-export const HeaderStyle = css`
+export const NavStyle = css`
   && {
     align-items: center;
     display: flex;
