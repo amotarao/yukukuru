@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import MediaQuery from 'react-responsive';
-import { RecordViewInterface } from '../../../stores/database/records';
+import { Record } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
@@ -10,13 +10,10 @@ import {
   WrapperStyle,
   HeaderStyle,
   SignOutButtonStyle,
-  RecordSectionStyle,
+  MainAreaStyle,
+  LabelNavStyle,
   RecordHeadStyle,
-  CameSectionStyle,
-  CameHeadStyle,
-  LeftSectionStyle,
-  LeftHeadStyle,
-  EmptyTextStyle,
+  UserSectionStyle,
   ErrorWrapperStyle,
   GetNextButtonStyle,
 } from './styled';
@@ -24,8 +21,9 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: RecordViewInterface[];
+  items: Record[];
   hasItems: boolean;
+  hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
   getNextRecords: () => void;
@@ -77,66 +75,47 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Main: React.FC<Pick<MyProps, 'items' | 'hasItems'>> = ({ items, hasItems }) => {
-  const filteredItems = items.filter(({ cameUsers, leftUsers }) => {
-    return cameUsers.length > 0 || leftUsers.length > 0;
-  });
-  const existsFilteredItems = filteredItems.length > 0;
-
+const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({ items, hasItems, hasOnlyEmptyItems }) => {
+  if (hasOnlyEmptyItems) {
+    return <NoViewItem />;
+  }
   if (!hasItems) {
     return <NoItem />;
   }
-  if (!existsFilteredItems) {
-    return <NoViewItem />;
-  }
+
+  let currentDate: string = '';
 
   return (
-    <React.Fragment>
+    <main css={MainAreaStyle}>
+      <nav css={LabelNavStyle}>
+        <ul>
+          <li data-type="yuku">ゆくひと</li>
+          <li data-type="kuru">くるひと</li>
+        </ul>
+      </nav>
       {items.map((item, itemIndex) => {
-        const date = new Date(item.date * 24 * 60 * 60 * 1000);
-        const dateText = `${date.getMonth() + 1}月${date.getDate()}日`;
+        const date = item.durationEnd.toDate();
+        const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        const showDate = currentDate !== dateText;
+        currentDate = dateText;
+
         return (
-          <section css={RecordSectionStyle} key={itemIndex}>
-            <h2 css={RecordHeadStyle}>{dateText}の記録</h2>
-            <section css={CameSectionStyle}>
-              <h3 css={LeftHeadStyle}>ゆくひと ({item.leftUsers.filter((user) => user).length})</h3>
-              {item.leftUsers.length ? (
-                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.leftUsers.map((user, userIndex) => (
-                    <li key={userIndex}>
-                      <UserCard {...user} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p css={EmptyTextStyle}>なし</p>
-              )}
+          <React.Fragment key={itemIndex}>
+            {showDate && <h2 css={RecordHeadStyle}>{dateText}</h2>}
+            <section css={UserSectionStyle} data-type={item.type}>
+              <UserCard {...item} />
             </section>
-            <section css={LeftSectionStyle}>
-              <h3 css={CameHeadStyle}>くるひと ({item.cameUsers.filter((user) => user).length})</h3>
-              {item.cameUsers.length ? (
-                <ul style={{ listStyle: 'none', marginBottom: 64 }}>
-                  {item.cameUsers.map((user, userIndex) => (
-                    <li key={userIndex}>
-                      <UserCard {...user} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p css={EmptyTextStyle}>なし</p>
-              )}
-            </section>
-          </section>
+          </React.Fragment>
         );
       })}
-    </React.Fragment>
+    </main>
   );
 };
 
 /**
  * マイページ全体のコンポーネント
  */
-export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasNext, hasToken, signOut, getNextRecords }) => (
+export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasOnlyEmptyItems, hasNext, hasToken, signOut, getNextRecords }) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
@@ -148,7 +127,7 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItem
         ログアウト
       </button>
     </header>
-    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} />}
+    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
       <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>

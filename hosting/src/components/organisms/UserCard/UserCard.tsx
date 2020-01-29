@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { RecordViewUserInterface } from '../../../stores/database/records';
+import { Record } from '../../../stores/database/records';
 import { ProfileImage } from '../../atoms/ProfileImage';
 import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NotFoundedTextStyle, DurationTextStyle, NoDetailWrapperStyle } from './styled';
 
@@ -12,24 +12,24 @@ const convertDateText = (date: firebase.firestore.Timestamp) => {
   return `${h}:${m}`;
 };
 
-export interface UserCardProps extends RecordViewUserInterface {}
+export type UserCardProps = Record;
 
-export const UserCard: React.FC<UserCardProps> = ({ data: { name, screenName, photoUrl, notFounded = false }, duration: { start, end } }) => {
-  const hasDetail = name && screenName && photoUrl;
-  const duration = `${convertDateText(start)} から ${convertDateText(end)} までの間`;
+export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, durationEnd }) => {
+  const hasDetail = user.displayName && user.screenName && user.photoUrl;
+  const duration = `${convertDateText(durationStart)} から ${convertDateText(durationEnd)} までの間`;
 
   return hasDetail ? (
-    <a css={WrapperStyle} href={`https://twitter.com/${screenName}`} target="_blank" rel="noopener noreferrer">
+    <a css={WrapperStyle} data-type={type} href={`https://twitter.com/${user.screenName}`} target="_blank" rel="noopener noreferrer">
       <div css={IconWrapperStyle}>
-        <ProfileImage src={photoUrl} alt={name} />
+        <ProfileImage src={user.photoUrl} alt={user.displayName} />
       </div>
-      <p css={NameStyle}>{name}</p>
-      <p css={ScreenNameStyle}>@{screenName}</p>
-      {notFounded && <p css={NotFoundedTextStyle}>アカウントが削除、凍結された可能性があります</p>}
+      <p css={NameStyle}>{user.displayName}</p>
+      <p css={ScreenNameStyle}>@{user.screenName}</p>
+      {user.maybeDeletedOrSuspended && <p css={NotFoundedTextStyle}>アカウントが削除、凍結された可能性があります</p>}
       <p css={DurationTextStyle}>{duration}</p>
     </a>
   ) : (
-    <div css={NoDetailWrapperStyle}>
+    <div css={NoDetailWrapperStyle} data-type={type}>
       <p className="head">情報の取得ができないユーザー</p>
       <p className="text">アカウントが削除、凍結された可能性があります</p>
       <p className="duration">{duration}</p>

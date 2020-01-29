@@ -1,49 +1,44 @@
-import firebase, { firestore } from '../modules/firebase';
-import { RecordInterface, RecordItemUserInterface, RecordViewInterface, RecordViewUserInterface } from '../stores/database/records';
+import { RecordIdData, Record, RecordUserOld } from '../stores/database/records';
 
-const convertRecordUsers = (users: RecordItemUserInterface[], durationStart: firebase.firestore.Timestamp, durationEnd: firebase.firestore.Timestamp) => {
-  return users.map(
-    (user): RecordViewUserInterface => {
-      return {
-        data: user,
-        duration: {
-          start: durationStart,
-          end: durationEnd,
-        },
-      };
-    }
-  );
-};
-
-export const convertRecords = (items: RecordInterface[]): [RecordViewInterface[], firebase.firestore.Timestamp] => {
+/**
+ * Records を 表示用のデータに変換
+ */
+export const convertRecordsForView = (items: RecordIdData[]): Record[] => {
   if (!items.length) {
-    return [[], firebase.firestore.Timestamp.now()];
+    return [];
   }
 
-  const newItems: RecordViewInterface[] = [];
-  const timeZoneOffset = 9;
+  const newItems: Record[] = [];
 
-  items.forEach(({ data: { cameUsers, leftUsers, durationStart, durationEnd } }) => {
-    const date = Math.floor((durationEnd.seconds / 60 / 60 + timeZoneOffset) / 24);
-    const newItem = newItems.find((newItem) => newItem.date === date);
-
-    const newCameUsers = convertRecordUsers(cameUsers, durationStart, durationEnd);
-    const newLeftUsers = convertRecordUsers(leftUsers, durationStart, durationEnd);
-
-    if (!newItem) {
-      const newItem: RecordViewInterface = {
-        date,
-        cameUsers: newCameUsers,
-        leftUsers: newLeftUsers,
-      };
-      newItems.push(newItem);
+  items.forEach(({ data }) => {
+    // 新しい Interface の record はそのまま push
+    if ('type' in data) {
+      newItems.push(data);
       return;
     }
-    newItem.cameUsers.push(...newCameUsers);
-    newItem.leftUsers.push(...newLeftUsers);
+    const { cameUsers, leftUsers, durationStart, durationEnd } = data;
+
+    function convertItems(user: RecordUserOld, type: 'yuku' | 'kuru') {
+      const item: Record = {
+        user: {
+          id: user.id,
+          displayName: user.name,
+          screenName: user.screenName,
+          photoUrl: user.photoUrl,
+          maybeDeletedOrSuspended: typeof user.notFounded !== 'undefined' ? user.notFounded : !user.photoUrl,
+        },
+        type,
+        durationStart,
+        durationEnd,
+      };
+      return item;
+    }
+
+    const covertedYukuItems = leftUsers.map((user) => convertItems(user, 'yuku'));
+    const covertedKuruItems = cameUsers.map((user) => convertItems(user, 'kuru'));
+
+    newItems.push(...covertedYukuItems, ...covertedKuruItems);
   });
 
-  const lastDurationEnd = items.sort((a, b) => a.data.durationEnd.seconds - b.data.durationEnd.seconds)[0].data.durationEnd;
-
-  return [newItems, lastDurationEnd];
+  return newItems;
 };
