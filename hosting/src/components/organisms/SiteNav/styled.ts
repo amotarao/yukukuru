@@ -3,11 +3,18 @@ import { css } from '@emotion/core';
 export const NavStyle = css`
   && {
     align-items: center;
+    background: var(--back);
+    box-shadow: 0 -2px 4px 0 var(--shadow);
     display: flex;
-    height: 48px;
+    height: 64px;
     justify-content: flex-end;
-    margin-bottom: 16px;
-    padding: 0 16px;
+    padding: 0 16px constant(safe-area-inset-bottom);
+    padding: 0 16px env(safe-area-inset-bottom);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
 
     & > :first-child {
       flex: 1 0 auto;
