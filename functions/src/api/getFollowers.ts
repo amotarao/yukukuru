@@ -29,6 +29,7 @@ export default async () => {
     .where('active', '==', true)
     .where('invalid', '==', false)
     .where('lastUpdated', '<', time15)
+    .where('tmp.stopedOldGetFollowers', '==', false)
     .orderBy('lastUpdated')
     .limit(100)
     .get();
@@ -39,6 +40,7 @@ export default async () => {
     .where('invalid', '==', false)
     .where('pausedGetFollower', '==', true)
     .where('lastUpdated', '<', time3)
+    .where('tmp.stopedOldGetFollowers', '==', false)
     .orderBy('lastUpdated')
     .limit(10)
     .get();
@@ -48,6 +50,7 @@ export default async () => {
     .where('active', '==', true)
     .where('invalid', '==', false)
     .where('newUser', '==', true)
+    .where('tmp.stopedOldGetFollowers', '==', false)
     .limit(10)
     .get();
 
@@ -55,7 +58,10 @@ export default async () => {
   const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter(
     (x, i, self) => self.findIndex((y) => x.id === y.id) === i
   );
-  console.log(docs.map((doc) => doc.id), docs.length);
+  console.log(
+    docs.map((doc) => doc.id),
+    docs.length
+  );
 
   const requests = docs.map(async (snapshot) => {
     const { nextCursor } = snapshot.data() as UserData;

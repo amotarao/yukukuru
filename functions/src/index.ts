@@ -22,6 +22,10 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
   memory: '1GB',
 };
 
+/**
+ * [deprecated] フォロワー一覧取得処理
+ * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+ */
 export const getFollowers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
   if (req.query.key !== env.http_functions_key) {
     res.status(403).end();
