@@ -44,7 +44,7 @@ async function run({ after }: Props, context: Context): Promise<void> {
     { userId: twId, cursor, count: 75000 }
   );
   const { ids, next_cursor_str: nextCursor } = response;
-  const completed = nextCursor === '-1' || nextCursor === '0';
+  const completed = nextCursor === '0';
 
   /** Twitter API エラー処理 */
   if (errors.length) {

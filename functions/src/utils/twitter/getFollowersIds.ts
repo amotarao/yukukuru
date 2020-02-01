@@ -81,8 +81,8 @@ export async function getFollowersIds(
     ids.push(...response.ids);
     cursor = response.next_cursor_str;
 
-    // -1, 0 の際は最後まで取得が完了しているので終了
-    if (cursor === '-1' || cursor === '0') {
+    // 0 の際は最後まで取得が完了しているので終了
+    if (cursor === '0') {
       break;
     }
     loop--;
