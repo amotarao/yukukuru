@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import * as users from '../../utils/firestore/users';
 import * as queues from '../../utils/firestore/queues';
 import * as followersStorage from '../../utils/storage/followers';
 import { getFollowersIds } from '../../utils/twitter/getFollowersIds';
@@ -142,7 +143,7 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
     // フォロワー取得処理が初回の場合は実行しない
     if (currentState.latestQueueId === null || currentState.latestDurationStart === null) {
       console.error(
-        'Failed: add createCompareFollowersQueue\nlatestQueueId or latestDurationStart is null',
+        'Failed: createCompareFollowersQueue\nlatestQueueId or latestDurationStart is null',
         currentQueueId
       );
       return;
@@ -151,7 +152,7 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
     // データの整合性をチェック
     // Todo: 何故このチェックを入れたのか忘れたので、ログを監視し問題なければ削除する
     if (currentState.durationEnd === null) {
-      console.error('Failed: add createCompareFollowersQueue\ndurationEnd is null', currentQueueId);
+      console.error('Failed: createCompareFollowersQueue\ndurationEnd is null', currentQueueId);
       return;
     }
 
@@ -173,5 +174,18 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
     await queues.addQueueTypeCompareFollowers(props);
   }
 
-  await Promise.all([createNextQueue(), createCompareFollowersQueue()]);
+  /**
+   * [temporary] ユーザーの一時データを更新
+   */
+  async function updateUserTmp() {
+    // フォロワー取得処理が初回の場合は実行しない
+    if (currentState.latestQueueId === null || currentState.latestDurationStart === null) {
+      return;
+    }
+
+    console.log('Successed: updateTmpUser', currentQueueId);
+    await users.updateUserTmp(currentParams.uid, { stopedOldGetFollowers: true });
+  }
+
+  await Promise.all([createNextQueue(), createCompareFollowersQueue(), updateUserTmp()]);
 }

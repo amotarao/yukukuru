@@ -88,3 +88,15 @@ export async function updateUserInvalid(id: string, invalid: boolean): Promise<v
   const data: Pick<User, 'invalid'> = { invalid };
   await collection.doc(id).set(data, { merge: true });
 }
+
+/**
+ * ユーザーの一時データをアップデート
+ * tmp下のフィールド名を入れる
+ */
+export async function updateUserTmp(uid: string, data: User['tmp']): Promise<void> {
+  const tmp: User['tmp'] = {};
+  Object.entries(data).forEach(([key, value]) => {
+    tmp[`tmp.${key}`] = value;
+  });
+  await collection.doc(uid).update(tmp);
+}
