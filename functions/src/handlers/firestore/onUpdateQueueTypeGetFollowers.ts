@@ -149,6 +149,7 @@ async function terminate({ after }: Props, context: Context): Promise<void> {
     }
 
     // データの整合性をチェック
+    // Todo: 何故このチェックを入れたのか忘れたので、ログを監視し問題なければ削除する
     if (currentState.durationEnd === null) {
       console.error('Failed: add createCompareFollowersQueue\ndurationEnd is null', currentQueueId);
       return;
