@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { QueueBase } from '../../utils/firestore/queues';
-import { onUpdateQueueTypeGetFollowers } from '../../hanlders/firestore/onUpdateQueueTypeGetFollowers';
-import { onUpdateQueueTypeCompareFollowers } from '../../hanlders/firestore/onUpdateQueueTypeCompareFollowers';
+import { onUpdateQueueTypeGetFollowers } from '../../handlers/firestore/onUpdateQueueTypeGetFollowers';
+import { onUpdateQueueTypeCompareFollowers } from '../../handlers/firestore/onUpdateQueueTypeCompareFollowers';
 
 type Props = functions.Change<FirebaseFirestore.DocumentSnapshot>;
 type Context = functions.EventContext;
