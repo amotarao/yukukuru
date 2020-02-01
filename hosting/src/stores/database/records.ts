@@ -1,23 +1,46 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createContainer } from 'unstated-next';
 import firebase, { firestore } from '../../modules/firebase';
-import { convertRecords } from '../../utils/records';
+import { convertRecordsForView } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
 
-export interface RecordInterface {
+export interface RecordIdData {
   id: string;
-  data: RecordDataInterface;
+  data: Record | RecordOld;
 }
 
-export interface RecordDataInterface {
-  cameUsers: RecordItemUserInterface[];
-  leftUsers: RecordItemUserInterface[];
+export interface Record {
+  user: RecordUser;
+  type: 'yuku' | 'kuru';
   durationStart: firebase.firestore.Timestamp;
   durationEnd: firebase.firestore.Timestamp;
 }
 
-export interface RecordItemUserInterface {
+export interface RecordUser {
+  id: string;
+  displayName?: string;
+  screenName?: string;
+  photoUrl?: string;
+  maybeDeletedOrSuspended: boolean;
+}
+
+/**
+ * 古い Interface の Record
+ * データが存在するため、残している
+ */
+export interface RecordOld {
+  cameUsers: RecordUserOld[];
+  leftUsers: RecordUserOld[];
+  durationStart: firebase.firestore.Timestamp;
+  durationEnd: firebase.firestore.Timestamp;
+}
+
+/**
+ * 古い Interface の Record User
+ * データが存在するため、残している
+ */
+export interface RecordUserOld {
   id: string;
   screenName?: string;
   name?: string;
@@ -25,36 +48,33 @@ export interface RecordItemUserInterface {
   notFounded?: boolean;
 }
 
-export interface RecordViewInterface {
-  date: number;
-  cameUsers: RecordViewUserInterface[];
-  leftUsers: RecordViewUserInterface[];
-}
-
-export interface RecordViewUserInterface {
-  data: RecordItemUserInterface;
-  duration: {
-    start: firebase.firestore.Timestamp;
-    end: firebase.firestore.Timestamp;
-  };
-}
-
 const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
-  const item: RecordInterface = {
+  const item: RecordIdData = {
     id: snapshot.id,
-    data: snapshot.data() as RecordDataInterface,
+    data: snapshot.data() as Record | RecordOld,
   };
   return item;
 };
 
-const getRecordsFromFirestore = async (uid: string, end: firebase.firestore.Timestamp): Promise<firebase.firestore.QuerySnapshot> => {
-  const qs = await usersCollection
+/**
+ * Firestore から Records を取得
+ *
+ * @param uid 取得対象ユーザーのUID
+ * @param startAfter cursor
+ */
+const getRecordsFromFirestore = async (uid: string, startAfter: firebase.firestore.QueryDocumentSnapshot | null): Promise<firebase.firestore.QuerySnapshot> => {
+  let query = usersCollection
     .doc(uid)
     .collection('records')
-    .orderBy('durationEnd', 'desc')
-    .startAfter(end)
-    .limit(20)
-    .get();
+    .orderBy('durationEnd', 'desc');
+
+  if (startAfter) {
+    query = query.startAfter(startAfter);
+  }
+
+  query = query.limit(20);
+
+  const qs = await query.get();
   return qs;
 };
 
@@ -72,13 +92,13 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
 
   /** アイテム */
-  const [items, setItems] = useState<RecordViewInterface[]>([]);
+  const [items, setItems] = useState<Record[]>([]);
 
   /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);
 
-  /** アイテムの読み込みのカーソル代わり */
-  const [lastDurationEnd, setLastDurationEnd] = useState<firebase.firestore.Timestamp>(firebase.firestore.Timestamp.now());
+  /** データ追加読み込み用のカーソル */
+  const [cursor, setCursor] = useState<firebase.firestore.QueryDocumentSnapshot | null>(null);
 
   /**
    * Records を取得し処理する
@@ -87,19 +107,18 @@ const useRecords = () => {
     if (!uid) {
       return;
     }
-    const { docs, size } = await getRecordsFromFirestore(uid, lastDurationEnd);
-    const tmpItems = docs.map(convertRecordItems).sort((a, b) => b.data.durationEnd.seconds - a.data.durationEnd.seconds);
-    const [newItems, newLastDurationEnd] = convertRecords(tmpItems);
+    const { docs, size } = await getRecordsFromFirestore(uid, cursor);
+    const newItems = convertRecordsForView(docs.map(convertRecordItems));
 
     setItems((items) => [...items, ...newItems]);
-    setLastDurationEnd(newLastDurationEnd);
     setHasNext(size >= 20);
+    setCursor(size > 0 ? docs[size - 1] : null);
 
     // この順番でないと初回Records取得が再始動する
     setFirstLoaded(true);
     setFirstLoading(false);
     setNextLoading(false);
-  }, [lastDurationEnd, uid]);
+  }, [cursor, uid]);
 
   /**
    * 初回 Records を取得する
@@ -124,13 +143,31 @@ const useRecords = () => {
   };
 
   return {
+    /** 最初のデータが読み込み中かどうか */
     isLoading: isFirstLoading || !isFirstLoaded,
+
+    /** 続きのデータが読み込み中かどうか */
     isNextLoading,
+
+    /** アイテム */
     items,
+
+    /** アイテムがあるかどうか */
     hasItems: items.length > 0,
+
+    /** 空のアイテムだけがあるかどうか */
+    hasOnlyEmptyItems: items.length === 0 && cursor !== null,
+
+    /** 続きのデータがあるかどうか */
     hasNext,
-    setUid,
+
+    /** 続きのデータを取得する */
     getNextRecords,
+
+    /** uid をセットする */
+    setUid: (uid: string) => {
+      setUid(uid);
+    },
   };
 };
 
