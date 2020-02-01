@@ -1,25 +1,32 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import MediaQuery from 'react-responsive';
-import { TweetButton } from '../TweetButton';
-import { ThemeSwitchButtonContainer } from '../ThemeSwitchButton';
-import { NavStyle, SignOutButtonStyle } from './styled';
+import { NavStyle } from './styled';
 
 interface SiteNavProps {
   signOut: () => Promise<void>;
 }
 
-export const SiteNav: React.FC<SiteNavProps> = ({ signOut }) => {
+export const SiteNav: React.FC<SiteNavProps> = () => {
   return (
     <nav css={NavStyle}>
-      <TweetButton size="large" />
-      <ThemeSwitchButtonContainer>
-        <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
-      </ThemeSwitchButtonContainer>
-      <button css={SignOutButtonStyle} onClick={signOut}>
-        ログアウト
-      </button>
+      <ul>
+        <li>
+          <a href="">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTT81eb5aF5-fLfqivMtJra9Dah-8bL_1NP2Hi1YkvKNbv-QoL8" width="32" height="32" />
+          </a>
+        </li>
+        <li className="user">
+          <a href="">
+            <img src="https://pbs.twimg.com/profile_images/1206874530540486657/cLyI3tuI_400x400.png" alt="ユーザー設定" />
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTCRKTLQzWRQKUzZSHljy9uCpjetu9VG2K9WVzzO7Jc0neXEsdF" width="32" height="32" />
+          </a>
+        </li>
+      </ul>
     </nav>
   );
 };
