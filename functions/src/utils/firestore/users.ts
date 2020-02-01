@@ -16,23 +16,41 @@ export interface User {
   /** 無効かどうか */
   invalid: boolean;
 
-  /** 新しいユーザーかどうか */
-  newUser: boolean;
-
-  /** フォロワー一覧取得 最終実行日時 */
-  lastUpdated: DateLike;
-
   /** フォロワー情報取得 最終実行日時 */
   lastUpdatedTwUsers: DateLike;
 
-  /** フォロワー一覧取得 state cursor */
-  nextCursor: string;
+  /** 一時データ */
+  tmp: { [key: string]: any };
 
-  /** フォロワー一覧取得 state doc-id */
-  currentWatchesId: string;
+  /**
+   * [deprecated] 新しいユーザーかどうか
+   * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+   */
+  newUser?: boolean;
 
-  /** フォロワー一覧取得 state 途中かどうか */
-  pausedGetFollower: boolean;
+  /**
+   * [deprecated] フォロワー一覧取得 最終実行日時
+   * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+   */
+  lastUpdated?: DateLike;
+
+  /**
+   * [deprecated] フォロワー一覧取得 state cursor
+   * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+   */
+  nextCursor?: string;
+
+  /**
+   * [deprecated] フォロワー一覧取得 state doc-id
+   * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+   */
+  currentWatchesId?: string;
+
+  /**
+   * [deprecated] フォロワー一覧取得 state 途中かどうか
+   * Todo: フォロワー取得処理のキュー化完了後、不要なので削除
+   */
+  pausedGetFollower?: boolean;
 }
 
 /**
@@ -42,15 +60,15 @@ export async function initializeUser(id: string, props: Pick<User, 'photoUrl' | 
   const now = admin.firestore.FieldValue.serverTimestamp();
 
   const data: User = {
+    photoUrl: props.photoUrl,
+    displayName: props.displayName,
     active: true,
     invalid: false,
-    newUser: true,
-    lastUpdated: now,
     lastUpdatedTwUsers: now,
-    nextCursor: '-1',
-    currentWatchesId: '',
-    pausedGetFollower: false,
-    ...props,
+    tmp: {
+      /** 旧フォロワー取得処理を止めているかどうか */
+      stopedOldGetFollowers: true,
+    },
   };
   await collection.doc(id).set(data, { merge: true });
 }
