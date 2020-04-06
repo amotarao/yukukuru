@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 
-export const ButtonStyle = css`
+export const button = css`
   && {
     height: 20px;
     width: 75px;

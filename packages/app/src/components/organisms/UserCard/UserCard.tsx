@@ -3,15 +3,7 @@ import { jsx } from '@emotion/core';
 import { FirestoreDateLike, RecordData } from '@yukukuru/types';
 import React from 'react';
 import { ProfileImage } from '../../atoms/ProfileImage';
-import {
-  WrapperStyle,
-  IconWrapperStyle,
-  NameStyle,
-  ScreenNameStyle,
-  NotFoundedTextStyle,
-  DurationTextStyle,
-  NoDetailWrapperStyle,
-} from './styled';
+import * as style from './style';
 
 const convertDateText = (date: FirestoreDateLike): string => {
   if (!(date instanceof Date || 'seconds' in date)) {
@@ -32,22 +24,22 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
 
   return hasDetail ? (
     <a
-      css={WrapperStyle}
+      css={style.wrapper}
       data-type={type}
       href={`https://twitter.com/${user.screenName}`}
       target="_blank"
       rel="noopener noreferrer"
     >
-      <div css={IconWrapperStyle}>
+      <div css={style.iconWrapper}>
         <ProfileImage src={user.photoUrl} alt={user.displayName} />
       </div>
-      <p css={NameStyle}>{user.displayName}</p>
-      <p css={ScreenNameStyle}>@{user.screenName}</p>
-      {user.maybeDeletedOrSuspended && <p css={NotFoundedTextStyle}>アカウントが削除、凍結された可能性があります</p>}
-      <p css={DurationTextStyle}>{duration}</p>
+      <p css={style.name}>{user.displayName}</p>
+      <p css={style.screenName}>@{user.screenName}</p>
+      {user.maybeDeletedOrSuspended && <p css={style.notFoundedText}>アカウントが削除、凍結された可能性があります</p>}
+      <p css={style.durationText}>{duration}</p>
     </a>
   ) : (
-    <div css={NoDetailWrapperStyle} data-type={type}>
+    <div css={style.noDetailWrapper} data-type={type}>
       <p className="head">情報の取得ができないユーザー</p>
       <p className="text">アカウントが削除、凍結された可能性があります</p>
       <p className="duration">{duration}</p>

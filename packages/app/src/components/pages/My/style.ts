@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 
-export const WrapperStyle = css`
+export const wrapper = css`
   && {
     padding: 0 calc(50% - 240px);
 
@@ -10,7 +10,7 @@ export const WrapperStyle = css`
   }
 `;
 
-export const HeaderStyle = css`
+export const header = css`
   && {
     align-items: center;
     display: flex;
@@ -28,7 +28,7 @@ export const HeaderStyle = css`
   }
 `;
 
-export const SignOutButtonStyle = css`
+export const signOutButton = css`
   && {
     appearance: none;
     background: var(--danger);
@@ -42,7 +42,7 @@ export const SignOutButtonStyle = css`
   }
 `;
 
-export const MainAreaStyle = css`
+export const mainArea = css`
   & {
     background: none;
     padding-bottom: 40px;
@@ -54,7 +54,7 @@ export const MainAreaStyle = css`
   }
 `;
 
-export const LabelNavStyle = css`
+export const labelNav = css`
   & {
     margin: 0 16px 16px;
     pointer-events: none;
@@ -107,7 +107,7 @@ export const LabelNavStyle = css`
   }
 `;
 
-export const RecordHeadStyle = css`
+export const recordHead = css`
   & {
     background: var(--primary);
     color: var(--back);
@@ -131,7 +131,7 @@ export const RecordHeadStyle = css`
   }
 `;
 
-export const UserSectionStyle = css`
+export const userSection = css`
   & {
     flex: 1 0 300px;
     display: flex;
@@ -200,7 +200,7 @@ export const UserSectionStyle = css`
   }
 `;
 
-export const ErrorWrapperStyle = css`
+export const errorWrapper = css`
   && {
     border: 1px solid var(--danger);
     color: var(--danger);
@@ -213,7 +213,7 @@ export const ErrorWrapperStyle = css`
   }
 `;
 
-export const GetNextButtonStyle = css`
+export const getNextButton = css`
   && {
     appearance: none;
     background: var(--primary);

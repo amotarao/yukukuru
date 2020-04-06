@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 
-export const WrapperStyle = css`
+export const wrapper = css`
   && {
     align-items: center;
     background-image: var(--primary-gradient);
@@ -12,7 +12,7 @@ export const WrapperStyle = css`
   }
 `;
 
-export const InnerStyle = css`
+export const inner = css`
   && {
     align-items: center;
     background: var(--back-shadow);
@@ -31,7 +31,7 @@ export const InnerStyle = css`
   }
 `;
 
-export const ImageStyle = css`
+export const image = css`
   && {
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 var(--shadow);
@@ -47,7 +47,7 @@ export const ImageStyle = css`
   }
 `;
 
-export const SignInButtonStyle = css`
+export const signInButton = css`
   && {
     appearance: none;
     background: var(--primary);
@@ -61,7 +61,7 @@ export const SignInButtonStyle = css`
   }
 `;
 
-export const SocialButtonsStyle = css`
+export const socialButtons = css`
   && {
     display: flex;
     margin: 16px 0 0;

@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 
-export const WrapperStyle = css`
+export const wrapper = css`
   && {
     background: var(--back);
     border-radius: 8px;
@@ -34,7 +34,7 @@ export const WrapperStyle = css`
   }
 `;
 
-export const IconWrapperStyle = css`
+export const iconWrapper = css`
   && {
     border-radius: 50%;
     float: left;
@@ -49,7 +49,7 @@ export const IconWrapperStyle = css`
   }
 `;
 
-export const NameStyle = css`
+export const name = css`
   && {
     font-size: 1.2rem;
     line-height: 1.5;
@@ -58,7 +58,7 @@ export const NameStyle = css`
   }
 `;
 
-export const ScreenNameStyle = css`
+export const screenName = css`
   && {
     font-size: 0.8rem;
     font-weight: bold;
@@ -67,7 +67,7 @@ export const ScreenNameStyle = css`
   }
 `;
 
-export const NotFoundedTextStyle = css`
+export const notFoundedText = css`
   && {
     font-size: 0.8rem;
     margin-top: 8px;
@@ -75,7 +75,7 @@ export const NotFoundedTextStyle = css`
   }
 `;
 
-export const DurationTextStyle = css`
+export const durationText = css`
   && {
     color: var(--sub);
     font-size: 0.8rem;
@@ -84,7 +84,7 @@ export const DurationTextStyle = css`
   }
 `;
 
-export const NoDetailWrapperStyle = css`
+export const noDetailWrapper = css`
   & {
     background: var(--back);
     border-radius: 8px;
