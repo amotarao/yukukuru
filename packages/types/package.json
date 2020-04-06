@@ -5,8 +5,10 @@
   "scripts": {
     "lint": "eslint types --ext .ts,.js"
   },
+  "dependencies": {
+    "@firebase/firestore-types": "^1.10.1"
+  },
   "devDependencies": {
-    "@firebase/firestore-types": "^1.10.1",
     "eslint": "^6.8.0"
   }
 }
