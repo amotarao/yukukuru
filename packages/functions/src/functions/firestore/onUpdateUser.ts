@@ -1,3 +1,4 @@
+import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
@@ -11,7 +12,6 @@ import {
   getTwUsers,
   setTwUsers,
 } from '../../utils/firestore';
-import { UserData, UserWatchData, UserRecordUserItemData, UserRecordData } from '../../utils/interfaces';
 import { getUsersLookup } from '../../utils/twitter';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
@@ -63,7 +63,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     console.log('endedQuery.size < 2');
     return;
   }
-  const endDates = endedQuery.docs.map((snap) => (snap.data() as UserWatchData).getEndDate);
+  const endDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getEndDate);
 
   const startAfter: FirebaseFirestore.Timestamp | Date = endedQuery.size === 3 ? endDates[2] : new Date('2000/1/1');
   const targetQuery = await after.ref.collection('watches').orderBy('getEndDate').startAfter(startAfter).get();
@@ -72,7 +72,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const newFollowers: string[] = [];
 
   targetQuery.docs.map((doc) => {
-    const { followers, getEndDate } = doc.data() as UserWatchData;
+    const { followers, getEndDate } = doc.data() as WatchData;
     if (getEndDate.seconds <= endDates[1].seconds) {
       oldFollowers.push(...followers);
       return;
@@ -90,7 +90,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     const exists = await existsRecords(uid);
 
     if (!exists) {
-      const data: UserRecordData = {
+      const data: RecordDataOld = {
         cameUsers: [],
         leftUsers: [],
         durationStart: endDates[1],
@@ -129,7 +129,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const lookupedUsers = 'errors' in result ? [] : result.response;
 
   const users = lookupedUsers.map(({ id_str, name, screen_name, profile_image_url_https }) => {
-    const convertedUser: UserRecordUserItemData = {
+    const convertedUser: RecordUserDataOld = {
       id: id_str,
       name: name,
       screenName: screen_name,
@@ -139,7 +139,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return convertedUser;
   });
 
-  const findUser = async (userId: string): Promise<UserRecordUserItemData> => {
+  const findUser = async (userId: string): Promise<RecordUserDataOld> => {
     const obj = users.find((e) => e.id === userId);
     if (obj) {
       return obj;
@@ -147,14 +147,14 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
     const user = await getTwUsers([userId]);
     if (user.length === 0) {
-      const item: UserRecordUserItemData = {
+      const item: RecordUserDataOld = {
         id: userId,
         notFounded: true,
       };
       return item;
     }
 
-    const item: UserRecordUserItemData = {
+    const item: RecordUserDataOld = {
       ...user[0],
       notFounded: true,
     };
@@ -163,7 +163,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   const [cameUsers, leftUsers] = await Promise.all([Promise.all(came.map(findUser)), Promise.all(left.map(findUser))]);
 
-  const data: UserRecordData = {
+  const data: RecordDataOld = {
     cameUsers,
     leftUsers,
     durationStart: endDates[1],

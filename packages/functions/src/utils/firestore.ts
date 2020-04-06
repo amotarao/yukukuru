@@ -1,7 +1,7 @@
+import { TokenData, TwUserData, RecordDataOld } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
-import { TokenData, UserRecordData, TwUserData } from '../utils/interfaces';
 import { TwitterUserInterface } from './twitter';
 
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
@@ -112,7 +112,7 @@ export const existsRecords = async (userId: string): Promise<boolean> => {
   return !snapshot.empty;
 };
 
-export const setRecord = async (userId: string, data: UserRecordData): Promise<void> => {
+export const setRecord = async (userId: string, data: RecordDataOld): Promise<void> => {
   await firestore.collection('users').doc(userId).collection('records').add(data);
   return;
 };

@@ -1,6 +1,6 @@
+import { TokenData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore } from '../modules/firebase';
-import { TokenData } from '../utils/interfaces';
 
 type Props = TokenData;
 

@@ -1,8 +1,8 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { RecordData } from '@yukukuru/types';
 import React from 'react';
 import MediaQuery from 'react-responsive';
-import { Record } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
@@ -21,7 +21,7 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: Record[];
+  items: RecordData[];
   hasItems: boolean;
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
@@ -116,7 +116,11 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
         </ul>
       </nav>
       {items.map((item, itemIndex) => {
-        const date = item.durationEnd.toDate();
+        if (!(item.durationEnd instanceof Date || 'seconds' in item.durationEnd)) {
+          return null;
+        }
+
+        const date = item.durationEnd instanceof Date ? item.durationEnd : item.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         const showDate = currentDate !== dateText;
         currentDate = dateText;

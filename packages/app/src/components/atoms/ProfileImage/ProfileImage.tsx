@@ -13,5 +13,5 @@ export const ProfileImage: React.FC<ProfileImageProps> = (props) => {
     setSrc(fallbackImage);
   };
 
-  return <img {...props} src={src} crossOrigin="anonymous" onError={onError} />;
+  return <img {...props} src={src} alt={props.alt} crossOrigin="anonymous" onError={onError} />;
 };

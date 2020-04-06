@@ -1,8 +1,8 @@
+import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import { setTwUsers, updateUserLastUpdatedTwUsers } from '../utils/firestore';
-import { UserWatchData } from '../utils/interfaces';
 import { getUsersLookup } from '../utils/twitter';
 
 export default async () => {
@@ -27,7 +27,7 @@ export default async () => {
       return '';
     }
 
-    const { followers } = watch.docs[0].data() as UserWatchData;
+    const { followers } = watch.docs[0].data() as WatchData;
     // API 制限ギリギリまで
     if (usersId.length + followers.length > 30000) {
       return '';

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { FirestoreDateLike, RecordData } from '@yukukuru/types';
 import React from 'react';
-import { Record } from '../../../stores/database/records';
 import { ProfileImage } from '../../atoms/ProfileImage';
 import {
   WrapperStyle,
@@ -13,14 +13,18 @@ import {
   NoDetailWrapperStyle,
 } from './styled';
 
-const convertDateText = (date: firebase.firestore.Timestamp) => {
-  const d = date.toDate();
+const convertDateText = (date: FirestoreDateLike): string => {
+  if (!(date instanceof Date || 'seconds' in date)) {
+    return '';
+  }
+
+  const d = date instanceof Date ? date : date.toDate();
   const h = d.getHours();
   const m = `0${d.getMinutes()}`.slice(-2);
   return `${h}:${m}`;
 };
 
-export type UserCardProps = Record;
+export type UserCardProps = RecordData;
 
 export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, durationEnd }) => {
   const hasDetail = user.displayName && user.screenName && user.photoUrl;

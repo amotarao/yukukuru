@@ -1,22 +1,30 @@
+import { TokenData } from '@yukukuru/types';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { auth, provider } from '../modules/firebase';
 import { updateToken } from '../utils/functions';
-import { TokenDataInterface } from './database/token';
 
 const useUser = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [user, setUser] = useState<firebase.User | null>(null);
-  const [token, setToken] = useState<TokenDataInterface | null>(null);
+  const [token, setToken] = useState<TokenData | null>(null);
 
   useEffect(() => {
     auth.getRedirectResult().then(({ additionalUserInfo, credential, user }) => {
       if (additionalUserInfo && credential && user) {
+        const twitterId =
+          (additionalUserInfo &&
+            'profile' in additionalUserInfo &&
+            additionalUserInfo.profile &&
+            'id_str' in additionalUserInfo.profile &&
+            ((additionalUserInfo.profile as any).id_str as string)) ||
+          '';
+
         setToken({
           twitterAccessToken: (credential as any).accessToken,
           twitterAccessTokenSecret: (credential as any).secret,
-          twitterId: (additionalUserInfo.profile! as any).id_str!,
+          twitterId,
         });
       }
     });

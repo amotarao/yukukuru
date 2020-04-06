@@ -61,6 +61,11 @@
     faye-websocket "0.11.3"
     tslib "1.11.1"
 
+"@firebase/firestore-types@^1.10.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@firebase/firestore-types/-/firestore-types-1.10.1.tgz#bf018f9c495f470592de745389474dc1c2960d3f"
+  integrity sha512-vyKdm+AYUFT8XeUX62IOqaqPFCs/mAMoSEsqIz9HnSVsqCw/IocNjtjSa+3M80kRw4V8fI7JI+Xz6Wg5VJXLqA==
+
 "@firebase/logger@0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@firebase/logger/-/logger-0.2.1.tgz#09cdc5d3fe8ba4ed9bf8d6e6ab2a3b5398bd80bb"
@@ -338,6 +343,11 @@
   dependencies:
     "@types/node" "*"
     "@types/request" "*"
+
+"@yukukuru/types@../types":
+  version "0.1.0"
+  dependencies:
+    "@firebase/firestore-types" "^1.10.1"
 
 abort-controller@^3.0.0:
   version "3.0.0"

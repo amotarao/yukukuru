@@ -1,3 +1,4 @@
+import { UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
@@ -10,7 +11,6 @@ import {
   checkProtectedUser,
   setUserResultWithNoChange,
 } from '../utils/firestore';
-import { UserData } from '../utils/interfaces';
 import { getFollowersIdList } from '../utils/twitter';
 
 export default async () => {
