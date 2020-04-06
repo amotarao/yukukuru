@@ -1,5 +1,5 @@
+import { TokenData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { TokenData } from '../../utils/interfaces';
 import { updateUserInvalid } from '../../utils/firestore/users';
 
 export default async ({ after }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
