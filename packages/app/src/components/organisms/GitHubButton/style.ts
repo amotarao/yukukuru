@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 
-export const button = css`
+export const wrapper = css`
   height: 20px;
   width: 50px;
 

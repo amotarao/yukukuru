@@ -12,7 +12,7 @@ export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => 
   const isNormal = size === 'normal';
 
   return (
-    <div css={style.button} data-size={isNormal ? undefined : size}>
+    <div css={style.wrapper} data-size={isNormal ? undefined : size}>
       <Share
         url="https://yukukuru.app"
         options={{

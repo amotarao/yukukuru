@@ -12,7 +12,7 @@ export const GitHubButton: React.FC<GitHubButtonProps> = ({ size = 'normal' }) =
   const isNormal = size === 'normal';
 
   return (
-    <div css={style.button} data-size={isNormal ? undefined : size}>
+    <div css={style.wrapper} data-size={isNormal ? undefined : size}>
       <ReactGitHubButton
         href="https://github.com/amotarao/yukukuru-app"
         data-icon="octicon-star"
