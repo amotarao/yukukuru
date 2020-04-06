@@ -39,7 +39,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint './src/**/*.{ts,tsx}' './functions/src/**/*.ts'",
+    "lint": "eslint . --ext .ts,.tsx,.js --ignore-path .gitignore",
     "deploy": "firebase deploy --only hosting"
   },
   "eslintConfig": {
