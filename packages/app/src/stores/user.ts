@@ -1,14 +1,14 @@
+import { TokenData } from '@yukukuru/types';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { auth, provider } from '../modules/firebase';
 import { updateToken } from '../utils/functions';
-import { TokenDataInterface } from './database/token';
 
 const useUser = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [user, setUser] = useState<firebase.User | null>(null);
-  const [token, setToken] = useState<TokenDataInterface | null>(null);
+  const [token, setToken] = useState<TokenData | null>(null);
 
   useEffect(() => {
     auth.getRedirectResult().then(({ additionalUserInfo, credential, user }) => {

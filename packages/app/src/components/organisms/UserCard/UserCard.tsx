@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { RecordData } from '@yukukuru/types';
 import React from 'react';
-import { Record } from '../../../stores/database/records';
 import { ProfileImage } from '../../atoms/ProfileImage';
 import {
   WrapperStyle,
@@ -20,7 +20,7 @@ const convertDateText = (date: firebase.firestore.Timestamp) => {
   return `${h}:${m}`;
 };
 
-export type UserCardProps = Record;
+export type UserCardProps = RecordData;
 
 export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, durationEnd }) => {
   const hasDetail = user.displayName && user.screenName && user.photoUrl;

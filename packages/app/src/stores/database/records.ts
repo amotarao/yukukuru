@@ -1,3 +1,4 @@
+import { FirestoreIdData, RecordData, RecordDataOld } from '@yukukuru/types';
 import { useState, useEffect, useCallback } from 'react';
 import { createContainer } from 'unstated-next';
 import firebase, { firestore } from '../../modules/firebase';
@@ -5,53 +6,10 @@ import { convertRecordsForView } from '../../utils/records';
 
 const usersCollection = firestore.collection('users');
 
-export interface RecordIdData {
-  id: string;
-  data: Record | RecordOld;
-}
-
-export interface Record {
-  user: RecordUser;
-  type: 'yuku' | 'kuru';
-  durationStart: firebase.firestore.Timestamp;
-  durationEnd: firebase.firestore.Timestamp;
-}
-
-export interface RecordUser {
-  id: string;
-  displayName?: string;
-  screenName?: string;
-  photoUrl?: string;
-  maybeDeletedOrSuspended: boolean;
-}
-
-/**
- * 古い Interface の Record
- * データが存在するため、残している
- */
-export interface RecordOld {
-  cameUsers: RecordUserOld[];
-  leftUsers: RecordUserOld[];
-  durationStart: firebase.firestore.Timestamp;
-  durationEnd: firebase.firestore.Timestamp;
-}
-
-/**
- * 古い Interface の Record User
- * データが存在するため、残している
- */
-export interface RecordUserOld {
-  id: string;
-  screenName?: string;
-  name?: string;
-  photoUrl?: string;
-  notFounded?: boolean;
-}
-
 const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
-  const item: RecordIdData = {
+  const item: FirestoreIdData<RecordData> = {
     id: snapshot.id,
-    data: snapshot.data() as Record | RecordOld,
+    data: snapshot.data() as RecordData | RecordDataOld,
   };
   return item;
 };
@@ -92,7 +50,7 @@ const useRecords = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
 
   /** アイテム */
-  const [items, setItems] = useState<Record[]>([]);
+  const [items, setItems] = useState<RecordData[]>([]);
 
   /** Firebase UID */
   const [uid, setUid] = useState<string | null>(null);

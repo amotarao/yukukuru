@@ -1,8 +1,8 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { RecordData } from '@yukukuru/types';
 import React from 'react';
 import MediaQuery from 'react-responsive';
-import { Record } from '../../../stores/database/records';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
@@ -21,7 +21,7 @@ import {
 export interface MyProps {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: Record[];
+  items: RecordData[];
   hasItems: boolean;
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;

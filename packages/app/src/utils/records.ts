@@ -1,14 +1,14 @@
-import { RecordIdData, Record, RecordUserOld } from '../stores/database/records';
+import { FirestoreIdData, RecordData, RecordDataOld, RecordUserDataOld } from '@yukukuru/types';
 
 /**
  * Records を 表示用のデータに変換
  */
-export const convertRecordsForView = (items: RecordIdData[]): Record[] => {
+export const convertRecordsForView = (items: FirestoreIdData<RecordData | RecordDataOld>[]): RecordData[] => {
   if (!items.length) {
     return [];
   }
 
-  const newItems: Record[] = [];
+  const newItems: RecordData[] = [];
 
   items.forEach(({ data }) => {
     // 新しい Interface の record はそのまま push
@@ -18,8 +18,8 @@ export const convertRecordsForView = (items: RecordIdData[]): Record[] => {
     }
     const { cameUsers, leftUsers, durationStart, durationEnd } = data;
 
-    function convertItems(user: RecordUserOld, type: 'yuku' | 'kuru') {
-      const item: Record = {
+    function convertItems(user: RecordUserDataOld, type: 'yuku' | 'kuru') {
+      const item: RecordData = {
         user: {
           id: user.id,
           displayName: user.name,
