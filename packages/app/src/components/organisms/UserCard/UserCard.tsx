@@ -3,7 +3,15 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { Record } from '../../../stores/database/records';
 import { ProfileImage } from '../../atoms/ProfileImage';
-import { WrapperStyle, IconWrapperStyle, NameStyle, ScreenNameStyle, NotFoundedTextStyle, DurationTextStyle, NoDetailWrapperStyle } from './styled';
+import {
+  WrapperStyle,
+  IconWrapperStyle,
+  NameStyle,
+  ScreenNameStyle,
+  NotFoundedTextStyle,
+  DurationTextStyle,
+  NoDetailWrapperStyle,
+} from './styled';
 
 const convertDateText = (date: firebase.firestore.Timestamp) => {
   const d = date.toDate();
@@ -19,7 +27,13 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
   const duration = `${convertDateText(durationStart)} から ${convertDateText(durationEnd)} までの間`;
 
   return hasDetail ? (
-    <a css={WrapperStyle} data-type={type} href={`https://twitter.com/${user.screenName}`} target="_blank" rel="noopener noreferrer">
+    <a
+      css={WrapperStyle}
+      data-type={type}
+      href={`https://twitter.com/${user.screenName}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <div css={IconWrapperStyle}>
         <ProfileImage src={user.photoUrl} alt={user.displayName} />
       </div>

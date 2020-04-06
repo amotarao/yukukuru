@@ -139,7 +139,15 @@ export const UserSectionStyle = css`
     pointer-events: none;
 
     &[data-type='yuku'] {
-      background: linear-gradient(to right, transparent 0%, transparent 20%, var(--yuku) 20%, var(--yuku) 50%, transparent 50%) center center/100% 2px no-repeat;
+      background: linear-gradient(
+          to right,
+          transparent 0%,
+          transparent 20%,
+          var(--yuku) 20%,
+          var(--yuku) 50%,
+          transparent 50%
+        )
+        center center/100% 2px no-repeat;
       justify-content: flex-start;
 
       &::before {
@@ -148,7 +156,15 @@ export const UserSectionStyle = css`
     }
 
     &[data-type='kuru'] {
-      background: linear-gradient(to left, transparent 0%, transparent 20%, var(--kuru) 20%, var(--kuru) 50%, transparent 50%) center center/100% 2px no-repeat;
+      background: linear-gradient(
+          to left,
+          transparent 0%,
+          transparent 20%,
+          var(--kuru) 20%,
+          var(--kuru) 50%,
+          transparent 50%
+        )
+        center center/100% 2px no-repeat;
       justify-content: flex-end;
 
       &::before {

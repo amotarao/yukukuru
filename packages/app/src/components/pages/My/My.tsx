@@ -50,7 +50,16 @@ const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
 const NoItem: React.FC = () => {
   return (
     <div>
-      <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
+      <p
+        style={{
+          fontSize: '0.8em',
+          color: '#999',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          margin: '8px 16px',
+        }}
+      >
         <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
         <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
       </p>
@@ -64,7 +73,16 @@ const NoItem: React.FC = () => {
 const NoViewItem: React.FC = () => {
   return (
     <div>
-      <p style={{ fontSize: '0.8em', color: '#999', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', margin: '8px 16px' }}>
+      <p
+        style={{
+          fontSize: '0.8em',
+          color: '#999',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          margin: '8px 16px',
+        }}
+      >
         <span style={{ whiteSpace: 'nowrap' }}>データの取得は完了していますが、</span>
         <span style={{ whiteSpace: 'nowrap' }}>今のところフォロワーの増減がありません。</span>
       </p>
@@ -75,7 +93,11 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({ items, hasItems, hasOnlyEmptyItems }) => {
+const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({
+  items,
+  hasItems,
+  hasOnlyEmptyItems,
+}) => {
   if (hasOnlyEmptyItems) {
     return <NoViewItem />;
   }
@@ -83,7 +105,7 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
     return <NoItem />;
   }
 
-  let currentDate: string = '';
+  let currentDate = '';
 
   return (
     <main css={MainAreaStyle}>
@@ -115,7 +137,17 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
 /**
  * マイページ全体のコンポーネント
  */
-export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItems, hasOnlyEmptyItems, hasNext, hasToken, signOut, getNextRecords }) => (
+export const My: React.FC<MyProps> = ({
+  isLoading,
+  isNextLoading,
+  items,
+  hasItems,
+  hasOnlyEmptyItems,
+  hasNext,
+  hasToken,
+  signOut,
+  getNextRecords,
+}) => (
   <div css={WrapperStyle}>
     {!isLoading && <Error hasToken={hasToken} />}
     <header css={HeaderStyle}>
@@ -127,7 +159,11 @@ export const My: React.FC<MyProps> = ({ isLoading, isNextLoading, items, hasItem
         ログアウト
       </button>
     </header>
-    {isLoading ? <p style={{ margin: 16 }}>読み込み中</p> : <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />}
+    {isLoading ? (
+      <p style={{ margin: 16 }}>読み込み中</p>
+    ) : (
+      <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+    )}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
       <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>

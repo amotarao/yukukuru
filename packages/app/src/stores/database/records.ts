@@ -62,11 +62,11 @@ const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) 
  * @param uid 取得対象ユーザーのUID
  * @param startAfter cursor
  */
-const getRecordsFromFirestore = async (uid: string, startAfter: firebase.firestore.QueryDocumentSnapshot | null): Promise<firebase.firestore.QuerySnapshot> => {
-  let query = usersCollection
-    .doc(uid)
-    .collection('records')
-    .orderBy('durationEnd', 'desc');
+const getRecordsFromFirestore = async (
+  uid: string,
+  startAfter: firebase.firestore.QueryDocumentSnapshot | null
+): Promise<firebase.firestore.QuerySnapshot> => {
+  let query = usersCollection.doc(uid).collection('records').orderBy('durationEnd', 'desc');
 
   if (startAfter) {
     query = query.startAfter(startAfter);
