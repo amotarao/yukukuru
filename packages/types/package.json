@@ -1,5 +1,8 @@
 {
   "name": "@yukukuru/types",
   "version": "1.0.0",
-  "types": "types/index.d.ts"
+  "types": "types/index.d.ts",
+  "devDependencies": {
+    "@firebase/firestore-types": "^1.10.1"
+  }
 }
