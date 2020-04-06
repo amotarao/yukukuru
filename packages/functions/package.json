@@ -7,28 +7,28 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint --ext .ts src/**"
+    "lint": "eslint . --ext .ts,.js --ignore-path .gitignore"
   },
   "engines": {
     "node": "10"
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^8.9.0",
-    "firebase-functions": "^3.3.0",
+    "firebase-admin": "^8.10.0",
+    "firebase-functions": "^3.6.0",
     "lodash": "^4.17.15",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
     "@types/twitter": "^1.7.0",
-    "@typescript-eslint/eslint-plugin": "^2.14.0",
-    "@typescript-eslint/parser": "^2.14.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
+    "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
-    "prettier": "^1.19.1",
-    "typescript": "^3.2.2"
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3"
   },
   "private": true
 }

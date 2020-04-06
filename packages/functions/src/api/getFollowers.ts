@@ -55,7 +55,10 @@ export default async () => {
   const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter(
     (x, i, self) => self.findIndex((y) => x.id === y.id) === i
   );
-  console.log(docs.map((doc) => doc.id), docs.length);
+  console.log(
+    docs.map((doc) => doc.id),
+    docs.length
+  );
 
   const requests = docs.map(async (snapshot) => {
     const { nextCursor } = snapshot.data() as UserData;

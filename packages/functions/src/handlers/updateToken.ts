@@ -4,7 +4,7 @@ import { TokenData } from '../utils/interfaces';
 
 type Props = TokenData;
 
-function isObject(data: any): data is Object {
+function isObject(data: any): data is Record<string, any> {
   return typeof data === 'object' && data !== null && !Array.isArray(data);
 }
 
@@ -25,10 +25,7 @@ export async function updateTokenHandler(data: any, context: functions.https.Cal
     return false;
   }
 
-  await firestore
-    .collection('tokens')
-    .doc(context.auth.uid)
-    .set(data);
+  await firestore.collection('tokens').doc(context.auth.uid).set(data);
 
   return true;
 }

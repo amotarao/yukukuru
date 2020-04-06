@@ -20,25 +20,19 @@ export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean =>
 };
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
-  const user = firestore
-    .collection('users')
-    .doc(userId)
-    .set(
-      {
-        invalid: true,
-      },
-      { merge: true }
-    );
-  const token = firestore
-    .collection('tokens')
-    .doc(userId)
-    .set(
-      {
-        twitterAccessToken: '',
-        twitterAccessTokenSecret: '',
-      },
-      { merge: true }
-    );
+  const user = firestore.collection('users').doc(userId).set(
+    {
+      invalid: true,
+    },
+    { merge: true }
+  );
+  const token = firestore.collection('tokens').doc(userId).set(
+    {
+      twitterAccessToken: '',
+      twitterAccessTokenSecret: '',
+    },
+    { merge: true }
+  );
   await Promise.all([user, token]);
   return;
 };
@@ -57,10 +51,7 @@ export const getToken = async (userId: string): Promise<TokenData | null> => {
 };
 
 export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {
-  const collection = firestore
-    .collection('users')
-    .doc(userId)
-    .collection('watches');
+  const collection = firestore.collection('users').doc(userId).collection('watches');
 
   const { id } = await collection.add({
     followers,
@@ -117,21 +108,12 @@ export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): 
 };
 
 export const existsRecords = async (userId: string): Promise<boolean> => {
-  const snapshot = await firestore
-    .collection('users')
-    .doc(userId)
-    .collection('records')
-    .limit(1)
-    .get();
+  const snapshot = await firestore.collection('users').doc(userId).collection('records').limit(1).get();
   return !snapshot.empty;
 };
 
 export const setRecord = async (userId: string, data: UserRecordData): Promise<void> => {
-  await firestore
-    .collection('users')
-    .doc(userId)
-    .collection('records')
-    .add(data);
+  await firestore.collection('users').doc(userId).collection('records').add(data);
   return;
 };
 

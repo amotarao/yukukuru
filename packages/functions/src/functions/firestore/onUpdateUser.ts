@@ -66,11 +66,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const endDates = endedQuery.docs.map((snap) => (snap.data() as UserWatchData).getEndDate);
 
   const startAfter: FirebaseFirestore.Timestamp | Date = endedQuery.size === 3 ? endDates[2] : new Date('2000/1/1');
-  const targetQuery = await after.ref
-    .collection('watches')
-    .orderBy('getEndDate')
-    .startAfter(startAfter)
-    .get();
+  const targetQuery = await after.ref.collection('watches').orderBy('getEndDate').startAfter(startAfter).get();
 
   const oldFollowers: string[] = [];
   const newFollowers: string[] = [];
