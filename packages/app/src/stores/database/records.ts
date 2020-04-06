@@ -66,10 +66,7 @@ const getRecordsFromFirestore = async (
   uid: string,
   startAfter: firebase.firestore.QueryDocumentSnapshot | null
 ): Promise<firebase.firestore.QuerySnapshot> => {
-  let query = usersCollection
-    .doc(uid)
-    .collection('records')
-    .orderBy('durationEnd', 'desc');
+  let query = usersCollection.doc(uid).collection('records').orderBy('durationEnd', 'desc');
 
   if (startAfter) {
     query = query.startAfter(startAfter);
