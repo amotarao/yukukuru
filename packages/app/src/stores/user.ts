@@ -13,10 +13,18 @@ const useUser = () => {
   useEffect(() => {
     auth.getRedirectResult().then(({ additionalUserInfo, credential, user }) => {
       if (additionalUserInfo && credential && user) {
+        const twitterId =
+          (additionalUserInfo &&
+            'profile' in additionalUserInfo &&
+            additionalUserInfo.profile &&
+            'id_str' in additionalUserInfo.profile &&
+            ((additionalUserInfo.profile as any).id_str as string)) ||
+          '';
+
         setToken({
           twitterAccessToken: (credential as any).accessToken,
           twitterAccessTokenSecret: (credential as any).secret,
-          twitterId: (additionalUserInfo.profile! as any).id_str!,
+          twitterId,
         });
       }
     });

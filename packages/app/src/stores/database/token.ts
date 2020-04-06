@@ -1,4 +1,4 @@
-import { FirestoreIdData, TokenData } from '@yukukuru/types';
+import { TokenData } from '@yukukuru/types';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { firestore } from '../../modules/firebase';
@@ -22,7 +22,7 @@ const useToken = () => {
         return;
       }
 
-      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as FirestoreIdData<TokenData>;
+      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
       if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
         setHasToken(false);
         return;

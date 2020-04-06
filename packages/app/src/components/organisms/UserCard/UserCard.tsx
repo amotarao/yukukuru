@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { RecordData } from '@yukukuru/types';
+import { FirestoreDateLike, RecordData } from '@yukukuru/types';
 import React from 'react';
 import { ProfileImage } from '../../atoms/ProfileImage';
 import {
@@ -13,8 +13,12 @@ import {
   NoDetailWrapperStyle,
 } from './styled';
 
-const convertDateText = (date: firebase.firestore.Timestamp) => {
-  const d = date.toDate();
+const convertDateText = (date: FirestoreDateLike): string => {
+  if (!(date instanceof Date || 'seconds' in date)) {
+    return '';
+  }
+
+  const d = date instanceof Date ? date : date.toDate();
   const h = d.getHours();
   const m = `0${d.getMinutes()}`.slice(-2);
   return `${h}:${m}`;

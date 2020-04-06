@@ -7,7 +7,7 @@ import { convertRecordsForView } from '../../utils/records';
 const usersCollection = firestore.collection('users');
 
 const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
-  const item: FirestoreIdData<RecordData> = {
+  const item: FirestoreIdData<RecordData | RecordDataOld> = {
     id: snapshot.id,
     data: snapshot.data() as RecordData | RecordDataOld,
   };
