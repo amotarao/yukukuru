@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "@yukukuru/functions",
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase serve --only functions",
@@ -10,7 +10,7 @@
     "lint": "eslint --ext .ts src/**"
   },
   "engines": {
-    "node": "8"
+    "node": "10"
   },
   "main": "lib/index.js",
   "dependencies": {
