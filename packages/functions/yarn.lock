@@ -345,7 +345,7 @@
     "@types/request" "*"
 
 "@yukukuru/types@../types":
-  version "0.1.0"
+  version "0.1.1"
   dependencies:
     "@firebase/firestore-types" "^1.10.1"
 
