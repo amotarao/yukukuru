@@ -4,6 +4,28 @@ import { createContainer } from 'unstated-next';
 import { auth, provider } from '../modules/firebase';
 import { updateToken } from '../utils/functions';
 
+function isUserInfo(data: unknown): data is { profile: { id_str: string } } {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'profile' in data &&
+    typeof data.profile === 'object' &&
+    data.profile !== null &&
+    'id_str' in data.profile &&
+    typeof data.profile.id_str === 'string'
+  );
+}
+
+function isCredential(data: unknown | null): data is { accessToken: string; secret: string } {
+  return (
+    data !== null &&
+    'accessToken' in data &&
+    'secret' in data &&
+    typeof data.accessToken === 'string' &&
+    typeof data.secret === 'string'
+  );
+}
+
 const useUser = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [signedIn, setSignedIn] = useState<boolean>(false);
@@ -12,19 +34,11 @@ const useUser = () => {
 
   useEffect(() => {
     auth.getRedirectResult().then(({ additionalUserInfo, credential, user }) => {
-      if (additionalUserInfo && credential && user) {
-        const twitterId =
-          (additionalUserInfo &&
-            'profile' in additionalUserInfo &&
-            additionalUserInfo.profile &&
-            'id_str' in additionalUserInfo.profile &&
-            (additionalUserInfo.profile as { id_str: string }).id_str) ||
-          '';
-
+      if (additionalUserInfo && credential && user && isUserInfo(additionalUserInfo) && isCredential(credential)) {
         setToken({
-          twitterAccessToken: (credential as { accessToken: string }).accessToken,
-          twitterAccessTokenSecret: (credential as { secret: string }).secret,
-          twitterId,
+          twitterAccessToken: credential.accessToken,
+          twitterAccessTokenSecret: credential.secret,
+          twitterId: additionalUserInfo.profile.id_str,
         });
       }
     });

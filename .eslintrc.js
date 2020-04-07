@@ -10,6 +10,7 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/camelcase': 'warn',
+    '@typescript-eslint/ban-types': 'off',
     'prettier/prettier': [
       'error',
       {
