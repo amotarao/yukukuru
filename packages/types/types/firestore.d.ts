@@ -14,3 +14,5 @@ export interface FirestoreIdData<T> {
 }
 
 export type FirestoreDateLike = Date | Timestamp | FieldValue;
+
+export { Timestamp };

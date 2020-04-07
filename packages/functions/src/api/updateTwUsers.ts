@@ -1,4 +1,4 @@
-import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
+import { WatchData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
