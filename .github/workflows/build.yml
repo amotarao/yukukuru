@@ -1,0 +1,119 @@
+name: Lint and Build
+
+on:
+  push:
+    branches:
+    - master
+    - develop
+  pull_request:
+    branches:
+    - master
+    - develop
+
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v1
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/app/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies on root
+      run: yarn --frozen-lockfile
+
+    - name: Install dependencies on app
+      run: yarn --frozen-lockfile
+      working-directory: ./packages/app
+
+    - name: Run lint on app
+      run: yarn lint
+      working-directory: ./packages/app
+
+    - name: Run build on app
+      run: yarn build
+      working-directory: ./packages/app
+
+  build-functions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v1
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/functions/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies on root
+      run: yarn --frozen-lockfile
+
+    - name: Install dependencies on functions
+      run: yarn --frozen-lockfile
+      working-directory: ./packages/functions
+
+    - name: Run lint on functions
+      run: yarn lint
+      working-directory: ./packages/functions
+
+    - name: Run build on functions
+      run: yarn build
+      working-directory: ./packages/functions
+
+  build-types:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v1
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/types/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies on root
+      run: yarn --frozen-lockfile
+
+    - name: Install dependencies on types
+      run: yarn --frozen-lockfile
+      working-directory: ./packages/types
+
+    - name: Run lint on types
+      run: yarn lint
+      working-directory: ./packages/types
