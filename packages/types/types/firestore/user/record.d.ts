@@ -1,8 +1,9 @@
+import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../../firestore';
 
 export type RecordType = 'yuku' | 'kuru';
 
-export interface RecordData {
+export interface RecordData<T extends FirestoreDateLike = Timestamp> {
   /** record のタイプ */
   type: RecordType;
 
@@ -10,10 +11,10 @@ export interface RecordData {
   user: RecordUserData;
 
   /** record が更新された可能性のある期間の開始日時 */
-  durationStart: FirestoreDateLike;
+  durationStart: T;
 
   /** record が更新された可能性のある期間の終了日時 */
-  durationEnd: FirestoreDateLike;
+  durationEnd: T;
 }
 
 export interface RecordUserData {
@@ -36,7 +37,7 @@ export interface RecordUserData {
 /**
  * Memo: 古い形式のため、移行が完了したら削除する
  */
-export interface RecordDataOld {
+export interface RecordDataOld<T extends FirestoreDateLike = Timestamp> {
   /** この期間にフォローされたユーザーリスト (くる) */
   cameUsers: RecordUserDataOld[];
 
@@ -44,10 +45,10 @@ export interface RecordDataOld {
   leftUsers: RecordUserDataOld[];
 
   /** record が更新された可能性のある期間の開始日時 */
-  durationStart: FirestoreDateLike;
+  durationStart: T;
 
   /** record が更新された可能性のある期間の終了日時 */
-  durationEnd: FirestoreDateLike;
+  durationEnd: T;
 }
 
 /**

@@ -1,6 +1,7 @@
+import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
-export interface UserData {
+export interface UserData<T extends FirestoreDateLike = Timestamp> {
   /** Twitter プロフィール画像URL */
   photoUrl: string;
 
@@ -17,10 +18,10 @@ export interface UserData {
   newUser: boolean;
 
   /** フォロワー一覧取得 最終実行日時 */
-  lastUpdated: FirestoreDateLike;
+  lastUpdated: T;
 
   /** フォロワー情報取得 最終実行日時 */
-  lastUpdatedTwUsers: FirestoreDateLike;
+  lastUpdatedTwUsers: T;
 
   /** フォロワー一覧取得 state cursor */
   nextCursor: string;
