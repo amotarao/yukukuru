@@ -6,17 +6,7 @@ import MediaQuery from 'react-responsive';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
-import {
-  WrapperStyle,
-  HeaderStyle,
-  SignOutButtonStyle,
-  MainAreaStyle,
-  LabelNavStyle,
-  RecordHeadStyle,
-  UserSectionStyle,
-  ErrorWrapperStyle,
-  GetNextButtonStyle,
-} from './styled';
+import * as style from './style';
 
 export interface MyProps {
   isLoading: boolean;
@@ -36,7 +26,7 @@ export interface MyProps {
 const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   if (!hasToken) {
     return (
-      <div css={ErrorWrapperStyle}>
+      <div css={style.errorWrapper}>
         <span style={{ whiteSpace: 'nowrap' }}>ログアウトし、再度ログインしてください。</span>
       </div>
     );
@@ -108,8 +98,8 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
   let currentDate = '';
 
   return (
-    <main css={MainAreaStyle}>
-      <nav css={LabelNavStyle}>
+    <main css={style.mainArea}>
+      <nav css={style.labelNav}>
         <ul>
           <li data-type="yuku">ゆくひと</li>
           <li data-type="kuru">くるひと</li>
@@ -127,8 +117,8 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
 
         return (
           <React.Fragment key={itemIndex}>
-            {showDate && <h2 css={RecordHeadStyle}>{dateText}</h2>}
-            <section css={UserSectionStyle} data-type={item.type}>
+            {showDate && <h2 css={style.recordHead}>{dateText}</h2>}
+            <section css={style.userSection} data-type={item.type}>
               <UserCard {...item} />
             </section>
           </React.Fragment>
@@ -152,14 +142,14 @@ export const My: React.FC<MyProps> = ({
   signOut,
   getNextRecords,
 }) => (
-  <div css={WrapperStyle}>
+  <div css={style.wrapper}>
     {!isLoading && <Error hasToken={hasToken} />}
-    <header css={HeaderStyle}>
+    <header css={style.header}>
       <TweetButton size="large" />
       <ThemeSwitchButtonContainer>
         <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
       </ThemeSwitchButtonContainer>
-      <button css={SignOutButtonStyle} onClick={signOut}>
+      <button css={style.signOutButton} onClick={signOut}>
         ログアウト
       </button>
     </header>
@@ -170,7 +160,7 @@ export const My: React.FC<MyProps> = ({
     )}
     {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
     {!isLoading && hasNext && (
-      <button css={GetNextButtonStyle} disabled={isNextLoading} onClick={() => getNextRecords()}>
+      <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
         続きを取得
       </button>
     )}

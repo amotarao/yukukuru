@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { Share } from 'react-twitter-widgets';
-import { ButtonStyle } from './styled';
+import * as style from './style';
 
 interface TweetButtonProps {
   size?: 'normal' | 'large';
@@ -12,7 +12,7 @@ export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => 
   const isNormal = size === 'normal';
 
   return (
-    <div css={ButtonStyle} data-size={isNormal ? undefined : size}>
+    <div css={style.wrapper} data-size={isNormal ? undefined : size}>
       <Share
         url="https://yukukuru.app"
         options={{
