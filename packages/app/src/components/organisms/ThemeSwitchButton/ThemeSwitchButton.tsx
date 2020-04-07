@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { ButtonStyle } from './styled';
+import * as style from './style';
 import { ThemeType } from '../../../stores/theme';
 
 export interface ThemeSwitchButtonProps {
@@ -20,7 +20,7 @@ export const ThemeSwitchButton: React.FC<ThemeSwitchButtonProps> = ({ children =
   };
 
   return (
-    <button css={ButtonStyle} onClick={isDefault ? setDark : setDefault}>
+    <button css={style.button} onClick={isDefault ? setDark : setDefault}>
       {children}
     </button>
   );
