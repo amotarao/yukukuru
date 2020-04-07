@@ -116,11 +116,7 @@ const Main: React.FC<Pick<MyProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> 
         </ul>
       </nav>
       {items.map((item, itemIndex) => {
-        if (!(item.durationEnd instanceof Date || 'seconds' in item.durationEnd)) {
-          return null;
-        }
-
-        const date = item.durationEnd instanceof Date ? item.durationEnd : item.durationEnd.toDate();
+        const date = item.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         const showDate = currentDate !== dateText;
         currentDate = dateText;
