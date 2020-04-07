@@ -18,12 +18,12 @@ const useUser = () => {
             'profile' in additionalUserInfo &&
             additionalUserInfo.profile &&
             'id_str' in additionalUserInfo.profile &&
-            ((additionalUserInfo.profile as any).id_str as string)) ||
+            (additionalUserInfo.profile as { id_str: string }).id_str) ||
           '';
 
         setToken({
-          twitterAccessToken: (credential as any).accessToken,
-          twitterAccessTokenSecret: (credential as any).secret,
+          twitterAccessToken: (credential as { accessToken: string }).accessToken,
+          twitterAccessTokenSecret: (credential as { secret: string }).secret,
           twitterId,
         });
       }
