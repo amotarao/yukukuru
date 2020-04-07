@@ -1,5 +1,8 @@
 {
   "name": "@yukukuru/functions",
+  "version": "0.100.3",
+  "homepage": "https://yukukuru.app",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase serve --only functions",
