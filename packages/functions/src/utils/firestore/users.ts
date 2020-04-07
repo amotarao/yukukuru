@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { FirestoreDateLike, UserData } from '@yukukuru/types';
 import { firestore, admin } from '../../modules/firebase';
 
 const collection = firestore.collection('users');
@@ -9,7 +9,7 @@ const collection = firestore.collection('users');
 export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl' | 'displayName'>): Promise<void> {
   const now = admin.firestore.FieldValue.serverTimestamp();
 
-  const data: UserData = {
+  const data: UserData<FirestoreDateLike> = {
     active: true,
     invalid: false,
     newUser: true,
