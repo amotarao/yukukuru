@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
@@ -13,7 +15,7 @@ import {
 } from '../utils/firestore';
 import { getFollowersIdList } from '../utils/twitter';
 
-export default async () => {
+export default async (): void => {
   const now = new Date();
   // API は 15分で 75000人 の取得制限がある
   // 1回で 10000人 まで取れるので、2.5分間隔

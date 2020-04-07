@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { WatchData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
@@ -5,7 +7,7 @@ import { env } from '../utils/env';
 import { setTwUsers, updateUserLastUpdatedTwUsers } from '../utils/firestore';
 import { getUsersLookup } from '../utils/twitter';
 
-export default async () => {
+export default async (): void => {
   const now = new Date();
   const time1week = new Date();
   time1week.setDate(now.getDate() - 7);

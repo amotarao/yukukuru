@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { TokenData, TwUserData, RecordDataOld } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';

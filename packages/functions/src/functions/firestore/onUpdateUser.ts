@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
@@ -14,7 +16,7 @@ import {
 } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 
-export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
+export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>): void => {
   const afterData = after.data() as UserData;
   const beforeData = before.data() as UserData;
   const uid = after.id;

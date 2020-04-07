@@ -2,13 +2,11 @@ import { TokenData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore } from '../modules/firebase';
 
-type Props = TokenData;
-
-function isObject(data: any): data is Record<string, any> {
+function isObject(data): data is Record<string> {
   return typeof data === 'object' && data !== null && !Array.isArray(data);
 }
 
-function isProps(data: any): data is Props {
+function isTokenData(data): data is TokenData {
   return (
     isObject(data) &&
     typeof data.twitterAccessToken === 'string' &&
@@ -18,10 +16,10 @@ function isProps(data: any): data is Props {
   );
 }
 
-export async function updateTokenHandler(data: any, context: functions.https.CallableContext) {
+export async function updateTokenHandler(data, context: functions.https.CallableContext): boolean {
   console.log('updateToken', data, context);
 
-  if (!isProps(data) || typeof context.auth === 'undefined') {
+  if (!isTokenData(data) || typeof context.auth === 'undefined') {
     return false;
   }
 

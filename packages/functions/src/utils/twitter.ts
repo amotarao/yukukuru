@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { twitterClientErrorHandler, TwitterClientErrorData } from '../utils/error';
