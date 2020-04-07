@@ -16,7 +16,7 @@ import {
 } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 
-export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>): void => {
+export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>): Promise<void> => {
   const afterData = after.data() as UserData;
   const beforeData = before.data() as UserData;
   const uid = after.id;

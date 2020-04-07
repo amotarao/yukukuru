@@ -15,7 +15,7 @@ import {
 } from '../utils/firestore';
 import { getFollowersIdList } from '../utils/twitter';
 
-export default async (): void => {
+export default async (): Promise<void> => {
   const now = new Date();
   // API は 15分で 75000人 の取得制限がある
   // 1回で 10000人 まで取れるので、2.5分間隔

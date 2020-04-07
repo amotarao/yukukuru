@@ -7,7 +7,7 @@ import { env } from '../utils/env';
 import { setTwUsers, updateUserLastUpdatedTwUsers } from '../utils/firestore';
 import { getUsersLookup } from '../utils/twitter';
 
-export default async (): void => {
+export default async (): Promise<void> => {
   const now = new Date();
   const time1week = new Date();
   time1week.setDate(now.getDate() - 7);
