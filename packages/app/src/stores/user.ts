@@ -8,21 +8,15 @@ function isUserInfo(data: unknown): data is { profile: { id_str: string } } {
   return (
     typeof data === 'object' &&
     data !== null &&
-    'profile' in data &&
     typeof data.profile === 'object' &&
     data.profile !== null &&
-    'id_str' in data.profile &&
     typeof data.profile.id_str === 'string'
   );
 }
 
-function isCredential(data: unknown | null): data is { accessToken: string; secret: string } {
+function isCredential(data: unknown): data is { accessToken: string; secret: string } {
   return (
-    data !== null &&
-    'accessToken' in data &&
-    'secret' in data &&
-    typeof data.accessToken === 'string' &&
-    typeof data.secret === 'string'
+    typeof data === 'object' && data !== null && typeof data.accessToken === 'string' && typeof data.secret === 'string'
   );
 }
 
