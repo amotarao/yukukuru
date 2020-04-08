@@ -9,7 +9,7 @@ import { getToken } from '../../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../../utils/firestore/tokens/setTokenInvalid';
 import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
 import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
-import { getUsersLookup } from '../../utils/twitter';
+import { getUsersLookup } from '../../utils/twitter/getUsersLookup';
 import { checkInvalidToken } from '../../utils/twitter/error';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {

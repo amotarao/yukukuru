@@ -7,7 +7,7 @@ import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResul
 import { addWatch } from '../utils/firestore/users/watches/addWatch';
 import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
-import { getFollowersIdList } from '../utils/twitter';
+import { getFollowersIdList } from '../utils/twitter/getFollowersIdList';
 import { checkInvalidToken, checkProtectedUser } from '../utils/twitter/error';
 
 export default async () => {

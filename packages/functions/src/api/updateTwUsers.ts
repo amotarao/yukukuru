@@ -4,7 +4,7 @@ import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import { updateUserLastUpdatedTwUsers } from '../utils/firestore/users/updateUserLastUpdatedTwUsers';
 import { setTwUsers } from '../utils/firestore/twUsers/setTwUsers';
-import { getUsersLookup } from '../utils/twitter';
+import { getUsersLookup } from '../utils/twitter/getUsersLookup';
 
 export default async () => {
   const now = new Date();
