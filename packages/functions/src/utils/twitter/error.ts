@@ -1,4 +1,11 @@
-import { TwitterClientErrorData } from '../utils/error';
+export interface TwitterClientErrorData {
+  code: number;
+  message: string;
+}
+
+export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { errors: TwitterClientErrorData[] } => {
+  return { errors };
+};
 
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
   const error = errors.find(({ code }) => code === 89);

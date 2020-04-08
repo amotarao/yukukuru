@@ -3,7 +3,6 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken } from '../../utils/firestore';
 import { addRecord } from '../../utils/firestore/users/records/addRecord';
 import { hasRecords } from '../../utils/firestore/users/records/hasRecords';
 import { getToken } from '../../utils/firestore/tokens/getToken';
@@ -11,6 +10,7 @@ import { setTokenInvalid } from '../../utils/firestore/tokens/setTokenInvalid';
 import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
 import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../../utils/twitter';
+import { checkInvalidToken } from '../../utils/twitter/error';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as UserData;
