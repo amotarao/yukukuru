@@ -2,7 +2,8 @@ import { WatchData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { setTwUsers, updateUserLastUpdatedTwUsers } from '../utils/firestore';
+import { updateUserLastUpdatedTwUsers } from '../utils/firestore';
+import { setTwUsers } from '../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../utils/twitter';
 
 export default async () => {

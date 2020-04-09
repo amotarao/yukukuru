@@ -1,8 +1,7 @@
-import { TokenData, TwUserData, RecordDataOld } from '@yukukuru/types';
+import { TokenData, RecordDataOld } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
-import { TwitterUserInterface } from './twitter';
 
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
   const error = errors.find(({ code }) => code === 89);
@@ -115,45 +114,4 @@ export const existsRecords = async (userId: string): Promise<boolean> => {
 export const setRecord = async (userId: string, data: RecordDataOld): Promise<void> => {
   await firestore.collection('users').doc(userId).collection('records').add(data);
   return;
-};
-
-const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> => {
-  const batch = firestore.batch();
-  const collection = firestore.collection('twUsers');
-
-  users.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
-    const ref = collection.doc(id_str);
-    const data: TwUserData = {
-      id: id_str,
-      screenName: screen_name,
-      name,
-      photoUrl: profile_image_url_https,
-    };
-    batch.set(ref, data, { merge: true });
-  });
-
-  await batch.commit();
-  return;
-};
-
-export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
-  const requests = _.chunk(users, 500).map((users) => setTwUsersSingle(users));
-  await Promise.all(requests);
-  return;
-};
-
-export const getTwUsers = async (users: string[]): Promise<TwUserData[]> => {
-  const collection = firestore.collection('twUsers');
-  const requests = users.map(async (user) => {
-    const snapshot = await collection.doc(user).get();
-    return snapshot;
-  });
-  const results = await Promise.all(requests);
-  return results
-    .filter((result) => {
-      return result.exists;
-    })
-    .map((result) => {
-      return result.data() as TwUserData;
-    });
 };

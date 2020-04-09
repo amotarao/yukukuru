@@ -3,15 +3,9 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import {
-  checkInvalidToken,
-  setTokenInvalid,
-  getToken,
-  setRecord,
-  existsRecords,
-  getTwUsers,
-  setTwUsers,
-} from '../../utils/firestore';
+import { checkInvalidToken, setTokenInvalid, getToken, setRecord, existsRecords } from '../../utils/firestore';
+import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
+import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../../utils/twitter';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
