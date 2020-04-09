@@ -2,9 +2,10 @@ import { UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { checkInvalidToken, setWatch, checkProtectedUser } from '../utils/firestore';
+import { checkInvalidToken, checkProtectedUser } from '../utils/firestore';
 import { setUserResult } from '../utils/firestore/users/setUserResult';
 import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResultWithNoChange';
+import { addWatch } from '../utils/firestore/users/watches/addWatch';
 import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
 import { getFollowersIdList } from '../utils/twitter';
@@ -94,7 +95,7 @@ export default async () => {
 
     const { ids, next_cursor_str: newNextCursor } = result.response;
     const ended = newNextCursor === '0' || newNextCursor === '-1';
-    const watchId = await setWatch(snapshot.id, ids, now, ended);
+    const watchId = await addWatch(snapshot.id, ids, now, ended);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
 
     return {
