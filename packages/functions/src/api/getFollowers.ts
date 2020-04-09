@@ -4,13 +4,13 @@ import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import {
   checkInvalidToken,
-  setTokenInvalid,
-  getToken,
   setWatch,
   setUserResult,
   checkProtectedUser,
   setUserResultWithNoChange,
 } from '../utils/firestore';
+import { getToken } from '../utils/firestore/tokens/getToken';
+import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
 import { getFollowersIdList } from '../utils/twitter';
 
 export default async () => {

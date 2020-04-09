@@ -1,5 +1,4 @@
-import { TokenData, RecordDataOld } from '@yukukuru/types';
-import * as _ from 'lodash';
+import { RecordDataOld } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 
@@ -16,37 +15,6 @@ export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolea
 export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
   const error = errors.find(({ code }) => code === 326);
   return error ? true : false;
-};
-
-export const setTokenInvalid = async (userId: string): Promise<void> => {
-  const user = firestore.collection('users').doc(userId).set(
-    {
-      invalid: true,
-    },
-    { merge: true }
-  );
-  const token = firestore.collection('tokens').doc(userId).set(
-    {
-      twitterAccessToken: '',
-      twitterAccessTokenSecret: '',
-    },
-    { merge: true }
-  );
-  await Promise.all([user, token]);
-  return;
-};
-
-export const getToken = async (userId: string): Promise<TokenData | null> => {
-  const tokenRef = firestore.collection('tokens').doc(userId);
-  const tokenDoc = await tokenRef.get();
-  if (!tokenDoc.exists) {
-    return null;
-  }
-  const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = tokenDoc.data() as TokenData;
-  if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
-    return null;
-  }
-  return { twitterAccessToken, twitterAccessTokenSecret, twitterId };
 };
 
 export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {
