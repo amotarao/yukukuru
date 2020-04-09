@@ -1,5 +1,5 @@
 import { admin } from '../../modules/firebase';
-import { initializeUser } from '../../utils/firestore/users';
+import { initializeUser } from '../../utils/firestore/users/initializeUser';
 
 type Data = Parameters<typeof initializeUser>[1];
 
