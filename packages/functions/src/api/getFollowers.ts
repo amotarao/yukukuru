@@ -2,13 +2,9 @@ import { UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import {
-  checkInvalidToken,
-  setWatch,
-  setUserResult,
-  checkProtectedUser,
-  setUserResultWithNoChange,
-} from '../utils/firestore';
+import { checkInvalidToken, setWatch, checkProtectedUser } from '../utils/firestore';
+import { setUserResult } from '../utils/firestore/users/setUserResult';
+import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResultWithNoChange';
 import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
 import { getFollowersIdList } from '../utils/twitter';

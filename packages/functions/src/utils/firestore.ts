@@ -29,51 +29,6 @@ export const setWatch = async (userId: string, followers: string[], date: Date, 
   return id;
 };
 
-export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
-  const collection = firestore.collection('users').doc(userId);
-  const ended = nextCursor === '0' || nextCursor === '-1';
-
-  await collection.set(
-    {
-      nextCursor: ended ? '-1' : nextCursor,
-      currentWatchesId: ended ? '' : watchId,
-      pausedGetFollower: !ended,
-      lastUpdated: date,
-      newUser: false,
-    },
-    { merge: true }
-  );
-
-  return;
-};
-
-export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
-  const collection = firestore.collection('users').doc(userId);
-
-  await collection.set(
-    {
-      lastUpdated: date,
-      newUser: false,
-    },
-    { merge: true }
-  );
-
-  return;
-};
-
-export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
-  const collection = firestore.collection('users').doc(userId);
-
-  await collection.set(
-    {
-      lastUpdatedTwUsers: date,
-    },
-    { merge: true }
-  );
-
-  return;
-};
-
 export const existsRecords = async (userId: string): Promise<boolean> => {
   const snapshot = await firestore.collection('users').doc(userId).collection('records').limit(1).get();
   return !snapshot.empty;
