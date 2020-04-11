@@ -117,16 +117,15 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   const result = await getUsersLookup(client, { usersId: [...came, ...left] });
 
-  if ('errors' in result) {
-    console.error(uid, result);
-    if (checkInvalidToken(result.errors)) {
+  const setErrors = result.errors.map(async (error) => {
+    console.error(uid, error);
+    if (checkInvalidToken([error])) {
       await setTokenInvalid(uid);
     }
-  }
+  });
+  await Promise.all(setErrors);
 
-  const lookupedUsers = 'errors' in result ? [] : result.response;
-
-  const users = lookupedUsers.map(({ id_str, name, screen_name, profile_image_url_https }) => {
+  const users = result.users.map(({ id_str, name, screen_name, profile_image_url_https }) => {
     const convertedUser: RecordUserDataOld = {
       id: id_str,
       name: name,

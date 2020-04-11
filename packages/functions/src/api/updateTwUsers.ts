@@ -46,11 +46,13 @@ export default async () => {
   });
   const result = await getUsersLookup(client, { usersId });
 
-  if ('errors' in result) {
-    console.error(result);
-    return;
+  result.errors.forEach((error) => {
+    console.error(error);
+  });
+
+  if (result.users.length) {
+    await setTwUsers(result.users);
   }
-  await setTwUsers(result.response);
 
   const setDocsRequest = willUpdatedUsers.map((userId) => {
     return updateUserLastUpdatedTwUsers(userId, now);

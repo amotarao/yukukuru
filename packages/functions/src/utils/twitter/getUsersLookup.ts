@@ -1,10 +1,18 @@
-import * as _ from 'lodash';
+/* eslint-disable @typescript-eslint/camelcase */
+import * as chunk from 'lodash/chunk';
+import * as uniq from 'lodash/uniq';
 import * as Twitter from 'twitter';
-import { twitterClientErrorHandler, TwitterClientErrorData } from './error';
-import { TwitterUserData } from '.';
+import { TwitterClientErrorData } from './error';
+import { TwitterUserData, TwitterUserAllData } from '.';
 
-export interface GetUsersLookupProps {
+interface Props {
+  /** Twitter UID リスト */
   usersId: string[];
+}
+
+interface Response {
+  users: TwitterUserData[];
+  errors: TwitterClientErrorData[];
 }
 
 /**
@@ -12,56 +20,54 @@ export interface GetUsersLookupProps {
  * 100人まで 取得可能
  * 15分につき 300回 実行可能
  */
-export const getUsersLookupSingle = (
-  client: Twitter,
-  { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserData[] } | { errors: TwitterClientErrorData[] }> => {
-  return client
-    .get('users/lookup', {
-      user_id: usersId.join(','),
-    })
+const getUsersLookupSingle = (client: Twitter, { usersId }: Props): Promise<Response> => {
+  const params = {
+    user_id: usersId.join(','),
+  };
+  const requset = client.get('users/lookup', params);
+
+  return requset
     .then((response) => {
-      return { response: response as TwitterUserData[] };
+      const usersAllData = response as TwitterUserAllData[];
+      const usersData = usersAllData.map((allData) => {
+        const data: TwitterUserData = {
+          id_str: allData.id_str,
+          screen_name: allData.screen_name,
+          name: allData.name,
+          profile_image_url_https: allData.profile_image_url_https,
+        };
+        return data;
+      });
+      return { response: usersData, errors: [] };
     })
-    .catch(twitterClientErrorHandler);
+    .catch((e) => {
+      return {
+        response: [],
+        errors: e as TwitterClientErrorData[],
+      };
+    });
 };
 
 /**
  * ユーザー情報を取得
  * 15分につき 30,000人まで 取得可能
  */
-export const getUsersLookup = async (
-  client: Twitter,
-  { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserData[] } | { errors: TwitterClientErrorData[] }> => {
+export const getUsersLookup = async (client: Twitter, { usersId }: Props): Promise<Response> => {
   const users: TwitterUserData[] = [];
   const errors: TwitterClientErrorData[] = [];
 
-  const lookup = _.chunk(_.uniq(usersId), 100).map(async (usersId) => {
-    const result = await getUsersLookupSingle(client, { usersId });
-
-    if ('errors' in result) {
-      errors.push(...result.errors);
-      return;
-    }
-
-    result.response.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
-      const data: TwitterUserData = {
-        id_str,
-        screen_name,
-        name,
-        profile_image_url_https,
-      };
-      users.push(data);
-    });
-    return;
+  const chunks = chunk(uniq(usersId), 100);
+  const requests = chunks.map(async (usersId) => {
+    const single = await getUsersLookupSingle(client, { usersId });
+    users.push(...single.users);
+    errors.push(...single.errors);
   });
+  await Promise.all(requests);
 
-  await Promise.all(lookup);
-
-  if (users.length || !errors.length) {
-    return { response: users };
-  }
-
-  return { errors };
+  return {
+    users,
+    errors,
+  };
 };
+
+export { Props as GetUsersLookupProps, Response as GetUsersLookupResponse };
