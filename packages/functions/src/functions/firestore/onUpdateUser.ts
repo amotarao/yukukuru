@@ -3,15 +3,13 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import {
-  checkInvalidToken,
-  setTokenInvalid,
-  getToken,
-  setRecord,
-  existsRecords,
-  getTwUsers,
-  setTwUsers,
-} from '../../utils/firestore';
+import { checkInvalidToken } from '../../utils/firestore';
+import { addRecord } from '../../utils/firestore/users/records/addRecord';
+import { hasRecords } from '../../utils/firestore/users/records/hasRecords';
+import { getToken } from '../../utils/firestore/tokens/getToken';
+import { setTokenInvalid } from '../../utils/firestore/tokens/setTokenInvalid';
+import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
+import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../../utils/twitter';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
@@ -87,7 +85,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   if (!came.length && !left.length) {
     // 差分なし
 
-    const exists = await existsRecords(uid);
+    const exists = await hasRecords(uid);
 
     if (!exists) {
       const data: RecordDataOld = {
@@ -96,7 +94,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
         durationStart: endDates[1],
         durationEnd: endDates[0],
       };
-      await setRecord(uid, data);
+      await addRecord(uid, data);
     }
 
     return;
@@ -169,7 +167,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationStart: endDates[1],
     durationEnd: endDates[0],
   };
-  const setRecordPromise = setRecord(uid, data);
+  const setRecordPromise = addRecord(uid, data);
   const setTwUsersPromise = setTwUsers(lookupedUsers);
 
   await Promise.all([setRecordPromise, setTwUsersPromise]);
