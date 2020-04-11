@@ -6,7 +6,8 @@ import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
-import { env } from './utils/env';
+
+const httpKey = functions.config().app.http_functions_key as string;
 
 const builder = functions.region('asia-northeast1');
 
@@ -21,7 +22,7 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
 };
 
 export const getFollowers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
-  if (req.query.key !== env.http_functions_key) {
+  if (req.query.key !== httpKey) {
     res.status(403).end();
     return;
   }
@@ -30,7 +31,7 @@ export const getFollowers = builder.runWith(httpsRuntimeOptions).https.onRequest
 });
 
 export const updateTwUsers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
-  if (req.query.key !== env.http_functions_key) {
+  if (req.query.key !== httpKey) {
     res.status(403).end();
     return;
   }
