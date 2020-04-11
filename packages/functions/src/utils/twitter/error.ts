@@ -3,10 +3,6 @@ export interface TwitterClientErrorData {
   message: string;
 }
 
-export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { errors: TwitterClientErrorData[] } => {
-  return { errors };
-};
-
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
   return errors.some(({ code }) => code === 89);
 };
