@@ -14,7 +14,8 @@ type Response = TwUserData[];
  */
 export const getTwUsers = async (ids: Props): Promise<Response> => {
   const refs = ids.map((id) => collection.doc(id));
-  const options: FirebaseFirestore.ReadOptions = { fieldMask: ['id', 'screenName', 'name', 'photoUrl'] };
+  const fieldMask: (keyof TwUserData)[] = ['id', 'screenName', 'name', 'photoUrl'];
+  const options: FirebaseFirestore.ReadOptions = { fieldMask };
   const docs = await firestore.getAll(...refs, options);
   return docs.filter((doc) => doc.exists).map((doc) => doc.data() as TwUserData);
 };

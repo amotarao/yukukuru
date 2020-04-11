@@ -5,9 +5,8 @@ const collection = firestore.collection('tokens');
 
 export const getTokens = async (ids: string[]): Promise<(TokenData | null)[]> => {
   const refs = ids.map((id) => collection.doc(id));
-  const options: FirebaseFirestore.ReadOptions = {
-    fieldMask: ['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'],
-  };
+  const fieldMask: (keyof TokenData)[] = ['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'];
+  const options: FirebaseFirestore.ReadOptions = { fieldMask };
   const docs = await firestore.getAll(...refs, options);
 
   return docs.map((doc) => {
