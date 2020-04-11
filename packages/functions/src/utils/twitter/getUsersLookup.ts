@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import chunk from 'lodash/chunk';
 import uniq from 'lodash/uniq';
-import Twitter from 'twitter';
 import { TwitterClientErrorData } from './error';
+import { TwitterAccessToken, generateClient } from './generateClient';
 import { TwitterUserData, TwitterUserAllData } from '.';
 
 interface Props {
@@ -20,11 +20,11 @@ interface Response {
  * 100人まで 取得可能
  * 15分につき 300回 実行可能
  */
-const getUsersLookupSingle = (client: Twitter, { usersId }: Props): Promise<Response> => {
+const getUsersLookupSingle = (token: TwitterAccessToken, { usersId }: Props): Promise<Response> => {
   const params = {
     user_id: usersId.join(','),
   };
-  const requset = client.get('users/lookup', params);
+  const requset = generateClient(token).get('users/lookup', params);
 
   return requset
     .then((response) => {
@@ -52,13 +52,13 @@ const getUsersLookupSingle = (client: Twitter, { usersId }: Props): Promise<Resp
  * ユーザー情報を取得
  * 15分につき 30,000人まで 取得可能
  */
-export const getUsersLookup = async (client: Twitter, { usersId }: Props): Promise<Response> => {
+export const getUsersLookup = async (token: TwitterAccessToken, { usersId }: Props): Promise<Response> => {
   const users: TwitterUserData[] = [];
   const errors: TwitterClientErrorData[] = [];
 
   const chunks = chunk(uniq(usersId), 100);
   const requests = chunks.map(async (usersId) => {
-    const single = await getUsersLookupSingle(client, { usersId });
+    const single = await getUsersLookupSingle(token, { usersId });
     users.push(...single.users);
     errors.push(...single.errors);
   });

@@ -1,7 +1,5 @@
 import { WatchData } from '@yukukuru/types';
-import Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
-import { env } from '../utils/env';
 import { updateUserLastUpdatedTwUsers } from '../utils/firestore/users/updateUserLastUpdatedTwUsers';
 import { setTwUsers } from '../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../utils/twitter/getUsersLookup';
@@ -38,13 +36,7 @@ export default async () => {
   });
   const willUpdatedUsers = (await Promise.all(requests)).filter((e) => e !== '');
 
-  const client = new Twitter({
-    consumer_key: env.twitter_api_key,
-    consumer_secret: env.twitter_api_secret_key,
-    access_token_key: env.twitter_access_token_key,
-    access_token_secret: env.twitter_access_token_secret,
-  });
-  const result = await getUsersLookup(client, { usersId });
+  const result = await getUsersLookup(null, { usersId });
 
   result.errors.forEach((error) => {
     console.error(error);

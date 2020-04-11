@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import Twitter from 'twitter';
 import { TwitterClientErrorData } from './error';
+import { TwitterAccessToken, generateClient } from './generateClient';
 
 interface Props {
   userId: string;
@@ -25,7 +25,7 @@ interface TwitterResponse {
  * 15分につき 15回取得可能
  */
 export const getFollowersIdsSingle = (
-  client: Twitter,
+  token: TwitterAccessToken,
   { userId, cursor = '-1', count = 5000 }: Props
 ): Promise<Response> => {
   const params = {
@@ -34,7 +34,7 @@ export const getFollowersIdsSingle = (
     count,
     stringify_ids: true,
   };
-  const request = client.get('followers/ids', params);
+  const request = generateClient(token).get('followers/ids', params);
 
   return request
     .then(
@@ -63,7 +63,7 @@ export const getFollowersIdsSingle = (
  * 15分につき 75,000人まで 取得可能
  */
 export const getFollowersIds = async (
-  client: Twitter,
+  token: TwitterAccessToken,
   { userId, cursor = '-1', count = 75000 }: Props
 ): Promise<Response> => {
   const ids: string[] = [];
@@ -75,7 +75,7 @@ export const getFollowersIds = async (
       userId,
       cursor: nextCursor,
     };
-    const single = await getFollowersIdsSingle(client, obj);
+    const single = await getFollowersIdsSingle(token, obj);
 
     ids.push(...single.ids);
     errors.push(...single.errors);

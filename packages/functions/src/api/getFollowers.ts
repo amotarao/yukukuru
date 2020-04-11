@@ -1,7 +1,5 @@
 import { UserData } from '@yukukuru/types';
-import Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
-import { env } from '../utils/env';
 import { setUserResult } from '../utils/firestore/users/setUserResult';
 import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResultWithNoChange';
 import { addWatch } from '../utils/firestore/users/watches/addWatch';
@@ -9,6 +7,7 @@ import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
 import { getFollowersIds } from '../utils/twitter/getFollowersIds';
 import { checkInvalidToken, checkProtectedUser } from '../utils/twitter/error';
+import { TwitterAccessToken } from '../utils/twitter/generateClient';
 
 export default async () => {
   const now = new Date();
@@ -68,14 +67,12 @@ export default async () => {
     }
     const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
 
-    const client = new Twitter({
-      consumer_key: env.twitter_api_key,
-      consumer_secret: env.twitter_api_secret_key,
+    const twitterToken: TwitterAccessToken = {
       access_token_key: twitterAccessToken,
       access_token_secret: twitterAccessTokenSecret,
-    });
+    };
 
-    const result = await getFollowersIds(client, {
+    const result = await getFollowersIds(twitterToken, {
       userId: twitterId,
       cursor: nextCursor,
       count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値

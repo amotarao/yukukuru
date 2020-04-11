@@ -1,5 +1,5 @@
-import Twitter from 'twitter';
 import { TwitterClientErrorData } from './error';
+import { TwitterAccessToken, generateClient } from './generateClient';
 import { TwitterUserData, TwitterUserAllData } from '.';
 
 interface Props {
@@ -24,7 +24,10 @@ interface TwitterResponse {
  * 200人まで 取得可能
  * 15分につき 15回取得可能
  */
-const getFollowersListSingle = (client: Twitter, { userId, cursor = '-1', count = 200 }: Props): Promise<Response> => {
+const getFollowersListSingle = (
+  token: TwitterAccessToken,
+  { userId, cursor = '-1', count = 200 }: Props
+): Promise<Response> => {
   const params = {
     user_id: userId,
     cursor,
@@ -32,7 +35,7 @@ const getFollowersListSingle = (client: Twitter, { userId, cursor = '-1', count 
     skip_status: true,
     include_user_entities: false,
   };
-  const request = client.get('followers/list', params);
+  const request = generateClient(token).get('followers/list', params);
 
   return request
     .then((response) => {
@@ -57,7 +60,7 @@ const getFollowersListSingle = (client: Twitter, { userId, cursor = '-1', count 
  * 15分につき 3,000人まで 取得可能
  */
 export const getFollowersList = async (
-  client: Twitter,
+  token: TwitterAccessToken,
   { userId, cursor = '-1', count = 3000 }: Props
 ): Promise<Response> => {
   const users: TwitterUserData[] = [];
@@ -69,7 +72,7 @@ export const getFollowersList = async (
       userId,
       cursor: nextCursor,
     };
-    const single = await getFollowersListSingle(client, obj);
+    const single = await getFollowersListSingle(token, obj);
 
     users.push(...single.users);
     errors.push(...single.errors);
