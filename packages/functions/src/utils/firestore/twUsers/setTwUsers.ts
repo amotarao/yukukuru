@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { TwUserData } from '@yukukuru/types';
-import * as _ from 'lodash';
+import chunk from 'lodash/chunk';
 import { firestore } from '../../../modules/firebase';
 import { TwitterUserData } from '../../twitter';
 
@@ -32,7 +32,7 @@ const setTwUsersSingle = async (users: Props): Promise<Response> => {
  * twUsers を追加・更新
  */
 export const setTwUsers = async (users: Props): Promise<Response> => {
-  const chunks = _.chunk(users, 500);
+  const chunks = chunk(users, 500);
   const requests = chunks.map((users) => setTwUsersSingle(users));
   await Promise.all(requests);
 };

@@ -1,7 +1,7 @@
 import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
-import * as _ from 'lodash';
+import Twitter from 'twitter';
+import difference from 'lodash/difference';
 import { env } from '../../utils/env';
 import { addRecord } from '../../utils/firestore/users/records/addRecord';
 import { hasRecords } from '../../utils/firestore/users/records/hasRecords';
@@ -79,8 +79,8 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   });
 
-  const came = _.difference(newFollowers, oldFollowers);
-  const left = _.difference(oldFollowers, newFollowers);
+  const came = difference(newFollowers, oldFollowers);
+  const left = difference(oldFollowers, newFollowers);
 
   if (!came.length && !left.length) {
     // 差分なし
