@@ -8,16 +8,13 @@ export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { e
 };
 
 export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 89);
-  return error ? true : false;
+  return errors.some(({ code }) => code === 89);
 };
 
 export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 88);
-  return error ? true : false;
+  return errors.some(({ code }) => code === 88);
 };
 
 export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 326);
-  return error ? true : false;
+  return errors.some(({ code }) => code === 326);
 };
