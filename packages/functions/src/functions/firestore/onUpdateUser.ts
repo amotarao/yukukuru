@@ -1,8 +1,6 @@
 import { UserData, RecordUserDataOld, RecordDataOld, WatchData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import Twitter from 'twitter';
 import difference from 'lodash/difference';
-import { env } from '../../utils/env';
 import { addRecord } from '../../utils/firestore/users/records/addRecord';
 import { hasRecords } from '../../utils/firestore/users/records/hasRecords';
 import { getToken } from '../../utils/firestore/tokens/getToken';
@@ -11,6 +9,7 @@ import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
 import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
 import { getUsersLookup } from '../../utils/twitter/getUsersLookup';
 import { checkInvalidToken } from '../../utils/twitter/error';
+import { TwitterAccessToken } from '../../utils/twitter/generateClient';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as UserData;
@@ -108,14 +107,12 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   }
   const { twitterAccessToken, twitterAccessTokenSecret } = token;
 
-  const client = new Twitter({
-    consumer_key: env.twitter_api_key,
-    consumer_secret: env.twitter_api_secret_key,
+  const twitterToken: TwitterAccessToken = {
     access_token_key: twitterAccessToken,
     access_token_secret: twitterAccessTokenSecret,
-  });
+  };
 
-  const result = await getUsersLookup(client, { usersId: [...came, ...left] });
+  const result = await getUsersLookup(twitterToken, { usersId: [...came, ...left] });
 
   if (result.errors.length) {
     console.error(uid, result.errors);
