@@ -1,13 +1,19 @@
 import * as Twitter from 'twitter';
-import { twitterClientErrorHandler, TwitterClientErrorData, checkRateLimitExceeded } from './error';
+import { TwitterClientErrorData } from './error';
 
-export interface GetFollowersIdListProps {
+interface Props {
   userId: string;
   cursor?: string;
   count?: number;
 }
 
-export interface GetFollowersIdListResponse {
+interface Response {
+  ids: string[];
+  nextCursor: string | null;
+  errors: TwitterClientErrorData[];
+}
+
+interface TwitterResponse {
   ids: string[];
   next_cursor_str: string;
 }
@@ -19,19 +25,35 @@ export interface GetFollowersIdListResponse {
  */
 export const getFollowersIdListSingle = (
   client: Twitter,
-  { userId, cursor = '-1', count = 5000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponse } | { errors: TwitterClientErrorData[] }> => {
-  return client
-    .get('followers/ids', {
-      user_id: userId,
-      cursor,
-      count,
-      stringify_ids: true,
-    })
-    .then((response) => {
-      return { response: response as GetFollowersIdListResponse };
-    })
-    .catch(twitterClientErrorHandler);
+  { userId, cursor = '-1', count = 5000 }: Props
+): Promise<Response> => {
+  const params = {
+    user_id: userId,
+    cursor,
+    count,
+    stringify_ids: true,
+  };
+  const request = client.get('followers/ids', params);
+
+  return request
+    .then(
+      (response: TwitterResponse): Response => {
+        return {
+          ids: response.ids,
+          nextCursor: response.next_cursor_str,
+          errors: [],
+        };
+      }
+    )
+    .catch(
+      (e: TwitterClientErrorData[]): Response => {
+        return {
+          ids: [],
+          nextCursor: null,
+          errors: e,
+        };
+      }
+    );
 };
 
 /**
@@ -40,38 +62,29 @@ export const getFollowersIdListSingle = (
  */
 export const getFollowersIdList = async (
   client: Twitter,
-  { userId, cursor = '-1', count = 75000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponse } | { errors: TwitterClientErrorData[] }> => {
+  { userId, cursor = '-1', count = 75000 }: Props
+): Promise<Response> => {
   const ids: string[] = [];
+  const errors: TwitterClientErrorData[] = [];
   let nextCursor = cursor;
-  let getCount = 0;
-  const maxGetCount = Math.min(Math.floor(count / 5000), 15);
 
-  while (getCount < maxGetCount) {
-    const obj: GetFollowersIdListProps = {
+  while (ids.length < Math.max(count, 75000)) {
+    const obj: Props = {
       userId,
       cursor: nextCursor,
     };
-    const result = await getFollowersIdListSingle(client, obj);
-    if ('errors' in result) {
-      if (checkRateLimitExceeded(result.errors)) {
-        console.error({ summary: 'rateLimitExceeded', userId, count: getCount });
-        break;
-      }
-      return result;
-    }
-    ids.push(...result.response.ids);
-    nextCursor = result.response.next_cursor_str;
-    if (result.response.next_cursor_str === '0') {
+    const single = await getFollowersIdListSingle(client, obj);
+
+    ids.push(...single.ids);
+    nextCursor = single.nextCursor;
+    errors.push(...single.errors);
+
+    if (single.nextCursor === '0' || single.errors.length) {
       break;
     }
-    getCount++;
   }
 
-  const response: GetFollowersIdListResponse = {
-    ids,
-    next_cursor_str: nextCursor,
-  };
-
-  return { response };
+  return { ids, nextCursor, errors };
 };
+
+export { Props as GetFollowersIdListProps, Response as GetFollowersIdListResponse };

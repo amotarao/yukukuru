@@ -81,19 +81,25 @@ export default async () => {
       count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
-    if ('errors' in result) {
-      console.error(snapshot.id, result);
-      if (checkInvalidToken(result.errors)) {
+    if (result.errors.length) {
+      console.error(snapshot.id, result.errors);
+
+      const invalidToken = checkInvalidToken(result.errors);
+      const protectedUser = checkProtectedUser(result.errors);
+
+      if (invalidToken) {
         await setTokenInvalid(snapshot.id);
       }
-      if (checkProtectedUser(result.errors)) {
+
+      if (protectedUser) {
         await setUserResultWithNoChange(snapshot.id, now);
+      }
+      if (invalidToken || protectedUser) {
         return;
       }
-      return;
     }
 
-    const { ids, next_cursor_str: newNextCursor } = result.response;
+    const { ids, nextCursor: newNextCursor } = result;
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await addWatch(snapshot.id, ids, now, ended);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
