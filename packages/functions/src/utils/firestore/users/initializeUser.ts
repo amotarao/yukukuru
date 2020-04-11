@@ -13,7 +13,7 @@ export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl
     active: true,
     invalid: false,
     newUser: true,
-    lastUpdated: admin.firestore.Timestamp.now(),
+    lastUpdated: now,
     lastUpdatedTwUsers: now,
     nextCursor: '-1',
     currentWatchesId: '',
