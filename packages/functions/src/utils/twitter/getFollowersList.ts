@@ -1,6 +1,6 @@
 import * as Twitter from 'twitter';
 import { twitterClientErrorHandler, TwitterClientErrorData, checkRateLimitExceeded } from './error';
-import { TwitterUserInterface } from '.';
+import { TwitterUserData } from '.';
 
 export interface GetFollowersListProps {
   userId: string;
@@ -9,7 +9,7 @@ export interface GetFollowersListProps {
 }
 
 export interface GetFollowersListResponse {
-  users: TwitterUserInterface[];
+  users: TwitterUserData[];
   next_cursor_str: string;
 }
 
@@ -44,7 +44,7 @@ export const getFollowersList = async (
   client: Twitter,
   { userId, cursor = '-1' }: GetFollowersListProps
 ): Promise<{ response: GetFollowersListResponse } | { errors: TwitterClientErrorData[] }> => {
-  const users: TwitterUserInterface[] = [];
+  const users: TwitterUserData[] = [];
   let nextCursor = cursor;
   let count = 0;
 

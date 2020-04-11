@@ -2,12 +2,12 @@
 import { TwUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../../../modules/firebase';
-import { TwitterUserInterface } from '../../twitter';
+import { TwitterUserData } from '../../twitter';
 
 const collection = firestore.collection('twUsers');
 
 /** Twitter ユーザーデータ リスト */
-type Props = TwitterUserInterface[];
+type Props = TwitterUserData[];
 
 type Response = void;
 

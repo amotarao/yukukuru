@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { twitterClientErrorHandler, TwitterClientErrorData } from './error';
-import { TwitterUserInterface } from '.';
+import { TwitterUserData } from '.';
 
 export interface GetUsersLookupProps {
   usersId: string[];
@@ -15,13 +15,13 @@ export interface GetUsersLookupProps {
 export const getUsersLookupSingle = (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserData[] } | { errors: TwitterClientErrorData[] }> => {
   return client
     .get('users/lookup', {
       user_id: usersId.join(','),
     })
     .then((response) => {
-      return { response: response as TwitterUserInterface[] };
+      return { response: response as TwitterUserData[] };
     })
     .catch(twitterClientErrorHandler);
 };
@@ -33,8 +33,8 @@ export const getUsersLookupSingle = (
 export const getUsersLookup = async (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
-  const users: TwitterUserInterface[] = [];
+): Promise<{ response: TwitterUserData[] } | { errors: TwitterClientErrorData[] }> => {
+  const users: TwitterUserData[] = [];
   const errors: TwitterClientErrorData[] = [];
 
   const lookup = _.chunk(_.uniq(usersId), 100).map(async (usersId) => {
@@ -46,7 +46,7 @@ export const getUsersLookup = async (
     }
 
     result.response.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
-      const data: TwitterUserInterface = {
+      const data: TwitterUserData = {
         id_str,
         screen_name,
         name,
