@@ -23,7 +23,7 @@ interface TwitterResponse {
  * 5,000人まで 取得可能
  * 15分につき 15回取得可能
  */
-export const getFollowersIdListSingle = (
+export const getFollowersIdsSingle = (
   client: Twitter,
   { userId, cursor = '-1', count = 5000 }: Props
 ): Promise<Response> => {
@@ -60,7 +60,7 @@ export const getFollowersIdListSingle = (
  * userId のフォロワーの IDリストを取得
  * 15分につき 75,000人まで 取得可能
  */
-export const getFollowersIdList = async (
+export const getFollowersIds = async (
   client: Twitter,
   { userId, cursor = '-1', count = 75000 }: Props
 ): Promise<Response> => {
@@ -73,7 +73,7 @@ export const getFollowersIdList = async (
       userId,
       cursor: nextCursor,
     };
-    const single = await getFollowersIdListSingle(client, obj);
+    const single = await getFollowersIdsSingle(client, obj);
 
     ids.push(...single.ids);
     nextCursor = single.nextCursor;
@@ -87,4 +87,4 @@ export const getFollowersIdList = async (
   return { ids, nextCursor, errors };
 };
 
-export { Props as GetFollowersIdListProps, Response as GetFollowersIdListResponse };
+export { Props as GetFollowersIdsProps, Response as GetFollowersIdsResponse };

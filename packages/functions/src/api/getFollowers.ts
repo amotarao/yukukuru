@@ -7,7 +7,7 @@ import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResul
 import { addWatch } from '../utils/firestore/users/watches/addWatch';
 import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
-import { getFollowersIdList } from '../utils/twitter/getFollowersIdList';
+import { getFollowersIds } from '../utils/twitter/getFollowersIds';
 import { checkInvalidToken, checkProtectedUser } from '../utils/twitter/error';
 
 export default async () => {
@@ -75,7 +75,7 @@ export default async () => {
       access_token_secret: twitterAccessTokenSecret,
     });
 
-    const result = await getFollowersIdList(client, {
+    const result = await getFollowersIds(client, {
       userId: twitterId,
       cursor: nextCursor,
       count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値
