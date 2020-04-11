@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import * as chunk from 'lodash/chunk';
-import * as uniq from 'lodash/uniq';
+import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { TwitterClientErrorData } from './error';
 import { TwitterUserData, TwitterUserAllData } from '.';
@@ -38,11 +37,11 @@ const getUsersLookupSingle = (client: Twitter, { usersId }: Props): Promise<Resp
         };
         return data;
       });
-      return { response: usersData, errors: [] };
+      return { users: usersData, errors: [] };
     })
     .catch((e) => {
       return {
-        response: [],
+        users: [],
         errors: e as TwitterClientErrorData[],
       };
     });
@@ -56,7 +55,7 @@ export const getUsersLookup = async (client: Twitter, { usersId }: Props): Promi
   const users: TwitterUserData[] = [];
   const errors: TwitterClientErrorData[] = [];
 
-  const chunks = chunk(uniq(usersId), 100);
+  const chunks = _.chunk(_.uniq(usersId), 100);
   const requests = chunks.map(async (usersId) => {
     const single = await getUsersLookupSingle(client, { usersId });
     users.push(...single.users);

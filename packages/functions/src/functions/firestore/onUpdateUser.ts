@@ -118,7 +118,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
   const result = await getUsersLookup(client, { usersId: [...came, ...left] });
 
   if (result.errors.length) {
-    console.error(uid, error);
+    console.error(uid, result.errors);
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
@@ -166,7 +166,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationEnd: endDates[0],
   };
   const setRecordPromise = addRecord(uid, data);
-  const setTwUsersPromise = setTwUsers(lookupedUsers);
+  const setTwUsersPromise = setTwUsers(result.users);
 
   await Promise.all([setRecordPromise, setTwUsersPromise]);
 

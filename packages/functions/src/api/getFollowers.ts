@@ -100,6 +100,12 @@ export default async () => {
     }
 
     const { ids, nextCursor: newNextCursor } = result;
+
+    if (newNextCursor === null) {
+      console.error('no next cursor');
+      return;
+    }
+
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await addWatch(snapshot.id, ids, now, ended);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);

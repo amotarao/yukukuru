@@ -38,20 +38,21 @@ export const getFollowersIdsSingle = (
 
   return request
     .then(
-      (response: TwitterResponse): Response => {
+      (response): Response => {
+        const data = response as TwitterResponse;
         return {
-          ids: response.ids,
-          nextCursor: response.next_cursor_str,
+          ids: data.ids,
+          nextCursor: data.next_cursor_str,
           errors: [],
         };
       }
     )
     .catch(
-      (e: TwitterClientErrorData[]): Response => {
+      (e): Response => {
         return {
           ids: [],
           nextCursor: null,
-          errors: e,
+          errors: e as TwitterClientErrorData[],
         };
       }
     );
@@ -77,12 +78,17 @@ export const getFollowersIds = async (
     const single = await getFollowersIdsSingle(client, obj);
 
     ids.push(...single.ids);
-    nextCursor = single.nextCursor;
     errors.push(...single.errors);
 
-    if (single.nextCursor === '0' || single.errors.length) {
+    if (single.nextCursor === '0') {
+      nextCursor = single.nextCursor;
       break;
     }
+    if (single.nextCursor === null || single.errors.length) {
+      break;
+    }
+
+    nextCursor = single.nextCursor;
   }
 
   return { ids, nextCursor, errors };

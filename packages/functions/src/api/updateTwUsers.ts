@@ -59,5 +59,5 @@ export default async () => {
   });
   await Promise.all(setDocsRequest);
 
-  console.log(usersId.length, result.response.length, willUpdatedUsers);
+  console.log(usersId.length, result.users.length, willUpdatedUsers);
 };

@@ -35,18 +35,19 @@ const getFollowersListSingle = (client: Twitter, { userId, cursor = '-1', count 
   const request = client.get('followers/list', params);
 
   return request
-    .then((response: TwitterResponse) => {
+    .then((response) => {
+      const data = response as TwitterResponse;
       return {
-        users: response.users,
-        nextCursor: response.next_cursor_str,
+        users: data.users,
+        nextCursor: data.next_cursor_str,
         errors: [],
       };
     })
-    .catch((e: TwitterClientErrorData[]) => {
+    .catch((e) => {
       return {
         users: [],
         nextCursor: null,
-        errors: e,
+        errors: e as TwitterClientErrorData[],
       };
     });
 };
@@ -71,15 +72,20 @@ export const getFollowersList = async (
     const single = await getFollowersListSingle(client, obj);
 
     users.push(...single.users);
-    nextCursor = single.nextCursor;
     errors.push(...single.errors);
 
-    if (single.nextCursor === '0' || single.errors.length) {
+    if (single.nextCursor === '0') {
+      nextCursor = single.nextCursor;
       break;
     }
+    if (single.nextCursor === null || single.errors.length) {
+      break;
+    }
+
+    nextCursor = single.nextCursor;
   }
 
-  return { users, nextCursor, users };
+  return { users, nextCursor, errors };
 };
 
 export { Props as GetFollowersListProps, Response as GetFollowersListResponse };
