@@ -4,7 +4,7 @@ import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import { updateUserLastUpdatedTwUsers } from '../utils/firestore/users/updateUserLastUpdatedTwUsers';
 import { setTwUsers } from '../utils/firestore/twUsers/setTwUsers';
-import { getUsersLookup } from '../utils/twitter';
+import { getUsersLookup } from '../utils/twitter/getUsersLookup';
 
 export default async () => {
   const now = new Date();
@@ -46,16 +46,18 @@ export default async () => {
   });
   const result = await getUsersLookup(client, { usersId });
 
-  if ('errors' in result) {
-    console.error(result);
-    return;
+  result.errors.forEach((error) => {
+    console.error(error);
+  });
+
+  if (result.users.length) {
+    await setTwUsers(result.users);
   }
-  await setTwUsers(result.response);
 
   const setDocsRequest = willUpdatedUsers.map((userId) => {
     return updateUserLastUpdatedTwUsers(userId, now);
   });
   await Promise.all(setDocsRequest);
 
-  console.log(usersId.length, result.response.length, willUpdatedUsers);
+  console.log(usersId.length, result.users.length, willUpdatedUsers);
 };

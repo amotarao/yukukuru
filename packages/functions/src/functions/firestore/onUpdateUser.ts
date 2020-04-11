@@ -3,14 +3,14 @@ import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { env } from '../../utils/env';
-import { checkInvalidToken } from '../../utils/firestore';
 import { addRecord } from '../../utils/firestore/users/records/addRecord';
 import { hasRecords } from '../../utils/firestore/users/records/hasRecords';
 import { getToken } from '../../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../../utils/firestore/tokens/setTokenInvalid';
 import { getTwUsers } from '../../utils/firestore/twUsers/getTwUsers';
 import { setTwUsers } from '../../utils/firestore/twUsers/setTwUsers';
-import { getUsersLookup } from '../../utils/twitter';
+import { getUsersLookup } from '../../utils/twitter/getUsersLookup';
+import { checkInvalidToken } from '../../utils/twitter/error';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as UserData;
@@ -117,16 +117,14 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   const result = await getUsersLookup(client, { usersId: [...came, ...left] });
 
-  if ('errors' in result) {
-    console.error(uid, result);
+  if (result.errors.length) {
+    console.error(uid, result.errors);
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
   }
 
-  const lookupedUsers = 'errors' in result ? [] : result.response;
-
-  const users = lookupedUsers.map(({ id_str, name, screen_name, profile_image_url_https }) => {
+  const users = result.users.map(({ id_str, name, screen_name, profile_image_url_https }) => {
     const convertedUser: RecordUserDataOld = {
       id: id_str,
       name: name,
@@ -168,7 +166,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     durationEnd: endDates[0],
   };
   const setRecordPromise = addRecord(uid, data);
-  const setTwUsersPromise = setTwUsers(lookupedUsers);
+  const setTwUsersPromise = setTwUsers(result.users);
 
   await Promise.all([setRecordPromise, setTwUsersPromise]);
 

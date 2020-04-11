@@ -2,13 +2,13 @@ import { UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
-import { checkInvalidToken, checkProtectedUser } from '../utils/firestore';
 import { setUserResult } from '../utils/firestore/users/setUserResult';
 import { setUserResultWithNoChange } from '../utils/firestore/users/setUserResultWithNoChange';
 import { addWatch } from '../utils/firestore/users/watches/addWatch';
 import { getToken } from '../utils/firestore/tokens/getToken';
 import { setTokenInvalid } from '../utils/firestore/tokens/setTokenInvalid';
-import { getFollowersIdList } from '../utils/twitter';
+import { getFollowersIds } from '../utils/twitter/getFollowersIds';
+import { checkInvalidToken, checkProtectedUser } from '../utils/twitter/error';
 
 export default async () => {
   const now = new Date();
@@ -75,25 +75,37 @@ export default async () => {
       access_token_secret: twitterAccessTokenSecret,
     });
 
-    const result = await getFollowersIdList(client, {
+    const result = await getFollowersIds(client, {
       userId: twitterId,
       cursor: nextCursor,
       count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
-    if ('errors' in result) {
-      console.error(snapshot.id, result);
-      if (checkInvalidToken(result.errors)) {
+    if (result.errors.length) {
+      console.error(snapshot.id, result.errors);
+
+      const invalidToken = checkInvalidToken(result.errors);
+      const protectedUser = checkProtectedUser(result.errors);
+
+      if (invalidToken) {
         await setTokenInvalid(snapshot.id);
       }
-      if (checkProtectedUser(result.errors)) {
+
+      if (protectedUser) {
         await setUserResultWithNoChange(snapshot.id, now);
+      }
+      if (invalidToken || protectedUser) {
         return;
       }
+    }
+
+    const { ids, nextCursor: newNextCursor } = result;
+
+    if (newNextCursor === null) {
+      console.error('no next cursor');
       return;
     }
 
-    const { ids, next_cursor_str: newNextCursor } = result.response;
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await addWatch(snapshot.id, ids, now, ended);
     await setUserResult(snapshot.id, watchId, newNextCursor, now);
