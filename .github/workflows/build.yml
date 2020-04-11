@@ -1,14 +1,7 @@
-name: Lint and Build
+name: Build
 
-on:
-  push:
-    branches:
-    - master
-    - develop
-  pull_request:
-    branches:
-    - master
-    - develop
+on: 
+  - pull_request
 
 jobs:
   build-app:
