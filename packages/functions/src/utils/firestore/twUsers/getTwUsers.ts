@@ -13,18 +13,10 @@ type Response = TwUserData[];
  * 存在するデータのみを抽出して返す
  */
 export const getTwUsers = async (ids: Props): Promise<Response> => {
-  const requests = ids.map(async (id) => {
-    return await collection.doc(id).get();
-  });
-  const results = await Promise.all(requests);
-
-  return results
-    .filter((result) => {
-      return result.exists;
-    })
-    .map((result) => {
-      return result.data() as TwUserData;
-    });
+  const refs = ids.map((id) => collection.doc(id));
+  const options: FirebaseFirestore.ReadOptions = { fieldMask: ['id', 'screenName', 'name', 'photoUrl'] };
+  const docs = await firestore.getAll(...refs, options);
+  return docs.filter((doc) => doc.exists).map((doc) => doc.data() as TwUserData);
 };
 
 export { Props as GetTwUsersProps, Response as GetTwUsersResponse };
