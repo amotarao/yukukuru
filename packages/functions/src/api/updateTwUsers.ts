@@ -1,5 +1,5 @@
 import { WatchData } from '@yukukuru/types';
-import * as Twitter from 'twitter';
+import Twitter from 'twitter';
 import { firestore } from '../modules/firebase';
 import { env } from '../utils/env';
 import { updateUserLastUpdatedTwUsers } from '../utils/firestore/users/updateUserLastUpdatedTwUsers';
