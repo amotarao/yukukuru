@@ -6,6 +6,7 @@ import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
+import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
 import { env } from './utils/env';
 
 const builder = functions.region('asia-northeast1');
@@ -52,3 +53,8 @@ export const onFirestoreUpdateToken = builder.firestore
   .onUpdate(onFirestoreUpdateTokenHandler);
 
 export const updateToken = builder.runWith({ timeoutSeconds: 10, memory: '256MB' }).https.onCall(updateTokenHandler);
+
+export const onCreateQueue = builder
+  .runWith(functionsRuntimeOptions)
+  .firestore.document('queues/{queueId}')
+  .onCreate(onCreateQueueHandler);

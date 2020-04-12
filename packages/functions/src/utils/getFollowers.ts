@@ -1,4 +1,3 @@
-import { FirestoreIdData, UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { env } from './env';
 import {
@@ -12,7 +11,10 @@ import {
 } from './firestore';
 import { getFollowersIdList } from './twitter';
 
-type Props = FirestoreIdData<UserData>;
+type Props = {
+  uid: string;
+  nextCursor: string;
+};
 
 interface Response {
   userId: string;
@@ -20,11 +22,11 @@ interface Response {
   newNextCursor: string;
 }
 
-export const getFollowers = async ({ id, data: { nextCursor } }: Props): Promise<Response | void> => {
-  const token = await getToken(id);
+export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promise<Response | void> => {
+  const token = await getToken(uid);
   if (!token) {
-    console.log(id, 'no-token');
-    await setTokenInvalid(id);
+    console.log(uid, 'no-token');
+    await setTokenInvalid(uid);
     return;
   }
   const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
@@ -43,12 +45,12 @@ export const getFollowers = async ({ id, data: { nextCursor } }: Props): Promise
   });
 
   if ('errors' in result) {
-    console.error(id, result);
+    console.error(uid, result);
     if (checkInvalidToken(result.errors)) {
-      await setTokenInvalid(id);
+      await setTokenInvalid(uid);
     }
     if (checkProtectedUser(result.errors)) {
-      await setUserResultWithNoChange(id, now);
+      await setUserResultWithNoChange(uid, now);
       return;
     }
     return;
@@ -56,11 +58,11 @@ export const getFollowers = async ({ id, data: { nextCursor } }: Props): Promise
 
   const { ids, next_cursor_str: newNextCursor } = result.response;
   const ended = newNextCursor === '0' || newNextCursor === '-1';
-  const watchId = await setWatch(id, ids, now, ended);
-  await setUserResult(id, watchId, newNextCursor, now);
+  const watchId = await setWatch(uid, ids, now, ended);
+  await setUserResult(uid, watchId, newNextCursor, now);
 
   return {
-    userId: id,
+    userId: uid,
     watchId,
     newNextCursor,
   };
