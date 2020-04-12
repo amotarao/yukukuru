@@ -346,7 +346,7 @@
 
 "@yukukuru/types@file:./yukukuru-types-0.2.0.tgz":
   version "0.2.0"
-  resolved "file:./yukukuru-types-0.2.0.tgz#9e20295d0db5964df2a450ca57ad45e99bbd4f77"
+  resolved "file:./yukukuru-types-0.2.0.tgz"
   dependencies:
     "@firebase/firestore-types" "^1.10.1"
 
