@@ -49,10 +49,7 @@ export default async () => {
         data: doc.data() as UserData,
       };
     });
-  console.log(
-    docs.map((doc) => doc.id),
-    docs.length
-  );
+  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
 
   const items: QueueTypeGetFollowersData['data'][] = docs.map((doc) => ({
     uid: doc.id,
