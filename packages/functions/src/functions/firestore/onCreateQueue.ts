@@ -16,8 +16,10 @@ export const onCreateQueueHandler = (
     switch (type) {
       case 'getFollowers': {
         await getFollowers(data, now);
-        return;
+        break;
       }
     }
+
+    await snapshot.ref.delete();
   })();
 };
