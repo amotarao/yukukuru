@@ -2,7 +2,7 @@ import { FirestoreIdData, UserData, QueueTypeGetFollowersData } from '@yukukuru/
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
 
-export default async () => {
+export default async (): Promise<void> => {
   const now = new Date();
   // API は 15分で 75000人 の取得制限がある
   // 1回で 10000人 まで取れるので、2.5分間隔
