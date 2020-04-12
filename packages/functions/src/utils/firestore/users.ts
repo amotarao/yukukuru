@@ -1,5 +1,6 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
 import { firestore, admin } from '../../modules/firebase';
+import { getGroupIndex } from '../group';
 
 const collection = firestore.collection('users');
 
@@ -18,6 +19,7 @@ export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl
     nextCursor: '-1',
     currentWatchesId: '',
     pausedGetFollower: false,
+    group: getGroupIndex(id),
     ...props,
   };
   await collection.doc(id).set(data, { merge: true });

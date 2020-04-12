@@ -22,7 +22,7 @@ export default async () => {
 
   const usersId: string[] = [];
   const requests = querySnapshot.docs.map(async (snapshot) => {
-    const watch = await snapshot.ref.collection('watches').orderBy('getEndDate').limit(1).get();
+    const watch = await snapshot.ref.collection('watches').orderBy('getEndDate', 'desc').limit(1).get();
     if (watch.size !== 1) {
       return '';
     }
