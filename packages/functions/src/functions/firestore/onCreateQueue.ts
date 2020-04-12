@@ -2,24 +2,22 @@ import { QueueData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { getFollowers } from '../../utils/getFollowers';
 
-export const onCreateQueueHandler = (
+export const onCreateQueueHandler = async (
   snapshot: FirebaseFirestore.DocumentSnapshot,
   context: functions.EventContext
-): void => {
-  (async (): Promise<void> => {
-    const now = new Date(context.timestamp);
-    const id = snapshot.id;
-    const { type, data } = snapshot.data() as QueueData;
+): Promise<void> => {
+  const now = new Date(context.timestamp);
+  const id = snapshot.id;
+  const { type, data } = snapshot.data() as QueueData;
 
-    console.log('run queue', id, type);
+  console.log('run queue', id, type);
 
-    switch (type) {
-      case 'getFollowers': {
-        await getFollowers(data, now);
-        break;
-      }
+  switch (type) {
+    case 'getFollowers': {
+      await getFollowers(data, now);
+      break;
     }
+  }
 
-    await snapshot.ref.delete();
-  })();
+  await snapshot.ref.delete();
 };
