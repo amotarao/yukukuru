@@ -4,6 +4,7 @@
   "homepage": "https://yukukuru.app",
   "license": "MIT",
   "scripts": {
+    "preinstall": "if [ -d ../types ]; then npm pack ../types; fi",
     "build": "tsc",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
@@ -25,7 +26,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.149",
     "@types/twitter": "^1.7.0",
-    "@yukukuru/types": "../types",
+    "@yukukuru/types": "file:./yukukuru-types-0.2.0.tgz",
     "eslint": "^6.8.0",
     "typescript": "^3.8.3"
   }
