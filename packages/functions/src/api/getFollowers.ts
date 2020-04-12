@@ -1,3 +1,4 @@
+import { FirestoreIdData, UserData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { getFollowers } from '../utils/getFollowers';
 
@@ -40,9 +41,14 @@ export default async () => {
     .get();
 
   const [allUsersSnap, pausedUsersSnap, newUsersSnap] = await Promise.all([allUsers, pausedUsers, newUsers]);
-  const docs = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs].filter(
-    (x, i, self) => self.findIndex((y) => x.id === y.id) === i
-  );
+  const docs: FirestoreIdData<UserData>[] = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs]
+    .filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i)
+    .map((doc) => {
+      return {
+        id: doc.id,
+        data: doc.data() as UserData,
+      };
+    });
   console.log(
     docs.map((doc) => doc.id),
     docs.length

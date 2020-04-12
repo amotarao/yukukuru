@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { FirestoreIdData, UserData } from '@yukukuru/types';
 import * as Twitter from 'twitter';
 import { env } from './env';
 import {
@@ -12,21 +12,19 @@ import {
 } from './firestore';
 import { getFollowersIdList } from './twitter';
 
+type Props = FirestoreIdData<UserData>;
+
 interface Response {
   userId: string;
   watchId: string;
   newNextCursor: string;
 }
 
-export const getFollowers = async (
-  snapshot: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>
-): Promise<Response | void> => {
-  const { nextCursor } = snapshot.data() as UserData;
-
-  const token = await getToken(snapshot.id);
+export const getFollowers = async ({ id, data: { nextCursor } }: Props): Promise<Response | void> => {
+  const token = await getToken(id);
   if (!token) {
-    console.log(snapshot.id, 'no-token');
-    await setTokenInvalid(snapshot.id);
+    console.log(id, 'no-token');
+    await setTokenInvalid(id);
     return;
   }
   const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
@@ -45,12 +43,12 @@ export const getFollowers = async (
   });
 
   if ('errors' in result) {
-    console.error(snapshot.id, result);
+    console.error(id, result);
     if (checkInvalidToken(result.errors)) {
-      await setTokenInvalid(snapshot.id);
+      await setTokenInvalid(id);
     }
     if (checkProtectedUser(result.errors)) {
-      await setUserResultWithNoChange(snapshot.id, now);
+      await setUserResultWithNoChange(id, now);
       return;
     }
     return;
@@ -58,11 +56,11 @@ export const getFollowers = async (
 
   const { ids, next_cursor_str: newNextCursor } = result.response;
   const ended = newNextCursor === '0' || newNextCursor === '-1';
-  const watchId = await setWatch(snapshot.id, ids, now, ended);
-  await setUserResult(snapshot.id, watchId, newNextCursor, now);
+  const watchId = await setWatch(id, ids, now, ended);
+  await setUserResult(id, watchId, newNextCursor, now);
 
   return {
-    userId: snapshot.id,
+    userId: id,
     watchId,
     newNextCursor,
   };
