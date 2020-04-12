@@ -29,10 +29,10 @@ jobs:
           ${{ runner.os }}-yarn-
 
     - name: Install dependencies on root
-      run: yarn --frozen-lockfile
+      run: yarn
 
     - name: Install dependencies on functions
-      run: yarn --frozen-lockfile
+      run: yarn
       working-directory: ./packages/functions
 
     - name: Run lint on functions
