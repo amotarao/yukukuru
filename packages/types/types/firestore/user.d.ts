@@ -31,4 +31,7 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
 
   /** フォロワー一覧取得 state 途中かどうか */
   pausedGetFollower: boolean;
+
+  /** グループ番号 0-14 のいずれか */
+  group: number;
 }
