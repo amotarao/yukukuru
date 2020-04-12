@@ -1,6 +1,6 @@
-import { FirestoreIdData, UserData } from '@yukukuru/types';
+import { FirestoreIdData, UserData, QueueTypeGetFollowersData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { getFollowers } from '../utils/getFollowers';
+import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
 
 export default async () => {
   const now = new Date();
@@ -54,8 +54,9 @@ export default async () => {
     docs.length
   );
 
-  const requests = docs.map(getFollowers);
-
-  const results = await Promise.all(requests);
-  console.log(results);
+  const items: QueueTypeGetFollowersData['data'][] = docs.map((doc) => ({
+    uid: doc.id,
+    nextCursor: doc.data.nextCursor,
+  }));
+  await addQueuesTypeGetFollowers(items);
 };
