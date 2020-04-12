@@ -4,5 +4,6 @@ export interface TwitterClientErrorData {
 }
 
 export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { errors: TwitterClientErrorData[] } => {
+  console.error('twitterClientErrorHandler', errors);
   return { errors };
 };
