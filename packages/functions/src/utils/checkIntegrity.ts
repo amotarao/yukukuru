@@ -130,7 +130,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
       .filter((a, i, self) => self.findIndex((b) => a.id === b.id) === i);
 
     await updateRecordsStart({ uid, items: updates });
-    console.log(JSON.stringify({ type: 'checkIntegrity: sameEnd', uid }));
+    console.log(JSON.stringify({ type: 'checkIntegrity: sameEnd', uid, notExistsDiffs, unknownDiffs }));
   }
 
   // 想定されていない処理
