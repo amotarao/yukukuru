@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import getFollowersHandler from './api/getFollowers';
 import updateTwUsersHandler from './api/updateTwUsers';
+import checkIntegrityHandler from './api/checkIntegrity';
 import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onFirestoreUpdateUserHandler from './functions/firestore/onUpdateUser';
@@ -12,7 +13,12 @@ import { env } from './utils/env';
 const builder = functions.region('asia-northeast1');
 
 const httpsRuntimeOptions: functions.RuntimeOptions = {
-  timeoutSeconds: 90,
+  timeoutSeconds: 20,
+  memory: '512MB',
+};
+
+const oldHttpsRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 60,
   memory: '1GB',
 };
 
@@ -32,13 +38,24 @@ export const getFollowers = builder.runWith(httpsRuntimeOptions).https.onRequest
   })();
 });
 
-export const updateTwUsers = builder.runWith(httpsRuntimeOptions).https.onRequest(async (req, res) => {
+export const updateTwUsers = builder.runWith(oldHttpsRuntimeOptions).https.onRequest(async (req, res) => {
   if (req.query.key !== env.http_functions_key) {
     res.status(403).end();
     return;
   }
   await updateTwUsersHandler();
   res.status(200).end();
+});
+
+export const checkIntegrity = builder.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
+  (async (): Promise<void> => {
+    if (req.query.key !== env.http_functions_key) {
+      res.status(403).end();
+      return;
+    }
+    await checkIntegrityHandler();
+    res.status(200).end();
+  })();
 });
 
 export const onCreateUser = builder.auth.user().onCreate(onCreateUserHandler);
