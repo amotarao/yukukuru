@@ -8,6 +8,13 @@ export interface Diff {
   durationEnd: Date;
 }
 
+interface DiffJson {
+  type: RecordData['type'];
+  uid: string;
+  durationStart: string;
+  durationEnd: string;
+}
+
 export interface DiffWithId {
   id: string;
   diff: Diff;
@@ -48,8 +55,18 @@ export const getDiffFollowers = (watches: WatchData[]): Diff[] => {
   return _.flatten(diffs);
 };
 
-export const getDiffRecords = (currentDiff: Diff[], records: Diff[]): Diff[] => {
-  const currentMap = currentDiff.map((diff) => JSON.stringify(diff));
-  const recordsMap = records.map((diff) => JSON.stringify(diff));
-  return _.difference(currentMap, recordsMap).map((diff) => JSON.parse(diff) as Diff);
+export const getDiffRecords = (diffA: Diff[], diffB: Diff[]): Diff[] => {
+  const diffAMap = diffA.map((diff) => JSON.stringify(diff));
+  const diffBMap = diffB.map((diff) => JSON.stringify(diff));
+  return _.difference(diffAMap, diffBMap).map(
+    (str): Diff => {
+      const obj = JSON.parse(str) as DiffJson;
+      return {
+        type: obj.type,
+        uid: obj.uid,
+        durationStart: new Date(obj.durationStart),
+        durationEnd: new Date(obj.durationEnd),
+      };
+    }
+  );
 };
