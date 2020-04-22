@@ -1,58 +1,32 @@
-import { WatchData } from '@yukukuru/types';
-import * as Twitter from 'twitter';
+import { FirestoreIdData, UserData, QueueTypeUpdateTwUsersData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { env } from '../utils/env';
-import { setTwUsers, updateUserLastUpdatedTwUsers } from '../utils/firestore';
-import { getUsersLookup } from '../utils/twitter';
+import { addQueuesTypeUpdateTwUsers } from '../utils/firestore/queues/addQueuesTypeUpdateTwUsers';
+import { getGroupFromTime } from '../utils/group';
 
-export default async () => {
-  const now = new Date();
-  const time1week = new Date();
-  time1week.setDate(now.getDate() - 7);
+export default async (): Promise<void> => {
+  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
+  const group = getGroupFromTime(12, now);
 
-  const querySnapshot = await firestore
+  // 3日前
+  const previous = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 60 * 1000);
+
+  const usersSnap = await firestore
     .collection('users')
     .where('active', '==', true)
-    .where('lastUpdatedTwUsers', '<', time1week)
-    .orderBy('lastUpdatedTwUsers')
-    .limit(50)
+    .where('lastUpdatedTwUsers', '<', previous)
+    .where('group', '==', group)
     .get();
 
-  const usersId: string[] = [];
-  const requests = querySnapshot.docs.map(async (snapshot) => {
-    const watch = await snapshot.ref.collection('watches').orderBy('getEndDate', 'desc').limit(1).get();
-    if (watch.size !== 1) {
-      return '';
-    }
-
-    const { followers } = watch.docs[0].data() as WatchData;
-    // API 制限ギリギリまで
-    if (usersId.length + followers.length > 30000) {
-      return '';
-    }
-    usersId.push(...followers);
-    return snapshot.id;
+  const docs: FirestoreIdData<UserData>[] = usersSnap.docs.map((doc) => {
+    return {
+      id: doc.id,
+      data: doc.data() as UserData,
+    };
   });
-  const willUpdatedUsers = (await Promise.all(requests)).filter((e) => e !== '');
+  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
 
-  const client = new Twitter({
-    consumer_key: env.twitter_api_key,
-    consumer_secret: env.twitter_api_secret_key,
-    access_token_key: env.twitter_access_token_key,
-    access_token_secret: env.twitter_access_token_secret,
-  });
-  const result = await getUsersLookup(client, { usersId });
-
-  if ('errors' in result) {
-    console.error(result);
-    return;
-  }
-  await setTwUsers(result.response);
-
-  const setDocsRequest = willUpdatedUsers.map((userId) => {
-    return updateUserLastUpdatedTwUsers(userId, now);
-  });
-  await Promise.all(setDocsRequest);
-
-  console.log(usersId.length, result.response.length, willUpdatedUsers);
+  const items: QueueTypeUpdateTwUsersData['data'][] = docs.map((doc) => ({
+    uid: doc.id,
+  }));
+  await addQueuesTypeUpdateTwUsers(items);
 };

@@ -17,11 +17,6 @@ const httpsRuntimeOptions: functions.RuntimeOptions = {
   memory: '512MB',
 };
 
-const oldHttpsRuntimeOptions: functions.RuntimeOptions = {
-  timeoutSeconds: 60,
-  memory: '1GB',
-};
-
 const functionsRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 60,
   memory: '1GB',
@@ -44,13 +39,15 @@ export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onR
 /**
  * 定期処理: Twitter ユーザー情報更新
  */
-export const updateTwUsers = functionsBase.runWith(oldHttpsRuntimeOptions).https.onRequest(async (req, res) => {
-  if (req.query.key !== env.http_functions_key) {
-    res.status(403).end();
-    return;
-  }
-  await updateTwUsersHandler();
-  res.status(200).end();
+export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
+  (async (): Promise<void> => {
+    if (req.query.key !== env.http_functions_key) {
+      res.status(403).end();
+      return;
+    }
+    await updateTwUsersHandler();
+    res.status(200).end();
+  })();
 });
 
 /**
