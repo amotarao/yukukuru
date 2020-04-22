@@ -12,7 +12,6 @@ export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl
 
   const data: UserData<FirestoreDateLike> = {
     active: true,
-    newUser: true,
     lastUpdated: now,
     lastUpdatedTwUsers: now,
     lastUpdatedCheckIntegrity: now,

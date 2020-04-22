@@ -13,7 +13,6 @@ export default async () => {
   const querySnapshot = await firestore
     .collection('users')
     .where('active', '==', true)
-    .where('newUser', '==', false)
     .where('lastUpdatedTwUsers', '<', time1week)
     .orderBy('lastUpdatedTwUsers')
     .limit(50)

@@ -63,16 +63,12 @@ export const setUserResult = async (userId: string, watchId: string, nextCursor:
   const collection = firestore.collection('users').doc(userId);
   const ended = nextCursor === '0' || nextCursor === '-1';
 
-  await collection.set(
-    {
-      nextCursor: ended ? '-1' : nextCursor,
-      currentWatchesId: ended ? '' : watchId,
-      pausedGetFollower: !ended,
-      lastUpdated: date,
-      newUser: false,
-    },
-    { merge: true }
-  );
+  await collection.update({
+    nextCursor: ended ? '-1' : nextCursor,
+    currentWatchesId: ended ? '' : watchId,
+    pausedGetFollower: !ended,
+    lastUpdated: date,
+  });
 
   return;
 };
@@ -80,13 +76,9 @@ export const setUserResult = async (userId: string, watchId: string, nextCursor:
 export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
   const collection = firestore.collection('users').doc(userId);
 
-  await collection.set(
-    {
-      lastUpdated: date,
-      newUser: false,
-    },
-    { merge: true }
-  );
+  await collection.update({
+    lastUpdated: date,
+  });
 
   return;
 };
