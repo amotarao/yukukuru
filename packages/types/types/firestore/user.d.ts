@@ -11,9 +11,6 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
   /** 有効かどうか */
   active: boolean;
 
-  /** 無効かどうか */
-  invalid: boolean;
-
   /** 新しいユーザーかどうか */
   newUser: boolean;
 
