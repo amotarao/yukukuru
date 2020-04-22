@@ -1,8 +1,8 @@
 import { QueueData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { getFollowers } from '../../utils/getFollowers';
-import { checkIntegrity } from '../../utils/checkIntegrity';
-import { updateTwUsers } from '../../utils/updateTwUsers';
+import { getFollowers } from './queues/getFollowers';
+import { checkIntegrity } from './queues/checkIntegrity';
+import { updateTwUsers } from './queues/updateTwUsers';
 
 export const onCreateQueueHandler = async (
   snapshot: FirebaseFirestore.DocumentSnapshot,
