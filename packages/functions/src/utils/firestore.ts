@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 import { TwitterUserInterface } from './twitter';
+import { setUserToNotActive } from './firestore/users';
 
 export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
   return errors.some(({ code }) => code === 17);
@@ -21,12 +22,7 @@ export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean =>
 };
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
-  const user = firestore.collection('users').doc(userId).set(
-    {
-      invalid: true,
-    },
-    { merge: true }
-  );
+  const user = setUserToNotActive(userId);
   const token = firestore.collection('tokens').doc(userId).set(
     {
       twitterAccessToken: '',
