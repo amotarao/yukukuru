@@ -135,7 +135,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
 
   // 想定されていない処理
   else {
-    console.log(JSON.stringify({ type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs }));
+    console.error(JSON.stringify({ type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs }));
   }
 
   await updateUserCheckIntegrity(uid, now);
