@@ -344,9 +344,9 @@
     "@types/node" "*"
     "@types/request" "*"
 
-"@yukukuru/types@file:./yukukuru-types-0.2.4.tgz":
-  version "0.2.4"
-  resolved "file:./yukukuru-types-0.2.4.tgz"
+"@yukukuru/types@file:./yukukuru-types-0.2.5.tgz":
+  version "0.2.5"
+  resolved "file:./yukukuru-types-0.2.5.tgz"
   dependencies:
     "@firebase/firestore-types" "^1.10.1"
 
