@@ -15,7 +15,6 @@ export default async (): Promise<void> => {
   const allUsers = firestore
     .collection('users')
     .where('active', '==', true)
-    .where('invalid', '==', false)
     .where('pausedGetFollower', '==', false)
     .where('lastUpdated', '<', time60)
     .where('group', '==', group)
@@ -24,21 +23,13 @@ export default async (): Promise<void> => {
   const pausedUsers = firestore
     .collection('users')
     .where('active', '==', true)
-    .where('invalid', '==', false)
     .where('pausedGetFollower', '==', true)
     .where('lastUpdated', '<', time15)
     .where('group', '==', group)
     .get();
 
-  const newUsers = firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('invalid', '==', false)
-    .where('newUser', '==', true)
-    .get();
-
-  const [allUsersSnap, pausedUsersSnap, newUsersSnap] = await Promise.all([allUsers, pausedUsers, newUsers]);
-  const docs: FirestoreIdData<UserData>[] = [...allUsersSnap.docs, ...pausedUsersSnap.docs, ...newUsersSnap.docs]
+  const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
+  const docs: FirestoreIdData<UserData>[] = [...allUsersSnap.docs, ...pausedUsersSnap.docs]
     .filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i)
     .map((doc) => {
       return {

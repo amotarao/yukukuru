@@ -12,8 +12,6 @@ export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl
 
   const data: UserData<FirestoreDateLike> = {
     active: true,
-    invalid: false,
-    newUser: true,
     lastUpdated: now,
     lastUpdatedTwUsers: now,
     lastUpdatedCheckIntegrity: now,
@@ -27,17 +25,17 @@ export async function initializeUser(id: string, props: Pick<UserData, 'photoUrl
 }
 
 /**
- * ユーザーのactiveをfalseにする
+ * ユーザーの active を true にする
  */
-export async function setUserToNotActive(id: string): Promise<void> {
-  const data: Pick<UserData, 'active'> = { active: false };
-  await collection.doc(id).set(data, { merge: true });
+export async function setUserToActive(id: string): Promise<void> {
+  const data: Pick<UserData, 'active'> = { active: true };
+  await collection.doc(id).update(data);
 }
 
 /**
- * ユーザーのinvalidを変更
+ * ユーザーの active を false にする
  */
-export async function updateUserInvalid(id: string, invalid: boolean): Promise<void> {
-  const data: Pick<UserData, 'invalid'> = { invalid };
-  await collection.doc(id).set(data, { merge: true });
+export async function setUserToNotActive(id: string): Promise<void> {
+  const data: Pick<UserData, 'active'> = { active: false };
+  await collection.doc(id).update(data);
 }

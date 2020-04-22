@@ -20,7 +20,6 @@ export default async (): Promise<void> => {
   const users = firestore
     .collection('users')
     .where('active', '==', true)
-    .where('invalid', '==', false)
     .where('lastUpdatedCheckIntegrity', '<', yesterday)
     .where('group', '==', group)
     .get();
