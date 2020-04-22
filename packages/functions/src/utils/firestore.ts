@@ -4,19 +4,20 @@ import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 import { TwitterUserInterface } from './twitter';
 
-export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 89);
-  return error ? true : false;
+export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
+  return errors.some(({ code }) => code === 17);
 };
 
 export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 88);
-  return error ? true : false;
+  return errors.some(({ code }) => code === 88);
+};
+
+export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
+  return errors.some(({ code }) => code === 89);
 };
 
 export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
-  const error = errors.find(({ code }) => code === 326);
-  return error ? true : false;
+  return errors.some(({ code }) => code === 326);
 };
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
