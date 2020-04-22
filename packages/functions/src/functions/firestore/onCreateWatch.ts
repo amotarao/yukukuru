@@ -4,6 +4,7 @@ import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
 import {
+  checkNoUserMatches,
   checkInvalidToken,
   setTokenInvalid,
   getToken,
@@ -98,7 +99,12 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
   const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
 
   if ('errors' in result) {
-    console.error(uid, result);
+    result.errors.forEach((error) => {
+      if (!checkNoUserMatches([error])) {
+        console.error(uid, error);
+      }
+    });
+
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
