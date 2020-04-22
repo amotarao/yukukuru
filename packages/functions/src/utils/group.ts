@@ -25,3 +25,12 @@ export const getGroupIndex = (id: string): number => {
   const index = groups.findIndex((group) => group.includes(char));
   return Math.min(Math.max(index, 0), 14);
 };
+
+/**
+ * トリガー間隔 (分) からグループ番号を返す
+ */
+export const getGroupFromTime = (min: number, now: Date | null = null): number => {
+  now = now || new Date();
+  const time = Math.floor(now.getTime() / 1000 / 60 / min) % 15;
+  return time;
+};

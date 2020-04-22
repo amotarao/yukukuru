@@ -1,6 +1,7 @@
 import { QueueData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { getFollowers } from '../../utils/getFollowers';
+import { checkIntegrity } from '../../utils/checkIntegrity';
 
 export const onCreateQueueHandler = async (
   snapshot: FirebaseFirestore.DocumentSnapshot,
@@ -8,13 +9,17 @@ export const onCreateQueueHandler = async (
 ): Promise<void> => {
   const now = new Date(context.timestamp);
   const id = snapshot.id;
-  const { type, data } = snapshot.data() as QueueData;
+  const queue = snapshot.data() as QueueData;
 
-  console.log('run queue', id, type);
+  console.log('run queue', id, queue.type);
 
-  switch (type) {
+  switch (queue.type) {
     case 'getFollowers': {
-      await getFollowers(data, now);
+      await getFollowers(queue.data, now);
+      break;
+    }
+    case 'checkIntegrity': {
+      await checkIntegrity(queue.data, now);
       break;
     }
   }

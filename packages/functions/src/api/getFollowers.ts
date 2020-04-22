@@ -1,10 +1,11 @@
 import { FirestoreIdData, UserData, QueueTypeGetFollowersData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
+import { getGroupFromTime } from '../utils/group';
 
 export default async (): Promise<void> => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = now.getMinutes() % 15;
+  const group = getGroupFromTime(1, now);
 
   // 15分前
   const time15 = new Date(now.getTime() - 14 * 60 * 1000);
