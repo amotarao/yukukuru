@@ -8,7 +8,6 @@ import onCreateWatchHandler from './functions/firestore/onCreateWatch';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
 import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
-import { env } from './utils/env';
 
 const functionsBase = functions.region('asia-northeast1');
 
@@ -27,12 +26,12 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
  */
 export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
   (async (): Promise<void> => {
-    if (req.query.key !== env.http_functions_key) {
+    if (req.query.key !== (functions.config().https.key as string)) {
       res.status(403).end();
       return;
     }
     await getFollowersHandler();
-    res.status(200).end();
+    res.status(200).send('success');
   })();
 });
 
@@ -41,12 +40,12 @@ export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onR
  */
 export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
   (async (): Promise<void> => {
-    if (req.query.key !== env.http_functions_key) {
+    if (req.query.key !== (functions.config().https.key as string)) {
       res.status(403).end();
       return;
     }
     await updateTwUsersHandler();
-    res.status(200).end();
+    res.status(200).send('success');
   })();
 });
 
@@ -55,12 +54,12 @@ export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.on
  */
 export const checkIntegrity = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
   (async (): Promise<void> => {
-    if (req.query.key !== env.http_functions_key) {
+    if (req.query.key !== (functions.config().https.key as string)) {
       res.status(403).end();
       return;
     }
     await checkIntegrityHandler();
-    res.status(200).end();
+    res.status(200).send('success');
   })();
 });
 
