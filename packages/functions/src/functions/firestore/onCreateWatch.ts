@@ -139,7 +139,7 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     }
 
     const item: RecordUserDataOld = {
-      ...user,
+      ...user.data,
       notFounded: true,
     };
     return item;
