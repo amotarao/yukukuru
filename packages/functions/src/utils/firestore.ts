@@ -1,4 +1,4 @@
-import { TokenData, TwUserData, RecordDataOld } from '@yukukuru/types';
+import { FirestoreDateLike, TokenData, TwUserData, RecordDataOld, UserData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
@@ -23,15 +23,13 @@ export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean =>
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = setUserToNotActive(userId);
-  const token = firestore.collection('tokens').doc(userId).set(
-    {
-      twitterAccessToken: '',
-      twitterAccessTokenSecret: '',
-    },
-    { merge: true }
-  );
+  const data: Pick<TokenData, 'twitterAccessToken' | 'twitterAccessTokenSecret'> = {
+    twitterAccessToken: '',
+    twitterAccessTokenSecret: '',
+  };
+  const token = firestore.collection('tokens').doc(userId).update(data);
+
   await Promise.all([user, token]);
-  return;
 };
 
 export const getToken = async (userId: string): Promise<TokenData | null> => {
@@ -49,51 +47,49 @@ export const getToken = async (userId: string): Promise<TokenData | null> => {
 
 export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {
   const collection = firestore.collection('users').doc(userId).collection('watches');
-
-  const { id } = await collection.add({
+  const data: WatchData<FirestoreDateLike> = {
     followers,
     getStartDate: date,
     getEndDate: date,
     ended,
-  });
+  };
+
+  const { id } = await collection.add(data);
   return id;
 };
 
 export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
   const collection = firestore.collection('users').doc(userId);
   const ended = nextCursor === '0' || nextCursor === '-1';
-
-  await collection.update({
+  const data: Pick<
+    UserData<FirestoreDateLike>,
+    'nextCursor' | 'currentWatchesId' | 'pausedGetFollower' | 'lastUpdated'
+  > = {
     nextCursor: ended ? '-1' : nextCursor,
     currentWatchesId: ended ? '' : watchId,
     pausedGetFollower: !ended,
     lastUpdated: date,
-  });
+  };
 
-  return;
+  await collection.update(data);
 };
 
 export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
   const collection = firestore.collection('users').doc(userId);
-
-  await collection.update({
+  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdated'> = {
     lastUpdated: date,
-  });
+  };
 
-  return;
+  await collection.update(data);
 };
 
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
   const collection = firestore.collection('users').doc(userId);
+  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {
+    lastUpdatedTwUsers: date,
+  };
 
-  await collection.set(
-    {
-      lastUpdatedTwUsers: date,
-    },
-    { merge: true }
-  );
-
-  return;
+  await collection.update(data);
 };
 
 export const existsRecords = async (userId: string): Promise<boolean> => {
@@ -103,7 +99,6 @@ export const existsRecords = async (userId: string): Promise<boolean> => {
 
 export const setRecord = async (userId: string, data: RecordDataOld): Promise<void> => {
   await firestore.collection('users').doc(userId).collection('records').add(data);
-  return;
 };
 
 const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> => {
@@ -122,13 +117,11 @@ const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> =>
   });
 
   await batch.commit();
-  return;
 };
 
 export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
   const requests = _.chunk(users, 500).map((users) => setTwUsersSingle(users));
   await Promise.all(requests);
-  return;
 };
 
 export const getTwUsers = async (users: string[]): Promise<TwUserData[]> => {

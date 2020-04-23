@@ -1,5 +1,5 @@
+import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
-import { env } from './env';
 import {
   checkInvalidToken,
   setTokenInvalid,
@@ -8,8 +8,8 @@ import {
   setUserResult,
   checkProtectedUser,
   setUserResultWithNoChange,
-} from './firestore';
-import { getFollowersIdList } from './twitter';
+} from '../../../utils/firestore';
+import { getFollowersIdList } from '../../../utils/twitter';
 
 type Props = {
   uid: string;
@@ -32,8 +32,8 @@ export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promi
   const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
 
   const client = new Twitter({
-    consumer_key: env.twitter_api_key,
-    consumer_secret: env.twitter_api_secret_key,
+    consumer_key: functions.config().twitter.consumer_key as string,
+    consumer_secret: functions.config().twitter.consumer_secret as string,
     access_token_key: twitterAccessToken,
     access_token_secret: twitterAccessTokenSecret,
   });
@@ -41,7 +41,7 @@ export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promi
   const result = await getFollowersIdList(client, {
     userId: twitterId,
     cursor: nextCursor,
-    count: 10000, // Firestore ドキュメント データサイズ制限を考慮した数値
+    count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
   });
 
   if ('errors' in result) {

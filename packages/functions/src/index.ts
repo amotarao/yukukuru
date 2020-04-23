@@ -8,18 +8,12 @@ import onCreateWatchHandler from './functions/firestore/onCreateWatch';
 import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
 import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
-import { env } from './utils/env';
 
 const functionsBase = functions.region('asia-northeast1');
 
 const httpsRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 20,
   memory: '512MB',
-};
-
-const oldHttpsRuntimeOptions: functions.RuntimeOptions = {
-  timeoutSeconds: 60,
-  memory: '1GB',
 };
 
 const functionsRuntimeOptions: functions.RuntimeOptions = {
@@ -32,25 +26,27 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
  */
 export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
   (async (): Promise<void> => {
-    if (req.query.key !== env.http_functions_key) {
+    if (req.query.key !== (functions.config().https.key as string)) {
       res.status(403).end();
       return;
     }
     await getFollowersHandler();
-    res.status(200).end();
+    res.status(200).send('success');
   })();
 });
 
 /**
  * 定期処理: Twitter ユーザー情報更新
  */
-export const updateTwUsers = functionsBase.runWith(oldHttpsRuntimeOptions).https.onRequest(async (req, res) => {
-  if (req.query.key !== env.http_functions_key) {
-    res.status(403).end();
-    return;
-  }
-  await updateTwUsersHandler();
-  res.status(200).end();
+export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
+  (async (): Promise<void> => {
+    if (req.query.key !== (functions.config().https.key as string)) {
+      res.status(403).end();
+      return;
+    }
+    await updateTwUsersHandler();
+    res.status(200).send('success');
+  })();
 });
 
 /**
@@ -58,12 +54,12 @@ export const updateTwUsers = functionsBase.runWith(oldHttpsRuntimeOptions).https
  */
 export const checkIntegrity = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
   (async (): Promise<void> => {
-    if (req.query.key !== env.http_functions_key) {
+    if (req.query.key !== (functions.config().https.key as string)) {
       res.status(403).end();
       return;
     }
     await checkIntegrityHandler();
-    res.status(200).end();
+    res.status(200).send('success');
   })();
 });
 

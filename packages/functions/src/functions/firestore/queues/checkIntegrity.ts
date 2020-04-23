@@ -1,12 +1,12 @@
 import { FirestoreIdData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { updateUserCheckIntegrity } from './firestore/users/integrity';
-import { getRecords } from './firestore/records/getRecords';
-import { updateRecordsStart } from './firestore/records/updateRecordsStart';
-import { getWatches } from './firestore/watches/getWatches';
-import { removeWatches } from './firestore/watches/removeWatches';
-import { getDiffFollowers, getDiffRecords, Diff, DiffWithId } from './diff';
-import { convertRecords } from './convert';
+import { updateUserCheckIntegrity } from '../../../utils/firestore/users/integrity';
+import { getRecords } from '../../../utils/firestore/records/getRecords';
+import { updateRecordsStart } from '../../../utils/firestore/records/updateRecordsStart';
+import { getWatches } from '../../../utils/firestore/watches/getWatches';
+import { removeWatches } from '../../../utils/firestore/watches/removeWatches';
+import { getDiffFollowers, getDiffRecords, Diff, DiffWithId } from '../../../utils/diff';
+import { convertRecords } from '../../../utils/convert';
 
 type Props = {
   uid: string;
@@ -135,7 +135,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
 
   // 想定されていない処理
   else {
-    console.log(JSON.stringify({ type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs }));
+    console.error(JSON.stringify({ type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs }));
   }
 
   await updateUserCheckIntegrity(uid, now);

@@ -30,3 +30,24 @@ export const getWatches = async ({ uid, count }: Props): Promise<Response> => {
 
   return docs;
 };
+
+/**
+ * Watches を新しい順に順に取得する
+ */
+export const getLatestWatches = async ({ uid, count }: Props): Promise<Response> => {
+  const request = usersCollection.doc(uid).collection('watches').orderBy('getEndDate', 'desc').limit(count).get();
+
+  const qs = await request.catch((): false => false);
+  if (!qs) {
+    return [];
+  }
+
+  const docs = qs.docs.map((doc) => {
+    return {
+      id: doc.id,
+      data: doc.data() as WatchData,
+    };
+  });
+
+  return docs;
+};

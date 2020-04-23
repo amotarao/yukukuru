@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/types",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "types": "types/index.d.ts",
   "scripts": {
     "lint": "eslint types --ext .ts,.js"

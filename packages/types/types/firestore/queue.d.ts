@@ -21,6 +21,16 @@ export interface QueueTypeCheckIntegrityData {
   };
 }
 
-export type QueueData = QueueTypeGetFollowersData | QueueTypeCheckIntegrityData;
+export interface QueueTypeUpdateTwUsersData {
+  /** キュータイプ */
+  type: 'updateTwUsers';
+
+  data: {
+    /** Firebase UID */
+    uid: string;
+  };
+}
+
+export type QueueData = QueueTypeGetFollowersData | QueueTypeCheckIntegrityData | QueueTypeUpdateTwUsersData;
 
 export type QueueType = QueueData['type'];
