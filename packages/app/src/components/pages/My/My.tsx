@@ -23,6 +23,26 @@ export interface MyProps {
 /**
  * エラー表示をするコンポーネント
  */
+const Notice: React.FC = () => {
+  return (
+    <div css={style.errorWrapper}>
+      <span>ただいま、データが正常に取得できないエラーが発生しています。</span>
+      <span>復旧までしばらくお待ちください。</span>
+      <span>サービス再開見込みは未定です。</span>
+      <span>
+        ご不明点は
+        <a href="https://twitter.com/yukukuruapp" style={{ color: '#1b95e0' }}>
+          Twitter
+        </a>
+        にリプライかDMにてお願いします。
+      </span>
+    </div>
+  );
+};
+
+/**
+ * エラー表示をするコンポーネント
+ */
 const Error: React.FC<Pick<MyProps, 'hasToken'>> = ({ hasToken }) => {
   if (!hasToken) {
     return (
@@ -139,7 +159,7 @@ export const My: React.FC<MyProps> = ({
   getNextRecords,
 }) => (
   <div css={style.wrapper}>
-    {!isLoading && <Error hasToken={hasToken} />}
+    <Notice />
     <header css={style.header}>
       <TweetButton size="large" />
       <ThemeSwitchButtonContainer>
@@ -149,16 +169,5 @@ export const My: React.FC<MyProps> = ({
         ログアウト
       </button>
     </header>
-    {isLoading ? (
-      <p style={{ margin: 16 }}>読み込み中</p>
-    ) : (
-      <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
-    )}
-    {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
-    {!isLoading && hasNext && (
-      <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
-        続きを取得
-      </button>
-    )}
   </div>
 );

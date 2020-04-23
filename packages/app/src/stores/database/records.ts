@@ -38,16 +38,16 @@ const getRecordsFromFirestore = async (
 
 const useRecords = () => {
   /** 最初のデータが読み込み中かどうか */
-  const [isFirstLoading, setFirstLoading] = useState<boolean>(false);
+  const [isFirstLoading, setFirstLoading] = useState<boolean>(true);
 
   /** 最初のデータの読み込みが完了しているかどうか */
-  const [isFirstLoaded, setFirstLoaded] = useState<boolean>(false);
+  const [isFirstLoaded, setFirstLoaded] = useState<boolean>(true);
 
   /** 続きのデータが読み込み中かどうか */
-  const [isNextLoading, setNextLoading] = useState<boolean>(false);
+  const [isNextLoading, setNextLoading] = useState<boolean>(true);
 
   /** 続きのデータがあるかどうか */
-  const [hasNext, setHasNext] = useState<boolean>(true);
+  const [hasNext, setHasNext] = useState<boolean>(false);
 
   /** アイテム */
   const [items, setItems] = useState<RecordData[]>([]);
@@ -81,23 +81,23 @@ const useRecords = () => {
   /**
    * 初回 Records を取得する
    */
-  useEffect(() => {
-    if (isFirstLoading || isFirstLoaded || !uid) {
-      return;
-    }
-    setFirstLoading(true);
-    getRecords();
-  }, [getRecords, isFirstLoading, isFirstLoaded, uid]);
+  // useEffect(() => {
+  //   if (isFirstLoading || isFirstLoaded || !uid) {
+  //     return;
+  //   }
+  //   setFirstLoading(true);
+  //   getRecords();
+  // }, [getRecords, isFirstLoading, isFirstLoaded, uid]);
 
   /**
    * 続きの Records を取得する
    */
   const getNextRecords = () => {
-    if (isNextLoading || !uid) {
-      return;
-    }
-    setNextLoading(true);
-    getRecords();
+    // if (isNextLoading || !uid) {
+    //   return;
+    // }
+    // setNextLoading(true);
+    // getRecords();
   };
 
   return {
