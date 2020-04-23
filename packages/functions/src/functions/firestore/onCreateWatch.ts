@@ -14,6 +14,8 @@ import {
 } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
+import { addRecords } from '../../utils/firestore/records/addRecords';
+import { convertRecords } from '../../utils/convert';
 
 export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext): Promise<void> => {
   const data = snapshot.data() as WatchData;
@@ -153,10 +155,14 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     durationStart: endDates[1],
     durationEnd: endDates[0],
   };
-  const setRecordPromise = setRecord(uid, record);
+
+  const convertedItems = convertRecords([{ id: '', data: record }]);
+  const convertedItemsOnlyData = convertedItems.map(({ data }) => data);
+
+  const addRecordsPromise = addRecords({ uid, items: convertedItemsOnlyData });
   const setTwUsersPromise = setTwUsers(lookupedUsers);
 
-  await Promise.all([setRecordPromise, setTwUsersPromise]);
+  await Promise.all([addRecordsPromise, setTwUsersPromise]);
 
-  console.log(JSON.stringify({ uid, type: 'success', record }));
+  console.log(JSON.stringify({ uid, type: 'success', convertedItemsOnlyData }));
 };
