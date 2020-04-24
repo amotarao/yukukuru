@@ -40,9 +40,6 @@ export interface QueueTypeConvertRecordsData<T extends FirestoreDateLike = Times
   data: {
     /** Firebase UID */
     uid: string;
-
-    /** いつの日のデータから見るか */
-    cursor: T;
   };
 }
 
