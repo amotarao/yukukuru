@@ -1,4 +1,4 @@
-import { RecordUserDataOld, RecordDataOld, WatchData, FirestoreDateLike } from '@yukukuru/types';
+import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
@@ -8,21 +8,48 @@ import {
   checkInvalidToken,
   setTokenInvalid,
   getToken,
-  setRecord,
   existsRecords,
   setTwUsers,
 } from '../../utils/firestore';
-import { getUsersLookup } from '../../utils/twitter';
 import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
+import { addRecords } from '../../utils/firestore/records/addRecords';
+import { addRecord } from '../../utils/firestore/records/addRecord';
+import { getUsersLookup } from '../../utils/twitter';
+
+const emptyRecord: RecordData<FirestoreDateLike> = {
+  type: 'kuru',
+  user: {
+    id: 'EMPTY',
+    maybeDeletedOrSuspended: true,
+  },
+  durationStart: new Date(2000, 0),
+  durationEnd: new Date(2000, 0),
+};
 
 export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext): Promise<void> => {
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
 
+  // 終了している watch でなければ終了
   if (data.ended === false) {
     console.log(JSON.stringify({ uid, type: 'noEnded' }));
     return;
   }
+
+  const sameQuery = await firestore
+    .collection('users')
+    .doc(uid)
+    .collection('watches')
+    .where('getStartDate', '==', data.getStartDate)
+    .where('getEndDate', '==', data.getEndDate)
+    .get();
+
+  // 同じ時刻のものがある場合、スキップする
+  if (sameQuery.size > 1) {
+    console.log(JSON.stringify({ uid, type: 'sameWatch' }));
+    return;
+  }
+
   const endedQuery = await firestore
     .collection('users')
     .doc(uid)
@@ -73,13 +100,7 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     const exists = await existsRecords(uid);
 
     if (!exists) {
-      const data: RecordDataOld = {
-        cameUsers: [],
-        leftUsers: [],
-        durationStart: endDates[1],
-        durationEnd: endDates[0],
-      };
-      await setRecord(uid, data);
+      await addRecord({ uid, data: emptyRecord });
     }
 
     console.log(JSON.stringify({ uid, type: 'noDiffs' }));
@@ -114,20 +135,20 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     }
   }
 
-  const lookupedUsers = 'errors' in result ? [] : result.response;
+  const twUsers = 'errors' in result ? [] : result.response;
 
-  const usersFromTw = lookupedUsers.map(({ id_str, name, screen_name, profile_image_url_https }) => {
-    const convertedUser: RecordUserDataOld = {
-      id: id_str,
-      name: name,
-      screenName: screen_name,
-      photoUrl: profile_image_url_https,
-      notFounded: false,
+  const usersFromTw = twUsers.map((user) => {
+    const convertedUser: RecordUserData = {
+      id: user.id_str,
+      screenName: user.screen_name,
+      displayName: user.name,
+      photoUrl: user.profile_image_url_https,
+      maybeDeletedOrSuspended: false,
     };
     return convertedUser;
   });
 
-  const findUser = async (userId: string): Promise<RecordUserDataOld> => {
+  const findUser = async (userId: string): Promise<RecordUserData> => {
     const userFromTw = usersFromTw.find((e) => e.id === userId);
     if (userFromTw) {
       return userFromTw;
@@ -135,32 +156,51 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
 
     const user = await getTwUser(userId);
     if (user === null) {
-      const item: RecordUserDataOld = {
+      const item: RecordUserData = {
         id: userId,
-        notFounded: true,
+        maybeDeletedOrSuspended: true,
       };
       return item;
     }
 
-    const item: RecordUserDataOld = {
-      ...user.data,
-      notFounded: true,
+    const item: RecordUserData = {
+      id: user.data.id,
+      screenName: user.data.screenName,
+      displayName: user.data.name,
+      photoUrl: user.data.photoUrl,
+      maybeDeletedOrSuspended: true,
     };
     return item;
   };
 
-  const [cameUsers, leftUsers] = await Promise.all([Promise.all(kuru.map(findUser)), Promise.all(yuku.map(findUser))]);
+  const yukuRecords = yuku.map(
+    async (id): Promise<RecordData> => {
+      const user = await findUser(id);
+      return {
+        type: 'yuku',
+        user,
+        durationStart,
+        durationEnd,
+      };
+    }
+  );
+  const kuruRecords = kuru.map(
+    async (id): Promise<RecordData> => {
+      const user = await findUser(id);
+      return {
+        type: 'kuru',
+        user,
+        durationStart,
+        durationEnd,
+      };
+    }
+  );
+  const records = await Promise.all([...kuruRecords, ...yukuRecords]);
 
-  const record: RecordDataOld = {
-    cameUsers,
-    leftUsers,
-    durationStart: endDates[1],
-    durationEnd: endDates[0],
-  };
-  const setRecordPromise = setRecord(uid, record);
-  const setTwUsersPromise = setTwUsers(lookupedUsers);
+  const addRecordsPromise = addRecords({ uid, items: records });
+  const setTwUsersPromise = setTwUsers(twUsers);
 
-  await Promise.all([setRecordPromise, setTwUsersPromise]);
+  await Promise.all([addRecordsPromise, setTwUsersPromise]);
 
-  console.log(JSON.stringify({ uid, type: 'success', record }));
+  console.log(JSON.stringify({ uid, type: 'success', records }));
 };
