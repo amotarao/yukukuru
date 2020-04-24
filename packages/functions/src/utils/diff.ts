@@ -51,3 +51,7 @@ export const getDiffFollowers = (watches: WatchData[]): Diff[] => {
 export const getDiffRecords = (diffA: Diff[], diffB: Diff[]): Diff[] => {
   return _.differenceBy(diffA, diffB, (diff) => JSON.stringify(diff));
 };
+
+export const getDiffWithIdRecords = (diffA: DiffWithId[], diffB: DiffWithId[]): DiffWithId[] => {
+  return _.differenceBy(diffA, diffB, ({ diff }) => JSON.stringify(diff));
+};
