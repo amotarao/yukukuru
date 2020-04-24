@@ -37,7 +37,11 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     console.log(JSON.stringify({ uid, type: 'noPreviousWatch' }));
     return;
   }
+  const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
   const endDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getEndDate);
+
+  const durationStart = startDates[1];
+  const durationEnd = endDates[0];
 
   const startAfter: FirestoreDateLike = endedQuery.size === 3 ? endDates[2] : new Date('2000/1/1');
   const targetQuery = await firestore
