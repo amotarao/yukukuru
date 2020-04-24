@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { getFollowers } from './queues/getFollowers';
 import { checkIntegrity } from './queues/checkIntegrity';
 import { updateTwUsers } from './queues/updateTwUsers';
+import { convertRecords } from './queues/convertRecords';
 
 export const onCreateQueueHandler = async (
   snapshot: FirebaseFirestore.DocumentSnapshot,
@@ -12,7 +13,13 @@ export const onCreateQueueHandler = async (
   const id = snapshot.id;
   const queue = snapshot.data() as QueueData;
 
-  console.log('run queue', id, queue.type);
+  console.log(
+    JSON.stringify({
+      type: `run queue ${queue.type}`,
+      queueId: id,
+      uid: queue.data.uid,
+    })
+  );
 
   switch (queue.type) {
     case 'getFollowers': {
@@ -25,6 +32,10 @@ export const onCreateQueueHandler = async (
     }
     case 'updateTwUsers': {
       await updateTwUsers(queue.data, now);
+      break;
+    }
+    case 'convertRecords': {
+      await convertRecords(queue.data, now);
       break;
     }
   }

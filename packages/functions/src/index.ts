@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import getFollowersHandler from './api/getFollowers';
 import updateTwUsersHandler from './api/updateTwUsers';
 import checkIntegrityHandler from './api/checkIntegrity';
+import convertRecordsHandler from './api/convertRecords';
 import onCreateUserHandler from './functions/auth/onCreateUser';
 import onDeleteUserHandler from './functions/auth/onDeleteUser';
 import onCreateWatchHandler from './functions/firestore/onCreateWatch';
@@ -59,6 +60,20 @@ export const checkIntegrity = functionsBase.runWith(httpsRuntimeOptions).https.o
       return;
     }
     await checkIntegrityHandler();
+    res.status(200).send('success');
+  })();
+});
+
+/**
+ * 定期処理: record の変換
+ */
+export const convertRecords = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
+  (async (): Promise<void> => {
+    if (req.query.key !== (functions.config().https.key as string)) {
+      res.status(403).end();
+      return;
+    }
+    await convertRecordsHandler();
     res.status(200).send('success');
   })();
 });
