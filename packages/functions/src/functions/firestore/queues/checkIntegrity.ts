@@ -1,4 +1,4 @@
-import { FirestoreIdData, WatchData, RecordUserData } from '@yukukuru/types';
+import { RecordUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { updateUserCheckIntegrity } from '../../../utils/firestore/users/integrity';
 import { getRecords } from '../../../utils/firestore/records/getRecords';
@@ -8,55 +8,16 @@ import { removeWatches } from '../../../utils/firestore/watches/removeWatches';
 import { getTwUser } from '../../../utils/firestore/twUsers/getTwUser';
 import { addRecord } from '../../../utils/firestore/records/addRecord';
 import { removeRecords } from '../../../utils/firestore/records/removeRecords';
-import { getDiffFollowers, DiffWithId, getDiffWithIdRecords } from '../../../utils/diff';
+import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../../utils/diff';
 import { convertRecords } from '../../../utils/convert';
+import { mergeWatches } from '../../../utils/watches';
 
 type Props = {
   uid: string;
 };
 
-type convertWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
-
-const convertWatches = (watches: FirestoreIdData<WatchData>[]): { ids: string[]; watch: convertWatchData }[] => {
-  const currentWatches: FirestoreIdData<WatchData>[] = [];
-  const convertedWatchesGroups: FirestoreIdData<WatchData>[][] = [];
-
-  watches.forEach((watch) => {
-    currentWatches.push(watch);
-    if (!('ended' in watch.data) || watch.data.ended) {
-      convertedWatchesGroups.push([...currentWatches]);
-      currentWatches.splice(0, currentWatches.length);
-    }
-  });
-
-  const convertedWatches: { ids: string[]; watch: convertWatchData }[] = convertedWatchesGroups.map((watches) => {
-    const ids = watches.map((watch) => watch.id);
-    const watch = {
-      followers: _.flatten(watches.map((watch) => watch.data.followers)),
-      getStartDate: watches[0].data.getStartDate,
-      getEndDate: watches[watches.length - 1].data.getEndDate,
-    };
-    return { ids, watch };
-  });
-
-  return convertedWatches;
-};
-
-const checkSameEnd = (diffsA: DiffWithId[], diffsB: DiffWithId[]): boolean => {
-  const stringify = ({ diff }: DiffWithId): string => {
-    return JSON.stringify({
-      type: diff.type,
-      uid: diff.uid,
-      end: diff.durationEnd.getTime(),
-    });
-  };
-  const a = diffsA.map(stringify).sort().join();
-  const b = diffsB.map(stringify).sort().join();
-  return a === b;
-};
-
 export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> => {
-  const watches = convertWatches(await getWatches({ uid, count: 100 }));
+  const watches = mergeWatches(await getWatches({ uid, count: 100 }), true);
 
   if (watches.length < 5) {
     await updateUserCheckIntegrity(uid, now);
@@ -138,7 +99,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
   }
 
   // durationStart だけ異なるドキュメントがある場合は、アップデートする
-  else if (checkSameEnd(notExistsDiffs, unknownDiffs)) {
+  else if (checkSameEndDiff(notExistsDiffs, unknownDiffs)) {
     const starts = _.sortBy(notExistsDiffs, ({ diff: { type, uid, durationEnd } }) =>
       JSON.stringify({ type, uid, d: durationEnd.getTime() })
     );

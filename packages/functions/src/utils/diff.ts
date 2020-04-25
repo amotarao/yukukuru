@@ -39,7 +39,7 @@ const getDiffFollowersSingle = (start: WatchData, end: WatchData): Diff[] => {
 };
 
 /**
- * 過去のフォロワー記録リストから差分データを取得
+ * 過去のフォロワー記録リストから差分比較用データを取得
  */
 export const getDiffFollowers = (watches: WatchData[]): Diff[] => {
   const diffs = watches.slice(0, watches.length - 1).map((watch, i) => {
@@ -54,4 +54,20 @@ export const getDiffRecords = (diffA: Diff[], diffB: Diff[]): Diff[] => {
 
 export const getDiffWithIdRecords = (diffA: DiffWithId[], diffB: DiffWithId[]): DiffWithId[] => {
   return _.differenceBy(diffA, diffB, ({ diff }) => JSON.stringify(diff));
+};
+
+/**
+ * 差分のうち、すべて durationEnd が共通かどうか
+ */
+export const checkSameEndDiff = (diffsA: DiffWithId[], diffsB: DiffWithId[]): boolean => {
+  const stringify = ({ diff }: DiffWithId): string => {
+    return JSON.stringify({
+      type: diff.type,
+      uid: diff.uid,
+      end: diff.durationEnd.getTime(),
+    });
+  };
+  const a = diffsA.map(stringify).sort().join();
+  const b = diffsB.map(stringify).sort().join();
+  return a === b;
 };
