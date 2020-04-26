@@ -54,6 +54,7 @@ export const style = {
     padding: 1rem 1rem 5rem;
     padding: 1rem 1rem calc(5rem + constant(safe-area-inset-bottom));
     padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom));
+    z-index: 100;
   `,
 
   homeArea: css`

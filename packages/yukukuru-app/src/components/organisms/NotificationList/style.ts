@@ -6,7 +6,7 @@ export const style = {
   `,
 
   item: css`
-    border-bottom: 1px solid var(--sub);
+    border-bottom: 1px solid var(--back-2);
   `,
 
   card: css`

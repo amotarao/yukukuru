@@ -9,6 +9,7 @@ export const style = {
     left: 0;
     bottom: 0;
     font-size: 14px;
+    z-index: 200;
 
     a {
       color: var(--primary);
@@ -32,6 +33,7 @@ export const style = {
     background: none;
     border: none;
     color: var(--sub);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,6 +44,7 @@ export const style = {
     padding: 0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
     transition: height 0.3s ease-out, padding 0.3s ease-out;
     font-size: 0.6rem;
+    font-family: inherit;
 
     &[aria-selected='true'] {
       color: var(--primary);
