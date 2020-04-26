@@ -15,6 +15,7 @@ import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
 import { addRecords } from '../../utils/firestore/records/addRecords';
 import { addRecord } from '../../utils/firestore/records/addRecord';
 import { getUsersLookup } from '../../utils/twitter';
+import { mergeWatches } from '../../utils/watches';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',
@@ -36,41 +37,28 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     return;
   }
 
-  const sameQuery = await firestore
-    .collection('users')
-    .doc(uid)
-    .collection('watches')
-    .where('getStartDate', '==', data.getStartDate)
-    .where('getEndDate', '==', data.getEndDate)
-    .get();
-
-  // 同じ時刻のものがある場合、スキップする
-  if (sameQuery.size > 1) {
-    console.log(JSON.stringify({ uid, type: 'sameWatch' }));
-    return;
-  }
-
   const endedQuery = await firestore
     .collection('users')
     .doc(uid)
     .collection('watches')
     .where('ended', '==', true)
     .orderBy('getEndDate', 'desc')
-    .limit(3)
+    .startAfter(data.getEndDate)
+    .limit(2)
     .get();
 
   // 比較できるデータがない
-  if (endedQuery.size < 2) {
+  if (endedQuery.empty) {
     console.log(JSON.stringify({ uid, type: 'noPreviousWatch' }));
     return;
   }
   const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
   const endDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getEndDate);
 
-  const durationStart = startDates[1];
-  const durationEnd = endDates[0];
+  const durationStart = startDates[0];
+  const durationEnd = data.getEndDate;
 
-  const startAfter: FirestoreDateLike = endedQuery.size === 3 ? endDates[2] : new Date('2000/1/1');
+  const startAfter: FirestoreDateLike = endedQuery.size === 2 ? endDates[1] : new Date(2000, 0);
   const targetQuery = await firestore
     .collection('users')
     .doc(uid)
@@ -79,18 +67,16 @@ export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: fun
     .startAfter(startAfter)
     .get();
 
-  const oldFollowers: string[] = [];
-  const newFollowers: string[] = [];
-
-  targetQuery.docs.map((doc) => {
-    const { followers, getEndDate } = doc.data() as WatchData;
-    if (getEndDate.seconds <= endDates[1].seconds) {
-      oldFollowers.push(...followers);
-      return;
-    }
-    newFollowers.push(...followers);
-    return;
+  const watchDocs = targetQuery.docs.map((doc) => {
+    return {
+      id: doc.id,
+      data: doc.data() as WatchData,
+    };
   });
+  const [oldWatch, newWatch] = mergeWatches(watchDocs, true);
+
+  const oldFollowers = oldWatch.watch.followers;
+  const newFollowers = newWatch.watch.followers;
 
   const yuku = _.difference(oldFollowers, newFollowers);
   const kuru = _.difference(newFollowers, oldFollowers);
