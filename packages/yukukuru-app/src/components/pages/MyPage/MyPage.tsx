@@ -10,6 +10,7 @@ import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
+import { NotificationList } from '../../organisms/NotificationList';
 import { style } from './style';
 
 export interface MyPageProps {
@@ -157,6 +158,16 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
+      {nav === 'notification' && (
+        <section css={style.section}>
+          <NotificationList />
+        </section>
+      )}
+      {nav === 'setting' && (
+        <section css={style.section}>
+          <NotificationList />
+        </section>
+      )}
       <BottomNav active={nav} onChange={setNav} />
     </div>
   );

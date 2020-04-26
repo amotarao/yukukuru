@@ -43,6 +43,19 @@ export const style = {
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
   `,
 
+  section: css`
+    background: var(--back);
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding: 1rem 1rem 5rem;
+    padding: 1rem 1rem calc(5rem + constant(safe-area-inset-bottom));
+    padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom));
+  `,
+
   homeArea: css`
     background: none;
     padding-bottom: 40px;
