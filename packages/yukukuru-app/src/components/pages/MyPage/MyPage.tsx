@@ -10,6 +10,7 @@ import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
 import { style } from './style';
+import { LoadingCircle } from '../../atoms/LoadingCircle';
 
 export interface MyPageProps {
   isLoading: boolean;
@@ -141,11 +142,11 @@ export const MyPage: React.FC<MyPageProps> = ({
       {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
       <main css={style.main}>
         {isLoading ? (
-          <p style={{ margin: 16 }}>読み込み中</p>
+          <LoadingCircle />
         ) : (
           <>
             <Home items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
-            {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
+            {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
                 続きを取得
