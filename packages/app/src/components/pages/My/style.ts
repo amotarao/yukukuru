@@ -1,7 +1,7 @@
 import { css } from '@emotion/core';
 
 export const wrapper = css`
-  padding: 0 calc(50% - 240px);
+  padding: 0 calc(50% - 240px) 80px;
 
   @media screen and (min-width: 640px) {
     padding: 0 calc(50% - 480px);
@@ -206,11 +206,30 @@ export const getNextButton = css`
   cursor: pointer;
   font-size: 1rem;
   height: 48px;
-  margin: 40px 16px 80px;
+  margin: 40px 16px;
   width: calc(100% - 32px);
 
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+  }
+`;
+
+export const nav = css`
+  background: white;
+  box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 64px;
+  height: calc(64px + constant(safe-area-inset-bottom));
+  height: calc(64px + env(safe-area-inset-bottom));
+  transition: height 0.3s ease-out;
+  position: fixed;
+  padding: 12px 16px;
+  left: 0;
+  bottom: 0;
+  font-size: 14px;
+
+  a {
+    color: var(--primary);
   }
 `;

@@ -160,5 +160,12 @@ export const My: React.FC<MyProps> = ({
         続きを取得
       </button>
     )}
+    <nav css={style.nav}>
+      <p>
+        データが正常に表示されていないなどのお問い合わせは、
+        <a href="https://twitter.com/yukukuruapp">Twitterからリプライ・DMにて</a>
+        お知らせください
+      </p>
+    </nav>
   </div>
 );
