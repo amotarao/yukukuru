@@ -1,6 +1,12 @@
 require('dotenv').config();
 
 module.exports = {
+  exportPathMap() {
+    return {
+      '/': { page: '/' },
+      '/my/index.html': { page: '/my' },
+    };
+  },
   env: {
     PUBLIC_URL: process.env.PUBLIC_URL,
     GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
