@@ -11,6 +11,7 @@ import { UserCard } from '../../organisms/UserCard';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
+import { SettingMenu } from '../../organisms/SettingMenu';
 import { style } from './style';
 
 export interface MyPageProps {
@@ -129,20 +130,11 @@ export const MyPage: React.FC<MyPageProps> = ({
   signOut,
   getNextRecords,
 }) => {
-  const [nav, setNav] = useState<NavType>('home');
+  const [nav, setNav] = useState<NavType>('setting');
 
   return (
     <div css={style.wrapper}>
       {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
-      <header css={style.header}>
-        <TweetButton size="large" />
-        <ThemeSwitchButtonContainer>
-          <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
-        </ThemeSwitchButtonContainer>
-        <button css={style.signOutButton} onClick={signOut}>
-          ログアウト
-        </button>
-      </header>
       <main css={style.main}>
         {isLoading ? (
           <p style={{ margin: 16 }}>読み込み中</p>
@@ -165,7 +157,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       )}
       {nav === 'setting' && (
         <section css={style.section}>
-          <NotificationList />
+          <SettingMenu />
         </section>
       )}
       <BottomNav active={nav} onChange={setNav} />
