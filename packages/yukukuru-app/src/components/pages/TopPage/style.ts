@@ -23,6 +23,5 @@ export const style = {
 
   button: css`
     text-transform: initial;
-    margin-top: 16px;
   `,
 };
