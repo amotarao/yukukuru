@@ -20,9 +20,6 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
   /** 整合性チェック 最終実行日時 */
   lastUpdatedCheckIntegrity: T;
 
-  /** 整合性チェック 最終実行日時 */
-  lastConvertRecords: T;
-
   /** フォロワー一覧取得 state cursor */
   nextCursor: string;
 
