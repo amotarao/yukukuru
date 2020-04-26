@@ -19,7 +19,7 @@ const httpsRuntimeOptions: functions.RuntimeOptions = {
 
 const functionsRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 60,
-  memory: '1GB',
+  memory: '2GB',
 };
 
 /**
