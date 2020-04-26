@@ -1,12 +1,21 @@
 import Head from 'next/head';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 import { AuthContainer } from '../store/auth';
 import { ThemeContainer } from '../store/theme';
 import { TopPage, TopPageProps } from '../components/pages/TopPage';
 
 const Inner: React.FC = () => {
+  const router = useRouter();
+
   const { theme } = ThemeContainer.useContainer();
   const { isLoading, signIn, signedIn, signingIn } = AuthContainer.useContainer();
+
+  useEffect(() => {
+    if (!isLoading && signedIn) {
+      router.replace('/my');
+    }
+  }, [router, signedIn, isLoading]);
 
   const props: TopPageProps = {
     isLoading,
