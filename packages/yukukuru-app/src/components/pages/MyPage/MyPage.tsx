@@ -1,14 +1,14 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { RecordData } from '@yukukuru/types';
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthStoreType } from '../../../store/auth';
 import { RecordsStoreType } from '../../../store/database/records';
 import MediaQuery from 'react-responsive';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
-import { BottomNav } from '../../organisms/BottomNav';
+import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { style } from './style';
 
@@ -127,29 +127,33 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   signOut,
   getNextRecords,
-}) => (
-  <div css={style.wrapper}>
-    {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
-    <header css={style.header}>
-      <TweetButton size="large" />
-      <ThemeSwitchButtonContainer>
-        <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
-      </ThemeSwitchButtonContainer>
-      <button css={style.signOutButton} onClick={signOut}>
-        ログアウト
-      </button>
-    </header>
-    {isLoading ? (
-      <p style={{ margin: 16 }}>読み込み中</p>
-    ) : (
-      <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
-    )}
-    {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
-    {!isLoading && hasNext && (
-      <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
-        続きを取得
-      </button>
-    )}
-    <BottomNav />
-  </div>
-);
+}) => {
+  const [nav, setNav] = useState<NavType>('home');
+
+  return (
+    <div css={style.wrapper}>
+      {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
+      <header css={style.header}>
+        <TweetButton size="large" />
+        <ThemeSwitchButtonContainer>
+          <MediaQuery minWidth={375}>{(matches: boolean) => (matches ? 'テーマを変更' : 'テーマ')}</MediaQuery>
+        </ThemeSwitchButtonContainer>
+        <button css={style.signOutButton} onClick={signOut}>
+          ログアウト
+        </button>
+      </header>
+      {isLoading ? (
+        <p style={{ margin: 16 }}>読み込み中</p>
+      ) : (
+        <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+      )}
+      {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
+      {!isLoading && hasNext && (
+        <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
+          続きを取得
+        </button>
+      )}
+      <BottomNav active={nav} onChange={setNav} />
+    </div>
+  );
+};
