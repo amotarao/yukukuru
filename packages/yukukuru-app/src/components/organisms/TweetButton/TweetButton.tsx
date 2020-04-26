@@ -16,7 +16,7 @@ export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => 
       <Share
         url="https://yukukuru.app"
         options={{
-          text: 'ゆくひとくるひと - フォロワー管理アプリ',
+          text: 'ゆくくる - フォロワーがいつきたか・いなくなったかを記録します',
           size: isNormal ? undefined : size,
           via: 'yukukuruapp',
           hashtags: 'ゆくくる',
