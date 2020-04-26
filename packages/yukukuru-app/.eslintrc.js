@@ -31,5 +31,6 @@ module.exports = {
         arrowParens: 'always',
       },
     ],
+    'react/prop-types': 'off',
   },
 };
