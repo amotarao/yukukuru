@@ -2,7 +2,7 @@ import { css } from '@emotion/core';
 
 export const style = {
   wrapper: css`
-    padding: 0 calc(50% - 240px) 80px;
+    padding: 0 calc(50% - 240px);
 
     @media screen and (min-width: 640px) {
       padding: 0 calc(50% - 480px);
@@ -37,7 +37,13 @@ export const style = {
     padding: 8px 16px;
   `,
 
-  mainArea: css`
+  main: css`
+    padding-bottom: 80px;
+    padding-bottom: calc(80px + constant(safe-area-inset-bottom));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  `,
+
+  homeArea: css`
     background: none;
     padding-bottom: 40px;
 

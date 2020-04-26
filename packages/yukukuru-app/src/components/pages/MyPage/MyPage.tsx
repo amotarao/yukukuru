@@ -73,7 +73,7 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Main: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({
+const Home: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({
   items,
   hasItems,
   hasOnlyEmptyItems,
@@ -88,7 +88,7 @@ const Main: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems
   let currentDate = '';
 
   return (
-    <main css={style.mainArea}>
+    <div css={style.homeArea}>
       <nav css={style.labelNav}>
         <ul>
           <li data-type="yuku">ゆくひと</li>
@@ -110,7 +110,7 @@ const Main: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems
           </React.Fragment>
         );
       })}
-    </main>
+    </div>
   );
 };
 
@@ -142,17 +142,21 @@ export const MyPage: React.FC<MyPageProps> = ({
           ログアウト
         </button>
       </header>
-      {isLoading ? (
-        <p style={{ margin: 16 }}>読み込み中</p>
-      ) : (
-        <Main items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
-      )}
-      {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
-      {!isLoading && hasNext && (
-        <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
-          続きを取得
-        </button>
-      )}
+      <main css={style.main}>
+        {isLoading ? (
+          <p style={{ margin: 16 }}>読み込み中</p>
+        ) : (
+          <>
+            <Home items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+            {!isLoading && isNextLoading && <p style={{ margin: 16 }}>読み込み中</p>}
+            {!isLoading && hasNext && (
+              <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
+                続きを取得
+              </button>
+            )}
+          </>
+        )}
+      </main>
       <BottomNav active={nav} onChange={setNav} />
     </div>
   );
