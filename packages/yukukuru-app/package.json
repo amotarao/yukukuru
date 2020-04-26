@@ -16,11 +16,15 @@
     "next": "9.3.5",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-github-btn": "^1.1.1",
+    "react-responsive": "^8.0.3",
+    "react-twitter-widgets": "^1.7.1",
     "unstated-next": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^13.13.2",
     "@types/react": "^16.9.34",
+    "@types/react-responsive": "^8.0.2",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^6.8.0",
