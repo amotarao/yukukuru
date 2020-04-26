@@ -57,7 +57,7 @@ const Page: React.FC = () => {
     <RecordsContainer.Provider>
       <TokenContainer.Provider>
         <Head>
-          <title>マイページ</title>
+          <title>マイページ - ゆくくる alpha</title>
         </Head>
         <Inner />
       </TokenContainer.Provider>

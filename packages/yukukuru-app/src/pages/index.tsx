@@ -23,7 +23,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>ゆくくる</title>
+        <title>ゆくくる alpha</title>
       </Head>
       <Inner />
     </>
