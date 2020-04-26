@@ -8,6 +8,7 @@ import MediaQuery from 'react-responsive';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
+import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { style } from './style';
 
@@ -149,12 +150,6 @@ export const MyPage: React.FC<MyPageProps> = ({
         続きを取得
       </button>
     )}
-    <nav css={style.nav}>
-      <p>
-        データが正常に表示されていないなどのお問い合わせは、
-        <a href="https://twitter.com/yukukuruapp">Twitterからリプライ・DMにて</a>
-        お知らせください
-      </p>
-    </nav>
+    <BottomNav />
   </div>
 );
