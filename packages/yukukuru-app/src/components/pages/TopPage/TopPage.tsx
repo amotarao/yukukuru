@@ -1,13 +1,14 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core';
+import { jsx, css } from '@emotion/core';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
+import firebase from '../../../modules/firebase';
 import { AuthStoreType } from '../../../store/auth';
 import { ThemeType } from '../../../store/theme';
-import { TweetButton } from '../../organisms/TweetButton';
+import { DummyUserCard } from '../../organisms/UserCard';
+import { style as myPageStyle } from '../../pages/MyPage/style';
 import { style } from './style';
-import * as style2 from './style2';
 
 export interface TopPageProps {
   isLoading: AuthStoreType['isLoading'];
@@ -56,48 +57,57 @@ export const MyButton: React.FC<Pick<TopPageProps, 'isLoading' | 'signingIn' | '
 };
 
 export const TopPage: React.FC<TopPageProps> = (props) => {
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    document.documentElement.style.overflow = null;
+  }, []);
+
   return (
-    <div css={style2.wrapper}>
-      <section css={style2.inner}>
-        <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: 16 }}>ゆくくる alpha</h1>
-        <p style={{ fontSize: '0.8em', marginBottom: 16 }}>フォロワーがいつきたか・いなくなったかを記録します</p>
-        <div css={style2.image}>
-          {props.theme !== 'dark' ? (
-            <img src="/image_default.jpg" alt="利用イメージ" />
-          ) : (
-            <img src="/image_dark.jpg" alt="利用イメージ" />
-          )}
-        </div>
+    <div css={style.wrapper}>
+      <section css={style.name}>
+        <h1 css={style.title}>ゆくくる alpha</h1>
+        <p css={style.text}>フォロワーがいつきたか・いなくなったかを記録します</p>
         <MyButton {...props} />
-        <p
-          style={{
-            fontSize: '0.6em',
-            marginTop: 16,
-            color: '#999',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
-          <span style={{ whiteSpace: 'nowrap' }}>※ 現在テスト版のため不具合が発生する場合があります。</span>
-        </p>
-        <p
-          style={{
-            fontSize: '0.6em',
-            marginTop: 4,
-            marginBottom: 8,
-            color: '#999',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
-          <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
-          <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
-        </p>
-        <div css={style2.socialButtons}>
-          <TweetButton />
-        </div>
+        <p css={style.caution}>ツイートする権限はありませんので安心してご利用ください</p>
+        <p css={style.caution}>※ 現在アルファ版のため不具合が発生する場合があります</p>
+      </section>
+      <section
+        css={css`
+          ${style.example}
+          ${myPageStyle.homeArea}
+        `}
+      >
+        <p css={myPageStyle.recordHead}>こんな感じで表示します</p>
+        <section css={myPageStyle.userSection} data-type="yuku">
+          <DummyUserCard
+            {...{
+              user: {
+                screenName: 'Twitter',
+                displayName: 'Twitter',
+                photoUrl: 'https://pbs.twimg.com/profile_images/1111729635610382336/_65QFl7B_400x400.png',
+              },
+              type: 'yuku',
+              durationStart: '11:11',
+              durationEnd: '12:34',
+            }}
+          />
+        </section>
+        <section css={myPageStyle.userSection} data-type="kuru">
+          <DummyUserCard
+            {...{
+              user: {
+                screenName: 'TwitterJP',
+                displayName: 'Twitter Japan',
+                photoUrl: 'https://pbs.twimg.com/profile_images/875091517198614528/eeNe_9Pc_400x400.jpg',
+              },
+              type: 'kuru',
+              durationStart: '10:00',
+              durationEnd: '11:11',
+            }}
+          />
+        </section>
       </section>
     </div>
   );

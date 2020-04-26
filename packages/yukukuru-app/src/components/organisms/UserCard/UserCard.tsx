@@ -47,3 +47,29 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
     </div>
   );
 };
+
+export interface DummyUserCardProps {
+  user: {
+    screenName: string;
+    displayName: string;
+    photoUrl: string;
+  };
+  type: RecordData['type'];
+  durationStart: string;
+  durationEnd: string;
+}
+
+export const DummyUserCard: React.FC<DummyUserCardProps> = ({ user, type, durationStart, durationEnd }) => {
+  const duration = `${durationStart} から ${durationEnd} までの間`;
+
+  return (
+    <div css={style.wrapper} data-type={type}>
+      <div css={style.iconWrapper}>
+        <ProfileImage src={user.photoUrl} alt={user.displayName} />
+      </div>
+      <p css={style.name}>{user.displayName}</p>
+      <p css={style.screenName}>@{user.screenName}</p>
+      <p css={style.durationText}>{duration}</p>
+    </div>
+  );
+};
