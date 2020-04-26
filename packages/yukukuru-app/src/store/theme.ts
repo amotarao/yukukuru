@@ -4,23 +4,31 @@ import { createContainer } from 'unstated-next';
 export type ThemeType = 'default' | 'dark';
 
 const useTheme = () => {
-  if (typeof window === 'undefined') {
-    return {
-      theme: 'default' as ThemeType,
-      setTheme: (): void => {
-        return undefined;
-      },
-    };
-  }
-
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const init: ThemeType = isDark ? 'dark' : 'default';
-  const [theme, setTheme] = useState<ThemeType>((localStorage.getItem('theme') as ThemeType | null) || init);
+  const [isLoading, setLoading] = useState<boolean>(typeof window !== 'undefined');
+  const [theme, setTheme] = useState<ThemeType>('default');
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const init: ThemeType = isDark ? 'dark' : 'default';
+    setTheme((localStorage.getItem('theme') as ThemeType | null) || init);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (isLoading) {
+      setLoading(false);
+      return;
+    }
+
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  }, [isLoading, theme]);
 
   return {
     theme,
