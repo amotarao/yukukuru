@@ -60,7 +60,7 @@ export const TopPage: React.FC<TopPageProps> = (props) => {
     <div css={style2.wrapper}>
       <section css={style2.inner}>
         <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: 16 }}>ゆくくる alpha</h1>
-        <p style={{ fontSize: '0.8em', marginBottom: 16 }}>あなたのフォロワーを管理します</p>
+        <p style={{ fontSize: '0.8em', marginBottom: 16 }}>フォロワーがいつきたか・いなくなったかを記録します</p>
         <div css={style2.image}>
           {props.theme !== 'dark' ? (
             <img src="/image_default.jpg" alt="利用イメージ" />
