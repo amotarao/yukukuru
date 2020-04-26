@@ -187,17 +187,6 @@ export const style = {
     }
   `,
 
-  errorWrapper: css`
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    display: flex;
-    flex-wrap: wrap;
-    font-size: 0.8em;
-    justify-content: center;
-    margin: 16px;
-    padding: 4;
-  `,
-
   getNextButton: css`
     appearance: none;
     background: var(--primary);

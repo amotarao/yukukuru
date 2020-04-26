@@ -8,6 +8,7 @@ import MediaQuery from 'react-responsive';
 import { TweetButton } from '../../organisms/TweetButton';
 import { ThemeSwitchButtonContainer } from '../../organisms/ThemeSwitchButton';
 import { UserCard } from '../../organisms/UserCard';
+import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { style } from './style';
 
 export interface MyPageProps {
@@ -21,20 +22,6 @@ export interface MyPageProps {
   getNextRecords: RecordsStoreType['getNextRecords'];
   signOut: AuthStoreType['signOut'];
 }
-
-/**
- * エラー表示をするコンポーネント
- */
-const Error: React.FC<Pick<MyPageProps, 'hasToken'>> = ({ hasToken }) => {
-  if (!hasToken) {
-    return (
-      <div css={style.errorWrapper}>
-        <span style={{ whiteSpace: 'nowrap' }}>ログアウトし、再度ログインしてください。</span>
-      </div>
-    );
-  }
-  return null;
-};
 
 /**
  * アイテムがないことを表示するコンポーネント
@@ -141,7 +128,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   getNextRecords,
 }) => (
   <div css={style.wrapper}>
-    {!isLoading && <Error hasToken={hasToken} />}
+    {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
     <header css={style.header}>
       <TweetButton size="large" />
       <ThemeSwitchButtonContainer>
