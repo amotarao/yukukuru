@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { RecordData } from '@yukukuru/types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthStoreType } from '../../../store/auth';
 import { RecordsStoreType } from '../../../store/database/records';
 import { UserCard } from '../../organisms/UserCard';
@@ -127,7 +127,14 @@ export const MyPage: React.FC<MyPageProps> = ({
   signOut,
   getNextRecords,
 }) => {
-  const [nav, setNav] = useState<NavType>('setting');
+  const [nav, setNav] = useState<NavType>('home');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : null;
+  }, [nav]);
 
   return (
     <div css={style.wrapper}>

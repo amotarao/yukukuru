@@ -45,16 +45,23 @@ export const style = {
 
   section: css`
     background: var(--back);
-    position: absolute;
-    left: 0;
+    position: fixed;
     top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     height: 100%;
     width: 100%;
     overflow-y: auto;
-    padding: 1rem 1rem 5rem;
-    padding: 1rem 1rem calc(5rem + constant(safe-area-inset-bottom));
-    padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom));
+    padding: 1rem calc(50% - 240px) 5rem;
+    padding: 1rem calc(50% - 240px) calc(5rem + constant(safe-area-inset-bottom));
+    padding: 1rem calc(50% - 240px) calc(5rem + env(safe-area-inset-bottom));
     z-index: 100;
+
+    @media screen and (min-width: 640px) {
+      padding-right: calc(50% - 480px);
+      padding-left: calc(50% - 480px);
+    }
   `,
 
   homeArea: css`
