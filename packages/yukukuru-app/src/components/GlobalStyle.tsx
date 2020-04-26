@@ -56,6 +56,10 @@ const style = css`
   svg {
     display: block;
   }
+
+  #__next {
+    height: 100%;
+  }
 `;
 
 export const GlobalStyle: React.FC = () => <Global styles={style} />;

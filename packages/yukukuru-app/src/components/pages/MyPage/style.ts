@@ -53,6 +53,8 @@ export const style = {
     height: 100%;
     width: 100%;
     overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
     padding: 1rem calc(50% - 240px) 5rem;
     padding: 1rem calc(50% - 240px) calc(5rem + constant(safe-area-inset-bottom));
     padding: 1rem calc(50% - 240px) calc(5rem + env(safe-area-inset-bottom));

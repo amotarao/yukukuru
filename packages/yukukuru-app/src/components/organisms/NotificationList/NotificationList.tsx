@@ -23,7 +23,7 @@ export const NotificationList: React.FC = (props) => {
     <ul css={style.list}>
       {items.map((item, i) => (
         <li css={style.item} key={i}>
-          <a css={style.card} href={item.url}>
+          <a css={style.card} href={item.url} target="_blank" rel="noopener noreferrer">
             <p css={style.name}>{item.name}</p>
             <p css={style.text}>
               {item.text}
