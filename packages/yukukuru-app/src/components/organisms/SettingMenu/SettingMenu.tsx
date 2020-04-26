@@ -33,7 +33,22 @@ export const SettingMenu: React.FC = (props) => {
         </li>
       </ul>
       <div css={style.twitter}>
-        <a href="https://twitter.com/intent/follow?screen_name=yukukuruapp">公式Twitterをフォローする @yukukuruapp</a>
+        <p>
+          <a href="https://twitter.com/intent/follow?screen_name=yukukuruapp" target="_blank" rel="noopener noreferrer">
+            公式Twitterをフォローする @yukukuruapp
+          </a>
+        </p>
+        <p>
+          <a href="https://twitter.com/yukukuruapp" target="_blank" rel="noopener noreferrer">
+            不具合はリプライかDMでお問い合わせください
+          </a>
+        </p>
+        <p>
+          <a href="https://odaibako.net/u/yukukuruapp" target="_blank" rel="noopener noreferrer">
+            お題箱でもご意見受付中！
+          </a>
+          (お題箱への書き込みは公開されます)
+        </p>
         <TweetButton size="large" />
       </div>
     </>
