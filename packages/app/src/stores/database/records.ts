@@ -30,7 +30,7 @@ const getRecordsFromFirestore = async (
     query = query.startAfter(startAfter);
   }
 
-  query = query.limit(20);
+  query = query.limit(50);
 
   const qs = await query.get();
   return qs;
@@ -68,8 +68,8 @@ const useRecords = () => {
     const { docs, size } = await getRecordsFromFirestore(uid, cursor);
     const newItems = convertRecordsForView(docs.map(convertRecordItems));
 
-    setItems((items) => [...items, ...newItems]);
-    setHasNext(size >= 20);
+    setItems((items) => [...items, ...newItems].filter((item) => item.user.id !== 'EMPTY'));
+    setHasNext(size >= 50);
     setCursor(size > 0 ? docs[size - 1] : null);
 
     // この順番でないと初回Records取得が再始動する
