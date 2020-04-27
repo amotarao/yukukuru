@@ -6,7 +6,7 @@ import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
-export const SettingMenu: React.FC = (props) => {
+export const SettingMenu: React.FC = () => {
   const { signOut } = AuthContainer.useContainer();
   const { theme, setTheme } = ThemeContainer.useContainer();
 

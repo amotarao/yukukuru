@@ -9,7 +9,7 @@ interface NotificationItem {
   url: string;
 }
 
-export const NotificationList: React.FC = (props) => {
+export const NotificationList: React.FC = () => {
   const items: NotificationItem[] = [
     {
       name: 'ゆくくる運営',

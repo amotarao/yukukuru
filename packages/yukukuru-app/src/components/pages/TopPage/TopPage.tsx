@@ -3,7 +3,6 @@ import { jsx, css } from '@emotion/core';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import firebase from '../../../modules/firebase';
 import { AuthStoreType } from '../../../store/auth';
 import { ThemeType } from '../../../store/theme';
 import { DummyUserCard } from '../../organisms/UserCard';

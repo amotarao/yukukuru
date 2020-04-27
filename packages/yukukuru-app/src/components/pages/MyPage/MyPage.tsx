@@ -2,7 +2,6 @@
 import { jsx } from '@emotion/core';
 import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
-import { AuthStoreType } from '../../../store/auth';
 import { RecordsStoreType } from '../../../store/database/records';
 import { UserCard } from '../../organisms/UserCard';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
@@ -21,7 +20,6 @@ export interface MyPageProps {
   hasNext: boolean;
   hasToken: boolean;
   getNextRecords: RecordsStoreType['getNextRecords'];
-  signOut: AuthStoreType['signOut'];
 }
 
 /**
@@ -125,7 +123,6 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
-  signOut,
   getNextRecords,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
