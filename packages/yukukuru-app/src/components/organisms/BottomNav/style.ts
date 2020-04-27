@@ -50,6 +50,11 @@ export const style = {
       color: var(--primary);
     }
 
+    &:focus {
+      outline: none;
+      background-color: var(--primary-bg);
+    }
+
     svg {
       font-size: 1.75rem;
     }
