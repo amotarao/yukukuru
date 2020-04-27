@@ -1,5 +1,7 @@
 .DS_Store
 .env
+/public/sw.js
+/public/workbox-*
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
