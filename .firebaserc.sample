@@ -1,0 +1,22 @@
+{
+  "projects": {
+    "master": "",
+    "develop": ""
+  },
+  "targets": {
+    "": {
+      "hosting": {
+        "app": [
+          ""
+        ]
+      }
+    },
+    "": {
+      "hosting": {
+        "app": [
+          ""
+        ]
+      }
+    }
+  }
+}
