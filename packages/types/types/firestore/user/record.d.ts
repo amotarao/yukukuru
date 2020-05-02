@@ -8,7 +8,7 @@ export interface RecordData<T extends FirestoreDateLike = Timestamp> {
   type: RecordType;
 
   /** ユーザー情報 */
-  user: RecordUserData;
+  user: RecordUserData | RecordUserEmptyData;
 
   /** record が更新された可能性のある期間の開始日時 */
   durationStart: T;
@@ -32,6 +32,14 @@ export interface RecordUserData {
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: boolean;
+}
+
+export interface RecordUserEmptyData {
+  /** Twitter UID (ユニークな数字のID) */
+  id: 'EMPTY';
+
+  /** 削除または凍結された可能性があるかどうか */
+  maybeDeletedOrSuspended: true;
 }
 
 /**

@@ -17,8 +17,8 @@ type Response = FirestoreIdData<RecordData | RecordDataOld>[];
 export const getRecords = async ({ uid, cursor, max }: Props): Promise<Response> => {
   const collection = usersCollection.doc(uid).collection('records');
   const request = max
-    ? collection.where('durationStart', '<', max).orderBy('durationStart').startAt(cursor).get()
-    : collection.orderBy('durationStart').startAt(cursor).get();
+    ? collection.orderBy('durationEnd').startAfter(cursor).endAt(max).get()
+    : collection.orderBy('durationEnd').startAfter(cursor).get();
 
   const qs = await request.catch((): false => false);
   if (!qs) {

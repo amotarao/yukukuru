@@ -15,7 +15,7 @@ export const updateTwUsers = async ({ uid }: Props, now: Date): Promise<void> =>
 
   if (token === null) {
     // エラー
-    console.error(JSON.stringify({ type: 'checkIntegrity: noToken', uid }));
+    console.error(JSON.stringify({ type: 'updateTwUsers: noToken', uid }));
     return;
   }
 
@@ -29,7 +29,7 @@ export const updateTwUsers = async ({ uid }: Props, now: Date): Promise<void> =>
 
   if ('errors' in result) {
     // エラー
-    console.error(JSON.stringify({ type: 'checkIntegrity: usersLoopupError', uid }));
+    console.error(JSON.stringify({ type: 'updateTwUsers: usersLoopupError', uid }));
     return;
   }
   await setTwUsers(result.response);

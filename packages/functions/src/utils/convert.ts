@@ -1,4 +1,5 @@
-import { FirestoreIdData, RecordData, RecordDataOld, RecordUserDataOld } from '@yukukuru/types';
+import { FirestoreIdData, RecordData, RecordDataOld, RecordUserDataOld, RecordUserData } from '@yukukuru/types';
+import * as _ from 'lodash';
 
 /**
  * Records を 新しいタイプのインターフェイスに変換する
@@ -18,17 +19,19 @@ export const convertRecords = (items: FirestoreIdData<RecordData | RecordDataOld
     const { cameUsers, leftUsers, durationStart, durationEnd } = item.data;
 
     function convertItems(user: RecordUserDataOld, type: 'yuku' | 'kuru'): FirestoreIdData<RecordData> {
+      const userData: RecordUserData = {
+        id: user.id,
+        displayName: user.name,
+        screenName: user.screenName,
+        photoUrl: user.photoUrl,
+        maybeDeletedOrSuspended: typeof user.notFounded !== 'undefined' ? user.notFounded : !user.photoUrl,
+      };
+
       const newItem: FirestoreIdData<RecordData> = {
         id: item.id,
         data: {
           type,
-          user: {
-            id: user.id,
-            displayName: user.name,
-            screenName: user.screenName,
-            photoUrl: user.photoUrl,
-            maybeDeletedOrSuspended: typeof user.notFounded !== 'undefined' ? user.notFounded : !user.photoUrl,
-          },
+          user: _.pickBy(userData, (value) => value !== undefined) as RecordUserData,
           durationStart,
           durationEnd,
         },

@@ -1,4 +1,4 @@
-import { FirestoreDateLike, TokenData, TwUserData, RecordDataOld, UserData, WatchData } from '@yukukuru/types';
+import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
@@ -95,10 +95,6 @@ export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): 
 export const existsRecords = async (userId: string): Promise<boolean> => {
   const snapshot = await firestore.collection('users').doc(userId).collection('records').limit(1).get();
   return !snapshot.empty;
-};
-
-export const setRecord = async (userId: string, data: RecordDataOld): Promise<void> => {
-  await firestore.collection('users').doc(userId).collection('records').add(data);
 };
 
 const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> => {
