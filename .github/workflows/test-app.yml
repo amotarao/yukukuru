@@ -3,7 +3,7 @@ name: Test app
 on:
   pull_request:
     paths:
-    - 'packages/app/**'
+    - 'packages/yukukuru-app/**'
 
 jobs:
   test:
@@ -24,7 +24,7 @@ jobs:
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/app/yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/yukukuru-app/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
@@ -33,12 +33,12 @@ jobs:
 
     - name: Install dependencies on app
       run: yarn --frozen-lockfile
-      working-directory: ./packages/app
+      working-directory: ./packages/yukukuru-app
 
     - name: Run lint on app
       run: yarn lint
-      working-directory: ./packages/app
+      working-directory: ./packages/yukukuru-app
 
     - name: Run build on app
       run: yarn build
-      working-directory: ./packages/app
+      working-directory: ./packages/yukukuru-app
