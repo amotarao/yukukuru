@@ -35,7 +35,11 @@ gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
           <meta name="twitter:description" content="フォロワーがいつきたか・いなくなったかを記録します" />
           <meta name="twitter:image" content={`${process.env.PUBLIC_URL}/ogp.jpg`} />
           <link rel="canonical" href={process.env.PUBLIC_URL} />
-          <link rel="icon" href="/favicon.ico" />
+          <link rel="manifest" href="/manifest.json" />
+          <link href="/images/icons/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />
+          <link href="/images/icons/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32" />
+          <link rel="apple-touch-icon" href="/images/icons/apple-icon.png"></link>
+          <meta name="theme-color" content="#2196f3" />
         </Head>
         <body>
           <Main />
