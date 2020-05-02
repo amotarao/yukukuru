@@ -1,0 +1,42 @@
+{
+  "name": "yukukuru-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start",
+    "lint": "eslint 'src/**/*.{js,ts,tsx}'"
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "firebase": "^7.14.2",
+    "next": "9.3.5",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-github-btn": "^1.1.1",
+    "react-responsive": "^8.0.3",
+    "react-transition-group": "^4.3.0",
+    "react-twitter-widgets": "^1.7.1",
+    "unstated-next": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.2",
+    "@types/react": "^16.9.34",
+    "@types/react-responsive": "^8.0.2",
+    "@types/react-transition-group": "^4.2.4",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "@yukukuru/types": "../types",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  }
+}
