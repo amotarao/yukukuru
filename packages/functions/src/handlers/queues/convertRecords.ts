@@ -1,8 +1,8 @@
 import { QueueTypeConvertRecordsData, RecordData, RecordDataOld } from '@yukukuru/types';
-import { firestore } from '../../../modules/firebase';
-import { addRecords } from '../../../utils/firestore/records/addRecords';
-import { removeRecord } from '../../../utils/firestore/records/removeRecord';
-import { convertRecords as convert } from '../../../utils/convert';
+import { firestore } from '../../modules/firebase';
+import { addRecords } from '../../utils/firestore/records/addRecords';
+import { removeRecord } from '../../utils/firestore/records/removeRecord';
+import { convertRecords as convert } from '../../utils/convert';
 
 type Props = QueueTypeConvertRecordsData['data'];
 

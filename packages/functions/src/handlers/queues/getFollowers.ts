@@ -8,8 +8,8 @@ import {
   setUserResult,
   checkProtectedUser,
   setUserResultWithNoChange,
-} from '../../../utils/firestore';
-import { getFollowersIdList } from '../../../utils/twitter';
+} from '../../utils/firestore';
+import { getFollowersIdList } from '../../utils/twitter';
 
 type Props = {
   uid: string;

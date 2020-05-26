@@ -1,5 +1,5 @@
-import { initializeUser } from '../../utils/firestore/users';
-import { AuthOnCreateHandler } from '../../types/functions';
+import { initializeUser } from '../utils/firestore/users';
+import { AuthOnCreateHandler } from '../types/functions';
 
 type Data = Parameters<typeof initializeUser>[1];
 

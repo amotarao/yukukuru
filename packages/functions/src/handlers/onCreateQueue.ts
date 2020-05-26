@@ -3,7 +3,7 @@ import { getFollowers } from './queues/getFollowers';
 import { checkIntegrity } from './queues/checkIntegrity';
 import { updateTwUsers } from './queues/updateTwUsers';
 import { convertRecords } from './queues/convertRecords';
-import { FirestoreOnCreateHandler } from '../../types/functions';
+import { FirestoreOnCreateHandler } from '../types/functions';
 
 export const onCreateQueueHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const now = new Date(context.timestamp);

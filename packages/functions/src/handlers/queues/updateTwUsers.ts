@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
-import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../../../utils/firestore';
-import { getUsersLookup } from '../../../utils/twitter';
-import { getLatestWatches } from '../../../utils/firestore/watches/getWatches';
+import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../../utils/firestore';
+import { getUsersLookup } from '../../utils/twitter';
+import { getLatestWatches } from '../../utils/firestore/watches/getWatches';
 
 type Props = {
   uid: string;

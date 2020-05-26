@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
-import { getFollowersHandler } from './api/getFollowers';
-import { updateTwUsersHandler } from './api/updateTwUsers';
-import { checkIntegrityHandler } from './api/checkIntegrity';
-import { convertRecordsHandler } from './api/convertRecords';
-import { onCreateUserHandler } from './functions/auth/onCreateUser';
-import { onDeleteUserHandler } from './functions/auth/onDeleteUser';
-import { onCreateWatchHandler } from './functions/firestore/onCreateWatch';
-import { onUpdateTokenHandler } from './functions/firestore/onUpdateToken';
+import { getFollowersHandler } from './handlers/getFollowers';
+import { updateTwUsersHandler } from './handlers/updateTwUsers';
+import { checkIntegrityHandler } from './handlers/checkIntegrity';
+import { convertRecordsHandler } from './handlers/convertRecords';
+import { onCreateUserHandler } from './handlers/onCreateUser';
+import { onDeleteUserHandler } from './handlers/onDeleteUser';
+import { onCreateWatchHandler } from './handlers/onCreateWatch';
+import { onUpdateTokenHandler } from './handlers/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
-import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
+import { onCreateQueueHandler } from './handlers/onCreateQueue';
 
 const functionsBase = functions.region('asia-northeast1');
 
