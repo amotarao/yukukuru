@@ -1,8 +1,9 @@
-import { FirestoreIdData, UserData, QueueTypeUpdateTwUsersData } from '@yukukuru/types';
+import { QueueTypeUpdateTwUsersData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeUpdateTwUsers } from '../utils/firestore/queues/addQueuesTypeUpdateTwUsers';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
@@ -18,16 +19,9 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
     .where('group', '==', group)
     .get();
 
-  const docs: FirestoreIdData<UserData>[] = usersSnap.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data() as UserData,
-    };
-  });
-  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
+  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
+  log('updateTwUsers', '', { ids, count: ids.length });
 
-  const items: QueueTypeUpdateTwUsersData['data'][] = docs.map((doc) => ({
-    uid: doc.id,
-  }));
+  const items: QueueTypeUpdateTwUsersData['data'][] = ids.map((id) => ({ uid: id }));
   await addQueuesTypeUpdateTwUsers(items);
 };

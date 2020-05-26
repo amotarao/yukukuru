@@ -17,6 +17,7 @@ import { addRecord } from '../utils/firestore/records/addRecord';
 import { getUsersLookup } from '../utils/twitter';
 import { mergeWatches } from '../utils/watches';
 import { FirestoreOnCreateHandler } from '../types/functions';
+import { log, errorLog } from '../utils/log';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',
@@ -32,17 +33,11 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
 
-  console.log(
-    JSON.stringify({
-      type: `run queue onCreateWatch`,
-      queueId: snapshot.id,
-      uid,
-    })
-  );
+  log('onCreateWatch', '', { queueId: snapshot.id, uid });
 
   // 終了している watch でなければ終了
   if (data.ended === false) {
-    console.log(JSON.stringify({ uid, type: 'noEnded' }));
+    log('onCreateWatch', '', { uid, type: 'noEnded' });
     return;
   }
 
@@ -58,7 +53,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
 
   // 比較できるデータがない
   if (endedQuery.empty) {
-    console.log(JSON.stringify({ uid, type: 'noPreviousWatch' }));
+    log('onCreateWatch', '', { uid, type: 'noPreviousWatch' });
     return;
   }
   const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
@@ -98,14 +93,14 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
       await addRecord({ uid, data: emptyRecord });
     }
 
-    console.log(JSON.stringify({ uid, type: 'noDiffs' }));
+    log('onCreateWatch', '', { uid, type: 'noDiffs' });
     return;
   }
 
   const token = await getToken(uid);
   if (!token) {
     await setTokenInvalid(uid);
-    console.error(JSON.stringify({ uid, type: 'invalidToken' }));
+    errorLog('onCreateWatch', '', { uid, type: 'invalidToken' });
     return;
   }
 
@@ -121,7 +116,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
   if ('errors' in result) {
     result.errors.forEach((error) => {
       if (!checkNoUserMatches([error])) {
-        console.error(uid, error);
+        errorLog('onCreateWatch', '', { uid, error, type: 'TwitterError' });
       }
     });
 
@@ -197,5 +192,5 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
 
   await Promise.all([addRecordsPromise, setTwUsersPromise]);
 
-  console.log(JSON.stringify({ uid, type: 'success', records }));
+  log('onCreateWatch', '', { uid, type: 'success', records });
 };

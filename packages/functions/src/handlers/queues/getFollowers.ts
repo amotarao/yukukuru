@@ -10,6 +10,7 @@ import {
   setUserResultWithNoChange,
 } from '../../utils/firestore';
 import { getFollowersIdList } from '../../utils/twitter';
+import { log, errorLog } from '../../utils/log';
 
 type Props = {
   uid: string;
@@ -25,7 +26,7 @@ interface Response {
 export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promise<Response | void> => {
   const token = await getToken(uid);
   if (!token) {
-    console.log(uid, 'no-token');
+    log('onCreateQueue', 'getFollowers', { type: 'no-token', uid });
     await setTokenInvalid(uid);
     return;
   }
@@ -45,7 +46,7 @@ export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promi
   });
 
   if ('errors' in result) {
-    console.error(uid, result);
+    errorLog('onCreateQueue', 'getFollowers', { uid, errors: result.errors });
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }

@@ -3,6 +3,7 @@ import { firestore } from '../modules/firebase';
 import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const getFollowersHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
@@ -38,7 +39,7 @@ export const getFollowersHandler: PubSubOnRunHandler = async () => {
         data: doc.data() as UserData,
       };
     });
-  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
+  log('getFollowers', '', { ids: docs.map((doc) => doc.id), count: docs.length });
 
   const items: QueueTypeGetFollowersData['data'][] = docs.map((doc) => ({
     uid: doc.id,
