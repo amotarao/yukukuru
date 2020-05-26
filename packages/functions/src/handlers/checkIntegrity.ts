@@ -1,4 +1,4 @@
-import { FirestoreIdData, UserData, QueueTypeCheckIntegrityData } from '@yukukuru/types';
+import { QueueTypeCheckIntegrityData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeCheckIntegrity } from '../utils/firestore/queues/addQueuesTypeCheckIntegrity';
 import { getGroupFromTime } from '../utils/group';
@@ -27,16 +27,9 @@ export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
 
   const usersSnap = await users;
 
-  const docs: FirestoreIdData<UserData>[] = usersSnap.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data() as UserData,
-    };
-  });
-  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
+  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
+  console.log(JSON.stringify({ ids, count: ids.length }));
 
-  const items: QueueTypeCheckIntegrityData['data'][] = docs.map((doc) => ({
-    uid: doc.id,
-  }));
+  const items: QueueTypeCheckIntegrityData['data'][] = ids.map((id) => ({ uid: id }));
   await addQueuesTypeCheckIntegrity(items);
 };
