@@ -2,7 +2,7 @@ import { FirestoreIdData, UserData, QueueTypeCheckIntegrityData } from '@yukukur
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeCheckIntegrity } from '../utils/firestore/queues/addQueuesTypeCheckIntegrity';
 import { getGroupFromTime } from '../utils/group';
-import { PubsubOnRunHandler } from '../types/functions';
+import { PubSubOnRunHandler } from '../types/functions';
 
 /**
  * 整合性チェックのキューを作成
@@ -11,7 +11,7 @@ import { PubsubOnRunHandler } from '../types/functions';
  * 1日に 120回実行
  * ユーザーごとに 1日1回 整合性をチェック
  */
-export const checkIntegrityHandler: PubsubOnRunHandler = async () => {
+export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(12, now);
 

@@ -2,9 +2,9 @@ import { FirestoreIdData, UserData, QueueTypeUpdateTwUsersData } from '@yukukuru
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeUpdateTwUsers } from '../utils/firestore/queues/addQueuesTypeUpdateTwUsers';
 import { getGroupFromTime } from '../utils/group';
-import { PubsubOnRunHandler } from '../types/functions';
+import { PubSubOnRunHandler } from '../types/functions';
 
-export const updateTwUsersHandler: PubsubOnRunHandler = async () => {
+export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(12, now);
 

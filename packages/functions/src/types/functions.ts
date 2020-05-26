@@ -10,4 +10,4 @@ type DocumentBuilder = InstanceType<typeof functions.firestore.DocumentBuilder>;
 export type FirestoreOnCreateHandler = Parameters<DocumentBuilder['onCreate']>[0];
 export type FirestoreOnUpdateHandler = Parameters<DocumentBuilder['onUpdate']>[0];
 
-export type PubsubOnRunHandler = Parameters<InstanceType<typeof functions.pubsub.ScheduleBuilder>['onRun']>[0];
+export type PubSubOnRunHandler = Parameters<InstanceType<typeof functions.pubsub.ScheduleBuilder>['onRun']>[0];

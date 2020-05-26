@@ -12,7 +12,7 @@ import { onCreateQueueHandler } from './handlers/onCreateQueue';
 
 const functionsBase = functions.region('asia-northeast1');
 
-const pubsubRuntimeOptions: functions.RuntimeOptions = {
+const pubSubRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 20,
   memory: '512MB',
 };
@@ -22,28 +22,28 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
   memory: '2GB',
 };
 
-const pubsubScheduleBuilder = (schedule: string): functions.pubsub.ScheduleBuilder =>
-  functionsBase.runWith(pubsubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
+const pubSubScheduleBuilder = (schedule: string): functions.pubSub.ScheduleBuilder =>
+  functionsBase.runWith(pubSubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
 
 /**
- * 定期処理: フォロワー取得
+ * PubSub: フォロワー取得
  */
-export const getFollowers = pubsubScheduleBuilder('* * * * *').onRun(getFollowersHandler);
+export const getFollowers = pubSubScheduleBuilder('* * * * *').onRun(getFollowersHandler);
 
 /**
- * 定期処理: Twitter ユーザー情報更新
+ * PubSub: Twitter ユーザー情報更新
  */
-export const updateTwUsers = pubsubScheduleBuilder('*/12 * * * *').onRun(updateTwUsersHandler);
+export const updateTwUsers = pubSubScheduleBuilder('*/12 * * * *').onRun(updateTwUsersHandler);
 
 /**
- * 定期処理: 整合性チェック
+ * PubSub: 整合性チェック
  */
-export const checkIntegrity = pubsubScheduleBuilder('*/12 * * * *').onRun(checkIntegrityHandler);
+export const checkIntegrity = pubSubScheduleBuilder('*/12 * * * *').onRun(checkIntegrityHandler);
 
 /**
- * 定期処理: record の変換
+ * PubSub: record の変換
  */
-export const convertRecords = pubsubScheduleBuilder('* * * * *').onRun(convertRecordsHandler);
+export const convertRecords = pubSubScheduleBuilder('* * * * *').onRun(convertRecordsHandler);
 
 /**
  * Twitter Token のアップデート
