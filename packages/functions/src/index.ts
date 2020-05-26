@@ -12,7 +12,7 @@ import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
 
 const functionsBase = functions.region('asia-northeast1');
 
-const httpsRuntimeOptions: functions.RuntimeOptions = {
+const pubsubRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 20,
   memory: '512MB',
 };
@@ -22,61 +22,28 @@ const functionsRuntimeOptions: functions.RuntimeOptions = {
   memory: '2GB',
 };
 
+const pubsubScheduleBuilder = (schedule: string): functions.pubsub.ScheduleBuilder =>
+  functionsBase.runWith(pubsubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
+
 /**
  * 定期処理: フォロワー取得
  */
-export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await getFollowersHandler();
-    res.status(200).send('success');
-  })();
-});
+export const getFollowers = pubsubScheduleBuilder('* * * * *').onRun(getFollowersHandler);
 
 /**
  * 定期処理: Twitter ユーザー情報更新
  */
-export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await updateTwUsersHandler();
-    res.status(200).send('success');
-  })();
-});
+export const updateTwUsers = pubsubScheduleBuilder('*/12 * * * *').onRun(updateTwUsersHandler);
 
 /**
  * 定期処理: 整合性チェック
  */
-export const checkIntegrity = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await checkIntegrityHandler();
-    res.status(200).send('success');
-  })();
-});
+export const checkIntegrity = pubsubScheduleBuilder('*/12 * * * *').onRun(checkIntegrityHandler);
 
 /**
  * 定期処理: record の変換
  */
-export const convertRecords = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await convertRecordsHandler();
-    res.status(200).send('success');
-  })();
-});
+export const convertRecords = pubsubScheduleBuilder('* * * * *').onRun(convertRecordsHandler);
 
 /**
  * Twitter Token のアップデート
