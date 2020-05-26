@@ -1,8 +1,8 @@
 import { TokenData } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
-import { setUserToActive, setUserToNotActive } from '../../utils/firestore/users';
+import { setUserToActive, setUserToNotActive } from '../utils/firestore/users';
+import { FirestoreOnUpdateHandler } from '../types/functions';
 
-export default async ({ after }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
+export const onUpdateTokenHandler: FirestoreOnUpdateHandler = async ({ after }) => {
   const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = after.data() as TokenData;
   const invalid = !twitterAccessToken || !twitterAccessTokenSecret || !twitterId;
   if (invalid) {

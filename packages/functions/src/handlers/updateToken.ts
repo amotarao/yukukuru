@@ -1,6 +1,6 @@
 import { TokenData } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
 import { firestore } from '../modules/firebase';
+import { HttpsOnCallHandler } from '../types/functions';
 
 type Props = TokenData;
 
@@ -18,7 +18,7 @@ function isProps(data: any): data is Props {
   );
 }
 
-export async function updateTokenHandler(data: any, context: functions.https.CallableContext) {
+export const updateTokenHandler: HttpsOnCallHandler = async (data, context) => {
   console.log('updateToken', data, context);
 
   if (!isProps(data) || typeof context.auth === 'undefined') {
@@ -28,4 +28,4 @@ export async function updateTokenHandler(data: any, context: functions.https.Cal
   await firestore.collection('tokens').doc(context.auth.uid).set(data);
 
   return true;
-}
+};

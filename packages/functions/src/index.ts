@@ -1,119 +1,64 @@
 import * as functions from 'firebase-functions';
-import getFollowersHandler from './api/getFollowers';
-import updateTwUsersHandler from './api/updateTwUsers';
-import checkIntegrityHandler from './api/checkIntegrity';
-import convertRecordsHandler from './api/convertRecords';
-import onCreateUserHandler from './functions/auth/onCreateUser';
-import onDeleteUserHandler from './functions/auth/onDeleteUser';
-import onCreateWatchHandler from './functions/firestore/onCreateWatch';
-import onFirestoreUpdateTokenHandler from './functions/firestore/onUpdateToken';
+import { getFollowersHandler } from './handlers/getFollowers';
+import { updateTwUsersHandler } from './handlers/updateTwUsers';
+import { checkIntegrityHandler } from './handlers/checkIntegrity';
+import { convertRecordsHandler } from './handlers/convertRecords';
+import { onCreateUserHandler } from './handlers/onCreateUser';
+import { onDeleteUserHandler } from './handlers/onDeleteUser';
+import { onCreateWatchHandler } from './handlers/onCreateWatch';
+import { onUpdateTokenHandler } from './handlers/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
-import { onCreateQueueHandler } from './functions/firestore/onCreateQueue';
+import { onCreateQueueHandler } from './handlers/onCreateQueue';
 
 const functionsBase = functions.region('asia-northeast1');
 
-const httpsRuntimeOptions: functions.RuntimeOptions = {
+const pubSubRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 20,
   memory: '512MB',
 };
 
-const functionsRuntimeOptions: functions.RuntimeOptions = {
+const firestoreRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 60,
   memory: '2GB',
 };
 
-/**
- * 定期処理: フォロワー取得
- */
-export const getFollowers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await getFollowersHandler();
-    res.status(200).send('success');
-  })();
-});
+const httpsRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 10,
+  memory: '256MB',
+};
 
-/**
- * 定期処理: Twitter ユーザー情報更新
- */
-export const updateTwUsers = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await updateTwUsersHandler();
-    res.status(200).send('success');
-  })();
-});
+const pubSubScheduleBuilder = (schedule: string): functions.pubsub.ScheduleBuilder =>
+  functionsBase.runWith(pubSubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
 
-/**
- * 定期処理: 整合性チェック
- */
-export const checkIntegrity = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await checkIntegrityHandler();
-    res.status(200).send('success');
-  })();
-});
+const firestoreBuilder = (path: string): functions.firestore.DocumentBuilder =>
+  functionsBase.runWith(firestoreRuntimeOptions).firestore.document(path);
 
-/**
- * 定期処理: record の変換
- */
-export const convertRecords = functionsBase.runWith(httpsRuntimeOptions).https.onRequest((req, res) => {
-  (async (): Promise<void> => {
-    if (req.query.key !== (functions.config().https.key as string)) {
-      res.status(403).end();
-      return;
-    }
-    await convertRecordsHandler();
-    res.status(200).send('success');
-  })();
-});
+/** PubSub: フォロワー取得 */
+export const getFollowers = pubSubScheduleBuilder('* * * * *').onRun(getFollowersHandler);
 
-/**
- * Twitter Token のアップデート
- */
-export const updateToken = functionsBase
-  .runWith({ timeoutSeconds: 10, memory: '256MB' })
-  .https.onCall(updateTokenHandler);
+/** PubSub: Twitter ユーザー情報更新 */
+export const updateTwUsers = pubSubScheduleBuilder('*/12 * * * *').onRun(updateTwUsersHandler);
 
-/**
- * Auth: ユーザーが作成されたときの処理
- */
+/** PubSub: 整合性チェック */
+export const checkIntegrity = pubSubScheduleBuilder('*/12 * * * *').onRun(checkIntegrityHandler);
+
+/** PubSub: record の変換 */
+export const convertRecords = pubSubScheduleBuilder('* * * * *').onRun(convertRecordsHandler);
+
+/** Twitter Token のアップデート */
+export const updateToken = functionsBase.runWith(httpsRuntimeOptions).https.onCall(updateTokenHandler);
+
+/** Auth: ユーザーが作成されたときの処理 */
 export const onCreateUser = functionsBase.auth.user().onCreate(onCreateUserHandler);
 
-/**
- * Auth: ユーザーが削除されたときの処理
- */
+/** Auth: ユーザーが削除されたときの処理 */
 export const onDeleteUser = functionsBase.auth.user().onDelete(onDeleteUserHandler);
 
-/**
- * Firestore: トークンが更新されたときの処理
- */
-export const onFirestoreUpdateToken = functionsBase.firestore
-  .document('tokens/{userId}')
-  .onUpdate(onFirestoreUpdateTokenHandler);
+/** Firestore: トークンが更新されたときの処理 */
+export const onFirestoreUpdateToken = firestoreBuilder('tokens/{userId}').onUpdate(onUpdateTokenHandler);
 
-/**
- * Firestore: watch が作成されたときの処理
- */
-export const onCreateWatch = functionsBase
-  .runWith(functionsRuntimeOptions)
-  .firestore.document('users/{userId}/watches/{watchId}')
-  .onCreate(onCreateWatchHandler);
+/** Firestore: watch が作成されたときの処理 */
+export const onCreateWatch = firestoreBuilder('users/{userId}/watches/{watchId}').onCreate(onCreateWatchHandler);
 
-/**
- * Firestore: queue が作成されたときの処理
- */
-export const onCreateQueue = functionsBase
-  .runWith(functionsRuntimeOptions)
-  .firestore.document('queues/{queueId}')
-  .onCreate(onCreateQueueHandler);
+/** Firestore: queue が作成されたときの処理 */
+export const onCreateQueue = firestoreBuilder('queues/{queueId}').onCreate(onCreateQueueHandler);

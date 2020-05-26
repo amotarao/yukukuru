@@ -2,7 +2,7 @@ import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukuk
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import * as _ from 'lodash';
-import { firestore } from '../../modules/firebase';
+import { firestore } from '../modules/firebase';
 import {
   checkNoUserMatches,
   checkInvalidToken,
@@ -10,12 +10,13 @@ import {
   getToken,
   existsRecords,
   setTwUsers,
-} from '../../utils/firestore';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
-import { addRecords } from '../../utils/firestore/records/addRecords';
-import { addRecord } from '../../utils/firestore/records/addRecord';
-import { getUsersLookup } from '../../utils/twitter';
-import { mergeWatches } from '../../utils/watches';
+} from '../utils/firestore';
+import { getTwUser } from '../utils/firestore/twUsers/getTwUser';
+import { addRecords } from '../utils/firestore/records/addRecords';
+import { addRecord } from '../utils/firestore/records/addRecord';
+import { getUsersLookup } from '../utils/twitter';
+import { mergeWatches } from '../utils/watches';
+import { FirestoreOnCreateHandler } from '../types/functions';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',
@@ -27,9 +28,17 @@ const emptyRecord: RecordData<FirestoreDateLike> = {
   durationEnd: new Date(2000, 0),
 };
 
-export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext): Promise<void> => {
+export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
+
+  console.log(
+    JSON.stringify({
+      type: `run queue onCreateWatch`,
+      queueId: snapshot.id,
+      uid,
+    })
+  );
 
   // 終了している watch でなければ終了
   if (data.ended === false) {
