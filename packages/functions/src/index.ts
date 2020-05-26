@@ -27,7 +27,7 @@ const httpsRuntimeOptions: functions.RuntimeOptions = {
   memory: '256MB',
 };
 
-const pubSubScheduleBuilder = (schedule: string): functions.pubSub.ScheduleBuilder =>
+const pubSubScheduleBuilder = (schedule: string): functions.pubsub.ScheduleBuilder =>
   functionsBase.runWith(pubSubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
 
 const firestoreBuilder = (path: string): functions.firestore.DocumentBuilder =>
