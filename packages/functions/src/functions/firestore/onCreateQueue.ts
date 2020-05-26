@@ -1,14 +1,11 @@
 import { QueueData } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
 import { getFollowers } from './queues/getFollowers';
 import { checkIntegrity } from './queues/checkIntegrity';
 import { updateTwUsers } from './queues/updateTwUsers';
 import { convertRecords } from './queues/convertRecords';
+import { FirestoreOnCreateHandler } from '../../types/functions';
 
-export const onCreateQueueHandler = async (
-  snapshot: FirebaseFirestore.DocumentSnapshot,
-  context: functions.EventContext
-): Promise<void> => {
+export const onCreateQueueHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const now = new Date(context.timestamp);
   const id = snapshot.id;
   const queue = snapshot.data() as QueueData;

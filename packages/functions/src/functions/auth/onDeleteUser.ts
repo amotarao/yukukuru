@@ -1,6 +1,6 @@
-import { admin } from '../../modules/firebase';
 import { setUserToNotActive } from '../../utils/firestore/users';
+import { AuthOnDeleteHandler } from '../../types/functions';
 
-export const onDeleteUserHandler = async ({ uid }: admin.auth.UserRecord) => {
+export const onDeleteUserHandler: AuthOnDeleteHandler = async ({ uid }) => {
   await setUserToNotActive(uid);
 };

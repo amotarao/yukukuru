@@ -2,8 +2,9 @@ import { FirestoreIdData, UserData, QueueTypeConvertRecordsData } from '@yukukur
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeConvertRecords } from '../utils/firestore/queues/addQueuesTypeConvertRecords';
 import { getGroupFromTime } from '../utils/group';
+import { PubsubOnRunHandler } from '../types/functions';
 
-export const convertRecordsHandler = async (): Promise<void> => {
+export const convertRecordsHandler: PubsubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(1, now);
 
