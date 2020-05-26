@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
+import * as gtag from '../../../libs/gtag';
 import { RecordsStoreType } from '../../../store/database/records';
 import { UserCard } from '../../organisms/UserCard';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
@@ -126,6 +127,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   getNextRecords,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
+  const [paging, setPaging] = useState<number>(1);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -133,6 +135,30 @@ export const MyPage: React.FC<MyPageProps> = ({
     }
     document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : null;
   }, [nav]);
+
+  useEffect(() => {
+    if (isLoading || isNextLoading) {
+      return;
+    }
+
+    gtag.event({
+      action: 'element_show',
+      category: 'has_next',
+      label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+      value: 100,
+    });
+  }, [isLoading, isNextLoading, hasNext, paging]);
+
+  const getNext = () => {
+    getNextRecords();
+    gtag.event({
+      action: 'button_click',
+      category: 'click_next',
+      label: `click_next_p-${paging}`,
+      value: 100,
+    });
+    setPaging(paging + 1);
+  };
 
   return (
     <div css={style.wrapper}>
@@ -145,7 +171,7 @@ export const MyPage: React.FC<MyPageProps> = ({
             <Home items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
-              <button css={style.getNextButton} disabled={isNextLoading} onClick={() => getNextRecords()}>
+              <button css={style.getNextButton} disabled={isNextLoading} onClick={getNext}>
                 続きを取得
               </button>
             )}
