@@ -10,7 +10,7 @@ import { getGroupFromTime } from '../utils/group';
  * 1日に 120回実行
  * ユーザーごとに 1日1回 整合性をチェック
  */
-export default async (): Promise<void> => {
+export const checkIntegrityHandler = async (): Promise<void> => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(12, now);
 

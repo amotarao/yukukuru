@@ -27,9 +27,20 @@ const emptyRecord: RecordData<FirestoreDateLike> = {
   durationEnd: new Date(2000, 0),
 };
 
-export default async (snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext): Promise<void> => {
+export const onCreateWatchHandler = async (
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  context: functions.EventContext
+): Promise<void> => {
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
+
+  console.log(
+    JSON.stringify({
+      type: `run queue onCreateWatch`,
+      queueId: snapshot.id,
+      uid,
+    })
+  );
 
   // 終了している watch でなければ終了
   if (data.ended === false) {

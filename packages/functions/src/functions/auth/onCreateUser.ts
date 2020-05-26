@@ -3,7 +3,7 @@ import { initializeUser } from '../../utils/firestore/users';
 
 type Data = Parameters<typeof initializeUser>[1];
 
-export default async (user: admin.auth.UserRecord) => {
+export const onCreateUserHandler = async (user: admin.auth.UserRecord) => {
   const { photoURL, displayName, uid } = user;
   const data: Data = {
     displayName: displayName || '',
