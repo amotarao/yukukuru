@@ -17,70 +17,48 @@ const pubSubRuntimeOptions: functions.RuntimeOptions = {
   memory: '512MB',
 };
 
-const functionsRuntimeOptions: functions.RuntimeOptions = {
+const firestoreRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 60,
   memory: '2GB',
+};
+
+const httpsRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 10,
+  memory: '256MB',
 };
 
 const pubSubScheduleBuilder = (schedule: string): functions.pubSub.ScheduleBuilder =>
   functionsBase.runWith(pubSubRuntimeOptions).pubsub.schedule(schedule).timeZone('Asia/Tokyo');
 
-/**
- * PubSub: フォロワー取得
- */
+const firestoreBuilder = (path: string): functions.firestore.DocumentBuilder =>
+  functionsBase.runWith(firestoreRuntimeOptions).firestore.document(path);
+
+/** PubSub: フォロワー取得 */
 export const getFollowers = pubSubScheduleBuilder('* * * * *').onRun(getFollowersHandler);
 
-/**
- * PubSub: Twitter ユーザー情報更新
- */
+/** PubSub: Twitter ユーザー情報更新 */
 export const updateTwUsers = pubSubScheduleBuilder('*/12 * * * *').onRun(updateTwUsersHandler);
 
-/**
- * PubSub: 整合性チェック
- */
+/** PubSub: 整合性チェック */
 export const checkIntegrity = pubSubScheduleBuilder('*/12 * * * *').onRun(checkIntegrityHandler);
 
-/**
- * PubSub: record の変換
- */
+/** PubSub: record の変換 */
 export const convertRecords = pubSubScheduleBuilder('* * * * *').onRun(convertRecordsHandler);
 
-/**
- * Twitter Token のアップデート
- */
-export const updateToken = functionsBase
-  .runWith({ timeoutSeconds: 10, memory: '256MB' })
-  .https.onCall(updateTokenHandler);
+/** Twitter Token のアップデート */
+export const updateToken = functionsBase.runWith(httpsRuntimeOptions).https.onCall(updateTokenHandler);
 
-/**
- * Auth: ユーザーが作成されたときの処理
- */
+/** Auth: ユーザーが作成されたときの処理 */
 export const onCreateUser = functionsBase.auth.user().onCreate(onCreateUserHandler);
 
-/**
- * Auth: ユーザーが削除されたときの処理
- */
+/** Auth: ユーザーが削除されたときの処理 */
 export const onDeleteUser = functionsBase.auth.user().onDelete(onDeleteUserHandler);
 
-/**
- * Firestore: トークンが更新されたときの処理
- */
-export const onFirestoreUpdateToken = functionsBase.firestore
-  .document('tokens/{userId}')
-  .onUpdate(onUpdateTokenHandler);
+/** Firestore: トークンが更新されたときの処理 */
+export const onFirestoreUpdateToken = firestoreBuilder('tokens/{userId}').onUpdate(onUpdateTokenHandler);
 
-/**
- * Firestore: watch が作成されたときの処理
- */
-export const onCreateWatch = functionsBase
-  .runWith(functionsRuntimeOptions)
-  .firestore.document('users/{userId}/watches/{watchId}')
-  .onCreate(onCreateWatchHandler);
+/** Firestore: watch が作成されたときの処理 */
+export const onCreateWatch = firestoreBuilder('users/{userId}/watches/{watchId}').onCreate(onCreateWatchHandler);
 
-/**
- * Firestore: queue が作成されたときの処理
- */
-export const onCreateQueue = functionsBase
-  .runWith(functionsRuntimeOptions)
-  .firestore.document('queues/{queueId}')
-  .onCreate(onCreateQueueHandler);
+/** Firestore: queue が作成されたときの処理 */
+export const onCreateQueue = firestoreBuilder('queues/{queueId}').onCreate(onCreateQueueHandler);
