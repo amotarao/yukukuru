@@ -3,6 +3,7 @@ import { firestore } from '../../modules/firebase';
 import { addRecords } from '../../utils/firestore/records/addRecords';
 import { removeRecord } from '../../utils/firestore/records/removeRecord';
 import { convertRecords as convert } from '../../utils/convert';
+import { log } from '../../utils/log';
 
 type Props = QueueTypeConvertRecordsData['data'];
 
@@ -30,5 +31,5 @@ export const convertRecords = async ({ uid }: Props, now: Date): Promise<void> =
   });
   await Promise.all(requests);
 
-  console.log(JSON.stringify({ uid, type: 'success', ids: rawDocs.docs.map((doc) => doc.id) }));
+  log('onCreateQueue', 'convertRecords', { uid, type: 'success', ids: rawDocs.docs.map((doc) => doc.id) });
 };

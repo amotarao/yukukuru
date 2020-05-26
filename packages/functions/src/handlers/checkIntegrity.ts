@@ -3,6 +3,7 @@ import { firestore } from '../modules/firebase';
 import { addQueuesTypeCheckIntegrity } from '../utils/firestore/queues/addQueuesTypeCheckIntegrity';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 /**
  * 整合性チェックのキューを作成
@@ -28,7 +29,7 @@ export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
   const usersSnap = await users;
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-  console.log(JSON.stringify({ ids, count: ids.length }));
+  log('checkIntegrity', '', { ids, count: ids.length });
 
   const items: QueueTypeCheckIntegrityData['data'][] = ids.map((id) => ({ uid: id }));
   await addQueuesTypeCheckIntegrity(items);

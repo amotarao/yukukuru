@@ -1,8 +1,9 @@
-import { FirestoreIdData, UserData, QueueTypeConvertRecordsData } from '@yukukuru/types';
+import { QueueTypeConvertRecordsData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { addQueuesTypeConvertRecords } from '../utils/firestore/queues/addQueuesTypeConvertRecords';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const convertRecordsHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
@@ -10,16 +11,9 @@ export const convertRecordsHandler: PubSubOnRunHandler = async () => {
 
   const usersSnap = await firestore.collection('users').where('active', '==', true).where('group', '==', group).get();
 
-  const docs: FirestoreIdData<UserData>[] = usersSnap.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data() as UserData,
-    };
-  });
-  console.log({ ids: docs.map((doc) => doc.id).join(','), count: docs.length });
+  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
+  log('convertRecords', '', { ids, count: ids.length });
 
-  const items: QueueTypeConvertRecordsData['data'][] = docs.map((doc) => ({
-    uid: doc.id,
-  }));
+  const items: QueueTypeConvertRecordsData['data'][] = ids.map((id) => ({ uid: id }));
   await addQueuesTypeConvertRecords(items);
 };

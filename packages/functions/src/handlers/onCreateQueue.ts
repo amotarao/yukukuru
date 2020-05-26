@@ -4,19 +4,14 @@ import { checkIntegrity } from './queues/checkIntegrity';
 import { updateTwUsers } from './queues/updateTwUsers';
 import { convertRecords } from './queues/convertRecords';
 import { FirestoreOnCreateHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const onCreateQueueHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const now = new Date(context.timestamp);
   const id = snapshot.id;
   const queue = snapshot.data() as QueueData;
 
-  console.log(
-    JSON.stringify({
-      type: `run queue ${queue.type}`,
-      queueId: id,
-      uid: queue.data.uid,
-    })
-  );
+  log('onCreateQueue', queue.type, { queueId: id, uid: queue.data.uid });
 
   switch (queue.type) {
     case 'getFollowers': {

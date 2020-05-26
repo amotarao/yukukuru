@@ -4,6 +4,7 @@ import * as Twitter from 'twitter';
 import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 import { getLatestWatches } from '../../utils/firestore/watches/getWatches';
+import { log, errorLog } from '../../utils/log';
 
 type Props = {
   uid: string;
@@ -15,7 +16,7 @@ export const updateTwUsers = async ({ uid }: Props, now: Date): Promise<void> =>
 
   if (token === null) {
     // エラー
-    console.error(JSON.stringify({ type: 'updateTwUsers: noToken', uid }));
+    errorLog('onCreateQueue', 'updateTwUsers', { uid, type: 'noToken' });
     return;
   }
 
@@ -29,11 +30,16 @@ export const updateTwUsers = async ({ uid }: Props, now: Date): Promise<void> =>
 
   if ('errors' in result) {
     // エラー
-    console.error(JSON.stringify({ type: 'updateTwUsers: usersLoopupError', uid }));
+    errorLog('onCreateQueue', 'updateTwUsers', { uid, type: 'usersLoopupError' });
     return;
   }
   await setTwUsers(result.response);
   await updateUserLastUpdatedTwUsers(uid, now);
 
-  console.log(JSON.stringify({ uid, type: 'success', lookuped: result.response.length, followers: followers.length }));
+  log('onCreateQueue', 'updateTwUsers', {
+    uid,
+    type: 'success',
+    lookuped: result.response.length,
+    followers: followers.length,
+  });
 };

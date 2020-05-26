@@ -11,6 +11,7 @@ import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } 
 import { convertRecords } from '../../utils/convert';
 import { mergeWatches } from '../../utils/watches';
 import { addRecords } from '../../utils/firestore/records/addRecords';
+import { log, errorLog } from '../../utils/log';
 
 type Props = {
   uid: string;
@@ -81,7 +82,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
 
   // 存在しないドキュメントがある場合は追加する
   if (notExistsDiffs.length !== 0 && unknownDiffs.length === 0) {
-    console.log(JSON.stringify({ type: 'checkIntegrity: hasNotExistsDiffs', uid, notExistsDiffs }));
+    log('onCreateQueue', 'checkIntegrity', { type: 'hasNotExistsDiffs', uid, notExistsDiffs });
   }
 
   // 得体のしれないドキュメントがある場合はエラーを出す
@@ -89,7 +90,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     const removeRecordIds = _.flatten(unknownDiffs.map(({ id }) => id));
     await removeRecords({ uid, removeIds: removeRecordIds });
 
-    console.log(JSON.stringify({ type: 'checkIntegrity: hasUnknownDiffs', uid, unknownDiffs, removeRecordIds }));
+    log('onCreateQueue', 'checkIntegrity', { type: 'hasUnknownDiffs', uid, unknownDiffs, removeRecordIds });
   }
 
   // 何も変化がない場合、そのまま削除する
@@ -97,7 +98,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     const removeIds = _.flatten(watches.map(({ ids }) => ids).slice(0, watches.length - 1));
     await removeWatches({ uid, removeIds });
 
-    console.log(JSON.stringify({ type: 'checkIntegrity: correctRecords', uid, removeIds }));
+    log('onCreateQueue', 'checkIntegrity', { type: 'correctRecords', uid, removeIds });
   }
 
   // durationStart だけ異なるドキュメントがある場合は、アップデートする
@@ -117,12 +118,12 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     });
 
     await updateRecordsStart({ uid, items });
-    console.log(JSON.stringify({ type: 'checkIntegrity: sameEnd', uid, notExistsDiffs, unknownDiffs, items }));
+    log('onCreateQueue', 'checkIntegrity', { type: 'sameEnd', uid, notExistsDiffs, unknownDiffs, items });
   }
 
   // 想定されていない処理
   else {
-    console.error(JSON.stringify({ type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs }));
+    errorLog('onCreateQueue', 'checkIntegrity', { type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs });
   }
 
   await updateUserCheckIntegrity(uid, now);

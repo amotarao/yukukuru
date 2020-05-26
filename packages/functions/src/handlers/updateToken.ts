@@ -1,6 +1,7 @@
 import { TokenData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { HttpsOnCallHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 type Props = TokenData;
 
@@ -19,7 +20,7 @@ function isProps(data: any): data is Props {
 }
 
 export const updateTokenHandler: HttpsOnCallHandler = async (data, context) => {
-  console.log('updateToken', data, context);
+  log('updateToken', '', { data, context });
 
   if (!isProps(data) || typeof context.auth === 'undefined') {
     return false;

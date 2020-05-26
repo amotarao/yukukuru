@@ -3,6 +3,7 @@ import { firestore } from '../modules/firebase';
 import { addQueuesTypeUpdateTwUsers } from '../utils/firestore/queues/addQueuesTypeUpdateTwUsers';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
@@ -19,7 +20,7 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
     .get();
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-  console.log(JSON.stringify({ ids, count: ids.length }));
+  log('updateTwUsers', '', { ids, count: ids.length });
 
   const items: QueueTypeUpdateTwUsersData['data'][] = ids.map((id) => ({ uid: id }));
   await addQueuesTypeUpdateTwUsers(items);
