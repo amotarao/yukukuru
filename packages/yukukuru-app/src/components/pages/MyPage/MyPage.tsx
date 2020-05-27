@@ -28,7 +28,7 @@ export interface MyPageProps {
  */
 const NoItem: React.FC = () => {
   return (
-    <div>
+    <div style={{ paddingTop: 32 }}>
       <p
         style={{
           fontSize: '0.8em',
@@ -39,7 +39,7 @@ const NoItem: React.FC = () => {
           margin: '8px 16px',
         }}
       >
-        <span style={{ whiteSpace: 'nowrap' }}>※ データ取得までに時間が掛かります。</span>
+        <span style={{ whiteSpace: 'nowrap' }}>データ取得までに時間が掛かります。</span>
         <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
       </p>
     </div>
@@ -51,7 +51,7 @@ const NoItem: React.FC = () => {
  */
 const NoViewItem: React.FC = () => {
   return (
-    <div>
+    <div style={{ paddingTop: 32 }}>
       <p
         style={{
           fontSize: '0.8em',
