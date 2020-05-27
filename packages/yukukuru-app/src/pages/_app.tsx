@@ -7,7 +7,6 @@ import { AuthContainer } from '../store/auth';
 import { ThemeContainer } from '../store/theme';
 
 Router.events.on('routeChangeComplete', (url) => {
-  console.log('url', url);
   gtag.pageview(url);
 });
 
