@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "if [ -d ../types ]; then npm pack ../types; fi",
-    "build": "tsc",
+    "build": "rm -rf lib/* && tsc",
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
