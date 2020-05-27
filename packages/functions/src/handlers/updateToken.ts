@@ -20,7 +20,7 @@ function isProps(data: any): data is Props {
 }
 
 export const updateTokenHandler: HttpsOnCallHandler = async (data, context) => {
-  log('updateToken', '', { data, context });
+  log('updateToken', '', { data });
 
   if (!isProps(data) || typeof context.auth === 'undefined') {
     return false;

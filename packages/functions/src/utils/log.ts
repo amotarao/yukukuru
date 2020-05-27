@@ -11,7 +11,12 @@ export const log = (functionName: string, subName: string, details: object): voi
     details,
   };
 
-  console.log(JSON.stringify(data));
+  try {
+    console.log(JSON.stringify(data));
+  } catch (e) {
+    console.log(JSON.stringify({ functionName, subName }));
+    console.error(e);
+  }
 };
 
 /**
@@ -27,5 +32,10 @@ export const errorLog = (functionName: string, subName: string, details: object)
     details,
   };
 
-  console.error(JSON.stringify(data));
+  try {
+    console.error(JSON.stringify(data));
+  } catch (e) {
+    console.error(JSON.stringify({ functionName, subName }));
+    console.error(e);
+  }
 };
