@@ -37,37 +37,39 @@ const getRecordsFromFirestore = async (
 };
 
 type State = {
-  isFirstLoading: boolean
-  isNextLoading: boolean
-  isLoaded: boolean
-}
+  isFirstLoading: boolean;
+  isNextLoading: boolean;
+  isLoaded: boolean;
+};
 
 const initialState: State = {
   isFirstLoading: false,
   isNextLoading: false,
   isLoaded: false,
-}
+};
 
-type Action = {
-  type: 'getRecordStarted'
-  payload?: { isNext: boolean }
-} |  {
-  type: 'getRecordSuccess'
-}
+type Action =
+  | {
+      type: 'getRecordStarted';
+      payload?: { isNext: boolean };
+    }
+  | {
+      type: 'getRecordSuccess';
+    };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'getRecordStarted': {
-      return { ...state, isFirstLoading: true, isNextLoading: !!action.payload?.isNext }
+      return { ...state, isFirstLoading: true, isNextLoading: !!action.payload?.isNext };
     }
     case 'getRecordSuccess': {
-      return { ...state, isLoaded: true, isFirstLoading: false, isNextLoading: false }
+      return { ...state, isLoaded: true, isFirstLoading: false, isNextLoading: false };
     }
   }
 }
 
 const useRecords = () => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   /** 続きのデータがあるかどうか */
   const [hasNext, setHasNext] = useState<boolean>(true);
@@ -95,17 +97,17 @@ const useRecords = () => {
     setHasNext(size >= 50);
     setCursor(size > 0 ? docs[size - 1] : null);
 
-    dispatch({type: 'getRecordSuccess'})
+    dispatch({ type: 'getRecordSuccess' });
   }, [cursor, uid]);
 
   /**
    * 初回 Records を取得する
    */
   useEffect(() => {
-    if(state.isFirstLoading || state.isLoaded || !uid) {
+    if (state.isFirstLoading || state.isLoaded || !uid) {
       return;
     }
-    dispatch({type: 'getRecordStarted'})
+    dispatch({ type: 'getRecordStarted' });
     getRecords();
   }, [getRecords, state.isFirstLoading, state.isLoaded, uid]);
 
@@ -116,7 +118,7 @@ const useRecords = () => {
     if (state.isNextLoading || !uid) {
       return;
     }
-    dispatch({type: 'getRecordStarted', payload: { isNext: true }})
+    dispatch({ type: 'getRecordStarted', payload: { isNext: true } });
     getRecords();
   };
 
