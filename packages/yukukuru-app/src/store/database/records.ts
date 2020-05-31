@@ -50,8 +50,8 @@ const initialState: State = {
 
 type Action =
   | {
-      type: 'getRecordStarted';
-      payload?: { isNext: boolean };
+      type: 'getRecordStart';
+      payload: { isNext: boolean };
     }
   | {
       type: 'getRecordSuccess';
@@ -59,8 +59,8 @@ type Action =
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'getRecordStarted': {
-      return { ...state, isFirstLoading: true, isNextLoading: !!action.payload?.isNext };
+    case 'getRecordStart': {
+      return { ...state, isFirstLoading: !action.payload.isNext, isNextLoading: action.payload.isNext };
     }
     case 'getRecordSuccess': {
       return { ...state, isLoaded: true, isFirstLoading: false, isNextLoading: false };
@@ -107,7 +107,7 @@ const useRecords = () => {
     if (state.isFirstLoading || state.isLoaded || !uid) {
       return;
     }
-    dispatch({ type: 'getRecordStarted' });
+    dispatch({ type: 'getRecordStart', payload: { isNext: false } });
     getRecords();
   }, [getRecords, state.isFirstLoading, state.isLoaded, uid]);
 
@@ -118,7 +118,7 @@ const useRecords = () => {
     if (state.isNextLoading || !uid) {
       return;
     }
-    dispatch({ type: 'getRecordStarted', payload: { isNext: true } });
+    dispatch({ type: 'getRecordStart', payload: { isNext: true } });
     getRecords();
   };
 
