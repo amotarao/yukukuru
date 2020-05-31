@@ -1,5 +1,5 @@
 import { FirestoreIdData, RecordData, RecordDataOld } from '@yukukuru/types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
 import { createContainer } from 'unstated-next';
 import firebase, { firestore } from '../../modules/firebase';
 import { convertRecordsForView } from '../../utils/records';
@@ -36,15 +36,40 @@ const getRecordsFromFirestore = async (
   return qs;
 };
 
+type State = {
+  isFirstLoading: boolean;
+  isNextLoading: boolean;
+  isLoaded: boolean;
+};
+
+const initialState: State = {
+  isFirstLoading: false,
+  isNextLoading: false,
+  isLoaded: false,
+};
+
+type Action =
+  | {
+      type: 'getRecordStart';
+      payload: { isNext: boolean };
+    }
+  | {
+      type: 'getRecordSuccess';
+    };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'getRecordStart': {
+      return { ...state, isFirstLoading: !action.payload.isNext, isNextLoading: action.payload.isNext };
+    }
+    case 'getRecordSuccess': {
+      return { ...state, isLoaded: true, isFirstLoading: false, isNextLoading: false };
+    }
+  }
+}
+
 const useRecords = () => {
-  /** 最初のデータが読み込み中かどうか */
-  const [isFirstLoading, setFirstLoading] = useState<boolean>(false);
-
-  /** 最初のデータの読み込みが完了しているかどうか */
-  const [isFirstLoaded, setFirstLoaded] = useState<boolean>(false);
-
-  /** 続きのデータが読み込み中かどうか */
-  const [isNextLoading, setNextLoading] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   /** 続きのデータがあるかどうか */
   const [hasNext, setHasNext] = useState<boolean>(true);
@@ -72,40 +97,37 @@ const useRecords = () => {
     setHasNext(size >= 50);
     setCursor(size > 0 ? docs[size - 1] : null);
 
-    // この順番でないと初回Records取得が再始動する
-    setFirstLoaded(true);
-    setFirstLoading(false);
-    setNextLoading(false);
+    dispatch({ type: 'getRecordSuccess' });
   }, [cursor, uid]);
 
   /**
    * 初回 Records を取得する
    */
   useEffect(() => {
-    if (isFirstLoading || isFirstLoaded || !uid) {
+    if (state.isFirstLoading || state.isLoaded || !uid) {
       return;
     }
-    setFirstLoading(true);
+    dispatch({ type: 'getRecordStart', payload: { isNext: false } });
     getRecords();
-  }, [getRecords, isFirstLoading, isFirstLoaded, uid]);
+  }, [getRecords, state.isFirstLoading, state.isLoaded, uid]);
 
   /**
    * 続きの Records を取得する
    */
   const getNextRecords = () => {
-    if (isNextLoading || !uid) {
+    if (state.isNextLoading || !uid) {
       return;
     }
-    setNextLoading(true);
+    dispatch({ type: 'getRecordStart', payload: { isNext: true } });
     getRecords();
   };
 
   return {
     /** 最初のデータが読み込み中かどうか */
-    isLoading: isFirstLoading || !isFirstLoaded,
+    isLoading: state.isFirstLoading || !state.isLoaded,
 
     /** 続きのデータが読み込み中かどうか */
-    isNextLoading,
+    isNextLoading: state.isNextLoading,
 
     /** アイテム */
     items,
