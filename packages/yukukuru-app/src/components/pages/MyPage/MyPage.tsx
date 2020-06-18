@@ -160,9 +160,18 @@ export const MyPage: React.FC<MyPageProps> = ({
     setPaging(paging + 1);
   };
 
+  const superReload = () => {
+    window.location.reload(true);
+  };
+
   return (
     <div css={style.wrapper}>
-      {!isLoading && !hasToken && <ErrorWrapper text="ログアウトし、再度ログインしてください。" />}
+      {!isLoading && !hasToken && (
+        <ErrorWrapper onClick={superReload}>
+          <p>ログアウトし、再度ログインしてください。</p>
+          <p>解消しない場合はこちらをタップしてください。</p>
+        </ErrorWrapper>
+      )}
       <main css={style.main}>
         {isLoading ? (
           <LoadingCircle />
