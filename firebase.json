@@ -10,7 +10,6 @@
   "hosting": [
     {
       "target": "app",
-      "predeploy": "yarn --cwd packages/yukukuru-app build",
       "public": "packages/yukukuru-app/out",
       "ignore": [
         "firebase.json",
