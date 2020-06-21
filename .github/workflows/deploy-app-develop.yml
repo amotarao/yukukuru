@@ -78,11 +78,16 @@ jobs:
         name: app-dist
         path: ./packages/yukukuru-app/out
 
+    - name: Add target to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: target:apply hosting app ${{ secrets.FIREBASE_HOSTING_SITE_APP_DEVELOP }}
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
     - name: Deploy to Firebase
       uses: w9jds/firebase-action@master
       with:
-        args:
-          - target:apply hosting app ${{ secrets.FIREBASE_HOSTING_SITE_APP_DEVELOP }}
-          - deploy --only hosting:app
+        args: deploy --only hosting:app
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
