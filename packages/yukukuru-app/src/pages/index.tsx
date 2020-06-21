@@ -32,7 +32,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>ゆくくる alpha</title>
+        <title>ゆくくる alpha develop</title>
       </Head>
       <Inner />
     </>
