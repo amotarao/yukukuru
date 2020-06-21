@@ -9,12 +9,7 @@ service cloud.firestore {
     }
 
     match /users/{userID} {
-      allow write: if isMe(userID)
-                   && request.resource.data.keys().hasAll(["twitterAccessToken", "twitterAccessTokenSecret", "twitterId"])
-                   && request.resource.data.twitterAccessToken is string
-                   && request.resource.data.twitterAccessTokenSecret is string
-                   && request.resource.data.twitterId is string;
-      allow read: if false;
+      allow write, read: if false;
 
       match /records/{recordID} {
         allow write: if false;
@@ -24,6 +19,11 @@ service cloud.firestore {
       match /watches/{watchID} {
         allow write, read: if false;
       }
+    }
+
+    match /tokens/{userID} {
+      allow write: if false;
+      allow read: if isMe(userID);
     }
   }
 }

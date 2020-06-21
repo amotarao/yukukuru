@@ -1,0 +1,96 @@
+name: Build and Deploy app for develop
+
+on:
+  pull_request:
+    branches:
+    - develop
+    paths:
+    - packages/yukukuru-app/**
+
+jobs:
+  build:
+    name: Build app
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v2
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/yukukuru-app/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies on root
+      run: yarn --frozen-lockfile
+
+    - name: Install dependencies on app
+      run: yarn --frozen-lockfile
+      working-directory: ./packages/yukukuru-app
+
+    - name: Run lint on app
+      run: yarn lint
+      working-directory: ./packages/yukukuru-app
+
+    - name: Run build on app
+      run: yarn build
+      working-directory: ./packages/yukukuru-app
+      env:
+        PUBLIC_URL: ${{ secrets.PUBLIC_URL_DEVELOP }}
+        GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS_DEVELOP }}
+        FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY_DEVELOP }}
+        FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN_DEVELOP }}
+        FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL_DEVELOP }}
+        FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
+        FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET_DEVELOP }}
+        FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID_DEVELOP }}
+        FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_DEVELOP }}
+
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: app-dist
+        path: ./packages/yukukuru-app/out
+
+  deploy:
+    name: Deploy app
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
+      SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID_DEVELOP }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+
+    - name: Download Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: app-dist
+        path: ./packages/yukukuru-app/out
+
+    - name: Install to firebase-tools
+      run: npm i -g firebase-tools
+
+    - name: Add target to Firebase
+      run: npx firebase target:apply hosting app $SITE_ID --project $PROJECT_ID
+
+    - name: Deploy to Firebase
+      run: npx firebase deploy --only hosting:app --project $PROJECT_ID

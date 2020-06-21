@@ -1,65 +1,18 @@
 {
-  "name": "follower-manager",
-  "version": "0.1.0",
+  "name": "yukukuru",
+  "version": "0.101.0",
+  "homepage": "https://yukukuru.app",
+  "license": "UNLICENSED",
   "private": true,
-  "dependencies": {
-    "@emotion/core": "^10.0.14",
-    "firebase": "^6.3.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1",
-    "typescript": "3.5.3",
-    "unstated-next": "^1.1.0"
-  },
+  "repository": "git@github.com:amotarao/yukukuru-app.git",
+  "author": "Amon Sawamura <amon.sawamura@gmail.com>",
   "devDependencies": {
-    "@types/jest": "24.0.15",
-    "@types/node": "12.6.2",
-    "@types/react": "16.8.23",
-    "@types/react-dom": "16.8.4",
-    "@types/react-router-dom": "^4.3.4",
-    "@typescript-eslint/eslint-plugin": "^1.12.0",
-    "@typescript-eslint/parser": "^1.12.0",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^6.0.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-react": "^7.14.2",
-    "eslint-plugin-react-hooks": "^1.6.1",
-    "husky": "^3.0.0",
-    "lint-staged": "^9.2.0",
-    "prettier": "^1.18.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint './src/**/*.{ts,tsx}' './functions/src/**/*.ts'"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3"
   }
 }
