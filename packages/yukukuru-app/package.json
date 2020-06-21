@@ -1,7 +1,7 @@
 {
-  "name": "yukukuru-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@yukukuru/yukukuru-app",
+  "homepage": "https://yukukuru.app",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",

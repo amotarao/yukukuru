@@ -1,8 +1,7 @@
 {
   "name": "@yukukuru/functions",
-  "version": "0.100.3",
   "homepage": "https://yukukuru.app",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "scripts": {
     "preinstall": "if [ -d ../types ]; then npm pack ../types; fi",
     "build": "rm -rf lib/* && tsc",
