@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
-      SITE_ID: ${{ secrets.FIREBASE_HOSTING_SITE_APP_DEVELOP }}
+      SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID_DEVELOP }}
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
     steps:
     - name: Checkout
