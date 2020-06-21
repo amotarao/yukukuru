@@ -8,6 +8,7 @@ on:
     - packages/yukukuru-app/**
 
 env:
+  FIREBASE_HOSTING_SITE_APP: ${{ secrets.FIREBASE_HOSTING_SITE_APP_DEVELOP }}
   PUBLIC_URL: ${{ secrets.PUBLIC_URL_DEVELOP }}
   GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS_DEVELOP }}
   FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY_DEVELOP }}
@@ -81,13 +82,13 @@ jobs:
     - name: Add target to Firebase
       uses: w9jds/firebase-action@master
       with:
-        args: target:apply hosting app ${{ secrets.FIREBASE_HOSTING_SITE_APP_DEVELOP }}
+        args: target:apply hosting app $FIREBASE_HOSTING_SITE_APP
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
     - name: Deploy to Firebase
       uses: w9jds/firebase-action@master
       with:
-        args: deploy --only hosting:app
+        args: deploy --only hosting:app --project $FIREBASE_PROJECT_ID
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
