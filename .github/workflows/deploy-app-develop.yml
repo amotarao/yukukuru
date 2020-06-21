@@ -86,4 +86,3 @@ jobs:
           - deploy --only hosting:app
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      working-directory: ./packages/yukukuru-app
