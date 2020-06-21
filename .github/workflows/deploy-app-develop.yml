@@ -87,10 +87,10 @@ jobs:
         path: ./packages/yukukuru-app/out
 
     - name: Install to firebase-tools
-      run: yarn global add firebase-tools
+      run: npm i -g firebase-tools
 
     - name: Add target to Firebase
-      run: firebase target:apply hosting app $FIREBASE_HOSTING_SITE_APP --project $FIREBASE_PROJECT_ID
+      run: npx firebase target:apply hosting app $FIREBASE_HOSTING_SITE_APP --project $FIREBASE_PROJECT_ID
 
     - name: Deploy to Firebase
-      run: firebase deploy --only hosting:app --project $FIREBASE_PROJECT_ID
+      run: npx firebase deploy --only hosting:app --project $FIREBASE_PROJECT_ID
