@@ -10,7 +10,7 @@
   "hosting": [
     {
       "target": "app",
-      "public": "packages/yukukuru-app/out",
+      "public": "packages/app/out",
       "ignore": [
         "firebase.json",
         "**/.*",

@@ -16,29 +16,11 @@ jobs:
       with:
         node-version: '10.x'
 
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - name: Install dependencies
+      run: yarn --frozen-lockfile
 
-    - uses: actions/cache@v1
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/functions/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+    - name: Run lint
+      run: yarn workspace @yukukuru/functions lint
 
-    - name: Install dependencies on root
-      run: yarn
-
-    - name: Install dependencies on functions
-      run: yarn
-      working-directory: ./packages/functions
-
-    - name: Run lint on functions
-      run: yarn lint
-      working-directory: ./packages/functions
-
-    - name: Run build on functions
-      run: yarn build
-      working-directory: ./packages/functions
+    - name: Run build
+      run: yarn workspace @yukukuru/functions build

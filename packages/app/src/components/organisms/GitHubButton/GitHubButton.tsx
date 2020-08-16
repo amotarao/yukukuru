@@ -14,9 +14,9 @@ export const GitHubButton: React.FC<GitHubButtonProps> = ({ size = 'normal' }) =
   return (
     <div css={style.wrapper} data-size={isNormal ? undefined : size}>
       <ReactGitHubButton
-        href="https://github.com/amotarao/yukukuru-app"
+        href="https://github.com/amotarao/yukukuru"
         data-icon="octicon-star"
-        aria-label="Star amotarao/yukukuru-app on GitHub"
+        aria-label="Star amotarao/yukukuru on GitHub"
       >
         Star
       </ReactGitHubButton>
