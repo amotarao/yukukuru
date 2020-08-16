@@ -19,7 +19,7 @@
   "dependencies": {
     "firebase-admin": "^8.10.0",
     "firebase-functions": "^3.6.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
