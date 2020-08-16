@@ -3,7 +3,7 @@
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "private": true,
-  "repository": "git@github.com:amotarao/yukukuru-app.git",
+  "repository": "git@github.com:amotarao/yukukuru.git",
   "author": "Amon Sawamura <amon.sawamura@gmail.com>",
   "workspaces": [
     "packages/**"
