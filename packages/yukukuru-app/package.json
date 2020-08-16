@@ -1,5 +1,6 @@
 {
   "name": "@yukukuru/yukukuru-app",
+  "version": "0.1.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "scripts": {
@@ -29,7 +30,6 @@
     "@types/react-transition-group": "^4.2.4",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
-    "@yukukuru/types": "../types",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
