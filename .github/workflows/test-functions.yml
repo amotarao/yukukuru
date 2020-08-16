@@ -3,18 +3,20 @@ name: Test functions
 on:
   pull_request:
     paths:
-    - 'packages/functions/**'
+    - packages/functions/**
 
 jobs:
   test:
+    name: Test functions
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
-    - name: Use Node.js
+    - name: Setup Node.js 10
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: 10
 
     - name: Install dependencies
       run: yarn --frozen-lockfile

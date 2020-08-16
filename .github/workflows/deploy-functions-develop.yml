@@ -1,0 +1,59 @@
+name: Build and Deploy functions for develop
+
+on:
+  push:
+    branches:
+    - develop
+    paths:
+    - packages/functions/**
+
+jobs:
+  build:
+    name: Build functions
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+
+    - name: Install dependencies
+      run: yarn --frozen-lockfile
+
+    - name: Run lint
+      run: yarn workspace @yukukuru/functions lint
+
+    - name: Run build
+      run: yarn workspace @yukukuru/functions build
+
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: functions-dist
+        path: ./packages/functions/lib
+
+  deploy:
+    name: Deploy functions
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: functions-dist
+        path: ./packages/functions/lib
+
+    - name: Install to firebase-tools
+      run: npm i -g firebase-tools
+
+    - name: Deploy to Firebase
+      run: npx firebase deploy --only functions --project $PROJECT_ID
