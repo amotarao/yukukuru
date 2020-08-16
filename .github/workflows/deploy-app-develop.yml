@@ -1,7 +1,7 @@
 name: Build and Deploy app for develop
 
 on:
-  pull_request:
+  push:
     branches:
     - develop
     paths:
