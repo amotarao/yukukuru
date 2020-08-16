@@ -28,13 +28,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: Install dependencies on root
+    - name: Install dependencies
       run: yarn --frozen-lockfile
 
-    - name: Install dependencies on types
-      run: yarn --frozen-lockfile
-      working-directory: ./packages/types
-
-    - name: Run lint on types
-      run: yarn lint
-      working-directory: ./packages/types
+    - name: Run lint
+      run: yarn workspace @yukukuru/types lint

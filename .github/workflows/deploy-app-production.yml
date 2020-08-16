@@ -32,20 +32,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: Install dependencies on root
+    - name: Install dependencies
       run: yarn --frozen-lockfile
 
-    - name: Install dependencies on app
-      run: yarn --frozen-lockfile
-      working-directory: ./packages/app
+    - name: Run lint
+      run: yarn workspace @yukukuru/app lint
 
-    - name: Run lint on app
-      run: yarn lint
-      working-directory: ./packages/app
-
-    - name: Run build on app
-      run: yarn build
-      working-directory: ./packages/app
+    - name: Run build
+      run: yarn workspace @yukukuru/app build
       env:
         PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
         GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS }}

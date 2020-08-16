@@ -28,17 +28,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: Install dependencies on root
-      run: yarn
+    - name: Install dependencies
+      run: yarn --frozen-lockfile
 
-    - name: Install dependencies on functions
-      run: yarn
-      working-directory: ./packages/functions
+    - name: Run lint
+      run: yarn workspace @yukukuru/functions lint
 
-    - name: Run lint on functions
-      run: yarn lint
-      working-directory: ./packages/functions
-
-    - name: Run build on functions
-      run: yarn build
-      working-directory: ./packages/functions
+    - name: Run build
+      run: yarn workspace @yukukuru/functions build
