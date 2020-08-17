@@ -2,24 +2,7 @@ import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterUser } from '../modules/twitter/client';
-import { TwitterClientErrorData } from '../utils/error';
 import { setUserToNotActive } from './firestore/users';
-
-export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 17);
-};
-
-export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 88);
-};
-
-export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 89);
-};
-
-export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 326);
-};
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = setUserToNotActive(userId);

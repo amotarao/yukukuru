@@ -1,13 +1,6 @@
 import { getFollowersIdsLoop } from '../../modules/twitter/users';
-import {
-  checkInvalidToken,
-  setTokenInvalid,
-  getToken,
-  setWatch,
-  setUserResult,
-  checkProtectedUser,
-  setUserResultWithNoChange,
-} from '../../utils/firestore';
+import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
+import { setTokenInvalid, getToken, setWatch, setUserResult, setUserResultWithNoChange } from '../../utils/firestore';
 import { log, errorLog } from '../../utils/log';
 
 type Props = {
