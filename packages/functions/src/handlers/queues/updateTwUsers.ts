@@ -1,8 +1,6 @@
-import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
-import * as Twitter from 'twitter';
+import { getUsersLookup } from '../../modules/twitter/users';
 import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../../utils/firestore';
-import { getUsersLookup } from '../../utils/twitter';
 import { getLatestWatches } from '../../utils/firestore/watches/getWatches';
 import { log, errorLog } from '../../utils/log';
 
@@ -20,26 +18,26 @@ export const updateTwUsers = async ({ uid }: Props, now: Date): Promise<void> =>
     return;
   }
 
-  const client = new Twitter({
-    consumer_key: functions.config().twitter.consumer_key as string,
-    consumer_secret: functions.config().twitter.consumer_secret as string,
-    access_token_key: token.twitterAccessToken,
-    access_token_secret: token.twitterAccessTokenSecret,
-  });
-  const result = await getUsersLookup(client, { usersId: followers });
+  const result = await getUsersLookup(
+    { user_id: followers.join(',') },
+    {
+      access_token_key: token.twitterAccessToken,
+      access_token_secret: token.twitterAccessTokenSecret,
+    }
+  );
 
-  if ('errors' in result) {
+  if (!result.success) {
     // エラー
     errorLog('onCreateQueue', 'updateTwUsers', { uid, type: 'usersLoopupError' });
     return;
   }
-  await setTwUsers(result.response);
+  await setTwUsers(result.data);
   await updateUserLastUpdatedTwUsers(uid, now);
 
   log('onCreateQueue', 'updateTwUsers', {
     uid,
     type: 'success',
-    lookuped: result.response.length,
+    lookuped: result.data.length,
     followers: followers.length,
   });
 };

@@ -1,8 +1,7 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
+import { getUsersLookup } from '../modules/twitter/users';
 import {
   checkNoUserMatches,
   checkInvalidToken,
@@ -14,7 +13,6 @@ import {
 import { getTwUser } from '../utils/firestore/twUsers/getTwUser';
 import { addRecords } from '../utils/firestore/records/addRecords';
 import { addRecord } from '../utils/firestore/records/addRecord';
-import { getUsersLookup } from '../utils/twitter';
 import { mergeWatches } from '../utils/watches';
 import { FirestoreOnCreateHandler } from '../types/functions';
 import { log, errorLog } from '../utils/log';
@@ -104,28 +102,28 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     return;
   }
 
-  const client = new Twitter({
-    consumer_key: functions.config().twitter.consumer_key as string,
-    consumer_secret: functions.config().twitter.consumer_secret as string,
-    access_token_key: token.twitterAccessToken,
-    access_token_secret: token.twitterAccessTokenSecret,
-  });
+  const result = await getUsersLookup(
+    { user_id: [...kuru, ...yuku].join(',') },
+    {
+      access_token_key: token.twitterAccessToken,
+      access_token_secret: token.twitterAccessTokenSecret,
+    }
+  );
 
-  const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
+  if (!result.success) {
+    Array.isArray(result.error) &&
+      result.error.forEach((error) => {
+        if (!checkNoUserMatches([error])) {
+          errorLog('onCreateWatch', '', { uid, error, type: 'TwitterError' });
+        }
+      });
 
-  if ('errors' in result) {
-    result.errors.forEach((error) => {
-      if (!checkNoUserMatches([error])) {
-        errorLog('onCreateWatch', '', { uid, error, type: 'TwitterError' });
-      }
-    });
-
-    if (checkInvalidToken(result.errors)) {
+    if (checkInvalidToken(result.error)) {
       await setTokenInvalid(uid);
     }
   }
 
-  const twUsers = 'errors' in result ? [] : result.response;
+  const twUsers = result.success ? result.data : [];
 
   const usersFromTw = twUsers.map((user) => {
     const convertedUser: RecordUserData = {
