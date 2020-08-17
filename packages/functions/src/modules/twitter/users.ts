@@ -189,3 +189,84 @@ export const getFollowersListLoop = async <T extends number | string = number>(
     error,
   };
 };
+
+export type GetUsersLookupParams =
+  | {
+      user_id: string;
+      include_entities?: boolean;
+      tweet_mode?: boolean;
+    }
+  | {
+      screen_name: string;
+      include_entities?: boolean;
+      tweet_mode?: boolean;
+    };
+
+export type GetUsersLookupResponse = TwitterUser[];
+
+/**
+ * ユーザー情報を取得
+ *
+ * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup
+ */
+export const getUsersLookup = async (
+  params: GetUsersLookupParams,
+  accessToken?: AccessToken
+): TwitterApiResponseType<GetUsersLookupResponse> => {
+  const client = getClient(accessToken);
+
+  return client
+    .get('users/lookup', params)
+    .then((response) => {
+      return {
+        success: true as const,
+        data: response as GetUsersLookupResponse,
+      };
+    })
+    .catch((error) => {
+      return {
+        success: false as const,
+        error,
+      };
+    });
+};
+
+export const getUsersLookupLoop = async (
+  params: GetUsersLookupParams,
+  accessToken?: AccessToken
+): TwitterApiResponseType<GetUsersLookupResponse> => {
+  const type = 'user_id' in params ? 'user_id' : 'screen_name';
+  const targets = 'user_id' in params ? params.user_id.split(',') : params.screen_name.split(',');
+
+  const users: GetUsersLookupResponse = [];
+  let resultData: null | true = null;
+  let error: any | null = null;
+
+  let loopCount = 0;
+  const maxLoopCount = 100; // user: 900 / app: 300
+
+  while (loopCount < maxLoopCount) {
+    const currentTargets = targets.slice(loopCount * 100, (loopCount + 1) * 100).join(',');
+    const result = await getUsersLookup({ ...params, [type]: currentTargets }, accessToken);
+    if (!result.success) {
+      error = result.error;
+      break;
+    }
+
+    users.push(...result.data);
+    resultData = true;
+    loopCount++;
+  }
+
+  if (resultData) {
+    return {
+      success: true,
+      data: users,
+    };
+  }
+
+  return {
+    success: false,
+    error,
+  };
+};
