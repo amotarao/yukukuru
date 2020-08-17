@@ -1,4 +1,4 @@
-import { getClient, TwitterUser, AccessToken, TwitterApiResponseType } from './client';
+import { getClientLegacy, TwitterUserLegacy, AccessToken, TwitterApiResponseType } from './client';
 
 export type GetFollowersIdsParams =
   | {
@@ -31,7 +31,7 @@ export const getFollowersIds = async <T extends number | string = number>(
   params: GetFollowersIdsParams,
   accessToken?: AccessToken
 ): TwitterApiResponseType<GetFollowersIdsResponse<T>> => {
-  const client = getClient(accessToken);
+  const client = getClientLegacy(accessToken);
 
   return client
     .get('followers/ids', params)
@@ -111,7 +111,7 @@ export type GetFollowersListParams =
     };
 
 export type GetFollowersListResponse<T extends number | string = number> = {
-  users: TwitterUser[];
+  users: TwitterUserLegacy[];
   next_cursor: number;
   next_cursor_str: string;
   previous_cursor: number;
@@ -127,7 +127,7 @@ export const getFollowersList = async <T extends number | string = number>(
   params: GetFollowersListParams,
   accessToken?: AccessToken
 ): TwitterApiResponseType<GetFollowersListResponse<T>> => {
-  const client = getClient(accessToken);
+  const client = getClientLegacy(accessToken);
 
   return client
     .get('followers/list', params)
@@ -202,7 +202,7 @@ export type GetUsersLookupParams =
       tweet_mode?: boolean;
     };
 
-export type GetUsersLookupResponse = TwitterUser[];
+export type GetUsersLookupResponse = TwitterUserLegacy[];
 
 /**
  * ユーザー情報を取得
@@ -213,7 +213,7 @@ export const getUsersLookup = async (
   params: GetUsersLookupParams,
   accessToken?: AccessToken
 ): TwitterApiResponseType<GetUsersLookupResponse> => {
-  const client = getClient(accessToken);
+  const client = getClientLegacy(accessToken);
 
   return client
     .get('users/lookup', params)

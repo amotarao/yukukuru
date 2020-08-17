@@ -1,7 +1,7 @@
 import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
-import { TwitterUser } from '../modules/twitter/client';
+import { TwitterUserLegacy } from '../modules/twitter/client';
 import { setUserToNotActive } from './firestore/users';
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
@@ -80,7 +80,7 @@ export const existsRecords = async (userId: string): Promise<boolean> => {
   return !snapshot.empty;
 };
 
-const setTwUsersSingle = async (users: TwitterUser[]): Promise<void> => {
+const setTwUsersSingle = async (users: TwitterUserLegacy[]): Promise<void> => {
   const batch = firestore.batch();
   const collection = firestore.collection('twUsers');
 
@@ -98,7 +98,7 @@ const setTwUsersSingle = async (users: TwitterUser[]): Promise<void> => {
   await batch.commit();
 };
 
-export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
+export const setTwUsers = async (users: TwitterUserLegacy[]): Promise<void> => {
   const requests = _.chunk(users, 500).map((users) => setTwUsersSingle(users));
   await Promise.all(requests);
 };

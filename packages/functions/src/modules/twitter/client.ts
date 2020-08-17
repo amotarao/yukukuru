@@ -4,7 +4,7 @@ import * as Twitter from 'twitter';
 /**
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/overview/user-object
  */
-export type TwitterUser = {
+export type TwitterUserLegacy = {
   id: number;
   id_str: string;
   name: string;
@@ -33,7 +33,7 @@ export type AccessToken = Pick<Twitter.AccessTokenOptions, 'access_token_key' | 
 
 export type TwitterApiResponseType<T> = Promise<{ success: true; data: T } | { success: false; error: any }>;
 
-export const getClient = (accessToken?: AccessToken): Twitter => {
+export const getClientLegacy = (accessToken?: AccessToken): Twitter => {
   if (!accessToken) {
     return new Twitter(functions.config().twitter);
   }
