@@ -42,6 +42,19 @@ const NoItem: React.FC = () => {
         <span style={{ whiteSpace: 'nowrap' }}>データ取得までに時間が掛かります。</span>
         <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
       </p>
+      <p
+        style={{
+          fontSize: '0.8em',
+          color: '#999',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          margin: '8px 16px',
+        }}
+      >
+        <span style={{ whiteSpace: 'nowrap' }}>また、現在新規アカウント登録を停止しています。</span>
+        <span style={{ whiteSpace: 'nowrap' }}>(2021.5.4)</span>
+      </p>
     </div>
   );
 };
