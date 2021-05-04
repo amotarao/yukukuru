@@ -19,7 +19,7 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
 
   if (token === null) {
     // エラー
-    errorLog('onCreateQueue', 'updateTwUsers', { uid, type: 'noToken' });
+    errorLog('onPublishUpdateTwUsers', 'updateTwUsers', { uid, type: 'noToken' });
     return;
   }
 
@@ -33,13 +33,13 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
 
   if ('errors' in result) {
     // エラー
-    errorLog('onCreateQueue', 'updateTwUsers', { uid, type: 'usersLoopupError' });
+    errorLog('onPublishUpdateTwUsers', 'updateTwUsers', { uid, type: 'usersLoopupError' });
     return;
   }
   await setTwUsers(result.response);
   await updateUserLastUpdatedTwUsers(uid, now);
 
-  log('onCreateQueue', 'updateTwUsers', {
+  log('onPublishUpdateTwUsers', 'updateTwUsers', {
     uid,
     type: 'success',
     lookuped: result.response.length,
