@@ -8,7 +8,11 @@ import { onDeleteUserHandler } from './handlers/onDeleteUser';
 import { onCreateWatchHandler } from './handlers/onCreateWatch';
 import { onUpdateTokenHandler } from './handlers/onUpdateToken';
 import { updateTokenHandler } from './handlers/updateToken';
-import { onCreateQueueHandler } from './handlers/onCreateQueue';
+import { onPublishCheckIntegrityHandler } from './handlers/onPublishCheckIntegrity';
+import { onPublishConvertRecordsHandler } from './handlers/onPublishConvertRecords';
+import { onPublishGetFollowersHandler } from './handlers/onPublishGetFollowers';
+import { onPublishUpdateTwUsersHandler } from './handlers/onPublishUpdateTwUsers';
+import { Topic } from './modules/pubsub/topics';
 
 const functionsBase = functions.region('asia-northeast1');
 
@@ -60,5 +64,22 @@ export const onFirestoreUpdateToken = firestoreBuilder('tokens/{userId}').onUpda
 /** Firestore: watch が作成されたときの処理 */
 export const onCreateWatch = firestoreBuilder('users/{userId}/watches/{watchId}').onCreate(onCreateWatchHandler);
 
-/** Firestore: queue が作成されたときの処理 */
-export const onCreateQueue = firestoreBuilder('queues/{queueId}').onCreate(onCreateQueueHandler);
+export const onPublishCheckIntegrity = functionsBase
+  .runWith(pubSubRuntimeOptions)
+  .pubsub.topic(Topic.CheckIntegrity)
+  .onPublish(onPublishCheckIntegrityHandler);
+
+export const onPublishConvertRecords = functionsBase
+  .runWith(pubSubRuntimeOptions)
+  .pubsub.topic(Topic.ConvertRecords)
+  .onPublish(onPublishConvertRecordsHandler);
+
+export const onPublishGetFollowers = functionsBase
+  .runWith(pubSubRuntimeOptions)
+  .pubsub.topic(Topic.GetFollowers)
+  .onPublish(onPublishGetFollowersHandler);
+
+export const onPublishUpdateTwUsers = functionsBase
+  .runWith(pubSubRuntimeOptions)
+  .pubsub.topic(Topic.UpdateTwUsers)
+  .onPublish(onPublishUpdateTwUsersHandler);

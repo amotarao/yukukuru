@@ -1,23 +1,25 @@
-import { RecordUserData, RecordData, FirestoreDateLike } from '@yukukuru/types';
+import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
-import { getRecords } from '../../utils/firestore/records/getRecords';
-import { updateRecordsStart } from '../../utils/firestore/records/updateRecordsStart';
-import { getWatches } from '../../utils/firestore/watches/getWatches';
-import { removeWatches } from '../../utils/firestore/watches/removeWatches';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
-import { removeRecords } from '../../utils/firestore/records/removeRecords';
-import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/diff';
-import { convertRecords } from '../../utils/convert';
-import { mergeWatches } from '../../utils/watches';
-import { addRecords } from '../../utils/firestore/records/addRecords';
-import { log, errorLog } from '../../utils/log';
+import { updateUserCheckIntegrity } from '../utils/firestore/users/integrity';
+import { getRecords } from '../utils/firestore/records/getRecords';
+import { updateRecordsStart } from '../utils/firestore/records/updateRecordsStart';
+import { getWatches } from '../utils/firestore/watches/getWatches';
+import { removeWatches } from '../utils/firestore/watches/removeWatches';
+import { getTwUser } from '../utils/firestore/twUsers/getTwUser';
+import { removeRecords } from '../utils/firestore/records/removeRecords';
+import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../utils/diff';
+import { convertRecords } from '../utils/convert';
+import { mergeWatches } from '../utils/watches';
+import { addRecords } from '../utils/firestore/records/addRecords';
+import { log, errorLog } from '../utils/log';
+import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = {
-  uid: string;
-};
+type Props = CheckIntegrityMessage['data'];
 
-export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> => {
+export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
+  const { uid } = message.json as Props;
+  const now = new Date(context.timestamp);
+
   const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
 
   if (watches.length < 5) {

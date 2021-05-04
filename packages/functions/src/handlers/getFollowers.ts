@@ -1,6 +1,6 @@
-import { FirestoreIdData, UserData, QueueTypeGetFollowersData } from '@yukukuru/types';
+import { FirestoreIdData, UserData, GetFollowersMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
+import { publishGetFollowers } from '../modules/pubsub/publish/getFollowers';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
@@ -41,9 +41,9 @@ export const getFollowersHandler: PubSubOnRunHandler = async () => {
     });
   log('getFollowers', '', { ids: docs.map((doc) => doc.id), count: docs.length });
 
-  const items: QueueTypeGetFollowersData['data'][] = docs.map((doc) => ({
+  const items: GetFollowersMessage['data'][] = docs.map((doc) => ({
     uid: doc.id,
     nextCursor: doc.data.nextCursor,
   }));
-  await addQueuesTypeGetFollowers(items);
+  await publishGetFollowers(items);
 };
