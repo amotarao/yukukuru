@@ -1,4 +1,4 @@
-import { QueueTypeConvertRecordsData, RecordData, RecordDataOld } from '@yukukuru/types';
+import { ConvertRecordsMessage, RecordData, RecordDataOld } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { addRecords } from '../utils/firestore/records/addRecords';
 import { removeRecord } from '../utils/firestore/records/removeRecord';
@@ -6,7 +6,7 @@ import { convertRecords as convert } from '../utils/convert';
 import { log } from '../utils/log';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = QueueTypeConvertRecordsData['data'];
+type Props = ConvertRecordsMessage['data'];
 
 export const onPublishConvertRecordsHandler: PubSubOnPublishHandler = async (message) => {
   const { uid } = message.json as Props;

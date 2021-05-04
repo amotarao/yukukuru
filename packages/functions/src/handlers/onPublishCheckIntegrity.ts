@@ -1,4 +1,4 @@
-import { RecordUserData, RecordData, FirestoreDateLike, QueueTypeCheckIntegrityData } from '@yukukuru/types';
+import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { updateUserCheckIntegrity } from '../utils/firestore/users/integrity';
 import { getRecords } from '../utils/firestore/records/getRecords';
@@ -14,7 +14,7 @@ import { addRecords } from '../utils/firestore/records/addRecords';
 import { log, errorLog } from '../utils/log';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = QueueTypeCheckIntegrityData['data'];
+type Props = CheckIntegrityMessage['data'];
 
 export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;

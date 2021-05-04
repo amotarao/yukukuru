@@ -1,4 +1,4 @@
-import { QueueTypeConvertRecordsData } from '@yukukuru/types';
+import { ConvertRecordsMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { publishConvertRecords } from '../modules/pubsub/publish/convertRecords';
 import { getGroupFromTime } from '../utils/group';
@@ -14,6 +14,6 @@ export const convertRecordsHandler: PubSubOnRunHandler = async () => {
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('convertRecords', '', { ids, count: ids.length });
 
-  const items: QueueTypeConvertRecordsData['data'][] = ids.map((id) => ({ uid: id }));
+  const items: ConvertRecordsMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishConvertRecords(items);
 };

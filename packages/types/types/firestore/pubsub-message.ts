@@ -1,6 +1,6 @@
 import { FirestoreDateLike, Timestamp } from '../firestore';
 
-export interface QueueTypeGetFollowersData {
+export interface GetFollowersMessage {
   /** キュータイプ */
   type: 'getFollowers';
 
@@ -13,7 +13,7 @@ export interface QueueTypeGetFollowersData {
   };
 }
 
-export interface QueueTypeCheckIntegrityData {
+export interface CheckIntegrityMessage {
   /** キュータイプ */
   type: 'checkIntegrity';
 
@@ -23,7 +23,7 @@ export interface QueueTypeCheckIntegrityData {
   };
 }
 
-export interface QueueTypeUpdateTwUsersData {
+export interface UpdateTwUsersMessage {
   /** キュータイプ */
   type: 'updateTwUsers';
 
@@ -33,7 +33,7 @@ export interface QueueTypeUpdateTwUsersData {
   };
 }
 
-export interface QueueTypeConvertRecordsData<T extends FirestoreDateLike = Timestamp> {
+export interface ConvertRecordsMessage<T extends FirestoreDateLike = Timestamp> {
   /** キュータイプ */
   type: 'convertRecords';
 
@@ -43,10 +43,6 @@ export interface QueueTypeConvertRecordsData<T extends FirestoreDateLike = Times
   };
 }
 
-export type QueueData =
-  | QueueTypeGetFollowersData
-  | QueueTypeCheckIntegrityData
-  | QueueTypeUpdateTwUsersData
-  | QueueTypeConvertRecordsData;
+export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | ConvertRecordsMessage;
 
-export type QueueType = QueueData['type'];
+export type QueueType = Message['type'];

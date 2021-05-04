@@ -1,4 +1,4 @@
-import { QueueTypeUpdateTwUsersData } from '@yukukuru/types';
+import { UpdateTwUsersMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
 import { getGroupFromTime } from '../utils/group';
@@ -22,6 +22,6 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('updateTwUsers', '', { ids, count: ids.length });
 
-  const items: QueueTypeUpdateTwUsersData['data'][] = ids.map((id) => ({ uid: id }));
+  const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishUpdateTwUsers(items);
 };

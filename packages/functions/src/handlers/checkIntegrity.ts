@@ -1,4 +1,4 @@
-import { QueueTypeCheckIntegrityData } from '@yukukuru/types';
+import { CheckIntegrityMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { publishCheckIntegrity } from '../modules/pubsub/publish/checkIntegrity';
 import { getGroupFromTime } from '../utils/group';
@@ -31,6 +31,6 @@ export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('checkIntegrity', '', { ids, count: ids.length });
 
-  const items: QueueTypeCheckIntegrityData['data'][] = ids.map((id) => ({ uid: id }));
+  const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishCheckIntegrity(items);
 };

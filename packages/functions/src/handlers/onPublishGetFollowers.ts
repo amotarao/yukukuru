@@ -1,3 +1,4 @@
+import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import {
@@ -11,10 +12,9 @@ import {
 } from '../utils/firestore';
 import { getFollowersIdList } from '../utils/twitter';
 import { log, errorLog } from '../utils/log';
-import { QueueTypeGetFollowersData } from '@yukukuru/types';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = QueueTypeGetFollowersData['data'];
+type Props = GetFollowersMessage['data'];
 
 export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid, nextCursor } = message.json as Props;
