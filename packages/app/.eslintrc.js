@@ -19,19 +19,7 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        printWidth: 120,
-        tabWidth: 2,
-        useTabs: false,
-        semi: true,
-        singleQuote: true,
-        trailingComma: 'es5',
-        bracketSpacing: true,
-        arrowParens: 'always',
-      },
-    ],
+    'prettier/prettier': 'error',
     'react/prop-types': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
