@@ -3,94 +3,54 @@ name: Build and Deploy app for production
 on:
   push:
     branches:
-    - master
+      - master
     paths:
-    - packages/yukukuru-app/**
+      - packages/app/**
 
 jobs:
-  build:
-    name: Build app
+  build-deploy:
+    name: Build and Deploy app
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup Node.js 10
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10
+      - name: Setup Node.js 12
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
 
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
 
-    - uses: actions/cache@v2
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/yukukuru-app/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+      - name: Run lint
+        run: yarn workspace @yukukuru/app lint
 
-    - name: Install dependencies on root
-      run: yarn --frozen-lockfile
+      - name: Run build
+        run: yarn workspace @yukukuru/app build
+        env:
+          PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
+          GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 
-    - name: Install dependencies on app
-      run: yarn --frozen-lockfile
-      working-directory: ./packages/yukukuru-app
+      - name: Install to firebase-tools
+        run: npm i -g firebase-tools
 
-    - name: Run lint on app
-      run: yarn lint
-      working-directory: ./packages/yukukuru-app
+      - name: Add target to Firebase
+        run: npx firebase target:apply hosting app $SITE_ID --project $PROJECT_ID
+        env:
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID }}
 
-    - name: Run build on app
-      run: yarn build
-      working-directory: ./packages/yukukuru-app
-      env:
-        PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
-        GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS }}
-        FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-        FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-        FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
-        FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-        FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-        FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-
-    - name: Archive Production Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: app-dist
-        path: ./packages/yukukuru-app/out
-
-  deploy:
-    name: Deploy app
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-      SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID }}
-      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup Node.js 10
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10
-
-    - name: Download Artifact
-      uses: actions/download-artifact@master
-      with:
-        name: app-dist
-        path: ./packages/yukukuru-app/out
-
-    - name: Install to firebase-tools
-      run: npm i -g firebase-tools
-
-    - name: Add target to Firebase
-      run: npx firebase target:apply hosting app $SITE_ID --project $PROJECT_ID
-
-    - name: Deploy to Firebase
-      run: npx firebase deploy --only hosting:app --project $PROJECT_ID
+      - name: Deploy to Firebase
+        run: npx firebase deploy --only hosting:app --project $PROJECT_ID
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

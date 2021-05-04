@@ -3,38 +3,23 @@ name: Test types
 on:
   pull_request:
     paths:
-    - 'packages/types/**'
+    - packages/types/**
 
 jobs:
   test:
+    name: Test types
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - name: Setup Node.js 12
+      uses: actions/setup-node@v2
       with:
-        node-version: '10.x'
+        node-version: 12
 
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-
-    - uses: actions/cache@v1
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('./packages/types/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-
-    - name: Install dependencies on root
+    - name: Install dependencies
       run: yarn --frozen-lockfile
 
-    - name: Install dependencies on types
-      run: yarn --frozen-lockfile
-      working-directory: ./packages/types
-
-    - name: Run lint on types
-      run: yarn lint
-      working-directory: ./packages/types
+    - name: Run lint
+      run: yarn workspace @yukukuru/types lint

@@ -1,1 +1,1 @@
-# yukukuru-app
+# yukukuru

@@ -50,7 +50,7 @@ export const MyButton: React.FC<Pick<TopPageProps, 'isLoading' | 'signingIn' | '
     );
   return (
     <Button {...baseProps} onClick={props.signIn}>
-      Twitter連携して始める
+      ログイン
     </Button>
   );
 };
@@ -69,8 +69,7 @@ export const TopPage: React.FC<TopPageProps> = (props) => {
         <h1 css={style.title}>ゆくくる alpha</h1>
         <p css={style.text}>フォロワーがいつきたか・いなくなったかを記録します</p>
         <MyButton {...props} />
-        <p css={style.caution}>ツイートする権限はありませんので安心してご利用ください</p>
-        <p css={style.caution}>※ 現在アルファ版のため不具合が発生する場合があります</p>
+        <p css={style.caution}>現在、新規アカウント登録を停止しています。 (2021.5.4)</p>
       </section>
       <section
         css={css`
