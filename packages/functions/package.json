@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .ts,.js --ignore-path .gitignore"
   },
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "main": "lib/index.js",
   "dependencies": {

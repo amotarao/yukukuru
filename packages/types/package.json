@@ -3,6 +3,9 @@
   "version": "0.2.8",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
+  "engines": {
+    "node": "12"
+  },
   "types": "types/index.d.ts",
   "scripts": {
     "lint": "eslint types --ext .ts,.js"
