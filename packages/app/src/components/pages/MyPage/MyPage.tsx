@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
 import * as gtag from '../../../libs/gtag';

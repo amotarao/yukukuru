@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx, css } from '@emotion/react';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
