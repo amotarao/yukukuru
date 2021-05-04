@@ -45,4 +45,4 @@ export interface ConvertRecordsMessage<T extends FirestoreDateLike = Timestamp> 
 
 export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | ConvertRecordsMessage;
 
-export type QueueType = Message['type'];
+export type MessageType = Message['type'];

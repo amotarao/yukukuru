@@ -34,5 +34,5 @@ export const onPublishConvertRecordsHandler: PubSubOnPublishHandler = async (mes
   });
   await Promise.all(requests);
 
-  log('onCreateQueue', 'convertRecords', { uid, type: 'success', ids: rawDocs.docs.map((doc) => doc.id) });
+  log('onPublishConvertRecords', 'convertRecords', { uid, type: 'success', ids: rawDocs.docs.map((doc) => doc.id) });
 };

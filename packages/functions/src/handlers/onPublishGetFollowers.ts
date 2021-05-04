@@ -22,7 +22,7 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
 
   const token = await getToken(uid);
   if (!token) {
-    log('onCreateQueue', 'getFollowers', { type: 'no-token', uid });
+    log('onPublishGetFollowers', 'getFollowers', { type: 'no-token', uid });
     await setTokenInvalid(uid);
     return;
   }
@@ -42,7 +42,7 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
   });
 
   if ('errors' in result) {
-    errorLog('onCreateQueue', 'getFollowers', { uid, errors: result.errors });
+    errorLog('onPublishGetFollowers', 'getFollowers', { uid, errors: result.errors });
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
