@@ -1,6 +1,6 @@
 import { QueueTypeConvertRecordsData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { addQueuesTypeConvertRecords } from '../utils/firestore/queues/addQueuesTypeConvertRecords';
+import { publishConvertRecords } from '../modules/pubsub/publish/convertRecords';
 import { getGroupFromTime } from '../utils/group';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
@@ -15,5 +15,5 @@ export const convertRecordsHandler: PubSubOnRunHandler = async () => {
   log('convertRecords', '', { ids, count: ids.length });
 
   const items: QueueTypeConvertRecordsData['data'][] = ids.map((id) => ({ uid: id }));
-  await addQueuesTypeConvertRecords(items);
+  await publishConvertRecords(items);
 };
