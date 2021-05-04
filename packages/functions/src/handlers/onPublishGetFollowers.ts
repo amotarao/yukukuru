@@ -8,22 +8,18 @@ import {
   setUserResult,
   checkProtectedUser,
   setUserResultWithNoChange,
-} from '../../utils/firestore';
-import { getFollowersIdList } from '../../utils/twitter';
-import { log, errorLog } from '../../utils/log';
+} from '../utils/firestore';
+import { getFollowersIdList } from '../utils/twitter';
+import { log, errorLog } from '../utils/log';
+import { QueueTypeGetFollowersData } from '@yukukuru/types';
+import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = {
-  uid: string;
-  nextCursor: string;
-};
+type Props = QueueTypeGetFollowersData['data'];
 
-interface Response {
-  userId: string;
-  watchId: string;
-  newNextCursor: string;
-}
+export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
+  const { uid, nextCursor } = message.json as Props;
+  const now = new Date(context.timestamp);
 
-export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promise<Response | void> => {
   const token = await getToken(uid);
   if (!token) {
     log('onCreateQueue', 'getFollowers', { type: 'no-token', uid });
