@@ -3,6 +3,7 @@ import { jsx } from '@emotion/react';
 import HomeIcon from '@material-ui/icons/Home';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SettingsIcon from '@material-ui/icons/Settings';
+import React from 'react';
 import { style } from './style';
 
 export type NavType = 'home' | 'notification' | 'setting';
