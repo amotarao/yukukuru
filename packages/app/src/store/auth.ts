@@ -3,7 +3,7 @@ import type firebase from 'firebase';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { auth, providers } from '../modules/firebase';
-import { updateToken } from '../modules/functions';
+import { setToken as setTokenFirestore } from '../modules/firestore/token';
 
 type User = Pick<firebase.User, 'uid'>;
 
@@ -26,7 +26,7 @@ const useAuth = () => {
     if (!token || !user) {
       return;
     }
-    updateToken(token);
+    setTokenFirestore(user.uid, token);
   }, [token, user]);
 
   const signIn = () => {

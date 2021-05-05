@@ -24,7 +24,13 @@ service cloud.firestore {
     }
 
     match /tokens/{userID} {
-      allow write: if false;
+      allow write: if isMe(userID)
+                      && request.resource.data.size() == 3
+                      && request.resource.data.keys().hasAll(['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'])
+                      && request.resource.data.keys().hasOnly(['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'])
+                      && request.resource.data.twitterAccessToken is string
+                      && request.resource.data.twitterAccessTokenSecret is string
+                      && request.resource.data.twitterId is string;
       allow read: if isMe(userID);
     }
 
