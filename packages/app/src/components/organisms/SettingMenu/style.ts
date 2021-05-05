@@ -22,6 +22,7 @@ export const style = {
     color: inherit;
     font-size: 1rem;
     font-family: inherit;
+    text-decoration: none;
 
     button& {
       cursor: pointer;

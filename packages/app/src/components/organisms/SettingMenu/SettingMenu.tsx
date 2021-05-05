@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { ThemeContainer } from '../../../store/theme';
@@ -7,7 +8,7 @@ import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
 type SettingMenuProps = {
-  signOut: () => void;
+  signOut: () => void | Promise<void>;
 };
 
 export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
@@ -31,26 +32,30 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </div>
         </li>
         <li css={style.item}>
-          <button
-            css={style.card}
-            onClick={() => {
-              router.push('/');
-              signOut();
-            }}
-          >
-            <p>ログアウト</p>
-          </button>
+          <Link href="/" passHref>
+            <a
+              css={style.card}
+              onClick={() => {
+                signOut();
+              }}
+            >
+              <p>ログアウト</p>
+            </a>
+          </Link>
         </li>
         <li css={style.item}>
-          <button
-            css={style.card}
-            onClick={() => {
-              router.replace('/my?login');
-              signOut();
-            }}
-          >
-            <p>ログアウト・別のアカウントでログイン</p>
-          </button>
+          <Link href="/my?login" passHref>
+            <a
+              css={style.card}
+              onClick={async (e) => {
+                e.preventDefault();
+                await signOut();
+                router.replace('/my?login');
+              }}
+            >
+              <p>ログアウト・別のアカウントでログイン</p>
+            </a>
+          </Link>
         </li>
       </ul>
       <div css={style.twitter}>
