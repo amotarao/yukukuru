@@ -1,6 +1,7 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
+import { PubSubOnPublishHandler } from '../../types/functions';
 import {
   checkInvalidToken,
   setTokenInvalid,
@@ -10,9 +11,8 @@ import {
   checkProtectedUser,
   setUserResultWithNoChange,
 } from '../../utils/firestore';
-import { getFollowersIdList } from '../../utils/twitter';
 import { log, errorLog } from '../../utils/log';
-import { PubSubOnPublishHandler } from '../../types/functions';
+import { getFollowersIdList } from '../../utils/twitter';
 
 type Props = GetFollowersMessage['data'];
 

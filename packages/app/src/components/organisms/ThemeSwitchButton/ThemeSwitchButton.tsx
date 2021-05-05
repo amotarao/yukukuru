@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React from 'react';
-import * as style from './style';
 import { ThemeType, ThemeStoreType } from '../../../store/theme';
+import * as style from './style';
 
 export interface ThemeSwitchButtonProps {
   theme: ThemeType;

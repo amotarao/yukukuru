@@ -1,8 +1,8 @@
 import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
-import { TwitterUserInterface } from './twitter';
 import { setUserToNotActive } from './firestore/users';
+import { TwitterUserInterface } from './twitter';
 
 export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
   return errors.some(({ code }) => code === 17);
