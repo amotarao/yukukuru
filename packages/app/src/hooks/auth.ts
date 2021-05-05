@@ -110,15 +110,6 @@ export const useAuth = (): [State, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    dispatch({ type: 'FinishLoading' });
-    if (user) {
-      const { uid } = user;
-      dispatch({ type: 'SetUser', payload: { user: { uid } } });
-    } else {
-      dispatch({ type: 'ClearUser' });
-    }
-
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         const { uid } = user;
@@ -126,6 +117,7 @@ export const useAuth = (): [State, Action] => {
       } else {
         dispatch({ type: 'ClearUser' });
       }
+      dispatch({ type: 'FinishLoading' });
     });
 
     return () => {
