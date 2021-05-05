@@ -22,7 +22,6 @@ gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
               __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));`,
             }}
           />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content="#000000" />
           <meta name="description" content="フォロワーがいつきたか・いなくなったかを記録します" />
           <meta property="og:url" content={process.env.PUBLIC_URL} />
