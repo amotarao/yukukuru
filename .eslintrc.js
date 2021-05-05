@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'import'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -13,5 +13,13 @@ module.exports = {
   ],
   rules: {
     'prettier/prettier': 'error',
+    'import/order': [
+      'error',
+      {
+        alphabetize: {
+          order: 'asc',
+        },
+      },
+    ]
   },
 };
