@@ -32,7 +32,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </div>
         </li>
         <li css={style.item}>
-          <Link href="/" passHref>
+          <Link href="/">
             <a
               css={style.card}
               onClick={() => {
@@ -44,7 +44,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </Link>
         </li>
         <li css={style.item}>
-          <Link href="/my?login" passHref>
+          <Link href="/my?login">
             <a
               css={style.card}
               onClick={async (e) => {
