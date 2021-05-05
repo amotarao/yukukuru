@@ -12,7 +12,7 @@ export const TopPage: React.FC = () => {
     if (typeof window === 'undefined') {
       return;
     }
-    document.documentElement.style.overflow = null;
+    document.documentElement.style.overflow = '';
   }, []);
 
   return (

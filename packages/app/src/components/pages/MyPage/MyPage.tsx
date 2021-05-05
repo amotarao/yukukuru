@@ -158,7 +158,7 @@ export const MyPage: React.FC<MyPageProps> = ({
     if (typeof window === 'undefined') {
       return;
     }
-    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : null;
+    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : '';
   }, [nav]);
 
   useEffect(() => {
