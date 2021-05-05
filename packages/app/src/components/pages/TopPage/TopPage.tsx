@@ -20,7 +20,7 @@ export const TopPage: React.FC = () => {
       <section css={style.name}>
         <h1 css={style.title}>ゆくくる alpha</h1>
         <p css={style.text}>フォロワーがいつきたか・いなくなったかを記録します</p>
-        <Link href="/my" passHref>
+        <Link href="/my?login" passHref>
           <Button css={style.button} variant="outlined" color="primary">
             マイページ・ログイン
           </Button>

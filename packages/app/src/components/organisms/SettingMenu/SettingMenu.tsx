@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
@@ -10,6 +11,7 @@ type SettingMenuProps = {
 };
 
 export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
+  const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
   return (
@@ -31,6 +33,17 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
         <li css={style.item}>
           <button css={style.card} onClick={signOut}>
             <p>ログアウト</p>
+          </button>
+        </li>
+        <li css={style.item}>
+          <button
+            css={style.card}
+            onClick={() => {
+              signOut();
+              router.replace('/my?login');
+            }}
+          >
+            <p>ログアウト・別のアカウントでログイン</p>
           </button>
         </li>
       </ul>

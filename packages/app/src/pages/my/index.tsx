@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
@@ -8,6 +9,7 @@ import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 
 const Page: React.FC = () => {
+  const router = useRouter();
   const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const [
     { isFirstLoading, isFirstLoaded, isNextLoading, items, hasOnlyEmptyItems, hasNext },
@@ -23,6 +25,13 @@ const Page: React.FC = () => {
     setRecordsUid(uid);
     setTokenUid(uid);
   }, [uid, setRecordsUid, setTokenUid]);
+
+  useEffect(() => {
+    if (!userIsLoading && !signingIn && !signedIn && 'login' in router.query) {
+      signIn();
+      router.replace('/my');
+    }
+  }, [userIsLoading, signingIn, signedIn, router, signIn]);
 
   const props: MyPageProps = {
     isLoading,
