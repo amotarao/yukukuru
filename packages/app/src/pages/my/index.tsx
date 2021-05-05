@@ -1,15 +1,14 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+import { LoadingCircle } from '../../components/atoms/LoadingCircle';
+import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 import { AuthContainer } from '../../store/auth';
 import { RecordsContainer } from '../../store/database/records';
 import { TokenContainer } from '../../store/database/token';
 
 const Inner: React.FC = () => {
-  const router = useRouter();
-
-  const { isLoading: userIsLoading, signedIn, user, uid } = AuthContainer.useContainer();
+  const { isLoading: userIsLoading, signIn, signedIn, user, uid } = AuthContainer.useContainer();
   const {
     isLoading: recordsIsLoading,
     isNextLoading,
@@ -21,12 +20,6 @@ const Inner: React.FC = () => {
     getNextRecords,
   } = RecordsContainer.useContainer();
   const { isLoading: tokenIsLoading, setUid: setTokenUid, hasToken } = TokenContainer.useContainer();
-
-  useEffect(() => {
-    if (!userIsLoading && !signedIn) {
-      router.replace('/');
-    }
-  }, [router, signedIn, userIsLoading]);
 
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
@@ -49,7 +42,7 @@ const Inner: React.FC = () => {
     getNextRecords,
   };
 
-  return <MyPage {...props} />;
+  return userIsLoading ? <LoadingCircle /> : signedIn ? <MyPage {...props} /> : <LoginPage signIn={signIn} />;
 };
 
 const Page: React.FC = () => {
