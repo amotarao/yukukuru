@@ -1,8 +1,8 @@
 import { FirestoreIdData, UserData, GetFollowersMessage } from '@yukukuru/types';
 import { firestore } from '../../modules/firebase';
 import { publishGetFollowers } from '../../modules/pubsub/publish/getFollowers';
-import { getGroupFromTime } from '../../utils/group';
 import { PubSubOnRunHandler } from '../../types/functions';
+import { getGroupFromTime } from '../../utils/group';
 import { log } from '../../utils/log';
 
 export const getFollowersHandler: PubSubOnRunHandler = async () => {

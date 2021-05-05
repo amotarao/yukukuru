@@ -2,27 +2,27 @@
 import { RecordData } from '@yukukuru/types';
 import firebase from 'firebase/app';
 import React, { useState, useEffect } from 'react';
+import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { firestore } from '../../../modules/firebase';
-import { RecordsStoreType } from '../../../store/database/records';
-import { UserCard } from '../../organisms/UserCard';
+import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
-import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { UserCard } from '../../organisms/UserCard';
 import { style } from './style';
 
 export interface MyPageProps {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordData[];
-  hasItems: boolean;
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
   uid: string | null;
-  getNextRecords: RecordsStoreType['getNextRecords'];
+  getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  signOut: () => void;
 }
 
 /**
@@ -87,15 +87,11 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({
-  items,
-  hasItems,
-  hasOnlyEmptyItems,
-}) => {
+const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ items, hasOnlyEmptyItems }) => {
   if (hasOnlyEmptyItems) {
     return <NoViewItem />;
   }
-  if (!hasItems) {
+  if (items.length === 0) {
     return <NoItem />;
   }
 
@@ -135,12 +131,12 @@ export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
   items,
-  hasItems,
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
   uid,
   getNextRecords,
+  signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
@@ -158,7 +154,7 @@ export const MyPage: React.FC<MyPageProps> = ({
     if (typeof window === 'undefined') {
       return;
     }
-    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : null;
+    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : '';
   }, [nav]);
 
   useEffect(() => {
@@ -202,7 +198,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button css={style.getNextButton} disabled={isNextLoading} onClick={getNext}>
@@ -219,7 +215,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       )}
       {nav === 'setting' && (
         <section css={style.section}>
-          <SettingMenu />
+          <SettingMenu signOut={signOut} />
         </section>
       )}
       <BottomNav active={nav} onChange={setNav} />

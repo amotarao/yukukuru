@@ -1,5 +1,5 @@
-import { AuthOnCreateHandler } from '../../types/functions';
 import { auth } from '../../modules/firebase';
+import { AuthOnCreateHandler } from '../../types/functions';
 
 export const onCreateUserHandler: AuthOnCreateHandler = async (user) => {
   console.log(`⚙️ Initializing user document for [${user.uid}]`);

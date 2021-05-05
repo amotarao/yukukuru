@@ -1,8 +1,9 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
 import * as _ from 'lodash';
+import * as Twitter from 'twitter';
 import { firestore } from '../../modules/firebase';
+import { FirestoreOnCreateHandler } from '../../types/functions';
 import {
   checkNoUserMatches,
   checkInvalidToken,
@@ -11,13 +12,12 @@ import {
   existsRecords,
   setTwUsers,
 } from '../../utils/firestore';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
-import { addRecords } from '../../utils/firestore/records/addRecords';
 import { addRecord } from '../../utils/firestore/records/addRecord';
+import { addRecords } from '../../utils/firestore/records/addRecords';
+import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
+import { log, errorLog } from '../../utils/log';
 import { getUsersLookup } from '../../utils/twitter';
 import { mergeWatches } from '../../utils/watches';
-import { FirestoreOnCreateHandler } from '../../types/functions';
-import { log, errorLog } from '../../utils/log';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',

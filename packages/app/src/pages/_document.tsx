@@ -1,11 +1,11 @@
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import React from 'react';
 import { GlobalStyle } from '../components/GlobalStyle';
 
 export default class MyDocument extends Document {
   render(): JSX.Element {
     return (
-      <html lang="ja-jp">
+      <Html lang="ja-jp">
         <GlobalStyle />
         <Head>
           <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS}`} />
@@ -22,7 +22,6 @@ gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
               __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));`,
             }}
           />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content="#000000" />
           <meta name="description" content="フォロワーがいつきたか・いなくなったかを記録します" />
           <meta property="og:url" content={process.env.PUBLIC_URL} />
@@ -41,7 +40,7 @@ gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }

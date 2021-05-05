@@ -5,6 +5,7 @@ on:
     branches:
       - master
     paths:
+      - firebase.json
       - packages/app/**
 
 jobs:

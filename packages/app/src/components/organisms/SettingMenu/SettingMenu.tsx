@@ -1,13 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
+import { useRouter } from 'next/router';
 import React from 'react';
-import { AuthContainer } from '../../../store/auth';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
-export const SettingMenu: React.FC = () => {
-  const { signOut } = AuthContainer.useContainer();
+type SettingMenuProps = {
+  signOut: () => void;
+};
+
+export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
+  const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
   return (
@@ -27,8 +31,25 @@ export const SettingMenu: React.FC = () => {
           </div>
         </li>
         <li css={style.item}>
-          <button css={style.card} onClick={signOut}>
+          <button
+            css={style.card}
+            onClick={() => {
+              router.push('/');
+              signOut();
+            }}
+          >
             <p>ログアウト</p>
+          </button>
+        </li>
+        <li css={style.item}>
+          <button
+            css={style.card}
+            onClick={() => {
+              router.replace('/my?login');
+              signOut();
+            }}
+          >
+            <p>ログアウト・別のアカウントでログイン</p>
           </button>
         </li>
       </ul>
