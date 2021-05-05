@@ -23,11 +23,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "invalid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "lastUpdated",
+          "fieldPath": "followers",
           "order": "ASCENDING"
         }
       ]
@@ -41,15 +37,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "invalid",
+          "fieldPath": "group",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdated",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextCursor",
+          "fieldPath": "followers",
           "order": "ASCENDING"
         }
       ]
@@ -63,11 +55,25 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "invalid",
+          "fieldPath": "group",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "newUser",
+          "fieldPath": "lastUpdatedCheckIntegrity",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "group",
           "order": "ASCENDING"
         },
         {
@@ -85,60 +91,48 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdated",
+          "fieldPath": "group",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextCursor",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "invalid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "lastUpdated",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextCursor",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "invalid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "lastUpdated",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextCursor",
-          "order": "DESCENDING"
         },
         {
           "fieldPath": "pausedGetFollower",
-          "order": "DESCENDING"
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdated",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdated",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextCursor",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdatedTwUsers",
+          "order": "ASCENDING"
         }
       ]
     },
