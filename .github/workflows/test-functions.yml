@@ -3,26 +3,32 @@ name: Test functions
 on:
   pull_request:
     paths:
-    - packages/functions/**
+      - packages/functions/**
 
 jobs:
   test:
     name: Test functions
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup Node.js 14
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-    - name: Install dependencies
-      run: yarn --frozen-lockfile
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
 
-    - name: Run lint
-      run: yarn workspace @yukukuru/functions lint
+      - name: Install dependencies on functions
+        run: yarn --frozen-lockfile
+        working-directory: packages/functions
 
-    - name: Run build
-      run: yarn workspace @yukukuru/functions build
+      - name: Run lint
+        run: yarn lint
+        working-directory: packages/functions
+
+      - name: Run build
+        run: yarn build
+        working-directory: packages/functions
