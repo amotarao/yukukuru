@@ -12,45 +12,34 @@ export interface BottomNavProps {
   onChange: (nav: NavType) => void;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = (props) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
+  const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    const type = e.currentTarget.value as NavType;
+    onChange(type);
+
+    // HOME 同士の場合、スクロールTOPする
+    if (type === active && type === 'home') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav css={style.nav}>
       <ul css={style.list}>
         <li css={style.item}>
-          <button
-            css={style.button}
-            aria-selected={props.active === 'home'}
-            value="home"
-            onClick={(e) => {
-              props.onChange(e.currentTarget.value as NavType);
-            }}
-          >
+          <button css={style.button} aria-selected={active === 'home'} value="home" onClick={onClick}>
             <HomeIcon />
             ホーム
           </button>
         </li>
         <li css={style.item}>
-          <button
-            css={style.button}
-            aria-selected={props.active === 'notification'}
-            value="notification"
-            onClick={(e) => {
-              props.onChange(e.currentTarget.value as NavType);
-            }}
-          >
+          <button css={style.button} aria-selected={active === 'notification'} value="notification" onClick={onClick}>
             <NotificationsIcon />
             お知らせ
           </button>
         </li>
         <li css={style.item}>
-          <button
-            css={style.button}
-            aria-selected={props.active === 'setting'}
-            value="setting"
-            onClick={(e) => {
-              props.onChange(e.currentTarget.value as NavType);
-            }}
-          >
+          <button css={style.button} aria-selected={active === 'setting'} value="setting" onClick={onClick}>
             <SettingsIcon />
             設定
           </button>
