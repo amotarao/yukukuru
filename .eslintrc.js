@@ -9,7 +9,6 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
-    '@typescript-eslint/camelcase': 'warn',
     'prettier/prettier': 'error',
   },
 };
