@@ -2,7 +2,7 @@ import { TokenData } from '@yukukuru/types';
 import type firebase from 'firebase';
 import { useEffect, useReducer } from 'react';
 import { auth, providers } from '../modules/firebase';
-import { updateToken } from '../modules/functions';
+import { setToken } from '../modules/firestore/token';
 
 type User = Pick<firebase.User, 'uid'>;
 
@@ -134,12 +134,11 @@ export const useAuth = (): [State, Action] => {
   }, []);
 
   useEffect(() => {
-    if (!state.token || !state.signedIn) {
+    if (!state.token || !state.user) {
       return;
     }
-    console.log(state.token);
-    updateToken(state.token);
-  }, [state.token, state.signedIn]);
+    setToken(state.user.uid, state.token);
+  }, [state.token, state.user]);
 
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
