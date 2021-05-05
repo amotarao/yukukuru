@@ -1,3 +1,4 @@
+import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import {
@@ -11,22 +12,17 @@ import {
 } from '../../utils/firestore';
 import { getFollowersIdList } from '../../utils/twitter';
 import { log, errorLog } from '../../utils/log';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
-type Props = {
-  uid: string;
-  nextCursor: string;
-};
+type Props = GetFollowersMessage['data'];
 
-interface Response {
-  userId: string;
-  watchId: string;
-  newNextCursor: string;
-}
+export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
+  const { uid, nextCursor } = message.json as Props;
+  const now = new Date(context.timestamp);
 
-export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promise<Response | void> => {
   const token = await getToken(uid);
   if (!token) {
-    log('onCreateQueue', 'getFollowers', { type: 'no-token', uid });
+    log('onPublishGetFollowers', 'getFollowers', { type: 'no-token', uid });
     await setTokenInvalid(uid);
     return;
   }
@@ -46,7 +42,7 @@ export const getFollowers = async ({ uid, nextCursor }: Props, now: Date): Promi
   });
 
   if ('errors' in result) {
-    errorLog('onCreateQueue', 'getFollowers', { uid, errors: result.errors });
+    errorLog('onPublishGetFollowers', 'getFollowers', { uid, errors: result.errors });
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }

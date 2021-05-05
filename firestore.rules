@@ -1,6 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    allow write, read: if false;
+
     function isLoggedIn() {
       return request.auth != null;
     }
@@ -24,6 +26,15 @@ service cloud.firestore {
     match /tokens/{userID} {
       allow write: if false;
       allow read: if isMe(userID);
+    }
+
+    match /userStatuses/{userID} {
+      allow write: if isMe(userID)
+                      && request.resource.data.size() == 1
+                      && request.resource.data.keys().hasAll(['lastViewing'])
+                      && request.resource.data.keys().hasOnly(['lastViewing'])
+                      && request.resource.data.lastViewing == request.time;
+      allow read: if false;
     }
   }
 }

@@ -1,36 +1,25 @@
-import { QueueTypeCheckIntegrityData } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { addQueuesTypeCheckIntegrity } from '../utils/firestore/queues/addQueuesTypeCheckIntegrity';
-import { getGroupFromTime } from '../utils/group';
-import { PubSubOnRunHandler } from '../types/functions';
-import { log } from '../utils/log';
+import * as functions from 'firebase-functions';
+import { Topic } from '../modules/pubsub/topics';
+import { checkIntegrityHandler } from './handlers/checkIntegrity';
+import { onPublishCheckIntegrityHandler } from './handlers/onPublishCheckIntegrity';
 
-/**
- * 整合性チェックのキューを作成
- *
- * 12分ごとに 1グループずつ実行
- * 1日に 120回実行
- * ユーザーごとに 1日1回 整合性をチェック
- */
-export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = getGroupFromTime(12, now);
+/** PubSub: 整合性チェック 定期実行 */
+export const checkIntegrity = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('*/12 * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(checkIntegrityHandler);
 
-  // 1日前
-  const yesterday = new Date(now.getTime() - 23 * 60 * 60 * 1000);
-
-  const users = firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('lastUpdatedCheckIntegrity', '<', yesterday)
-    .where('group', '==', group)
-    .get();
-
-  const usersSnap = await users;
-
-  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-  log('checkIntegrity', '', { ids, count: ids.length });
-
-  const items: QueueTypeCheckIntegrityData['data'][] = ids.map((id) => ({ uid: id }));
-  await addQueuesTypeCheckIntegrity(items);
-};
+/** PubSub: 整合性チェック 個々の実行 */
+export const onPublishCheckIntegrity = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '1GB',
+  })
+  .pubsub.topic(Topic.CheckIntegrity)
+  .onPublish(onPublishCheckIntegrityHandler);

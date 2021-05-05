@@ -1,27 +1,25 @@
-import { QueueTypeUpdateTwUsersData } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { addQueuesTypeUpdateTwUsers } from '../utils/firestore/queues/addQueuesTypeUpdateTwUsers';
-import { getGroupFromTime } from '../utils/group';
-import { PubSubOnRunHandler } from '../types/functions';
-import { log } from '../utils/log';
+import * as functions from 'firebase-functions';
+import { Topic } from '../modules/pubsub/topics';
+import { updateTwUsersHandler } from './handlers/updateTwUsers';
+import { onPublishUpdateTwUsersHandler } from './handlers/onPublishUpdateTwUsers';
 
-export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = getGroupFromTime(12, now);
+/** PubSub: Twitter ユーザー情報更新 定期実行 */
+export const updateTwUsers = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('*/12 * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(updateTwUsersHandler);
 
-  // 3日前
-  const previous = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 60 * 1000);
-
-  const usersSnap = await firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('lastUpdatedTwUsers', '<', previous)
-    .where('group', '==', group)
-    .get();
-
-  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-  log('updateTwUsers', '', { ids, count: ids.length });
-
-  const items: QueueTypeUpdateTwUsersData['data'][] = ids.map((id) => ({ uid: id }));
-  await addQueuesTypeUpdateTwUsers(items);
-};
+/** PubSub: Twitter ユーザー情報更新 個々の実行 */
+export const onPublishUpdateTwUsers = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '1GB',
+  })
+  .pubsub.topic(Topic.UpdateTwUsers)
+  .onPublish(onPublishUpdateTwUsersHandler);

@@ -1,16 +1,17 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
 import { RecordData } from '@yukukuru/types';
+import firebase from 'firebase/app';
 import React, { useState, useEffect } from 'react';
 import * as gtag from '../../../libs/gtag';
+import { firestore } from '../../../modules/firebase';
 import { RecordsStoreType } from '../../../store/database/records';
 import { UserCard } from '../../organisms/UserCard';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
-import { style } from './style';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { style } from './style';
 
 export interface MyPageProps {
   isLoading: boolean;
@@ -20,6 +21,7 @@ export interface MyPageProps {
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
+  uid: string | null;
   getNextRecords: RecordsStoreType['getNextRecords'];
 }
 
@@ -137,10 +139,20 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
+  uid,
   getNextRecords,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
+
+  // lastViewing 送信
+  useEffect(() => {
+    if (!uid) {
+      return;
+    }
+    const doc = firestore.collection('userStatuses').doc(uid);
+    doc.set({ lastViewing: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+  }, [uid]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {

@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
 import { FirestoreDateLike, RecordData, RecordDataOld } from '@yukukuru/types';
 import { firestore } from '../../../modules/firebase';
+import { bulkWriterErrorHandler } from '../../firestore';
 
 const usersCollection = firestore.collection('users');
 
@@ -19,22 +19,18 @@ type Response = void;
  */
 export const updateRecordsStart = async ({ uid, items }: Props): Promise<Response> => {
   const collection = usersCollection.doc(uid).collection('records');
-  const chunks = _.chunk(items, 500);
 
-  const requests = chunks.map(async (items) => {
-    const batch = firestore.batch();
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
 
-    items.forEach((item) => {
-      const data:
-        | Pick<RecordData<FirestoreDateLike>, 'durationStart'>
-        | Pick<RecordDataOld<FirestoreDateLike>, 'durationStart'> = {
-        durationStart: item.start,
-      };
-      batch.update(collection.doc(item.id), data);
-    });
-
-    await batch.commit();
+  items.forEach((item) => {
+    const data:
+      | Pick<RecordData<FirestoreDateLike>, 'durationStart'>
+      | Pick<RecordDataOld<FirestoreDateLike>, 'durationStart'> = {
+      durationStart: item.start,
+    };
+    bulkWriter.update(collection.doc(item.id), data);
   });
 
-  await Promise.all(requests);
+  await bulkWriter.close();
 };

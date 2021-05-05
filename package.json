@@ -6,15 +6,16 @@
   "repository": "git@github.com:amotarao/yukukuru.git",
   "author": "Amon Sawamura <amon.sawamura@gmail.com>",
   "workspaces": [
-    "packages/**"
+    "packages/app",
+    "packages/types"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.26.0",
-    "@typescript-eslint/parser": "^2.26.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-prettier": "^3.1.2",
-    "prettier": "^2.0.4",
-    "typescript": "^3.8.3"
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.4"
   }
 }

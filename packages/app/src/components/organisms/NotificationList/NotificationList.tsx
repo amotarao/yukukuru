@@ -1,6 +1,6 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
 import LinkIcon from '@material-ui/icons/Link';
+import React from 'react';
 import { style } from './style';
 
 interface NotificationItem {

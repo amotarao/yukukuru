@@ -1,5 +1,5 @@
-import * as _ from 'lodash';
 import { firestore } from '../../../modules/firebase';
+import { bulkWriterErrorHandler } from '../../firestore';
 
 const usersCollection = firestore.collection('users');
 
@@ -15,17 +15,13 @@ type Response = void;
  */
 export const removeRecords = async ({ uid, removeIds }: Props): Promise<Response> => {
   const collection = usersCollection.doc(uid).collection('records');
-  const chunks = _.chunk(removeIds, 500);
 
-  const requests = chunks.map(async (ids) => {
-    const batch = firestore.batch();
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
 
-    ids.forEach((id) => {
-      batch.delete(collection.doc(id));
-    });
-
-    await batch.commit();
+  removeIds.forEach((id) => {
+    bulkWriter.delete(collection.doc(id));
   });
 
-  await Promise.all(requests);
+  await bulkWriter.close();
 };

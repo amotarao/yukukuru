@@ -1,49 +1,25 @@
-import { FirestoreIdData, UserData, QueueTypeGetFollowersData } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { addQueuesTypeGetFollowers } from '../utils/firestore/queues/addQueuesTypeGetFollowers';
-import { getGroupFromTime } from '../utils/group';
-import { PubSubOnRunHandler } from '../types/functions';
-import { log } from '../utils/log';
+import * as functions from 'firebase-functions';
+import { Topic } from '../modules/pubsub/topics';
+import { getFollowersHandler } from './handlers/getFollowers';
+import { onPublishGetFollowersHandler } from './handlers/onPublishGetFollowers';
 
-export const getFollowersHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = getGroupFromTime(1, now);
+/** PubSub: フォロワー取得 定期実行 */
+export const getFollowers = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(getFollowersHandler);
 
-  // 15分前
-  const time15 = new Date(now.getTime() - 14 * 60 * 1000);
-  // 60分前
-  const time60 = new Date(now.getTime() - 59 * 60 * 1000);
-
-  const allUsers = firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('pausedGetFollower', '==', false)
-    .where('lastUpdated', '<', time60)
-    .where('group', '==', group)
-    .get();
-
-  const pausedUsers = firestore
-    .collection('users')
-    .where('active', '==', true)
-    .where('pausedGetFollower', '==', true)
-    .where('lastUpdated', '<', time15)
-    .where('group', '==', group)
-    .get();
-
-  const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
-  const docs: FirestoreIdData<UserData>[] = [...allUsersSnap.docs, ...pausedUsersSnap.docs]
-    .filter((x, i, self) => self.findIndex((y) => x.id === y.id) === i)
-    .map((doc) => {
-      return {
-        id: doc.id,
-        data: doc.data() as UserData,
-      };
-    });
-  log('getFollowers', '', { ids: docs.map((doc) => doc.id), count: docs.length });
-
-  const items: QueueTypeGetFollowersData['data'][] = docs.map((doc) => ({
-    uid: doc.id,
-    nextCursor: doc.data.nextCursor,
-  }));
-  await addQueuesTypeGetFollowers(items);
-};
+/** PubSub: フォロワー取得 個々の実行 */
+export const onPublishGetFollowers = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '1GB',
+  })
+  .pubsub.topic(Topic.GetFollowers)
+  .onPublish(onPublishGetFollowersHandler);

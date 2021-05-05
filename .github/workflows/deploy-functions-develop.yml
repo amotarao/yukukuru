@@ -24,11 +24,13 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Run lint
-        run: yarn workspace @yukukuru/functions lint
+      - name: Install dependencies on functions
+        run: yarn --frozen-lockfile
+        working-directory: packages/functions
 
       - name: Run build
-        run: yarn workspace @yukukuru/functions build
+        run: yarn build
+        working-directory: packages/functions
 
       - name: Install to firebase-tools
         run: npm i -g firebase-tools

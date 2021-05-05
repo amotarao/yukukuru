@@ -1,4 +1,4 @@
-import { RecordUserData, RecordData, FirestoreDateLike } from '@yukukuru/types';
+import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
 import { getRecords } from '../../utils/firestore/records/getRecords';
@@ -12,12 +12,14 @@ import { convertRecords } from '../../utils/convert';
 import { mergeWatches } from '../../utils/watches';
 import { addRecords } from '../../utils/firestore/records/addRecords';
 import { log, errorLog } from '../../utils/log';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
-type Props = {
-  uid: string;
-};
+type Props = CheckIntegrityMessage['data'];
 
-export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> => {
+export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
+  const { uid } = message.json as Props;
+  const now = new Date(context.timestamp);
+
   const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
 
   if (watches.length < 5) {
@@ -82,7 +84,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
 
   // 存在しないドキュメントがある場合は追加する
   if (notExistsDiffs.length !== 0 && unknownDiffs.length === 0) {
-    log('onCreateQueue', 'checkIntegrity', { type: 'hasNotExistsDiffs', uid, notExistsDiffs });
+    log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'hasNotExistsDiffs', uid, notExistsDiffs });
   }
 
   // 得体のしれないドキュメントがある場合はエラーを出す
@@ -90,7 +92,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     const removeRecordIds = _.flatten(unknownDiffs.map(({ id }) => id));
     await removeRecords({ uid, removeIds: removeRecordIds });
 
-    log('onCreateQueue', 'checkIntegrity', { type: 'hasUnknownDiffs', uid, unknownDiffs, removeRecordIds });
+    log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'hasUnknownDiffs', uid, unknownDiffs, removeRecordIds });
   }
 
   // 何も変化がない場合、そのまま削除する
@@ -98,7 +100,7 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     const removeIds = _.flatten(watches.map(({ ids }) => ids).slice(0, watches.length - 1));
     await removeWatches({ uid, removeIds });
 
-    log('onCreateQueue', 'checkIntegrity', { type: 'correctRecords', uid, removeIds });
+    log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'correctRecords', uid, removeIds });
   }
 
   // durationStart だけ異なるドキュメントがある場合は、アップデートする
@@ -118,12 +120,17 @@ export const checkIntegrity = async ({ uid }: Props, now: Date): Promise<void> =
     });
 
     await updateRecordsStart({ uid, items });
-    log('onCreateQueue', 'checkIntegrity', { type: 'sameEnd', uid, notExistsDiffs, unknownDiffs, items });
+    log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'sameEnd', uid, notExistsDiffs, unknownDiffs, items });
   }
 
   // 想定されていない処理
   else {
-    errorLog('onCreateQueue', 'checkIntegrity', { type: 'checkIntegrity: ERROR', uid, notExistsDiffs, unknownDiffs });
+    errorLog('onPublishCheckIntegrity', 'checkIntegrity', {
+      type: 'checkIntegrity: ERROR',
+      uid,
+      notExistsDiffs,
+      unknownDiffs,
+    });
   }
 
   await updateUserCheckIntegrity(uid, now);
