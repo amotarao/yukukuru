@@ -1,4 +1,5 @@
 import { TokenData } from '@yukukuru/types';
+import type firebase from 'firebase';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { auth, providers } from '../modules/firebase';
