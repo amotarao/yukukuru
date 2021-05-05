@@ -18,7 +18,6 @@ const Page: React.FC = () => {
   const uid = user?.uid ?? null;
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
-  console.log({ userIsLoading, recordsIsLoading, tokenIsLoading, hasToken });
 
   useEffect(() => {
     if (uid) {
