@@ -1,19 +1,25 @@
-import { ConvertRecordsMessage } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { publishConvertRecords } from '../modules/pubsub/publish/convertRecords';
-import { getGroupFromTime } from '../utils/group';
-import { PubSubOnRunHandler } from '../types/functions';
-import { log } from '../utils/log';
+import * as functions from 'firebase-functions';
+import { Topic } from '../modules/pubsub/topics';
+import { convertRecordsHandler } from './handlers/convertRecords';
+import { onPublishConvertRecordsHandler } from './handlers/onPublishConvertRecords';
 
-export const convertRecordsHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = getGroupFromTime(1, now);
+/** PubSub: record の変換 定期実行 */
+export const convertRecords = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(convertRecordsHandler);
 
-  const usersSnap = await firestore.collection('users').where('active', '==', true).where('group', '==', group).get();
-
-  const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-  log('convertRecords', '', { ids, count: ids.length });
-
-  const items: ConvertRecordsMessage['data'][] = ids.map((id) => ({ uid: id }));
-  await publishConvertRecords(items);
-};
+/** PubSub: record の変換 個々の実行 */
+export const onPublishConvertRecords = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '1GB',
+  })
+  .pubsub.topic(Topic.ConvertRecords)
+  .onPublish(onPublishConvertRecordsHandler);

@@ -1,7 +1,7 @@
 import { TokenData } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { HttpsOnCallHandler } from '../types/functions';
-import { log } from '../utils/log';
+import { firestore } from '../../modules/firebase';
+import { HttpsOnCallHandler } from '../../types/functions';
+import { log } from '../../utils/log';
 
 type Props = TokenData;
 
