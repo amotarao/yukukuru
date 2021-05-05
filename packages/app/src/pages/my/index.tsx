@@ -9,7 +9,7 @@ import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 const Inner: React.FC = () => {
   const router = useRouter();
 
-  const { isLoading: userIsLoading, signedIn, user } = AuthContainer.useContainer();
+  const { isLoading: userIsLoading, signedIn, user, uid } = AuthContainer.useContainer();
   const {
     isLoading: recordsIsLoading,
     isNextLoading,
@@ -45,6 +45,7 @@ const Inner: React.FC = () => {
     hasOnlyEmptyItems,
     hasNext,
     hasToken,
+    uid,
     getNextRecords,
   };
 

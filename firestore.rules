@@ -27,5 +27,10 @@ service cloud.firestore {
       allow write: if false;
       allow read: if isMe(userID);
     }
+
+    match /userStatuses/{userID} {
+      allow write: if isMe(userID);
+      allow read: if false;
+    }
   }
 }
