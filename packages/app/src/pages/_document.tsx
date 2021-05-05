@@ -1,11 +1,11 @@
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import React from 'react';
 import { GlobalStyle } from '../components/GlobalStyle';
 
 export default class MyDocument extends Document {
   render(): JSX.Element {
     return (
-      <html lang="ja-jp">
+      <Html lang="ja-jp">
         <GlobalStyle />
         <Head>
           <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS}`} />
@@ -41,7 +41,7 @@ gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }
