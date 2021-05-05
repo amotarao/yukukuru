@@ -62,7 +62,7 @@ type DispatchAction =
   | {
       type: 'AddItems';
       payload: {
-        docs: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>[];
+        docs: firebase.firestore.QueryDocumentSnapshot[];
       };
     }
   | {

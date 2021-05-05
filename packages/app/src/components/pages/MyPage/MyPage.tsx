@@ -2,9 +2,9 @@
 import { RecordData } from '@yukukuru/types';
 import firebase from 'firebase/app';
 import React, { useState, useEffect } from 'react';
+import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { firestore } from '../../../modules/firebase';
-import { RecordsStoreType } from '../../../store/database/records';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
@@ -21,7 +21,7 @@ export interface MyPageProps {
   hasNext: boolean;
   hasToken: boolean;
   uid: string | null;
-  getNextRecords: RecordsStoreType['getNextRecords'];
+  getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   signOut: () => void;
 }
 
