@@ -2,11 +2,11 @@ import { UpdateTwUsersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
-import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../utils/firestore';
-import { getUsersLookup } from '../utils/twitter';
-import { getLatestWatches } from '../utils/firestore/watches/getWatches';
-import { log, errorLog } from '../utils/log';
-import { PubSubOnPublishHandler } from '../types/functions';
+import { setTwUsers, updateUserLastUpdatedTwUsers, getToken } from '../../utils/firestore';
+import { getUsersLookup } from '../../utils/twitter';
+import { getLatestWatches } from '../../utils/firestore/watches/getWatches';
+import { log, errorLog } from '../../utils/log';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
 type Props = UpdateTwUsersMessage['data'];
 

@@ -9,10 +9,10 @@ import {
   setUserResult,
   checkProtectedUser,
   setUserResultWithNoChange,
-} from '../utils/firestore';
-import { getFollowersIdList } from '../utils/twitter';
-import { log, errorLog } from '../utils/log';
-import { PubSubOnPublishHandler } from '../types/functions';
+} from '../../utils/firestore';
+import { getFollowersIdList } from '../../utils/twitter';
+import { log, errorLog } from '../../utils/log';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
 type Props = GetFollowersMessage['data'];
 
