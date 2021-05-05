@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - firebase.json
+      - firestore.indexes.json
+      - firestore.rules
 
 jobs:
   build-deploy:
