@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+import { TopPage, TopPageProps } from '../components/pages/TopPage';
 import { AuthContainer } from '../store/auth';
 import { ThemeContainer } from '../store/theme';
-import { TopPage, TopPageProps } from '../components/pages/TopPage';
 
 const Inner: React.FC = () => {
   const router = useRouter();

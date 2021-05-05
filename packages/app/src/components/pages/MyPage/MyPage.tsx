@@ -5,12 +5,12 @@ import React, { useState, useEffect } from 'react';
 import * as gtag from '../../../libs/gtag';
 import { firestore } from '../../../modules/firebase';
 import { RecordsStoreType } from '../../../store/database/records';
-import { UserCard } from '../../organisms/UserCard';
+import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
-import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { UserCard } from '../../organisms/UserCard';
 import { style } from './style';
 
 export interface MyPageProps {

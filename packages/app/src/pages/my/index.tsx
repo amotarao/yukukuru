@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 import { AuthContainer } from '../../store/auth';
 import { RecordsContainer } from '../../store/database/records';
 import { TokenContainer } from '../../store/database/token';
-import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 
 const Inner: React.FC = () => {
   const router = useRouter();
