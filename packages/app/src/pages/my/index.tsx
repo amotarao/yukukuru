@@ -3,12 +3,14 @@ import React, { useEffect } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage, MyPageProps } from '../../components/pages/MyPage';
-import { AuthContainer } from '../../store/auth';
+import { useAuth } from '../../hooks/auth';
 import { RecordsContainer } from '../../store/database/records';
 import { TokenContainer } from '../../store/database/token';
 
 const Inner: React.FC = () => {
-  const { isLoading: userIsLoading, signIn, signedIn, user, uid } = AuthContainer.useContainer();
+  const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
+  const uid = user?.uid ?? null;
+
   const {
     isLoading: recordsIsLoading,
     isNextLoading,
@@ -24,11 +26,11 @@ const Inner: React.FC = () => {
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
   useEffect(() => {
-    if (user) {
-      setRecordsUid(user.uid);
-      setTokenUid(user.uid);
+    if (uid) {
+      setRecordsUid(uid);
+      setTokenUid(uid);
     }
-  }, [user]);
+  }, [uid]);
 
   const props: MyPageProps = {
     isLoading,
@@ -42,21 +44,25 @@ const Inner: React.FC = () => {
     getNextRecords,
   };
 
-  return userIsLoading ? <LoadingCircle /> : signedIn ? <MyPage {...props} /> : <LoginPage signIn={signIn} />;
+  return userIsLoading || signingIn ? (
+    <LoadingCircle />
+  ) : signedIn ? (
+    <MyPage {...props} />
+  ) : (
+    <LoginPage signIn={signIn} />
+  );
 };
 
 const Page: React.FC = () => {
   return (
-    <AuthContainer.Provider>
-      <RecordsContainer.Provider>
-        <TokenContainer.Provider>
-          <Head>
-            <title>マイページ - ゆくくる alpha</title>
-          </Head>
-          <Inner />
-        </TokenContainer.Provider>
-      </RecordsContainer.Provider>
-    </AuthContainer.Provider>
+    <RecordsContainer.Provider>
+      <TokenContainer.Provider>
+        <Head>
+          <title>マイページ - ゆくくる alpha</title>
+        </Head>
+        <Inner />
+      </TokenContainer.Provider>
+    </RecordsContainer.Provider>
   );
 };
 
