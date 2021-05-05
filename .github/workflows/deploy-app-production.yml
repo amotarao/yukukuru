@@ -41,16 +41,16 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 
       - name: Install to firebase-tools
-        run: yarn global add firebase-tools
+        run: npm i -g firebase-tools
 
       - name: Add target to Firebase
-        run: yarn firebase target:apply hosting app $SITE_ID --project $PROJECT_ID
+        run: npx firebase target:apply hosting app $SITE_ID --project $PROJECT_ID
         env:
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID }}
 
       - name: Deploy to Firebase
-        run: yarn firebase deploy --only hosting:app --project $PROJECT_ID
+        run: npx firebase deploy --only hosting:app --project $PROJECT_ID
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
