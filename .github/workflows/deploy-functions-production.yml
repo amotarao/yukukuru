@@ -33,10 +33,10 @@ jobs:
         working-directory: packages/functions
 
       - name: Install to firebase-tools
-        run: yarn global add firebase-tools
+        run: npm i -g firebase-tools
 
       - name: Deploy to Firebase
-        run: yarn firebase deploy --only functions --project $PROJECT_ID
+        run: npx firebase deploy --only functions --project $PROJECT_ID
         env:
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
