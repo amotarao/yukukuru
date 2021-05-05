@@ -4,25 +4,20 @@ import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
+import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
-import { RecordsContainer } from '../../store/database/records';
 
 const Inner: React.FC = () => {
   const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const uid = user?.uid ?? null;
 
-  const {
-    isLoading: recordsIsLoading,
-    isNextLoading,
-    items,
-    hasItems,
-    hasOnlyEmptyItems,
-    hasNext,
-    setUid: setRecordsUid,
-    getNextRecords,
-  } = RecordsContainer.useContainer();
+  const [
+    { isFirstLoading, isFirstLoaded, isNextLoading, items, hasOnlyEmptyItems, hasNext },
+    { setUid: setRecordsUid, getNextRecords },
+  ] = useRecords();
   const [{ isLoading: tokenIsLoading, hasToken }, { setUid: setTokenUid }] = useToken();
 
+  const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
   useEffect(() => {
@@ -36,7 +31,7 @@ const Inner: React.FC = () => {
     isLoading,
     isNextLoading,
     items,
-    hasItems,
+    hasItems: items.length > 0,
     hasOnlyEmptyItems,
     hasNext,
     hasToken,
@@ -56,12 +51,12 @@ const Inner: React.FC = () => {
 
 const Page: React.FC = () => {
   return (
-    <RecordsContainer.Provider>
+    <>
       <Head>
         <title>マイページ - ゆくくる alpha</title>
       </Head>
       <Inner />
-    </RecordsContainer.Provider>
+    </>
   );
 };
 
