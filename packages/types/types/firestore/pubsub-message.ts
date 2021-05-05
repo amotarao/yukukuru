@@ -1,5 +1,3 @@
-import { FirestoreDateLike, Timestamp } from '../firestore';
-
 export interface GetFollowersMessage {
   /** キュータイプ */
   type: 'getFollowers';
@@ -33,16 +31,6 @@ export interface UpdateTwUsersMessage {
   };
 }
 
-export interface ConvertRecordsMessage<T extends FirestoreDateLike = Timestamp> {
-  /** キュータイプ */
-  type: 'convertRecords';
-
-  data: {
-    /** Firebase UID */
-    uid: string;
-  };
-}
-
-export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | ConvertRecordsMessage;
+export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage;
 
 export type MessageType = Message['type'];
