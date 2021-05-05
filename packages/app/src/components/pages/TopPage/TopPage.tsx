@@ -25,31 +25,30 @@ export const MyButton: React.FC<Pick<TopPageProps, 'isLoading' | 'signingIn' | '
   };
 
   const baseProps: ButtonProps = {
-    css: style.button,
     variant: 'outlined',
     color: 'primary',
   };
 
   if (props.isLoading)
     return (
-      <Button {...baseProps} disabled={true}>
+      <Button css={style.button} {...baseProps} disabled={true}>
         読み込み中
       </Button>
     );
   if (props.signingIn)
     return (
-      <Button {...baseProps} disabled={true}>
+      <Button css={style.button} {...baseProps} disabled={true}>
         ログイン処理中
       </Button>
     );
   if (props.signedIn)
     return (
-      <Button {...baseProps} href="/my" onClick={toMyPage}>
+      <Button css={style.button} {...baseProps} href="/my" onClick={toMyPage}>
         マイページ
       </Button>
     );
   return (
-    <Button {...baseProps} onClick={props.signIn}>
+    <Button css={style.button} {...baseProps} onClick={props.signIn}>
       ログイン
     </Button>
   );
