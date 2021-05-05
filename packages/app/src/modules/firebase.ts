@@ -1,7 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore/memory';
-import 'firebase/functions';
 
 const app = firebase.apps.length
   ? firebase.app()
@@ -20,11 +19,8 @@ twitterAuthProvider.setCustomParameters({
   lang: 'ja',
 });
 
-export default firebase;
-
 export const auth = app.auth();
 export const firestore = app.firestore();
-export const functions = app.functions('asia-northeast1');
 
 export const providers = {
   twitter: twitterAuthProvider,
