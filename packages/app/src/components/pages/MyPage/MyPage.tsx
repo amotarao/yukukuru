@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { RecordData } from '@yukukuru/types';
-import firebase from 'firebase/app';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
-import { firestore } from '../../../modules/firebase';
+import { setLastViewing } from '../../../modules/firestore/userStatuses';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
@@ -22,7 +21,7 @@ export interface MyPageProps {
   hasToken: boolean;
   uid: string | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  signOut: () => void;
+  signOut: () => void | Promise<void>;
 }
 
 /**
@@ -146,8 +145,7 @@ export const MyPage: React.FC<MyPageProps> = ({
     if (!uid) {
       return;
     }
-    const doc = firestore.collection('userStatuses').doc(uid);
-    doc.set({ lastViewing: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+    setLastViewing(uid);
   }, [uid]);
 
   useEffect(() => {
