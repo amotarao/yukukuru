@@ -1,65 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { jsx, css } from '@emotion/react';
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import { useRouter } from 'next/router';
+import { css } from '@emotion/react';
+import Button from '@material-ui/core/Button';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
-import { AuthStoreType } from '../../../store/auth';
-import { ThemeType } from '../../../store/theme';
 import { DummyUserCard } from '../../organisms/UserCard';
 import { style as myPageStyle } from '../../pages/MyPage/style';
 import { style } from './style';
 
-export interface TopPageProps {
-  isLoading: AuthStoreType['isLoading'];
-  signingIn: AuthStoreType['signingIn'];
-  signedIn: AuthStoreType['signedIn'];
-  signIn: AuthStoreType['signIn'];
-  theme: ThemeType;
-}
-
-export const MyButton: React.FC<Pick<TopPageProps, 'isLoading' | 'signingIn' | 'signedIn' | 'signIn'>> = (props) => {
-  const router = useRouter();
-  const toMyPage = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.preventDefault;
-    router.push('/my');
-  };
-
-  const baseProps: ButtonProps = {
-    variant: 'outlined',
-    color: 'primary',
-  };
-
-  if (props.isLoading)
-    return (
-      <Button css={style.button} {...baseProps} disabled={true}>
-        読み込み中
-      </Button>
-    );
-  if (props.signingIn)
-    return (
-      <Button css={style.button} {...baseProps} disabled={true}>
-        ログイン処理中
-      </Button>
-    );
-  if (props.signedIn)
-    return (
-      <Button css={style.button} {...baseProps} href="/my" onClick={toMyPage}>
-        マイページ
-      </Button>
-    );
-  return (
-    <Button css={style.button} {...baseProps} onClick={props.signIn}>
-      ログイン
-    </Button>
-  );
-};
-
-export const TopPage: React.FC<TopPageProps> = (props) => {
+export const TopPage: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
-    document.documentElement.style.overflow = null;
+    document.documentElement.style.overflow = '';
   }, []);
 
   return (
@@ -67,7 +20,11 @@ export const TopPage: React.FC<TopPageProps> = (props) => {
       <section css={style.name}>
         <h1 css={style.title}>ゆくくる alpha</h1>
         <p css={style.text}>フォロワーがいつきたか・いなくなったかを記録します</p>
-        <MyButton {...props} />
+        <Link href="/my?login" passHref>
+          <Button css={style.button} variant="outlined" color="primary">
+            マイページ・ログイン
+          </Button>
+        </Link>
         <p css={style.caution}>現在、新規アカウント登録を停止しています。 (2021.5.4)</p>
       </section>
       <section
