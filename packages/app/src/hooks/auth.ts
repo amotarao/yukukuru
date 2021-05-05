@@ -2,7 +2,7 @@ import { TokenData } from '@yukukuru/types';
 import type firebase from 'firebase';
 import { useEffect, useReducer } from 'react';
 import { auth, providers } from '../modules/firebase';
-import { setToken } from '../modules/firestore/token';
+import { setToken } from '../modules/firestore/tokens';
 
 type User = Pick<firebase.User, 'uid'>;
 
