@@ -31,6 +31,9 @@ const Page: React.FC = () => {
       signIn();
       router.replace('/my');
     }
+    if (signedIn && 'login' in router.query) {
+      router.replace('/my');
+    }
   }, [userIsLoading, signingIn, signedIn, router, signIn]);
 
   const props: MyPageProps = {
