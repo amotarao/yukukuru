@@ -3,7 +3,6 @@ import App from 'next/app';
 import Router from 'next/router';
 import React from 'react';
 import * as gtag from '../libs/gtag';
-import { AuthContainer } from '../store/auth';
 import { ThemeContainer } from '../store/theme';
 
 Router.events.on('routeChangeComplete', (url) => {
@@ -24,11 +23,9 @@ export default class MyApp extends App {
 
     return (
       <ThemeContainer.Provider>
-        <AuthContainer.Provider>
-          <StylesProvider injectFirst>
-            <Component {...pageProps} />
-          </StylesProvider>
-        </AuthContainer.Provider>
+        <StylesProvider injectFirst>
+          <Component {...pageProps} />
+        </StylesProvider>
       </ThemeContainer.Provider>
     );
   }

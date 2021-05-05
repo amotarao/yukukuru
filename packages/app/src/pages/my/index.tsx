@@ -47,14 +47,16 @@ const Inner: React.FC = () => {
 
 const Page: React.FC = () => {
   return (
-    <RecordsContainer.Provider>
-      <TokenContainer.Provider>
-        <Head>
-          <title>マイページ - ゆくくる alpha</title>
-        </Head>
-        <Inner />
-      </TokenContainer.Provider>
-    </RecordsContainer.Provider>
+    <AuthContainer.Provider>
+      <RecordsContainer.Provider>
+        <TokenContainer.Provider>
+          <Head>
+            <title>マイページ - ゆくくる alpha</title>
+          </Head>
+          <Inner />
+        </TokenContainer.Provider>
+      </RecordsContainer.Provider>
+    </AuthContainer.Provider>
   );
 };
 
