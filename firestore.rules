@@ -1,6 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    allow write, read: if false;
+
     function isLoggedIn() {
       return request.auth != null;
     }
