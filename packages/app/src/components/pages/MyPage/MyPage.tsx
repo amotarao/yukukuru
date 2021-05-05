@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { RecordData } from '@yukukuru/types';
-import type firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
