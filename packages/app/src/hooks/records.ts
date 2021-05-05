@@ -110,7 +110,10 @@ const reducer = (state: State, action: DispatchAction): State => {
 };
 
 type Action = {
+  /** 続きのデータを取得する */
   getNextRecords: () => void;
+
+  /** uid をセットする */
   setUid: (uid: string | null) => void;
 };
 
@@ -156,16 +159,5 @@ export const useRecords = (): [State, Action] => {
     getRecords();
   };
 
-  return [
-    state,
-    {
-      /** 続きのデータを取得する */
-      getNextRecords,
-
-      /** uid をセットする */
-      setUid: (uid: string) => {
-        setUid(uid);
-      },
-    },
-  ];
+  return [state, { getNextRecords, setUid }];
 };
