@@ -1,5 +1,4 @@
 import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
-import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 import { TwitterUserInterface } from './twitter';
@@ -19,6 +18,16 @@ export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => 
 
 export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
   return errors.some(({ code }) => code === 326);
+};
+
+export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError): boolean => {
+  const MAX_RETRY_ATTEMPTS = 5;
+
+  if (error.code === FirebaseFirestore.GrpcStatus.UNAVAILABLE && error.failedAttempts < MAX_RETRY_ATTEMPTS) {
+    return true;
+  }
+  console.error(`❗️[Error]: Failed to ${error.operationType} document for ${error.documentRef}`);
+  return false;
 };
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
@@ -97,8 +106,10 @@ export const existsRecords = async (userId: string): Promise<boolean> => {
   return !snapshot.empty;
 };
 
-const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> => {
-  const batch = firestore.batch();
+export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+
   const collection = firestore.collection('twUsers');
 
   users.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
@@ -109,15 +120,10 @@ const setTwUsersSingle = async (users: TwitterUserInterface[]): Promise<void> =>
       name,
       photoUrl: profile_image_url_https,
     };
-    batch.set(ref, data, { merge: true });
+    bulkWriter.set(ref, data, { merge: true });
   });
 
-  await batch.commit();
-};
-
-export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
-  const requests = _.chunk(users, 500).map((users) => setTwUsersSingle(users));
-  await Promise.all(requests);
+  await bulkWriter.close();
 };
 
 export const getTwUsers = async (users: string[]): Promise<TwUserData[]> => {
