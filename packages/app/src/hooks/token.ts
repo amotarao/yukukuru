@@ -52,7 +52,6 @@ export const useToken = (): [State, Action] => {
 
   useEffect(() => {
     if (!uid) {
-      dispatch({ type: 'ClearHasToken' });
       return;
     }
 
