@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from '@emotion/react';
 import { Timestamp, RecordData, RecordUserData } from '@yukukuru/types';
 import React from 'react';
 import { ProfileImage } from '../../atoms/ProfileImage';

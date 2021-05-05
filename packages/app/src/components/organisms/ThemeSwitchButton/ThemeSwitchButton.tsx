@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from '@emotion/react';
 import React from 'react';
 import * as style from './style';
 import { ThemeType, ThemeStoreType } from '../../../store/theme';

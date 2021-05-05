@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from '@emotion/react';
 import Switch from '@material-ui/core/Switch';
 import React from 'react';
 import { AuthContainer } from '../../../store/auth';

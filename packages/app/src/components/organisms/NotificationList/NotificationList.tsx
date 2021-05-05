@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from '@emotion/react';
 import LinkIcon from '@material-ui/icons/Link';
 import React from 'react';
 import { style } from './style';
