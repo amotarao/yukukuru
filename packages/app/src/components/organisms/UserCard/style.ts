@@ -46,10 +46,16 @@ export const iconWrapper = css`
 `;
 
 export const name = css`
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.5;
   margin-left: 64px;
   margin-bottom: 4px;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  display: -webkit-box;
+  overflow: hidden;
+  max-height: ${1.1 * 1.5 * 3}rem;
 `;
 
 export const screenName = css`
@@ -98,7 +104,7 @@ export const noDetailWrapper = css`
 
   .head {
     color: var(--main);
-    font-size: 1rem;
+    font-size: 1.1rem;
     line-height: 1.5;
   }
 

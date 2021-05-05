@@ -35,13 +35,13 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
       </div>
       <p css={style.name}>{user.displayName}</p>
       <p css={style.screenName}>@{user.screenName}</p>
-      {user.maybeDeletedOrSuspended && <p css={style.notFoundedText}>アカウントが削除、凍結された可能性があります</p>}
+      {user.maybeDeletedOrSuspended && <p css={style.notFoundedText}>⚠️ 削除または凍結の可能性有り</p>}
       <p css={style.durationText}>{duration}</p>
     </a>
   ) : (
     <div css={style.noDetailWrapper} data-type={type}>
       <p className="head">情報の取得ができないユーザー</p>
-      <p className="text">アカウントが削除、凍結された可能性があります</p>
+      <p className="text">⚠️ 削除または凍結の可能性有り</p>
       <p className="duration">{duration}</p>
     </div>
   );
