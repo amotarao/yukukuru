@@ -31,7 +31,13 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </div>
         </li>
         <li css={style.item}>
-          <button css={style.card} onClick={signOut}>
+          <button
+            css={style.card}
+            onClick={() => {
+              router.push('/');
+              signOut();
+            }}
+          >
             <p>ログアウト</p>
           </button>
         </li>
@@ -39,8 +45,8 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           <button
             css={style.card}
             onClick={() => {
-              signOut();
               router.replace('/my?login');
+              signOut();
             }}
           >
             <p>ログアウト・別のアカウントでログイン</p>
