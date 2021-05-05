@@ -20,10 +20,8 @@ const Page: React.FC = () => {
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
   useEffect(() => {
-    if (uid) {
-      setRecordsUid(uid);
-      setTokenUid(uid);
-    }
+    setRecordsUid(uid);
+    setTokenUid(uid);
   }, [uid, setRecordsUid, setTokenUid]);
 
   const props: MyPageProps = {

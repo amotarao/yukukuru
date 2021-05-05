@@ -64,6 +64,9 @@ type DispatchAction =
       payload: {
         docs: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>[];
       };
+    }
+  | {
+      type: 'Initialize';
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
@@ -106,6 +109,11 @@ const reducer = (state: State, action: DispatchAction): State => {
         cursor,
       };
     }
+
+    case 'Initialize':
+    default: {
+      return initialState;
+    }
   }
 };
 
@@ -136,6 +144,15 @@ export const useRecords = (): [State, Action] => {
       dispatch({ type: 'FinishLoadRecords' });
     })();
   }, [state.cursor, uid]);
+
+  /**
+   * UID が変更した際は初期化する
+   */
+  useEffect(() => {
+    if (!uid) {
+      dispatch({ type: 'Initialize' });
+    }
+  }, [uid]);
 
   /**
    * 初回 Records を取得する
