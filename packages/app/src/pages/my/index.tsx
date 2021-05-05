@@ -8,7 +8,7 @@ import { useToken } from '../../hooks/token';
 import { RecordsContainer } from '../../store/database/records';
 
 const Inner: React.FC = () => {
-  const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
+  const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const uid = user?.uid ?? null;
 
   const {
@@ -42,6 +42,7 @@ const Inner: React.FC = () => {
     hasToken,
     uid,
     getNextRecords,
+    signOut,
   };
 
   return userIsLoading || signingIn ? (

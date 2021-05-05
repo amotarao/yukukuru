@@ -23,6 +23,7 @@ export interface MyPageProps {
   hasToken: boolean;
   uid: string | null;
   getNextRecords: RecordsStoreType['getNextRecords'];
+  signOut: () => void;
 }
 
 /**
@@ -141,6 +142,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   uid,
   getNextRecords,
+  signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
@@ -219,7 +221,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       )}
       {nav === 'setting' && (
         <section css={style.section}>
-          <SettingMenu />
+          <SettingMenu signOut={signOut} />
         </section>
       )}
       <BottomNav active={nav} onChange={setNav} />

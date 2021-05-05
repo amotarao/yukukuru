@@ -1,13 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
 import React from 'react';
-import { AuthContainer } from '../../../store/auth';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
-export const SettingMenu: React.FC = () => {
-  const { signOut } = AuthContainer.useContainer();
+type SettingMenuProps = {
+  signOut: () => void;
+};
+
+export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
   const { theme, setTheme } = ThemeContainer.useContainer();
 
   return (
