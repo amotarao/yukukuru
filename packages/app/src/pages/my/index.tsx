@@ -29,7 +29,6 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (!userIsLoading && !signingIn && !signedIn && 'login' in router.query) {
       signIn();
-      router.replace('/my');
     }
     if (signedIn && 'login' in router.query) {
       router.replace('/my');

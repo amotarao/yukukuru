@@ -22,7 +22,7 @@ export interface MyPageProps {
   hasToken: boolean;
   uid: string | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  signOut: () => void;
+  signOut: () => void | Promise<void>;
 }
 
 /**

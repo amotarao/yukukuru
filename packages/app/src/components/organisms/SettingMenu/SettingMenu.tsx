@@ -7,7 +7,7 @@ import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
 type SettingMenuProps = {
-  signOut: () => void;
+  signOut: () => void | Promise<void>;
 };
 
 export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
@@ -33,9 +33,9 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
         <li css={style.item}>
           <button
             css={style.card}
-            onClick={() => {
+            onClick={async () => {
+              await signOut();
               router.push('/');
-              signOut();
             }}
           >
             <p>ログアウト</p>
@@ -44,9 +44,9 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
         <li css={style.item}>
           <button
             css={style.card}
-            onClick={() => {
+            onClick={async () => {
+              await signOut();
               router.replace('/my?login');
-              signOut();
             }}
           >
             <p>ログアウト・別のアカウントでログイン</p>
