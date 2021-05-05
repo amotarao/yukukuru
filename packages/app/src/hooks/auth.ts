@@ -104,7 +104,6 @@ const reducer = (state: State, action: DispatchAction): State => {
 type Action = {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
-  updateToken: (token: TokenData) => Promise<boolean>;
 };
 
 export const useAuth = (): [State, Action] => {
@@ -138,6 +137,7 @@ export const useAuth = (): [State, Action] => {
     if (!state.token || !state.signedIn) {
       return;
     }
+    console.log(state.token);
     updateToken(state.token);
   }, [state.token, state.signedIn]);
 
@@ -173,5 +173,5 @@ export const useAuth = (): [State, Action] => {
     await auth.signOut();
   };
 
-  return [state, { signIn, signOut, updateToken }];
+  return [state, { signIn, signOut }];
 };
