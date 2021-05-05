@@ -31,7 +31,6 @@ const Inner: React.FC = () => {
     isLoading,
     isNextLoading,
     items,
-    hasItems: items.length > 0,
     hasOnlyEmptyItems,
     hasNext,
     hasToken,

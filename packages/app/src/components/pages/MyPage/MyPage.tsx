@@ -17,7 +17,6 @@ export interface MyPageProps {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordData[];
-  hasItems: boolean;
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
@@ -88,15 +87,11 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'hasItems' | 'hasOnlyEmptyItems'>> = ({
-  items,
-  hasItems,
-  hasOnlyEmptyItems,
-}) => {
+const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ items, hasOnlyEmptyItems }) => {
   if (hasOnlyEmptyItems) {
     return <NoViewItem />;
   }
-  if (!hasItems) {
+  if (items.length === 0) {
     return <NoItem />;
   }
 
@@ -136,7 +131,6 @@ export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
   items,
-  hasItems,
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
@@ -204,7 +198,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} hasItems={hasItems} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button css={style.getNextButton} disabled={isNextLoading} onClick={getNext}>
