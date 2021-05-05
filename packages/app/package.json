@@ -4,7 +4,7 @@
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
-    "node": "14"
+    "node": "12"
   },
   "scripts": {
     "dev": "next dev",
