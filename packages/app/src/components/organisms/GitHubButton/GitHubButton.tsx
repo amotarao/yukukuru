@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 import React from 'react';
 import ReactGitHubButton from 'react-github-btn';
 import * as style from './style';

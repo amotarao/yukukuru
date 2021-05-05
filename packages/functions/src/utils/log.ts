@@ -4,7 +4,7 @@
  * @param subName 関数名の補助名
  * @param details 詳細
  */
-export const log = (functionName: string, subName: string, details: object): void => {
+export const log = (functionName: string, subName: string, details: Record<string, unknown>): void => {
   const data = {
     functionName,
     subName,
@@ -25,7 +25,7 @@ export const log = (functionName: string, subName: string, details: object): voi
  * @param subName 関数名の補助名
  * @param details 詳細
  */
-export const errorLog = (functionName: string, subName: string, details: object): void => {
+export const errorLog = (functionName: string, subName: string, details: Record<string, unknown>): void => {
   const data = {
     functionName,
     subName,

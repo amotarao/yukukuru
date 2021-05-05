@@ -1,6 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 import Switch from '@material-ui/core/Switch';
+import React from 'react';
 import { AuthContainer } from '../../../store/auth';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';

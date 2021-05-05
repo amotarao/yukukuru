@@ -3,23 +3,23 @@ name: Test app
 on:
   pull_request:
     paths:
-    - packages/app/**
+      - packages/app/**
 
 jobs:
   test:
     name: Test app
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup Node.js 14
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-    - name: Install dependencies
-      run: yarn --frozen-lockfile
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
 
-    - name: Run lint
-      run: yarn workspace @yukukuru/app lint
+      - name: Run lint
+        run: yarn workspace @yukukuru/app lint
