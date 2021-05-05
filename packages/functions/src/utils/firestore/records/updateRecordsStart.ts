@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { FirestoreDateLike, RecordData, RecordDataOld } from '@yukukuru/types';
 import { firestore } from '../../../modules/firebase';
 import { bulkWriterErrorHandler } from '../../firestore';

@@ -1,5 +1,4 @@
 import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
-import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { TwitterClientErrorData } from '../utils/error';
 import { TwitterUserInterface } from './twitter';
