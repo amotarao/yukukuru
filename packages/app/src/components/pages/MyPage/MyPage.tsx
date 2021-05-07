@@ -53,8 +53,7 @@ const NoItem: React.FC = () => {
           margin: '8px 16px',
         }}
       >
-        <span style={{ whiteSpace: 'nowrap' }}>現在、新規アカウント登録を停止しています。</span>
-        <span style={{ whiteSpace: 'nowrap' }}>(2021.5.4)</span>
+        現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。
       </p>
     </div>
   );
