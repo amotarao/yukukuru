@@ -2,10 +2,10 @@ import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
+import { setUserResult, setUserResultWithNoChange } from '../../modules/firestore/users/legacy';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { setUserResult, setUserResultWithNoChange } from '../../utils/firestore';
 import { log, errorLog } from '../../utils/log';
 import { getFollowersIdList } from '../../utils/twitter';
 

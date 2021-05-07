@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
+import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/legacy';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { updateUserLastUpdatedTwUsers } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 
 type Props = UpdateTwUsersMessage['data'];
