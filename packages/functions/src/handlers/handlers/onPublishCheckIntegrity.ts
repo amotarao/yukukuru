@@ -5,12 +5,12 @@ import { getRecords } from '../../modules/firestore/records/getRecords';
 import { removeRecords } from '../../modules/firestore/records/removeRecords';
 import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { updateUserCheckIntegrity } from '../../modules/firestore/users/integrity';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { convertRecords } from '../../utils/convert';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/diff';
-import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
 import { log, errorLog } from '../../utils/log';
 import { mergeWatches } from '../../utils/watches';
 
