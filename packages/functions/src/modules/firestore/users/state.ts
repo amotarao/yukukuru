@@ -34,6 +34,19 @@ export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): 
   await ref.update(data);
 };
 
+export const updateUserTwitterInfo = async (
+  userId: string,
+  twitter: UserData['twitter'],
+  date: Date
+): Promise<void> => {
+  const ref = collection.doc(userId);
+  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedUserTwitterInfo' | 'twitter'> = {
+    lastUpdatedUserTwitterInfo: date,
+    twitter,
+  };
+  await ref.update(data);
+};
+
 export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
   const ref = collection.doc(uid);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {

@@ -1,5 +1,5 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
-import { firestore, admin } from '../../firebase';
+import { admin, firestore } from '../../firebase';
 import { getGroupIndex } from '../../group';
 
 const collection = firestore.collection('users');
@@ -15,6 +15,7 @@ export const initializeUser = async (id: string, twitterId: string): Promise<voi
     lastUpdated: now,
     lastUpdatedTwUsers: now,
     lastUpdatedCheckIntegrity: now,
+    lastUpdatedUserTwitterInfo: now,
     nextCursor: '-1',
     currentWatchesId: '',
     pausedGetFollower: false,
