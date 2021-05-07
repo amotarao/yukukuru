@@ -38,10 +38,13 @@ const NoItem: React.FC = () => {
           flexWrap: 'wrap',
           justifyContent: 'center',
           margin: '8px 16px',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ whiteSpace: 'nowrap' }}>データ取得までに時間が掛かります。</span>
-        <span style={{ whiteSpace: 'nowrap' }}>気長にお待ちください。</span>
+        データ取得までに時間が掛かります。
+        <wbr />
+        気長にお待ちください。
       </p>
       <p
         style={{
@@ -51,10 +54,13 @@ const NoItem: React.FC = () => {
           flexWrap: 'wrap',
           justifyContent: 'center',
           margin: '8px 16px',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ whiteSpace: 'nowrap' }}>現在、新規アカウント登録を停止しています。</span>
-        <span style={{ whiteSpace: 'nowrap' }}>(2021.5.4)</span>
+        現在、フォロワー数1万人以上のアカウントの
+        <wbr />
+        新規登録を停止しています。
       </p>
     </div>
   );
