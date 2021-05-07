@@ -8,7 +8,7 @@ export interface TwitterUserInterface {
   screen_name: string;
   name: string;
   profile_image_url_https: string;
-  followers_count?: number;
+  followers_count: number;
 }
 
 export interface GetFollowersListProps {
@@ -203,13 +203,9 @@ export const getUsersLookup = async (
       return;
     }
 
-    result.response.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
-      const data: TwitterUserInterface = {
-        id_str,
-        screen_name,
-        name,
-        profile_image_url_https,
-      };
+    result.response.forEach((res) => {
+      const { id_str, screen_name, name, profile_image_url_https, followers_count } = res;
+      const data: TwitterUserInterface = { id_str, screen_name, name, profile_image_url_https, followers_count };
       users.push(data);
     });
     return;
