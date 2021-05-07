@@ -19,7 +19,13 @@ export const initializeUser = async (id: string, twitterId: string): Promise<voi
     currentWatchesId: '',
     pausedGetFollower: false,
     group: getGroupIndex(id),
-    twitterId,
+    twitter: {
+      id: twitterId,
+      screenName: '',
+      name: '',
+      photoUrl: '',
+      followersCount: -1,
+    },
   };
   await collection.doc(id).set(data, { merge: true });
 };
