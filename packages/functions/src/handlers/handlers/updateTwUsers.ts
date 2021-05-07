@@ -5,9 +5,9 @@ import { PubSubOnRunHandler } from '../../types/functions';
 import { getGroupFromTime } from '../../utils/group';
 import { log } from '../../utils/log';
 
-export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
-  const group = getGroupFromTime(12, now);
+export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
+  const now = new Date(context.timestamp || new Date().getTime());
+  const group = getGroupFromTime(1, now);
 
   // 3日前
   const previous = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 60 * 1000);
@@ -17,6 +17,7 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
     .where('active', '==', true)
     .where('lastUpdatedTwUsers', '<', previous)
     .where('group', '==', group)
+    .limit(5)
     .get();
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);

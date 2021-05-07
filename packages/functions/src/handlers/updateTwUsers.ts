@@ -10,7 +10,7 @@ export const updateTwUsers = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(updateTwUsersHandler);
 
