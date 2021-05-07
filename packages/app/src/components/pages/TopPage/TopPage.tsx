@@ -26,6 +26,8 @@ export const TopPage: React.FC = () => {
           </Button>
         </Link>
         <p css={style.caution}>現在、新規アカウント登録を停止しています。 (2021.5.4)</p>
+        <p css={style.caution}>ツイートする権限はありませんので安心してご利用ください</p>
+        <p css={style.caution}>※ 現在アルファ版のため不具合が発生する場合があります</p>
       </section>
       <section
         css={css`
