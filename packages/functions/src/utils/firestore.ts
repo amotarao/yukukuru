@@ -1,6 +1,5 @@
-import { FirestoreDateLike, TokenData, TwUserData, UserData, WatchData } from '@yukukuru/types';
+import { FirestoreDateLike, TwUserData, UserData, WatchData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { setUserToNotActive } from './firestore/users';
 import { TwitterUserInterface } from './twitter';
 
 export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError): boolean => {
@@ -11,30 +10,6 @@ export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError)
   }
   console.error(`❗️[Error]: Failed to ${error.operationType} document for ${error.documentRef}`);
   return false;
-};
-
-export const setTokenInvalid = async (userId: string): Promise<void> => {
-  const user = setUserToNotActive(userId);
-  const data: Pick<TokenData, 'twitterAccessToken' | 'twitterAccessTokenSecret'> = {
-    twitterAccessToken: '',
-    twitterAccessTokenSecret: '',
-  };
-  const token = firestore.collection('tokens').doc(userId).update(data);
-
-  await Promise.all([user, token]);
-};
-
-export const getToken = async (userId: string): Promise<TokenData | null> => {
-  const tokenRef = firestore.collection('tokens').doc(userId);
-  const tokenDoc = await tokenRef.get();
-  if (!tokenDoc.exists) {
-    return null;
-  }
-  const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = tokenDoc.data() as TokenData;
-  if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
-    return null;
-  }
-  return { twitterAccessToken, twitterAccessTokenSecret, twitterId };
 };
 
 export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {

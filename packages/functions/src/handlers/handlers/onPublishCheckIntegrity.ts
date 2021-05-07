@@ -1,5 +1,7 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
+import { getWatches } from '../../modules/firestore/watches/getWatches';
+import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { convertRecords } from '../../utils/convert';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/diff';
@@ -9,8 +11,6 @@ import { removeRecords } from '../../utils/firestore/records/removeRecords';
 import { updateRecordsStart } from '../../utils/firestore/records/updateRecordsStart';
 import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
 import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
-import { getWatches } from '../../utils/firestore/watches/getWatches';
-import { removeWatches } from '../../utils/firestore/watches/removeWatches';
 import { log, errorLog } from '../../utils/log';
 import { mergeWatches } from '../../utils/watches';
 
