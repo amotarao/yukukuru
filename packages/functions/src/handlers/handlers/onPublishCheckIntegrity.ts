@@ -9,10 +9,10 @@ import { updateUserCheckIntegrity } from '../../modules/firestore/users/integrit
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { convertRecords } from '../../utils/convert';
-import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/diff';
+import { convertRecords } from '../../utils/followers/convert';
+import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
+import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-import { mergeWatches } from '../../utils/watches';
 
 type Props = CheckIntegrityMessage['data'];
 

@@ -12,8 +12,8 @@ import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
 import { getUsersLookup } from '../../modules/twitter';
 import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/error';
 import { FirestoreOnCreateHandler } from '../../types/functions';
+import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-import { mergeWatches } from '../../utils/watches';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',
