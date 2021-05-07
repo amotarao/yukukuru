@@ -4,8 +4,7 @@ export interface TwitterClientErrorData {
 }
 
 export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientErrorData[] } => {
-  console.error(`❗️[Twitter Error] Failed to run Twitter API: Look next line.`);
-  console.error(error);
+  console.error(`❗️[Twitter Error] Failed to run Twitter API.`, error);
 
   if (Array.isArray(error)) {
     return { errors: error as TwitterClientErrorData[] };
