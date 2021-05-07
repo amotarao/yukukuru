@@ -1,23 +1,6 @@
 import { FirestoreDateLike, TwUserData, UserData, WatchData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
-import { TwitterClientErrorData } from '../utils/error';
 import { TwitterUserInterface } from './twitter';
-
-export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 17);
-};
-
-export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 88);
-};
-
-export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 89);
-};
-
-export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 326);
-};
 
 export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError): boolean => {
   const MAX_RETRY_ATTEMPTS = 5;
