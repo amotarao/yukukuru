@@ -1,13 +1,17 @@
-import { errorLog } from '../../utils/log';
-
 export interface TwitterClientErrorData {
   code: number;
   message: string;
 }
 
-export const twitterClientErrorHandler = (errors: TwitterClientErrorData[]): { errors: TwitterClientErrorData[] } => {
-  errorLog('twitterClientError', '', { errors });
-  return { errors };
+export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientErrorData[] } => {
+  console.error(`❗️[Twitter Error] Failed to run Twitter API: Look next line.`);
+  console.error(error);
+
+  if (Array.isArray(error)) {
+    return { errors: error as TwitterClientErrorData[] };
+  }
+
+  return { errors: [error] as TwitterClientErrorData[] };
 };
 
 export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
