@@ -17,6 +17,7 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async () => {
     .where('active', '==', true)
     .where('lastUpdatedTwUsers', '<', previous)
     .where('group', '==', group)
+    .limit(5)
     .get();
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
