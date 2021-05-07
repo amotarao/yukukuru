@@ -6,10 +6,13 @@ import { bulkWriterErrorHandler } from '../error';
 const collection = firestore.collection('twUsers');
 
 const setTwUsersParallel = async (users: TwitterUserInterface[], max = 100, count = 0): Promise<void> => {
+  const currentUsers = users.slice(0, max);
+  console.log(`⏳ Starting set ${currentUsers.length} twUsers documents ${count} times.`);
+
   const bulkWriter = firestore.bulkWriter();
   bulkWriter.onWriteError(bulkWriterErrorHandler);
 
-  users.slice(0, max).forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
+  currentUsers.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
     const ref = collection.doc(id_str);
     const data: TwUserData = {
       id: id_str,
@@ -21,6 +24,8 @@ const setTwUsersParallel = async (users: TwitterUserInterface[], max = 100, coun
   });
 
   await bulkWriter.close();
+
+  console.log(`⏳ Completed to set ${currentUsers.length} twUsers documents ${count} times.`);
 
   const nextUsers = users.slice(max);
   if (nextUsers.length) {
