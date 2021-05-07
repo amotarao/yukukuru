@@ -14,7 +14,7 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 
-  console.log(`⚙️ Starting update twUser document for [${uid}].`);
+  console.log(`⚙️ Starting update twUser documents for [${uid}].`);
 
   const [watches, token] = await Promise.all([getLatestWatches({ uid, count: 5 }), getToken(uid)]);
   const followers = _.uniq(_.flatten((watches || []).map((doc) => doc.data.followers))).slice(0, 10000); // 10000人まで
@@ -34,14 +34,19 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
   });
   const result = await getUsersLookup(client, { usersId: followers });
 
-  console.log(`⏳ Got users from Twitter.`);
-
   if ('errors' in result) {
     console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
     return;
   }
+  console.log(`⏳ Got ${result.response.length} users from Twitter.`);
+
   await setTwUsers(result.response);
+
+  console.log(`⏳ Updated twUser documents for [${uid}].`);
+
   await updateUserLastUpdatedTwUsers(uid, now);
 
-  console.log(`✔️ Completed update twUser document for [${uid}].`);
+  console.log(`⏳ Updated last updated to user document of [${uid}].`);
+
+  console.log(`✔️ Completed update twUser documents for [${uid}].`);
 };
