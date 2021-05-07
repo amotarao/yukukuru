@@ -1,5 +1,5 @@
 import { TokenData } from '@yukukuru/types';
-import { setUserToActive, setUserToNotActive } from '../../modules/firestore/users';
+import { setUserToActive, setUserToNotActive } from '../../modules/firestore/users/active';
 import { FirestoreOnUpdateHandler } from '../../types/functions';
 
 export const onUpdateTokenHandler: FirestoreOnUpdateHandler = async ({ after }) => {

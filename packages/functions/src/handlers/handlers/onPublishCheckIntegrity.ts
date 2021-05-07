@@ -5,7 +5,7 @@ import { getRecords } from '../../modules/firestore/records/getRecords';
 import { removeRecords } from '../../modules/firestore/records/removeRecords';
 import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
-import { updateUserCheckIntegrity } from '../../modules/firestore/users/integrity';
+import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
