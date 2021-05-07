@@ -25,8 +25,16 @@ export const TopPage: React.FC = () => {
             マイページ・ログイン
           </Button>
         </Link>
-        <p css={style.caution}>現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。 (2021.5.8)</p>
-        <p css={style.caution}>ツイートする権限はありませんので安心してご利用ください</p>
+        <p css={style.caution}>
+          現在、フォロワー数1万人以上のアカウントの
+          <wbr />
+          新規登録を停止しています。 (2021.5.8)
+        </p>
+        <p css={style.caution}>
+          ツイートする権限はありませんので
+          <wbr />
+          安心してご利用ください
+        </p>
         <p css={style.caution}>※ 不具合が発生する場合があります</p>
       </section>
       <section
