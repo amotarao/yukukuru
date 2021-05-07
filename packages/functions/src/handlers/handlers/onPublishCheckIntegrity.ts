@@ -1,5 +1,6 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
+import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
@@ -9,7 +10,6 @@ import { addRecords } from '../../utils/firestore/records/addRecords';
 import { getRecords } from '../../utils/firestore/records/getRecords';
 import { removeRecords } from '../../utils/firestore/records/removeRecords';
 import { updateRecordsStart } from '../../utils/firestore/records/updateRecordsStart';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
 import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
 import { log, errorLog } from '../../utils/log';
 import { mergeWatches } from '../../utils/watches';
