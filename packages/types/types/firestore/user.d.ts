@@ -14,6 +14,9 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
   /** 整合性チェック 最終実行日時 */
   lastUpdatedCheckIntegrity: T;
 
+  /** Twitter情報 最終実行日時 */
+  lastUpdatedTwitterInfo: T;
+
   /** フォロワー一覧取得 state cursor */
   nextCursor: string;
 
