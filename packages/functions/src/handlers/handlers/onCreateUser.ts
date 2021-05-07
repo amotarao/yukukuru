@@ -43,6 +43,7 @@ export const onCreateUserHandler: AuthOnCreateHandler = async (user) => {
     name: twitter.name,
     photoUrl: twitter.profile_image_url_https,
     followersCount: twitter.followers_count,
+    verified: twitter.verified,
   });
 
   console.log(`✔️ Completed initialize user document for [${uid}].`);

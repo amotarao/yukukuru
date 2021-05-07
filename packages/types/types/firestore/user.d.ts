@@ -45,5 +45,8 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
 
     /** フォロワー数 */
     followersCount: number;
+
+    /** 認証済みユーザーかどうか */
+    verified: boolean;
   };
 }

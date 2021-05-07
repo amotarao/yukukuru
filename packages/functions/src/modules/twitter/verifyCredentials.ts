@@ -15,13 +15,14 @@ export const getVerifyCredentials = (
       include_email: false,
     })
     .then((res) => {
-      const { id_str, screen_name, name, profile_image_url_https, followers_count } = res;
+      const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
       const response: TwitterUserInterface = {
         id_str,
         screen_name,
         name,
         profile_image_url_https,
         followers_count,
+        verified,
       };
       return { response };
     })

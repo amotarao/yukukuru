@@ -42,6 +42,7 @@ export const onPublishUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = asy
     name: result.response.name,
     photoUrl: result.response.profile_image_url_https,
     followersCount: result.response.followers_count,
+    verified: result.response.verified,
   };
 
   await updateUserTwitterInfo(uid, twitter, now);
