@@ -1,6 +1,6 @@
 import { TwUserData } from '@yukukuru/types';
-import { TwitterUserInterface } from '../../../utils/twitter';
 import { firestore } from '../../firebase';
+import { TwitterUserInterface } from '../../twitter';
 import { bulkWriterErrorHandler } from '../error';
 
 export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {

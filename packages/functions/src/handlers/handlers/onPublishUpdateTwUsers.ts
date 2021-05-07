@@ -6,8 +6,8 @@ import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/legacy';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
+import { getUsersLookup } from '../../modules/twitter';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { getUsersLookup } from '../../utils/twitter';
 
 type Props = UpdateTwUsersMessage['data'];
 
