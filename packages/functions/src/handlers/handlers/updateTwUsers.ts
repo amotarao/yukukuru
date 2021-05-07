@@ -17,6 +17,7 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
     .where('active', '==', true)
     .where('lastUpdatedTwUsers', '<', previous)
     .where('group', '==', group)
+    .orderBy('lastUpdatedTwUsers', 'asc')
     .limit(5)
     .get();
 
