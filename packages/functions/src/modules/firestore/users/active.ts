@@ -1,3 +1,4 @@
+import { UserData } from '@yukukuru/types';
 import { firestore } from '../../firebase';
 
 const collection = firestore.collection('users');
