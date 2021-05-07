@@ -1,11 +1,10 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
+import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import {
   checkInvalidToken,
-  setTokenInvalid,
-  getToken,
   setWatch,
   setUserResult,
   checkProtectedUser,
