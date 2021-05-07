@@ -7,7 +7,7 @@ import { TwitterUserInterface } from '.';
  */
 export const getVerifyCredentials = (
   client: Twitter
-): Promise<{ response: Required<TwitterUserInterface> } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserInterface } | { errors: TwitterClientErrorData[] }> => {
   return client
     .get('account/verify_credentials', {
       include_entities: true,
@@ -15,13 +15,14 @@ export const getVerifyCredentials = (
       include_email: false,
     })
     .then((res) => {
-      const { id_str, screen_name, name, profile_image_url_https, followers_count } = res;
-      const response: Required<TwitterUserInterface> = {
+      const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
+      const response: TwitterUserInterface = {
         id_str,
         screen_name,
         name,
         profile_image_url_https,
         followers_count,
+        verified,
       };
       return { response };
     })

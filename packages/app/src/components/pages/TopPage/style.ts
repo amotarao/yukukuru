@@ -66,6 +66,7 @@ export const style = {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    white-space: nowrap;
   `,
 
   example: css`
