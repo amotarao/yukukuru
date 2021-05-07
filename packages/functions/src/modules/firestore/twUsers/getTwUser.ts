@@ -1,5 +1,5 @@
 import { FirestoreIdData, TwUserData } from '@yukukuru/types';
-import { firestore } from '../../../modules/firebase';
+import { firestore } from '../../firebase';
 
 const twUsersCollection = firestore.collection('twUsers');
 

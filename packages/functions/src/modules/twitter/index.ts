@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
-import { TwitterClientErrorData, twitterClientErrorHandler, checkRateLimitExceeded } from '../modules/twitter/error';
-import { errorLog } from './log';
+import { errorLog } from '../../utils/log';
+import { TwitterClientErrorData, twitterClientErrorHandler, checkRateLimitExceeded } from './error';
 
 export interface TwitterUserInterface {
   id_str: string;

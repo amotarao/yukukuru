@@ -1,8 +1,8 @@
 import { CheckIntegrityMessage } from '@yukukuru/types';
 import { firestore } from '../../modules/firebase';
+import { getGroupFromTime } from '../../modules/group';
 import { publishCheckIntegrity } from '../../modules/pubsub/publish/checkIntegrity';
 import { PubSubOnRunHandler } from '../../types/functions';
-import { getGroupFromTime } from '../../utils/group';
 import { log } from '../../utils/log';
 
 /**

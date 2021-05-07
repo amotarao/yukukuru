@@ -1,18 +1,18 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
+import { addRecords } from '../../modules/firestore/records/addRecords';
+import { getRecords } from '../../modules/firestore/records/getRecords';
+import { removeRecords } from '../../modules/firestore/records/removeRecords';
+import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
+import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { updateUserCheckIntegrity } from '../../modules/firestore/users/integrity';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { convertRecords } from '../../utils/convert';
-import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/diff';
-import { addRecords } from '../../utils/firestore/records/addRecords';
-import { getRecords } from '../../utils/firestore/records/getRecords';
-import { removeRecords } from '../../utils/firestore/records/removeRecords';
-import { updateRecordsStart } from '../../utils/firestore/records/updateRecordsStart';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
-import { updateUserCheckIntegrity } from '../../utils/firestore/users/integrity';
+import { convertRecords } from '../../utils/followers/convert';
+import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
+import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-import { mergeWatches } from '../../utils/watches';
 
 type Props = CheckIntegrityMessage['data'];
 
