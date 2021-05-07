@@ -1,6 +1,6 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
-import { getGroupIndex } from '../../../utils/group';
 import { firestore, admin } from '../../firebase';
+import { getGroupIndex } from '../../group';
 
 const collection = firestore.collection('users');
 
