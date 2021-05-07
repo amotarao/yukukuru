@@ -28,7 +28,9 @@ export const TopPage: React.FC = () => {
         <p css={style.caution}>
           現在、フォロワー数1万人以上のアカウントの
           <wbr />
-          新規登録を停止しています。 (2021.5.8)
+          新規登録を停止しています。
+          <wbr />
+          (2021.5.8)
         </p>
         <p css={style.caution}>
           ツイートする権限はありませんので
