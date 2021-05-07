@@ -33,8 +33,7 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
   const result = await getUsersLookup(client, { usersId: followers });
 
   if ('errors' in result) {
-    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}]: Look next line.`);
-    console.error(result.errors);
+    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}]`, result.errors);
     return;
   }
   await setTwUsers(result.response);
