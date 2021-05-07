@@ -8,6 +8,7 @@ export interface TwitterUserInterface {
   screen_name: string;
   name: string;
   profile_image_url_https: string;
+  followers_count?: number;
 }
 
 export interface GetFollowersListProps {

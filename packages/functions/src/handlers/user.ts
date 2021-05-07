@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions';
+import { Topic } from '../modules/pubsub/topics';
 import { onCreateUserHandler } from './handlers/onCreateUser';
 import { onDeleteUserHandler } from './handlers/onDeleteUser';
+import { onPublishUpdateUserTwitterInfoHandler } from './handlers/onPublishUpdateUserTwitterInfo';
+import { updateUserTwitterInfoHandler } from './handlers/updateUserTwitterInfo';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const onCreateUser = functions
@@ -21,3 +24,24 @@ export const onDeleteUser = functions
   })
   .auth.user()
   .onDelete(onDeleteUserHandler);
+
+/** Twitter 情報更新 定期実行 */
+export const updateUserTwitterInfo = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(updateUserTwitterInfoHandler);
+
+/** PubSub: Twitter 情報更新 個々の実行 */
+export const onPublishUpdateUserTwitterInfo = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.topic(Topic.UpdateUserTwitterInfo)
+  .onPublish(onPublishUpdateUserTwitterInfoHandler);

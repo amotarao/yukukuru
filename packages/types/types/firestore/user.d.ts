@@ -2,12 +2,6 @@ import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
 export interface UserData<T extends FirestoreDateLike = Timestamp> {
-  /** Twitter プロフィール画像URL */
-  photoUrl: string;
-
-  /** Twitter 名前 */
-  displayName: string;
-
   /** 有効かどうか */
   active: boolean;
 
@@ -20,6 +14,9 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
   /** 整合性チェック 最終実行日時 */
   lastUpdatedCheckIntegrity: T;
 
+  /** Twitter情報 最終実行日時 */
+  lastUpdatedUserTwitterInfo: T;
+
   /** フォロワー一覧取得 state cursor */
   nextCursor: string;
 
@@ -31,4 +28,22 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
 
   /** グループ番号 0-14 のいずれか */
   group: number;
+
+  /** Twitter情報 */
+  twitter: {
+    /** Twitter UID (ユニークな数字のID) */
+    id: string;
+
+    /** Twitter ID (@から始まるID) */
+    screenName: string;
+
+    /** 名前 (プロフィールの名前) */
+    name: string;
+
+    /** プロフィール画像の URL */
+    photoUrl: string;
+
+    /** フォロワー数 */
+    followersCount: number;
+  };
 }

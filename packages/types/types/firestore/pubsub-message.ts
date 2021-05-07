@@ -31,6 +31,16 @@ export interface UpdateTwUsersMessage {
   };
 }
 
-export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage;
+export interface UpdateUserTwitterInfoMessage {
+  /** キュータイプ */
+  type: 'updateUserTwitterInfo';
+
+  data: {
+    /** Firebase UID */
+    uid: string;
+  };
+}
+
+export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | UpdateUserTwitterInfoMessage;
 
 export type MessageType = Message['type'];
