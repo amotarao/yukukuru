@@ -3,9 +3,10 @@ import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
+import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { setTwUsers, updateUserLastUpdatedTwUsers } from '../../utils/firestore';
+import { updateUserLastUpdatedTwUsers } from '../../utils/firestore';
 import { getUsersLookup } from '../../utils/twitter';
 
 type Props = UpdateTwUsersMessage['data'];
