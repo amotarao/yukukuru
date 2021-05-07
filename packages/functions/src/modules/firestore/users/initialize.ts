@@ -7,7 +7,7 @@ const collection = firestore.collection('users');
 /**
  * ユーザーを初期化
  */
-export const initializeUser = async (id: string, twitterId: string): Promise<void> => {
+export const initializeUser = async (id: string, twitter: UserData['twitter']): Promise<void> => {
   const now = admin.firestore.FieldValue.serverTimestamp();
 
   const data: UserData<FirestoreDateLike> = {
@@ -20,13 +20,7 @@ export const initializeUser = async (id: string, twitterId: string): Promise<voi
     currentWatchesId: '',
     pausedGetFollower: false,
     group: getGroupIndex(id),
-    twitter: {
-      id: twitterId,
-      screenName: '',
-      name: '',
-      photoUrl: '',
-      followersCount: -1,
-    },
+    twitter,
   };
   await collection.doc(id).set(data, { merge: true });
 };
