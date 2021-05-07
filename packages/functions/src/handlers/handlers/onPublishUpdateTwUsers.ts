@@ -14,7 +14,7 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 
-  console.log(`⚙️ Starting update twUser document for [${uid}]`);
+  console.log(`⚙️ Starting update twUser document for [${uid}].`);
 
   const [watches, token] = await Promise.all([getLatestWatches({ uid, count: 5 }), getToken(uid)]);
   const followers = _.uniq(_.flatten((watches || []).map((doc) => doc.data.followers))).slice(0, 10000); // 10000人まで
@@ -24,6 +24,8 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
     return;
   }
 
+  console.log(`⏳ Got watches and token from Firestore.`);
+
   const client = new Twitter({
     consumer_key: functions.config().twitter.consumer_key as string,
     consumer_secret: functions.config().twitter.consumer_secret as string,
@@ -32,8 +34,10 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
   });
   const result = await getUsersLookup(client, { usersId: followers });
 
+  console.log(`⏳ Got users from Twitter.`);
+
   if ('errors' in result) {
-    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}]`, result.errors);
+    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
     return;
   }
   await setTwUsers(result.response);
