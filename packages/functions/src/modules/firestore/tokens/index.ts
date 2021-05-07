@@ -1,6 +1,6 @@
 import { TokenData } from '@yukukuru/types';
-import { setUserToNotActive } from '../../utils/firestore/users';
-import { firestore } from '../firebase';
+import { setUserToNotActive } from '../../../utils/firestore/users';
+import { firestore } from '../../firebase';
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = setUserToNotActive(userId);
