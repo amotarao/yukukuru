@@ -1,16 +1,9 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
+import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import {
-  checkInvalidToken,
-  setTokenInvalid,
-  getToken,
-  setWatch,
-  setUserResult,
-  checkProtectedUser,
-  setUserResultWithNoChange,
-} from '../../utils/firestore';
+import { setTokenInvalid, getToken, setWatch, setUserResult, setUserResultWithNoChange } from '../../utils/firestore';
 import { log, errorLog } from '../../utils/log';
 import { getFollowersIdList } from '../../utils/twitter';
 
