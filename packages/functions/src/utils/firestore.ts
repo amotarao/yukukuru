@@ -1,4 +1,4 @@
-import { FirestoreDateLike, UserData, WatchData } from '@yukukuru/types';
+import { FirestoreDateLike, UserData } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 
 export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError): boolean => {
@@ -9,19 +9,6 @@ export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError)
   }
   console.error(`❗️[Error]: Failed to ${error.operationType} document for ${error.documentRef}`);
   return false;
-};
-
-export const setWatch = async (userId: string, followers: string[], date: Date, ended: boolean): Promise<string> => {
-  const collection = firestore.collection('users').doc(userId).collection('watches');
-  const data: WatchData<FirestoreDateLike> = {
-    followers,
-    getStartDate: date,
-    getEndDate: date,
-    ended,
-  };
-
-  const { id } = await collection.add(data);
-  return id;
 };
 
 export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
