@@ -25,4 +25,7 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
 
   /** グループ番号 0-14 のいずれか */
   group: number;
+
+  /** Twitter ID */
+  twitterId: string;
 }
