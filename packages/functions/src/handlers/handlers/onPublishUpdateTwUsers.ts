@@ -3,9 +3,9 @@ import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
+import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { setTwUsers, updateUserLastUpdatedTwUsers } from '../../utils/firestore';
-import { getLatestWatches } from '../../utils/firestore/watches/getWatches';
 import { getUsersLookup } from '../../utils/twitter';
 
 type Props = UpdateTwUsersMessage['data'];
