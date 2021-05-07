@@ -5,6 +5,9 @@ import { bulkWriterErrorHandler } from '../error';
 
 export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteResult((ref) => {
+    console.log(`[BulkWriter] Successfully executed write on document for [${ref.path}].`);
+  });
   bulkWriter.onWriteError(bulkWriterErrorHandler);
 
   const collection = firestore.collection('twUsers');
