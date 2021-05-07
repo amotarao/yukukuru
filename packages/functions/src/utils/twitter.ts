@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
-import { twitterClientErrorHandler, TwitterClientErrorData } from '../utils/error';
+import { TwitterClientErrorData, twitterClientErrorHandler } from '../modules/twitter/error';
 import { checkRateLimitExceeded } from './firestore';
 import { errorLog } from './log';
 

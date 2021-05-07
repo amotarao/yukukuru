@@ -1,4 +1,4 @@
-import { errorLog } from './log';
+import { errorLog } from '../../utils/log';
 
 export interface TwitterClientErrorData {
   code: number;
