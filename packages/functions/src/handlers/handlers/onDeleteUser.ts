@@ -1,4 +1,5 @@
-import { existsUserDoc, setUserToNotActive } from '../../modules/firestore/users';
+import { setUserToNotActive } from '../../modules/firestore/users/active';
+import { existsUserDoc } from '../../modules/firestore/users/exists';
 import { AuthOnDeleteHandler } from '../../types/functions';
 
 export const onDeleteUserHandler: AuthOnDeleteHandler = async ({ uid }) => {

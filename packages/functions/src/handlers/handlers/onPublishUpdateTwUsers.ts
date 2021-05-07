@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
-import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/legacy';
+import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { getUsersLookup } from '../../modules/twitter';
 import { PubSubOnPublishHandler } from '../../types/functions';
