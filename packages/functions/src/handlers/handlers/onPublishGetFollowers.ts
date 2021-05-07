@@ -2,11 +2,12 @@ import { GetFollowersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as Twitter from 'twitter';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
+import { setUserResult, setUserResultWithNoChange } from '../../modules/firestore/users/legacy';
+import { setWatch } from '../../modules/firestore/watches/setWatch';
+import { getFollowersIdList } from '../../modules/twitter';
 import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
 import { PubSubOnPublishHandler } from '../../types/functions';
-import { setWatch, setUserResult, setUserResultWithNoChange } from '../../utils/firestore';
 import { log, errorLog } from '../../utils/log';
-import { getFollowersIdList } from '../../utils/twitter';
 
 type Props = GetFollowersMessage['data'];
 

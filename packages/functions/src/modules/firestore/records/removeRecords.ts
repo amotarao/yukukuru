@@ -1,5 +1,5 @@
-import { firestore } from '../../../modules/firebase';
-import { bulkWriterErrorHandler } from '../../firestore';
+import { firestore } from '../../firebase';
+import { bulkWriterErrorHandler } from '../error';
 
 const usersCollection = firestore.collection('users');
 

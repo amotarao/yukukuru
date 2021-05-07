@@ -3,16 +3,17 @@ import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { firestore } from '../../modules/firebase';
+import { addRecord } from '../../modules/firestore/records/addRecord';
+import { addRecords } from '../../modules/firestore/records/addRecords';
+import { existsRecords } from '../../modules/firestore/records/legacy';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
+import { setTwUsers } from '../../modules/firestore/twUsers';
+import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { getUsersLookup } from '../../modules/twitter';
 import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/error';
 import { FirestoreOnCreateHandler } from '../../types/functions';
-import { existsRecords, setTwUsers } from '../../utils/firestore';
-import { addRecord } from '../../utils/firestore/records/addRecord';
-import { addRecords } from '../../utils/firestore/records/addRecords';
-import { getTwUser } from '../../utils/firestore/twUsers/getTwUser';
+import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-import { getUsersLookup } from '../../utils/twitter';
-import { mergeWatches } from '../../utils/watches';
 
 const emptyRecord: RecordData<FirestoreDateLike> = {
   type: 'kuru',
