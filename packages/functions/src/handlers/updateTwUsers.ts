@@ -18,8 +18,8 @@ export const updateTwUsers = functions
 export const onPublishUpdateTwUsers = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
-    memory: '1GB',
+    timeoutSeconds: 20,
+    memory: '256MB',
   })
   .pubsub.topic(Topic.UpdateTwUsers)
   .onPublish(onPublishUpdateTwUsersHandler);
