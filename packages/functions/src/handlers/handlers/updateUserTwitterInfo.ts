@@ -8,15 +8,16 @@ export const updateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) 
   const now = new Date(context.timestamp || new Date().getTime());
   const group = getGroupFromTime(1, now);
 
-  // 3日前 (-1h)
-  const previous = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 60 * 1000);
+  // 1日前 (-1h)
+  const previous = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 60 * 1000);
 
   const usersSnap = await firestore
     .collection('users')
     .where('active', '==', true)
     .where('lastUpdatedUserTwitterInfo', '<', previous)
     .where('group', '==', group)
-    .limit(5)
+    .orderBy('lastUpdatedUserTwitterInfo', 'asc')
+    .limit(10)
     .get();
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
