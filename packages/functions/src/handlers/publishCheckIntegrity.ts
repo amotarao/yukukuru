@@ -12,7 +12,7 @@ import { log } from '../utils/log';
  * 1日に 120回実行
  * ユーザーごとに 1日1回 整合性をチェック
  */
-export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
+export const publishCheckIntegrityHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(12, now);
 

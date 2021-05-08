@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import { getFollowersHandler } from '../handlers/getFollowers';
-import { onPublishGetFollowersHandler } from '../handlers/onPublishGetFollowers';
+import { publishGetFollowersHandler } from '../handlers/publishGetFollowers';
+import { runGetFollowersHandler } from '../handlers/runGetFollowers';
 import { Topic } from '../modules/pubsub/topics';
 
 /** フォロワー取得 定期実行 */
@@ -12,7 +12,7 @@ export const getFollowers = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(getFollowersHandler);
+  .onRun(publishGetFollowersHandler);
 
 /** PubSub: フォロワー取得 個々の実行 */
 export const onPublishGetFollowers = functions
@@ -22,4 +22,4 @@ export const onPublishGetFollowers = functions
     memory: '256MB',
   })
   .pubsub.topic(Topic.GetFollowers)
-  .onPublish(onPublishGetFollowersHandler);
+  .onPublish(runGetFollowersHandler);

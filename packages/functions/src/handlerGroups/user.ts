@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
 import { onCreateUserHandler } from '../handlers/onCreateUser';
 import { onDeleteUserHandler } from '../handlers/onDeleteUser';
-import { onPublishUpdateUserTwitterInfoHandler } from '../handlers/onPublishUpdateUserTwitterInfo';
-import { updateUserTwitterInfoHandler } from '../handlers/updateUserTwitterInfo';
+import { publishUpdateUserTwitterInfoHandler } from '../handlers/publishUpdateUserTwitterInfo';
+import { runUpdateUserTwitterInfoHandler } from '../handlers/runUpdateUserTwitterInfo';
 import { Topic } from '../modules/pubsub/topics';
 
 /** Auth: ユーザーが作成されたときの処理 */
@@ -34,7 +34,7 @@ export const updateUserTwitterInfo = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(updateUserTwitterInfoHandler);
+  .onRun(publishUpdateUserTwitterInfoHandler);
 
 /** PubSub: Twitter 情報更新 個々の実行 */
 export const onPublishUpdateUserTwitterInfo = functions
@@ -44,4 +44,4 @@ export const onPublishUpdateUserTwitterInfo = functions
     memory: '256MB',
   })
   .pubsub.topic(Topic.UpdateUserTwitterInfo)
-  .onPublish(onPublishUpdateUserTwitterInfoHandler);
+  .onPublish(runUpdateUserTwitterInfoHandler);

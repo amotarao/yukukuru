@@ -16,7 +16,7 @@ import { log, errorLog } from '../utils/log';
 
 type Props = CheckIntegrityMessage['data'];
 
-export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 

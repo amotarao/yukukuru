@@ -10,7 +10,7 @@ import { PubSubOnPublishHandler } from '../types/functions';
 
 type Props = UpdateTwUsersMessage['data'];
 
-export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runUpdateTwUsersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 

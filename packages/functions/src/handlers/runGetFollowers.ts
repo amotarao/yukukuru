@@ -10,7 +10,7 @@ import { log, errorLog } from '../utils/log';
 
 type Props = GetFollowersMessage['data'];
 
-export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid, nextCursor } = message.json as Props;
   const now = new Date(context.timestamp);
 

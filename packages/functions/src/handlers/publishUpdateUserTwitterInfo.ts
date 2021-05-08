@@ -4,7 +4,7 @@ import { getGroupFromTime } from '../modules/group';
 import { publishUpdateUserTwitterInfo } from '../modules/pubsub/publish/updateUserTwitterInfo';
 import { PubSubOnRunHandler } from '../types/functions';
 
-export const updateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) => {
+export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp || new Date().getTime());
   const group = getGroupFromTime(1, now);
 

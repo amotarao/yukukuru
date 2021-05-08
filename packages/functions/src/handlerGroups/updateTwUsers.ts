@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import { onPublishUpdateTwUsersHandler } from '../handlers/onPublishUpdateTwUsers';
-import { updateTwUsersHandler } from '../handlers/updateTwUsers';
+import { publishUpdateTwUsersHandler } from '../handlers/publishUpdateTwUsers';
+import { runUpdateTwUsersHandler } from '../handlers/runUpdateTwUsers';
 import { Topic } from '../modules/pubsub/topics';
 
 /** Twitter ユーザー情報更新 定期実行 */
@@ -12,7 +12,7 @@ export const updateTwUsers = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(updateTwUsersHandler);
+  .onRun(publishUpdateTwUsersHandler);
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */
 export const onPublishUpdateTwUsers = functions
@@ -22,4 +22,4 @@ export const onPublishUpdateTwUsers = functions
     memory: '256MB',
   })
   .pubsub.topic(Topic.UpdateTwUsers)
-  .onPublish(onPublishUpdateTwUsersHandler);
+  .onPublish(runUpdateTwUsersHandler);

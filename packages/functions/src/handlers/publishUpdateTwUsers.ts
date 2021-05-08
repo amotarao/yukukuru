@@ -5,7 +5,7 @@ import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
 
-export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
+export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp || new Date().getTime());
   const group = getGroupFromTime(1, now);
 

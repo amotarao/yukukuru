@@ -7,7 +7,7 @@ import { PubSubOnPublishHandler } from '../types/functions';
 
 type Props = UpdateUserTwitterInfoMessage['data'];
 
-export const onPublishUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 

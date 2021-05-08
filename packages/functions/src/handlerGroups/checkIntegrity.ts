@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import { checkIntegrityHandler } from '../handlers/checkIntegrity';
-import { onPublishCheckIntegrityHandler } from '../handlers/onPublishCheckIntegrity';
+import { publishCheckIntegrityHandler } from '../handlers/publishCheckIntegrity';
+import { runCheckIntegrityHandler } from '../handlers/runCheckIntegrity';
 import { Topic } from '../modules/pubsub/topics';
 
 /** 整合性チェック 定期実行 */
@@ -12,7 +12,7 @@ export const checkIntegrity = functions
   })
   .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(checkIntegrityHandler);
+  .onRun(publishCheckIntegrityHandler);
 
 /** PubSub: 整合性チェック 個々の実行 */
 export const onPublishCheckIntegrity = functions
@@ -22,4 +22,4 @@ export const onPublishCheckIntegrity = functions
     memory: '1GB',
   })
   .pubsub.topic(Topic.CheckIntegrity)
-  .onPublish(onPublishCheckIntegrityHandler);
+  .onPublish(runCheckIntegrityHandler);
