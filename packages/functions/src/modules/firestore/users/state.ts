@@ -3,19 +3,43 @@ import { firestore } from '../../firebase';
 
 const collection = firestore.collection('users');
 
-export const setUserResult = async (userId: string, watchId: string, nextCursor: string, date: Date): Promise<void> => {
+/**
+ * フォロワー取得処理の状態を保存
+ *
+ * @param userId ユーザーID
+ * @param watchId 保存した watch ID
+ * @param ended 取得が終了している (カーソルが 0 か -1) かどうか
+ * @param nextCursor 次のカーソル
+ * @param date 現在の日時
+ */
+export const setUserResult = async (
+  userId: string,
+  watchId: string,
+  ended: boolean,
+  nextCursor: string,
+  date: Date
+): Promise<void> => {
   const ref = collection.doc(userId);
-  const ended = nextCursor === '0' || nextCursor === '-1';
-  const data: Pick<
-    UserData<FirestoreDateLike>,
-    'nextCursor' | 'currentWatchesId' | 'pausedGetFollower' | 'lastUpdated'
-  > = {
-    nextCursor: ended ? '-1' : nextCursor,
-    currentWatchesId: ended ? '' : watchId,
-    pausedGetFollower: !ended,
-    lastUpdated: date,
-  };
-  await ref.update(data);
+
+  if (ended) {
+    const data: Pick<
+      UserData<FirestoreDateLike>,
+      'nextCursor' | 'currentWatchesId' | 'pausedGetFollower' | 'lastUpdated'
+    > = {
+      nextCursor: '-1',
+      currentWatchesId: '',
+      pausedGetFollower: false,
+      lastUpdated: date,
+    };
+    await ref.update(data);
+  } else {
+    const data: Pick<UserData<FirestoreDateLike>, 'nextCursor' | 'currentWatchesId' | 'pausedGetFollower'> = {
+      nextCursor: nextCursor,
+      currentWatchesId: watchId,
+      pausedGetFollower: true,
+    };
+    await ref.update(data);
+  }
 };
 
 export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
