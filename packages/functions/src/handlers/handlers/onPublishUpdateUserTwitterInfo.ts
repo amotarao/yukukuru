@@ -1,8 +1,8 @@
 import { UpdateUserTwitterInfoMessage, UserData } from '@yukukuru/types';
 import { getToken } from '../../modules/firestore/tokens';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
+import { getVerifyCredentials } from '../../modules/twitter/account/verifyCredentials';
 import { getClient } from '../../modules/twitter/client';
-import { getVerifyCredentials } from '../../modules/twitter/verifyCredentials';
 import { PubSubOnPublishHandler } from '../../types/functions';
 
 type Props = UpdateUserTwitterInfoMessage['data'];

@@ -1,6 +1,6 @@
 import * as Twitter from 'twitter';
-import { TwitterClientError, twitterClientErrorHandler } from './error';
-import { TwitterUserInterface } from '.';
+import { TwitterUserInterface } from '..';
+import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 /**
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
