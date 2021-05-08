@@ -3,7 +3,7 @@ import { Topic } from '../modules/pubsub/topics';
 import { onPublishUpdateTwUsersHandler } from './handlers/onPublishUpdateTwUsers';
 import { updateTwUsersHandler } from './handlers/updateTwUsers';
 
-/** PubSub: Twitter ユーザー情報更新 定期実行 */
+/** Twitter ユーザー情報更新 定期実行 */
 export const updateTwUsers = functions
   .region('asia-northeast1')
   .runWith({
