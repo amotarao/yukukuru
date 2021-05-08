@@ -42,14 +42,6 @@ export const setUserResult = async (
   }
 };
 
-export const setUserResultWithNoChange = async (userId: string, date: Date): Promise<void> => {
-  const ref = collection.doc(userId);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdated'> = {
-    lastUpdated: date,
-  };
-  await ref.update(data);
-};
-
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
   const ref = collection.doc(userId);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {

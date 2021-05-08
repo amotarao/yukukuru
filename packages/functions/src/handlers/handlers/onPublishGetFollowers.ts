@@ -1,10 +1,10 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setUserResult, setUserResultWithNoChange } from '../../modules/firestore/users/state';
+import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getFollowersIdList } from '../../modules/twitter';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
+import { checkInvalidToken } from '../../modules/twitter/error';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { log, errorLog } from '../../utils/log';
 
@@ -36,10 +36,6 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
     errorLog('onPublishGetFollowers', 'getFollowers', { uid, errors: result.errors });
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
-    }
-    if (checkProtectedUser(result.errors)) {
-      await setUserResultWithNoChange(uid, now);
-      return;
     }
     return;
   }
