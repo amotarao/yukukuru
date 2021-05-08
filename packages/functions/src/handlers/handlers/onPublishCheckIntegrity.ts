@@ -2,7 +2,7 @@ import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } 
 import * as _ from 'lodash';
 import { addRecords } from '../../modules/firestore/records/add';
 import { getRecords } from '../../modules/firestore/records/get';
-import { removeRecords } from '../../modules/firestore/records/removeRecords';
+import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
@@ -90,7 +90,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
   // 得体のしれないドキュメントがある場合はエラーを出す
   else if (notExistsDiffs.length === 0 && unknownDiffs.length !== 0) {
     const removeRecordIds = _.flatten(unknownDiffs.map(({ id }) => id));
-    await removeRecords({ uid, removeIds: removeRecordIds });
+    await removeRecords(uid, removeRecordIds);
 
     log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'hasUnknownDiffs', uid, unknownDiffs, removeRecordIds });
   }
