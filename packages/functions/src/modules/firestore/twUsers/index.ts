@@ -64,13 +64,7 @@ export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
 
   const results = await Promise.all(requests);
 
-  return results
-    .filter((result) => {
-      return result.exists;
-    })
-    .map((result) => {
-      return result.data() as TwUserData;
-    });
+  return results.filter((result) => result.exists).map((result) => result.data() as TwUserData);
 };
 
 /**
