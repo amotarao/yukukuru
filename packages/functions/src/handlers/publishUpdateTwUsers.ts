@@ -1,11 +1,11 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
-import { firestore } from '../../modules/firebase';
-import { getGroupFromTime } from '../../modules/group';
-import { publishUpdateTwUsers } from '../../modules/pubsub/publish/updateTwUsers';
-import { PubSubOnRunHandler } from '../../types/functions';
-import { log } from '../../utils/log';
+import { firestore } from '../modules/firebase';
+import { getGroupFromTime } from '../modules/group';
+import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
+import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
-export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
+export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp || new Date().getTime());
   const group = getGroupFromTime(1, now);
 
@@ -26,4 +26,6 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
 
   const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishUpdateTwUsers(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };

@@ -1,24 +1,26 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { addRecords } from '../../modules/firestore/records/add';
-import { getRecords } from '../../modules/firestore/records/get';
-import { removeRecords } from '../../modules/firestore/records/remove';
-import { updateRecordsStart } from '../../modules/firestore/records/update';
-import { getTwUser } from '../../modules/firestore/twUsers';
-import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { getWatches } from '../../modules/firestore/watches/getWatches';
-import { removeWatches } from '../../modules/firestore/watches/removeWatches';
-import { PubSubOnPublishHandler } from '../../types/functions';
-import { convertRecords } from '../../utils/followers/convert';
-import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
-import { mergeWatches } from '../../utils/followers/watches';
-import { log, errorLog } from '../../utils/log';
+import { addRecords } from '../modules/firestore/records/add';
+import { getRecords } from '../modules/firestore/records/get';
+import { removeRecords } from '../modules/firestore/records/remove';
+import { updateRecordsStart } from '../modules/firestore/records/update';
+import { getTwUser } from '../modules/firestore/twUsers';
+import { updateUserCheckIntegrity } from '../modules/firestore/users/state';
+import { getWatches } from '../modules/firestore/watches/getWatches';
+import { removeWatches } from '../modules/firestore/watches/removeWatches';
+import { PubSubOnPublishHandler } from '../types/functions';
+import { convertRecords } from '../utils/followers/convert';
+import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../utils/followers/diff';
+import { mergeWatches } from '../utils/followers/watches';
+import { log, errorLog } from '../utils/log';
 
 type Props = CheckIntegrityMessage['data'];
 
-export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
+
+  console.log(`⚙️ Starting check integrity for [${uid}].`);
 
   const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
 
@@ -134,4 +136,6 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
   }
 
   await updateUserCheckIntegrity(uid, now);
+
+  console.log(`✔️ Completed check integrity for [${uid}].`);
 };

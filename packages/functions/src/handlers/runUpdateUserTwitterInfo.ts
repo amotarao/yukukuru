@@ -1,13 +1,13 @@
 import { UpdateUserTwitterInfoMessage, UserData } from '@yukukuru/types';
-import { getToken } from '../../modules/firestore/tokens';
-import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
-import { getAccountVerifyCredentials } from '../../modules/twitter/account/verifyCredentials';
-import { getClient } from '../../modules/twitter/client';
-import { PubSubOnPublishHandler } from '../../types/functions';
+import { getToken } from '../modules/firestore/tokens';
+import { updateUserTwitterInfo } from '../modules/firestore/users/state';
+import { getAccountVerifyCredentials } from '../modules/twitter/account/verifyCredentials';
+import { getClient } from '../modules/twitter/client';
+import { PubSubOnPublishHandler } from '../types/functions';
 
 type Props = UpdateUserTwitterInfoMessage['data'];
 
-export const onPublishUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 

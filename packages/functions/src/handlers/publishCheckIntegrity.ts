@@ -1,9 +1,9 @@
 import { CheckIntegrityMessage } from '@yukukuru/types';
-import { firestore } from '../../modules/firebase';
-import { getGroupFromTime } from '../../modules/group';
-import { publishCheckIntegrity } from '../../modules/pubsub/publish/checkIntegrity';
-import { PubSubOnRunHandler } from '../../types/functions';
-import { log } from '../../utils/log';
+import { firestore } from '../modules/firebase';
+import { getGroupFromTime } from '../modules/group';
+import { publishCheckIntegrity } from '../modules/pubsub/publish/checkIntegrity';
+import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 /**
  * 整合性チェックのキューを作成
@@ -12,7 +12,7 @@ import { log } from '../../utils/log';
  * 1日に 120回実行
  * ユーザーごとに 1日1回 整合性をチェック
  */
-export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
+export const publishCheckIntegrityHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(12, now);
 
@@ -33,4 +33,6 @@ export const checkIntegrityHandler: PubSubOnRunHandler = async () => {
 
   const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishCheckIntegrity(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };
