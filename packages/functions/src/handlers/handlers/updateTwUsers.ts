@@ -9,7 +9,7 @@ export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp || new Date().getTime());
   const group = getGroupFromTime(1, now);
 
-  // 7日前 (-1h)
+  // 7日前 (-1m)
   const previous = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000 + 60 * 1000);
 
   const usersSnap = await firestore
