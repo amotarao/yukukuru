@@ -5,6 +5,13 @@ import { bulkWriterErrorHandler } from '../error';
 
 const collection = firestore.collection('twUsers');
 
+/**
+ * twUser ドキュメントを並列で保存
+ *
+ * @param users 保存するユーザー情報
+ * @param max 1回で保存する最大ドキュメント数
+ * @param count 実行回数
+ */
 const setTwUsersParallel = async (users: TwitterUserInterface[], max = 100, count = 0): Promise<void> => {
   const currentUsers = users.slice(0, max);
   console.log(`⏳ Starting set ${currentUsers.length} twUsers documents ${count} times.`);
@@ -33,16 +40,28 @@ const setTwUsersParallel = async (users: TwitterUserInterface[], max = 100, coun
   }
 };
 
+/**
+ * twUser ドキュメントを保存
+ *
+ * @param users 保存するユーザー情報
+ */
 export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> => {
   await setTwUsersParallel(users, 100);
 };
 
-export const getTwUsers = async (users: string[]): Promise<TwUserData[]> => {
-  const requests = users.map(async (user) => {
-    const snapshot = await collection.doc(user).get();
+/**
+ * twUser ドキュメントを取得
+ *
+ * @param ids 取得するユーザーID
+ */
+export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
+  const requests = ids.map(async (id) => {
+    const snapshot = await collection.doc(id).get();
     return snapshot;
   });
+
   const results = await Promise.all(requests);
+
   return results
     .filter((result) => {
       return result.exists;
