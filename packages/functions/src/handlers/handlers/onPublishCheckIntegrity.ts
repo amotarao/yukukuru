@@ -1,9 +1,9 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { addRecords } from '../../modules/firestore/records/addRecords';
-import { getRecords } from '../../modules/firestore/records/getRecords';
-import { removeRecords } from '../../modules/firestore/records/removeRecords';
-import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
+import { addRecords } from '../../modules/firestore/records/add';
+import { getRecords } from '../../modules/firestore/records/get';
+import { removeRecords } from '../../modules/firestore/records/remove';
+import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
@@ -33,7 +33,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
   const firstDate = watches[0].watch.getEndDate.toDate();
   // 今回比較する watches のうち、最新のものの取得開始時刻
   const lastDate = watches[watches.length - 1].watch.getEndDate.toDate();
-  const records = await getRecords({ uid, cursor: firstDate, max: lastDate });
+  const records = await getRecords(uid, firstDate, lastDate);
 
   const currentDiffs = getDiffFollowers(watches.map(({ watch }) => watch));
   const currentDiffsWithId: DiffWithId[] = currentDiffs.map((diff) => ({ id: '', diff }));
@@ -79,7 +79,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
         };
       }
     );
-    await addRecords({ uid, items: await Promise.all(items) });
+    await addRecords(uid, await Promise.all(items));
   }
 
   // 存在しないドキュメントがある場合は追加する
@@ -90,7 +90,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
   // 得体のしれないドキュメントがある場合はエラーを出す
   else if (notExistsDiffs.length === 0 && unknownDiffs.length !== 0) {
     const removeRecordIds = _.flatten(unknownDiffs.map(({ id }) => id));
-    await removeRecords({ uid, removeIds: removeRecordIds });
+    await removeRecords(uid, removeRecordIds);
 
     log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'hasUnknownDiffs', uid, unknownDiffs, removeRecordIds });
   }
@@ -119,7 +119,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
       };
     });
 
-    await updateRecordsStart({ uid, items });
+    await updateRecordsStart(uid, items);
     log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'sameEnd', uid, notExistsDiffs, unknownDiffs, items });
   }
 
