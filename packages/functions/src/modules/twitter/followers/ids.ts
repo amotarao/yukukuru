@@ -67,7 +67,7 @@ export const getFollowersIds = async (
     // エラーが発生した場合
     if ('errors' in result) {
       // 1回でも取得が完了している場合は、すでに取得されているデータを返すため、繰り返し処理を終了する
-      if (ids.length) {
+      if (getCount > 0) {
         break;
       }
 
