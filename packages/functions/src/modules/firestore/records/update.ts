@@ -4,20 +4,16 @@ import { bulkWriterErrorHandler } from '../error';
 
 const usersCollection = firestore.collection('users');
 
-interface Props {
-  uid: string;
-  items: {
-    id: string;
-    start: RecordData<FirestoreDateLike>['durationStart'] | RecordDataOld<FirestoreDateLike>['durationStart'];
-  }[];
-}
-
-type Response = void;
-
 /**
  * Records の durationStart をアップデート
  */
-export const updateRecordsStart = async ({ uid, items }: Props): Promise<Response> => {
+export const updateRecordsStart = async (
+  uid: string,
+  items: {
+    id: string;
+    start: RecordData<FirestoreDateLike>['durationStart'] | RecordDataOld<FirestoreDateLike>['durationStart'];
+  }[]
+): Promise<void> => {
   const collection = usersCollection.doc(uid).collection('records');
 
   const bulkWriter = firestore.bulkWriter();

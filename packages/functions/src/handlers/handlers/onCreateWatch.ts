@@ -1,28 +1,16 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
-import { addRecord } from '../../modules/firestore/records/addRecord';
-import { addRecords } from '../../modules/firestore/records/addRecords';
-import { existsRecords } from '../../modules/firestore/records/legacy';
+import { addEmptyRecord, addRecords } from '../../modules/firestore/records/add';
+import { existsRecords } from '../../modules/firestore/records/get';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setTwUsers } from '../../modules/firestore/twUsers';
-import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { getUsersLookup } from '../../modules/twitter';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/error';
 import { FirestoreOnCreateHandler } from '../../types/functions';
 import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-
-const emptyRecord: RecordData<FirestoreDateLike> = {
-  type: 'kuru',
-  user: {
-    id: 'EMPTY',
-    maybeDeletedOrSuspended: true,
-  },
-  durationStart: new Date(2000, 0),
-  durationEnd: new Date(2000, 0),
-};
 
 export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;
@@ -85,7 +73,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     const exists = await existsRecords(uid);
 
     if (!exists) {
-      await addRecord({ uid, data: emptyRecord });
+      await addEmptyRecord(uid);
     }
 
     log('onCreateWatch', '', { uid, type: 'noDiffs' });
@@ -146,10 +134,10 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     }
 
     const item: RecordUserData = {
-      id: user.data.id,
-      screenName: user.data.screenName,
-      displayName: user.data.name,
-      photoUrl: user.data.photoUrl,
+      id: user.id,
+      screenName: user.screenName,
+      displayName: user.name,
+      photoUrl: user.photoUrl,
       maybeDeletedOrSuspended: true,
     };
     return item;
@@ -179,7 +167,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
   );
   const records = await Promise.all([...kuruRecords, ...yukuRecords]);
 
-  const addRecordsPromise = addRecords({ uid, items: records });
+  const addRecordsPromise = addRecords(uid, records);
   const setTwUsersPromise = setTwUsers(twUsers);
 
   await Promise.all([addRecordsPromise, setTwUsersPromise]);

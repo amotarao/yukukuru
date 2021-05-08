@@ -3,17 +3,17 @@ import { bulkWriterErrorHandler } from '../error';
 
 const usersCollection = firestore.collection('users');
 
-interface Props {
-  uid: string;
-  removeIds: string[];
-}
-
-type Response = void;
+/**
+ * record を削除する
+ */
+export const removeRecord = async (uid: string, recordId: string): Promise<void> => {
+  await usersCollection.doc(uid).collection('records').doc(recordId).delete();
+};
 
 /**
- * Watches を削除する
+ * records を削除する
  */
-export const removeRecords = async ({ uid, removeIds }: Props): Promise<Response> => {
+export const removeRecords = async (uid: string, removeIds: string[]): Promise<void> => {
   const collection = usersCollection.doc(uid).collection('records');
 
   const bulkWriter = firestore.bulkWriter();

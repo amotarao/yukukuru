@@ -1,10 +1,10 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setUserResult, setUserResultWithNoChange } from '../../modules/firestore/users/state';
+import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
-import { getFollowersIdList } from '../../modules/twitter';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
+import { checkInvalidToken } from '../../modules/twitter/error';
+import { getFollowersIds } from '../../modules/twitter/followers/ids';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { log, errorLog } from '../../utils/log';
 
@@ -26,7 +26,7 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
     access_token_key: twitterAccessToken,
     access_token_secret: twitterAccessTokenSecret,
   });
-  const result = await getFollowersIdList(client, {
+  const result = await getFollowersIds(client, {
     userId: twitterId,
     cursor: nextCursor,
     count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
@@ -37,21 +37,11 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
-    if (checkProtectedUser(result.errors)) {
-      await setUserResultWithNoChange(uid, now);
-      return;
-    }
     return;
   }
 
   const { ids, next_cursor_str: newNextCursor } = result.response;
   const ended = newNextCursor === '0' || newNextCursor === '-1';
   const watchId = await setWatch(uid, ids, now, ended);
-  await setUserResult(uid, watchId, newNextCursor, now);
-
-  return {
-    userId: uid,
-    watchId,
-    newNextCursor,
-  };
+  await setUserResult(uid, watchId, ended, newNextCursor, now);
 };
