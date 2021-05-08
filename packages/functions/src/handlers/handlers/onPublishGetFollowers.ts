@@ -4,7 +4,7 @@ import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidToken } from '../../modules/twitter/error';
-import { getFollowersIdList } from '../../modules/twitter/followers/ids';
+import { getFollowersIds } from '../../modules/twitter/followers/ids';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { log, errorLog } from '../../utils/log';
 
@@ -26,7 +26,7 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
     access_token_key: twitterAccessToken,
     access_token_secret: twitterAccessTokenSecret,
   });
-  const result = await getFollowersIdList(client, {
+  const result = await getFollowersIds(client, {
     userId: twitterId,
     cursor: nextCursor,
     count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値

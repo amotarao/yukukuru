@@ -1,13 +1,13 @@
 import * as Twitter from 'twitter';
-import { TwitterClientErrorData, twitterClientErrorHandler } from './error';
-import { TwitterUserInterface } from '.';
+import { TwitterUserInterface } from '..';
+import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 /**
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
  */
-export const getVerifyCredentials = (
+export const getAccountVerifyCredentials = (
   client: Twitter
-): Promise<{ response: TwitterUserInterface } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserInterface } | { errors: TwitterClientError[] }> => {
   return client
     .get('account/verify_credentials', {
       include_entities: true,

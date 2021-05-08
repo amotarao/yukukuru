@@ -1,30 +1,62 @@
-export interface TwitterClientErrorData {
+export type TwitterClientError = {
   code: number;
   message: string;
-}
+};
 
-export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientErrorData[] } => {
+export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientError[] } => {
   console.error(`❗️[Twitter Error] Failed to run Twitter API.`, error);
 
   if (Array.isArray(error)) {
-    return { errors: error as TwitterClientErrorData[] };
+    return { errors: error as TwitterClientError[] };
   }
 
-  return { errors: [error] as TwitterClientErrorData[] };
+  return { errors: [error] as TwitterClientError[] };
 };
 
-export const checkNoUserMatches = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 17);
+/**
+ * エラーコードを確認
+ *
+ * @param errors エラーリスト
+ * @param code エラーコード
+ *
+ * @see https://developer.twitter.com/ja/docs/basics/response-codes
+ */
+const checkError = (errors: TwitterClientError[], code: number) => {
+  return errors.some((error) => error.code === code);
 };
 
-export const checkRateLimitExceeded = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 88);
+/**
+ * No user matches for specified terms.
+ *
+ * @param errors エラーリスト
+ */
+export const checkNoUserMatches = (errors: TwitterClientError[]): boolean => {
+  return checkError(errors, 17);
 };
 
-export const checkInvalidToken = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 89);
+/**
+ * Rate limit exceeded
+ *
+ * @param errors エラーリスト
+ */
+export const checkRateLimitExceeded = (errors: TwitterClientError[]): boolean => {
+  return checkError(errors, 88);
 };
 
-export const checkProtectedUser = (errors: TwitterClientErrorData[]): boolean => {
-  return errors.some(({ code }) => code === 326);
+/**
+ * Invalid or expired token
+ *
+ * @param errors エラーリスト
+ */
+export const checkInvalidToken = (errors: TwitterClientError[]): boolean => {
+  return checkError(errors, 89);
+};
+
+/**
+ * To protect our users from spam and other malicious activity, this account is temporarily locked.
+ *
+ * @param errors エラーリスト
+ */
+export const checkProtectedUser = (errors: TwitterClientError[]): boolean => {
+  return checkError(errors, 326);
 };
