@@ -24,7 +24,6 @@ export const getFollowersHandler: PubSubOnRunHandler = async () => {
     .collection('users')
     .where('active', '==', true)
     .where('pausedGetFollower', '==', true)
-    .where('lastUpdated', '<', time60)
     .where('group', '==', group)
     .get();
 
