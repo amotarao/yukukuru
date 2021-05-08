@@ -1,16 +1,16 @@
 import * as Twitter from 'twitter';
 import { TwitterClientErrorData, twitterClientErrorHandler } from '../error';
 
-export interface GetFollowersIdListProps {
+export type GetFollowersIdListProps = {
   userId: string;
   cursor?: string;
   count?: number;
-}
+};
 
-export interface GetFollowersIdListResponseData {
+export type GetFollowersIdListResponseData = {
   ids: string[];
   next_cursor_str: string;
-}
+};
 
 /**
  * userId のフォロワーの IDリストを取得
