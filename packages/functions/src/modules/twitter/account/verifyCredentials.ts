@@ -1,5 +1,5 @@
 import * as Twitter from 'twitter';
-import { TwitterUserInterface } from '..';
+import { TwitterUserObject } from '..';
 import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 /**
@@ -7,7 +7,7 @@ import { TwitterClientError, twitterClientErrorHandler } from '../error';
  */
 export const getAccountVerifyCredentials = (
   client: Twitter
-): Promise<{ response: TwitterUserInterface } | { errors: TwitterClientError[] }> => {
+): Promise<{ response: TwitterUserObject } | { errors: TwitterClientError[] }> => {
   return client
     .get('account/verify_credentials', {
       include_entities: true,
@@ -16,7 +16,7 @@ export const getAccountVerifyCredentials = (
     })
     .then((res) => {
       const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
-      const response: TwitterUserInterface = {
+      const response: TwitterUserObject = {
         id_str,
         screen_name,
         name,

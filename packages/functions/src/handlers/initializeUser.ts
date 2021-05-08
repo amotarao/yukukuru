@@ -1,7 +1,7 @@
 import { auth } from '../modules/firebase';
 import { initializeUser } from '../modules/firestore/users/initialize';
-import { getUsersLookup } from '../modules/twitter';
 import { getClient } from '../modules/twitter/client';
+import { getUsersLookup } from '../modules/twitter/users/lookup';
 import { AuthOnCreateHandler } from '../types/functions';
 
 export const initializeUserHandler: AuthOnCreateHandler = async (user) => {
