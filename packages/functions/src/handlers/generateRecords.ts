@@ -12,7 +12,7 @@ import { FirestoreOnCreateHandler } from '../types/functions';
 import { mergeWatches } from '../utils/followers/watches';
 import { log, errorLog } from '../utils/log';
 
-export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
+export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
 

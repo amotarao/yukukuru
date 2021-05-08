@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { onUpdateTokenHandler } from '../handlers/onUpdateToken';
+import { updateUserActiveByUpdateTokenHandler } from '../handlers/updateUserActiveByUpdateToken';
 
 /** Firestore: トークンが更新されたときの処理 */
 export const onFirestoreUpdateToken = functions
@@ -9,4 +9,4 @@ export const onFirestoreUpdateToken = functions
     memory: '256MB',
   })
   .firestore.document('tokens/{userId}')
-  .onUpdate(onUpdateTokenHandler);
+  .onUpdate(updateUserActiveByUpdateTokenHandler);

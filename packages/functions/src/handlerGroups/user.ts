@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
-import { onCreateUserHandler } from '../handlers/onCreateUser';
-import { onDeleteUserHandler } from '../handlers/onDeleteUser';
+import { initializeUserHandler } from '../handlers/initializeUser';
 import { publishUpdateUserTwitterInfoHandler } from '../handlers/publishUpdateUserTwitterInfo';
 import { runUpdateUserTwitterInfoHandler } from '../handlers/runUpdateUserTwitterInfo';
+import { updateUserActiveByDeleteUserHandler } from '../handlers/updateUserActiveByDeleteUser';
 import { Topic } from '../modules/pubsub/topics';
 
 /** Auth: ユーザーが作成されたときの処理 */
@@ -13,7 +13,7 @@ export const onCreateUser = functions
     memory: '256MB',
   })
   .auth.user()
-  .onCreate(onCreateUserHandler);
+  .onCreate(initializeUserHandler);
 
 /** Auth: ユーザーが削除されたときの処理 */
 export const onDeleteUser = functions
@@ -23,7 +23,7 @@ export const onDeleteUser = functions
     memory: '256MB',
   })
   .auth.user()
-  .onDelete(onDeleteUserHandler);
+  .onDelete(updateUserActiveByDeleteUserHandler);
 
 /** Twitter 情報更新 定期実行 */
 export const updateUserTwitterInfo = functions

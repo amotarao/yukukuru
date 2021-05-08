@@ -4,7 +4,7 @@ import { getUsersLookup } from '../modules/twitter';
 import { getClient } from '../modules/twitter/client';
 import { AuthOnCreateHandler } from '../types/functions';
 
-export const onCreateUserHandler: AuthOnCreateHandler = async (user) => {
+export const initializeUserHandler: AuthOnCreateHandler = async (user) => {
   const uid = user.uid;
 
   console.log(`⚙️ Initializing user document for [${uid}]`);
