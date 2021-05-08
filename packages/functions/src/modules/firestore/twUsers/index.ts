@@ -1,4 +1,4 @@
-import { TwUserData } from '@yukukuru/types';
+import { FirestoreDateLike, FirestoreIdData, TwUserData } from '@yukukuru/types';
 import { firestore } from '../../firebase';
 import { TwitterUserInterface } from '../../twitter';
 import { bulkWriterErrorHandler } from '../error';
@@ -52,7 +52,7 @@ export const setTwUsers = async (users: TwitterUserInterface[]): Promise<void> =
 /**
  * twUser ドキュメントを取得
  *
- * @param ids 取得するユーザーID
+ * @param ids 取得するユーザーIDリスト
  */
 export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
   const requests = ids.map(async (id) => {
@@ -69,4 +69,22 @@ export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
     .map((result) => {
       return result.data() as TwUserData;
     });
+};
+
+/**
+ * 指定した twUser ドキュメントを取得
+ *
+ * @param id 取得するユーザーID
+ */
+export const getTwUser = async (id: string): Promise<FirestoreIdData<TwUserData> | null> => {
+  const snapshot = await collection.doc(id).get();
+
+  if (!snapshot.exists) {
+    return null;
+  }
+
+  return {
+    id: snapshot.id,
+    data: snapshot.data() as TwUserData,
+  };
 };
