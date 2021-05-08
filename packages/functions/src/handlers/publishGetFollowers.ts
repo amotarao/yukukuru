@@ -37,4 +37,6 @@ export const publishGetFollowersHandler: PubSubOnRunHandler = async (context) =>
     nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
   }));
   await publishGetFollowers(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };

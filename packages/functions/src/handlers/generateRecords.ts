@@ -6,21 +6,20 @@ import { existsRecords } from '../modules/firestore/records/get';
 import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
 import { getTwUser, setTwUsers } from '../modules/firestore/twUsers';
 import { getClient } from '../modules/twitter/client';
-import { checkInvalidToken, checkNoUserMatches } from '../modules/twitter/error';
+import { checkInvalidToken } from '../modules/twitter/error';
 import { getUsersLookup } from '../modules/twitter/users/lookup';
 import { FirestoreOnCreateHandler } from '../types/functions';
 import { mergeWatches } from '../utils/followers/watches';
-import { log, errorLog } from '../utils/log';
 
 export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;
   const uid = context.params.userId as string;
 
-  log('onCreateWatch', '', { queueId: snapshot.id, uid });
+  console.log(`⚙️ Starting generate records for [${uid}].`);
 
   // 終了している watch でなければ終了
   if (data.ended === false) {
-    log('onCreateWatch', '', { uid, type: 'noEnded' });
+    console.log(`[Info]: Stopped generate records for [${uid}]: Not ended.`);
     return;
   }
 
@@ -36,7 +35,7 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
 
   // 比較できるデータがない
   if (endedQuery.empty) {
-    log('onCreateWatch', '', { uid, type: 'noPreviousWatch' });
+    console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
     return;
   }
   const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
@@ -76,14 +75,13 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
       await addEmptyRecord(uid);
     }
 
-    log('onCreateWatch', '', { uid, type: 'noDiffs' });
+    console.log(`[Info]: Stopped generate records for [${uid}]: Not exists diff.`);
     return;
   }
 
   const token = await getToken(uid);
-  if (!token) {
-    await setTokenInvalid(uid);
-    errorLog('onCreateWatch', '', { uid, type: 'invalidToken' });
+  if (token === null) {
+    console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
     return;
   }
 
@@ -94,12 +92,6 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
   const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
 
   if ('errors' in result) {
-    result.errors.forEach((error) => {
-      if (!checkNoUserMatches([error])) {
-        errorLog('onCreateWatch', '', { uid, error, type: 'TwitterError' });
-      }
-    });
-
     if (checkInvalidToken(result.errors)) {
       await setTokenInvalid(uid);
     }
@@ -172,5 +164,5 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
 
   await Promise.all([addRecordsPromise, setTwUsersPromise]);
 
-  log('onCreateWatch', '', { uid, type: 'success', records });
+  console.log(`✔️ Completed generate records for [${uid}].`);
 };

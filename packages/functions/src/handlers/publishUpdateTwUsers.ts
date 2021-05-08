@@ -26,4 +26,6 @@ export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) =
 
   const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishUpdateTwUsers(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };
