@@ -9,9 +9,7 @@ export const getFollowersHandler: PubSubOnRunHandler = async () => {
   const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
   const group = getGroupFromTime(1, now);
 
-  // 15分前
-  const time15 = new Date(now.getTime() - 14 * 60 * 1000);
-  // 60分前
+  // 60分前 (-1m)
   const time60 = new Date(now.getTime() - 59 * 60 * 1000);
 
   const allUsers = firestore
@@ -26,7 +24,7 @@ export const getFollowersHandler: PubSubOnRunHandler = async () => {
     .collection('users')
     .where('active', '==', true)
     .where('pausedGetFollower', '==', true)
-    .where('lastUpdated', '<', time15)
+    .where('lastUpdated', '<', time60)
     .where('group', '==', group)
     .get();
 
