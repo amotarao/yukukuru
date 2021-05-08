@@ -1,4 +1,5 @@
 import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
+import * as admin from 'firebase-admin';
 import { firestore } from '../../firebase';
 import { TwitterUserInterface } from '../../twitter';
 import { bulkWriterErrorHandler } from '../error';
@@ -21,11 +22,12 @@ const setTwUsersParallel = async (users: TwitterUserInterface[], max = 100, coun
 
   currentUsers.forEach(({ id_str, screen_name, name, profile_image_url_https }) => {
     const ref = collection.doc(id_str);
-    const data: TwUserData = {
+    const data: TwUserData<FirestoreDateLike> = {
       id: id_str,
       screenName: screen_name,
       name,
       photoUrl: profile_image_url_https,
+      lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
     };
     bulkWriter.set(ref, data, { merge: true });
   });
