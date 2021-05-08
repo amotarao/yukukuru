@@ -5,8 +5,8 @@ import { getGroupFromTime } from '../../modules/group';
 import { publishGetFollowers } from '../../modules/pubsub/publish/getFollowers';
 import { PubSubOnRunHandler } from '../../types/functions';
 
-export const getFollowersHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
+export const getFollowersHandler: PubSubOnRunHandler = async (context) => {
+  const now = new Date(context.timestamp);
   const group = getGroupFromTime(1, now);
 
   // 60分前 (-1m)
