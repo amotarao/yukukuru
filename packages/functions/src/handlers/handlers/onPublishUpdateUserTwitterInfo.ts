@@ -1,7 +1,7 @@
 import { UpdateUserTwitterInfoMessage, UserData } from '@yukukuru/types';
 import { getToken } from '../../modules/firestore/tokens';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
-import { getVerifyCredentials } from '../../modules/twitter/account/verifyCredentials';
+import { getAccountVerifyCredentials } from '../../modules/twitter/account/verifyCredentials';
 import { getClient } from '../../modules/twitter/client';
 import { PubSubOnPublishHandler } from '../../types/functions';
 
@@ -25,7 +25,7 @@ export const onPublishUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = asy
     access_token_key: token.twitterAccessToken,
     access_token_secret: token.twitterAccessTokenSecret,
   });
-  const result = await getVerifyCredentials(client);
+  const result = await getAccountVerifyCredentials(client);
 
   if ('errors' in result) {
     console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`, result.errors);
