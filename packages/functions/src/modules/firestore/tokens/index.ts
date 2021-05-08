@@ -11,17 +11,17 @@ export const setTokenInvalid = async (userId: string): Promise<void> => {
     twitterAccessTokenSecret: '',
   };
   const token = collection.doc(userId).update(data);
-
   await Promise.all([user, token]);
 };
 
 export const getToken = async (userId: string): Promise<TokenData | null> => {
-  const tokenRef = collection.doc(userId);
-  const tokenDoc = await tokenRef.get();
-  if (!tokenDoc.exists) {
+  const ref = collection.doc(userId);
+  const doc = await ref.get();
+  if (!doc.exists) {
     return null;
   }
-  const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = tokenDoc.data() as TokenData;
+
+  const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
   if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
     return null;
   }
