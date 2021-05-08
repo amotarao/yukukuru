@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
+import { checkIntegrityHandler } from '../handlers/checkIntegrity';
+import { onPublishCheckIntegrityHandler } from '../handlers/onPublishCheckIntegrity';
 import { Topic } from '../modules/pubsub/topics';
-import { checkIntegrityHandler } from './handlers/checkIntegrity';
-import { onPublishCheckIntegrityHandler } from './handlers/onPublishCheckIntegrity';
 
 /** 整合性チェック 定期実行 */
 export const checkIntegrity = functions

@@ -1,9 +1,9 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
-import { firestore } from '../../modules/firebase';
-import { getGroupFromTime } from '../../modules/group';
-import { publishUpdateTwUsers } from '../../modules/pubsub/publish/updateTwUsers';
-import { PubSubOnRunHandler } from '../../types/functions';
-import { log } from '../../utils/log';
+import { firestore } from '../modules/firebase';
+import { getGroupFromTime } from '../modules/group';
+import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
+import { PubSubOnRunHandler } from '../types/functions';
+import { log } from '../utils/log';
 
 export const updateTwUsersHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp || new Date().getTime());

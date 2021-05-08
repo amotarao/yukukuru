@@ -1,12 +1,12 @@
 import { GetFollowersMessage } from '@yukukuru/types';
-import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setUserResult } from '../../modules/firestore/users/state';
-import { setWatch } from '../../modules/firestore/watches/setWatch';
-import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken } from '../../modules/twitter/error';
-import { getFollowersIds } from '../../modules/twitter/followers/ids';
-import { PubSubOnPublishHandler } from '../../types/functions';
-import { log, errorLog } from '../../utils/log';
+import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import { setUserResult } from '../modules/firestore/users/state';
+import { setWatch } from '../modules/firestore/watches/setWatch';
+import { getClient } from '../modules/twitter/client';
+import { checkInvalidToken } from '../modules/twitter/error';
+import { getFollowersIds } from '../modules/twitter/followers/ids';
+import { PubSubOnPublishHandler } from '../types/functions';
+import { log, errorLog } from '../utils/log';
 
 type Props = GetFollowersMessage['data'];
 

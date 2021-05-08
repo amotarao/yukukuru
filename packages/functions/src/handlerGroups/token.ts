@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { onUpdateTokenHandler } from './handlers/onUpdateToken';
+import { onUpdateTokenHandler } from '../handlers/onUpdateToken';
 
 /** Firestore: トークンが更新されたときの処理 */
 export const onFirestoreUpdateToken = functions

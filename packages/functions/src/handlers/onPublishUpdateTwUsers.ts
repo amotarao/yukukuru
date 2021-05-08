@@ -1,12 +1,12 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { getToken } from '../../modules/firestore/tokens';
-import { setTwUsers } from '../../modules/firestore/twUsers';
-import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
-import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
-import { getUsersLookup } from '../../modules/twitter';
-import { getClient } from '../../modules/twitter/client';
-import { PubSubOnPublishHandler } from '../../types/functions';
+import { getToken } from '../modules/firestore/tokens';
+import { setTwUsers } from '../modules/firestore/twUsers';
+import { updateUserLastUpdatedTwUsers } from '../modules/firestore/users/state';
+import { getLatestWatches } from '../modules/firestore/watches/getWatches';
+import { getUsersLookup } from '../modules/twitter';
+import { getClient } from '../modules/twitter/client';
+import { PubSubOnPublishHandler } from '../types/functions';
 
 type Props = UpdateTwUsersMessage['data'];
 

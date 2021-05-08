@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { onCreateWatchHandler } from './handlers/onCreateWatch';
+import { onCreateWatchHandler } from '../handlers/onCreateWatch';
 
 /** Firestore: watch が作成されたときの処理 */
 export const onCreateWatch = functions

@@ -1,16 +1,16 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { firestore } from '../../modules/firebase';
-import { addEmptyRecord, addRecords } from '../../modules/firestore/records/add';
-import { existsRecords } from '../../modules/firestore/records/get';
-import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
-import { getUsersLookup } from '../../modules/twitter';
-import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/error';
-import { FirestoreOnCreateHandler } from '../../types/functions';
-import { mergeWatches } from '../../utils/followers/watches';
-import { log, errorLog } from '../../utils/log';
+import { firestore } from '../modules/firebase';
+import { addEmptyRecord, addRecords } from '../modules/firestore/records/add';
+import { existsRecords } from '../modules/firestore/records/get';
+import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import { getTwUser, setTwUsers } from '../modules/firestore/twUsers';
+import { getUsersLookup } from '../modules/twitter';
+import { getClient } from '../modules/twitter/client';
+import { checkInvalidToken, checkNoUserMatches } from '../modules/twitter/error';
+import { FirestoreOnCreateHandler } from '../types/functions';
+import { mergeWatches } from '../utils/followers/watches';
+import { log, errorLog } from '../utils/log';
 
 export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;

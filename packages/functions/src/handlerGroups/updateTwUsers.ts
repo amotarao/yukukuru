@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
+import { onPublishUpdateTwUsersHandler } from '../handlers/onPublishUpdateTwUsers';
+import { updateTwUsersHandler } from '../handlers/updateTwUsers';
 import { Topic } from '../modules/pubsub/topics';
-import { onPublishUpdateTwUsersHandler } from './handlers/onPublishUpdateTwUsers';
-import { updateTwUsersHandler } from './handlers/updateTwUsers';
 
 /** Twitter ユーザー情報更新 定期実行 */
 export const updateTwUsers = functions

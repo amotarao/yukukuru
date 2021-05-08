@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
+import { getFollowersHandler } from '../handlers/getFollowers';
+import { onPublishGetFollowersHandler } from '../handlers/onPublishGetFollowers';
 import { Topic } from '../modules/pubsub/topics';
-import { getFollowersHandler } from './handlers/getFollowers';
-import { onPublishGetFollowersHandler } from './handlers/onPublishGetFollowers';
 
 /** フォロワー取得 定期実行 */
 export const getFollowers = functions
