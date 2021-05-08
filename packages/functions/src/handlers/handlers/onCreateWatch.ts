@@ -1,7 +1,7 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
-import { addRecord, addRecords } from '../../modules/firestore/records/add';
+import { addEmptyRecord, addRecords } from '../../modules/firestore/records/add';
 import { existsRecords } from '../../modules/firestore/records/get';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
@@ -12,16 +12,6 @@ import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/err
 import { FirestoreOnCreateHandler } from '../../types/functions';
 import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
-
-const emptyRecord: RecordData<FirestoreDateLike> = {
-  type: 'kuru',
-  user: {
-    id: 'EMPTY',
-    maybeDeletedOrSuspended: true,
-  },
-  durationStart: new Date(2000, 0),
-  durationEnd: new Date(2000, 0),
-};
 
 export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, context) => {
   const data = snapshot.data() as WatchData;
@@ -84,7 +74,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     const exists = await existsRecords(uid);
 
     if (!exists) {
-      await addRecord(uid, emptyRecord);
+      await addEmptyRecord(uid);
     }
 
     log('onCreateWatch', '', { uid, type: 'noDiffs' });

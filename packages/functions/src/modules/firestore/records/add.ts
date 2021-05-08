@@ -5,14 +5,32 @@ import { bulkWriterErrorHandler } from '../error';
 const collection = firestore.collection('users');
 
 /**
- * Record を追加する
+ * record を追加する
  */
 export const addRecord = async (uid: string, data: RecordData<FirestoreDateLike>): Promise<void> => {
   await collection.doc(uid).collection('records').add(data);
 };
 
+const emptyRecord: RecordData<Date> = {
+  type: 'kuru',
+  user: {
+    id: 'EMPTY',
+    maybeDeletedOrSuspended: true,
+  },
+  durationStart: new Date(2000, 0),
+  durationEnd: new Date(2000, 0),
+};
+
 /**
- * Records を追加する
+ * 空 record を追加する
+ * @param uid 追加するユーザー
+ */
+export const addEmptyRecord = async (uid: string): Promise<void> => {
+  await addRecord(uid, emptyRecord);
+};
+
+/**
+ * records を追加する
  */
 export const addRecords = async (uid: string, items: RecordData<FirestoreDateLike>[]): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
