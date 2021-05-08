@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
 import { errorLog } from '../../utils/log';
-import { TwitterClientErrorData, twitterClientErrorHandler, checkRateLimitExceeded } from './error';
+import { TwitterClientError, twitterClientErrorHandler, checkRateLimitExceeded } from './error';
 
 export interface TwitterUserInterface {
   id_str: string;
@@ -31,7 +31,7 @@ export interface GetFollowersListResponseData {
 export const getFollowersListSingle = (
   client: Twitter,
   { userId, cursor = '-1', count = 200 }: GetFollowersListProps
-): Promise<{ response: GetFollowersListResponseData } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: GetFollowersListResponseData } | { errors: TwitterClientError[] }> => {
   return client
     .get('followers/list', {
       user_id: userId,
@@ -53,7 +53,7 @@ export const getFollowersListSingle = (
 export const getFollowersList = async (
   client: Twitter,
   { userId, cursor = '-1' }: GetFollowersListProps
-): Promise<{ response: GetFollowersListResponseData } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: GetFollowersListResponseData } | { errors: TwitterClientError[] }> => {
   const users: TwitterUserInterface[] = [];
   let nextCursor = cursor;
   let count = 0;
@@ -99,7 +99,7 @@ export interface GetUsersLookupProps {
 export const getUsersLookupSingle = (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientError[] }> => {
   return client
     .get('users/lookup', {
       user_id: usersId.join(','),
@@ -117,9 +117,9 @@ export const getUsersLookupSingle = (
 export const getUsersLookup = async (
   client: Twitter,
   { usersId }: GetUsersLookupProps
-): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: TwitterUserInterface[] } | { errors: TwitterClientError[] }> => {
   const users: TwitterUserInterface[] = [];
-  const errors: TwitterClientErrorData[] = [];
+  const errors: TwitterClientError[] = [];
 
   const lookup = _.chunk(_.uniq(usersId), 100).map(async (usersId) => {
     const result = await getUsersLookupSingle(client, { usersId });

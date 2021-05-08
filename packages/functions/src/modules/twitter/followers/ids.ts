@@ -1,5 +1,5 @@
 import * as Twitter from 'twitter';
-import { TwitterClientErrorData, twitterClientErrorHandler } from '../error';
+import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 export type GetFollowersIdListProps = {
   userId: string;
@@ -22,7 +22,7 @@ export type GetFollowersIdListResponseData = {
 export const getFollowersIdListSingle = (
   client: Twitter,
   { userId, cursor = '-1', count = 5000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientError[] }> => {
   return client
     .get('followers/ids', {
       user_id: userId,
@@ -43,7 +43,7 @@ export const getFollowersIdListSingle = (
 export const getFollowersIdList = async (
   client: Twitter,
   { userId, cursor = '-1', count = 75000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientErrorData[] }> => {
+): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientError[] }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
