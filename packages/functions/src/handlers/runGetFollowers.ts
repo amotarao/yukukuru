@@ -41,7 +41,7 @@ export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, co
     }
     return;
   }
-  console.log(`⏳ Got ${result.response.length} users from Twitter.`);
+  console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
 
   const { ids, next_cursor_str: newNextCursor } = result.response;
   const ended = newNextCursor === '0' || newNextCursor === '-1';
