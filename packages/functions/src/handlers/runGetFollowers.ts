@@ -1,16 +1,16 @@
 import { GetFollowersMessage } from '@yukukuru/types';
-import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setUserResult } from '../../modules/firestore/users/state';
-import { setWatch } from '../../modules/firestore/watches/setWatch';
-import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken } from '../../modules/twitter/error';
-import { getFollowersIds } from '../../modules/twitter/followers/ids';
-import { PubSubOnPublishHandler } from '../../types/functions';
-import { log, errorLog } from '../../utils/log';
+import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import { setUserResult } from '../modules/firestore/users/state';
+import { setWatch } from '../modules/firestore/watches/setWatch';
+import { getClient } from '../modules/twitter/client';
+import { checkInvalidToken } from '../modules/twitter/error';
+import { getFollowersIds } from '../modules/twitter/followers/ids';
+import { PubSubOnPublishHandler } from '../types/functions';
+import { log, errorLog } from '../utils/log';
 
 type Props = GetFollowersMessage['data'];
 
-export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
+export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid, nextCursor } = message.json as Props;
   const now = new Date(context.timestamp);
 

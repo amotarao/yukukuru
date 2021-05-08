@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
+import { publishUpdateTwUsersHandler } from '../handlers/publishUpdateTwUsers';
+import { runUpdateTwUsersHandler } from '../handlers/runUpdateTwUsers';
 import { Topic } from '../modules/pubsub/topics';
-import { onPublishUpdateTwUsersHandler } from './handlers/onPublishUpdateTwUsers';
-import { updateTwUsersHandler } from './handlers/updateTwUsers';
 
 /** Twitter ユーザー情報更新 定期実行 */
-export const updateTwUsers = functions
+export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -12,14 +12,14 @@ export const updateTwUsers = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(updateTwUsersHandler);
+  .onRun(publishUpdateTwUsersHandler);
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */
-export const onPublishUpdateTwUsers = functions
+export const run = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 20,
     memory: '256MB',
   })
   .pubsub.topic(Topic.UpdateTwUsers)
-  .onPublish(onPublishUpdateTwUsersHandler);
+  .onPublish(runUpdateTwUsersHandler);

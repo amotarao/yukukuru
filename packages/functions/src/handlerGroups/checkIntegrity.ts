@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
+import { publishCheckIntegrityHandler } from '../handlers/publishCheckIntegrity';
+import { runCheckIntegrityHandler } from '../handlers/runCheckIntegrity';
 import { Topic } from '../modules/pubsub/topics';
-import { checkIntegrityHandler } from './handlers/checkIntegrity';
-import { onPublishCheckIntegrityHandler } from './handlers/onPublishCheckIntegrity';
 
 /** 整合性チェック 定期実行 */
-export const checkIntegrity = functions
+export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -12,14 +12,14 @@ export const checkIntegrity = functions
   })
   .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(checkIntegrityHandler);
+  .onRun(publishCheckIntegrityHandler);
 
 /** PubSub: 整合性チェック 個々の実行 */
-export const onPublishCheckIntegrity = functions
+export const run = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 30,
     memory: '1GB',
   })
   .pubsub.topic(Topic.CheckIntegrity)
-  .onPublish(onPublishCheckIntegrityHandler);
+  .onPublish(runCheckIntegrityHandler);
