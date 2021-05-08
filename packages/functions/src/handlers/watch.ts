@@ -5,8 +5,8 @@ import { onCreateWatchHandler } from './handlers/onCreateWatch';
 export const onCreateWatch = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 60,
-    memory: '2GB',
+    timeoutSeconds: 20,
+    memory: '512MB',
   })
   .firestore.document('users/{userId}/watches/{watchId}')
   .onCreate(onCreateWatchHandler);
