@@ -94,9 +94,7 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
 
   const token = await getToken(uid);
   if (!token) {
-    await setTokenInvalid(uid);
     errorLog('onCreateWatch', '', { uid, type: 'invalidToken' });
-    return;
   }
 
   const client = getClient({
