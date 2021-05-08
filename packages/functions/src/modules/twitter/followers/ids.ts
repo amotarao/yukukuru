@@ -1,13 +1,13 @@
 import * as Twitter from 'twitter';
 import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
-export type GetFollowersIdListProps = {
+export type TwitterGetFollowersIdsParameters = {
   userId: string;
   cursor?: string;
   count?: number;
 };
 
-export type GetFollowersIdListResponseData = {
+export type TwitterGetFollowersIdsResponse = {
   ids: string[];
   next_cursor: number;
   next_cursor_str: string;
@@ -22,10 +22,10 @@ export type GetFollowersIdListResponseData = {
  *
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
  */
-export const getFollowersIdListSingle = (
+export const getFollowersIdsSingle = (
   client: Twitter,
-  { userId, cursor = '-1', count = 5000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientError[] }> => {
+  { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
+): Promise<{ response: TwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   return client
     .get('followers/ids', {
       user_id: userId,
@@ -35,7 +35,7 @@ export const getFollowersIdListSingle = (
     })
     .then((res) => {
       const { ids, next_cursor_str } = res;
-      const response: GetFollowersIdListResponseData = { ids, next_cursor_str };
+      const response: TwitterGetFollowersIdsResponse = { ids, next_cursor_str };
       return { response };
     })
     .catch(twitterClientErrorHandler);
@@ -45,10 +45,10 @@ export const getFollowersIdListSingle = (
  * userId のフォロワーの IDリストを取得
  * 15分につき 75,000人まで 取得可能
  */
-export const getFollowersIdList = async (
+export const getFollowersIds = async (
   client: Twitter,
-  { userId, cursor = '-1', count = 75000 }: GetFollowersIdListProps
-): Promise<{ response: GetFollowersIdListResponseData } | { errors: TwitterClientError[] }> => {
+  { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsParameters
+): Promise<{ response: TwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -56,11 +56,11 @@ export const getFollowersIdList = async (
   const maxGetCount = Math.min(Math.floor(count / 5000), 15);
 
   while (getCount < maxGetCount) {
-    const obj: GetFollowersIdListProps = {
+    const obj: TwitterGetFollowersIdsParameters = {
       userId,
       cursor: nextCursor,
     };
-    const result = await getFollowersIdListSingle(client, obj);
+    const result = await getFollowersIdsSingle(client, obj);
 
     // エラーが発生した場合
     if ('errors' in result) {
@@ -84,7 +84,7 @@ export const getFollowersIdList = async (
     getCount++;
   }
 
-  const response: GetFollowersIdListResponseData = {
+  const response: TwitterGetFollowersIdsResponse = {
     ids,
     next_cursor_str: nextCursor,
   };
