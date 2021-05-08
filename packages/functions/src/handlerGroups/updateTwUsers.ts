@@ -4,7 +4,7 @@ import { runUpdateTwUsersHandler } from '../handlers/runUpdateTwUsers';
 import { Topic } from '../modules/pubsub/topics';
 
 /** Twitter ユーザー情報更新 定期実行 */
-export const updateTwUsers = functions
+export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -15,7 +15,7 @@ export const updateTwUsers = functions
   .onRun(publishUpdateTwUsersHandler);
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */
-export const onPublishUpdateTwUsers = functions
+export const run = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 20,
