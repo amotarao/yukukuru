@@ -1,6 +1,6 @@
 import * as Twitter from 'twitter';
-import { errorLog } from '../../utils/log';
-import { TwitterClientErrorData, twitterClientErrorHandler, checkRateLimitExceeded } from './error';
+import { errorLog } from '../../../utils/log';
+import { TwitterClientErrorData, twitterClientErrorHandler, checkRateLimitExceeded } from '../error';
 
 export interface GetFollowersIdListProps {
   userId: string;
