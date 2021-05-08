@@ -2,7 +2,7 @@ import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukuk
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
 import { addRecord, addRecords } from '../../modules/firestore/records/add';
-import { existsRecords } from '../../modules/firestore/records/legacy';
+import { existsRecords } from '../../modules/firestore/records/get';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';

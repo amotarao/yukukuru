@@ -30,3 +30,13 @@ export const getRecords = async (
 
   return docs;
 };
+
+/**
+ * 指定したユーザーの records の存在を確認
+ *
+ * @param userId 指定するユーザー
+ */
+export const existsRecords = async (userId: string): Promise<boolean> => {
+  const snapshot = await usersCollection.doc(userId).collection('records').limit(1).get();
+  return !snapshot.empty;
+};
