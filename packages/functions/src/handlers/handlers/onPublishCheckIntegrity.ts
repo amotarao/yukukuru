@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { addRecords } from '../../modules/firestore/records/add';
 import { getRecords } from '../../modules/firestore/records/get';
 import { removeRecords } from '../../modules/firestore/records/remove';
-import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
+import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
@@ -119,7 +119,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
       };
     });
 
-    await updateRecordsStart({ uid, items });
+    await updateRecordsStart(uid, items);
     log('onPublishCheckIntegrity', 'checkIntegrity', { type: 'sameEnd', uid, notExistsDiffs, unknownDiffs, items });
   }
 
