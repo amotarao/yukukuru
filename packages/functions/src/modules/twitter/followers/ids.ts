@@ -30,8 +30,10 @@ export const getFollowersIdListSingle = (
       count,
       stringify_ids: true,
     })
-    .then((response) => {
-      return { response: response as GetFollowersIdListResponseData };
+    .then((res) => {
+      const { ids, next_cursor_str } = res;
+      const response: GetFollowersIdListResponseData = { ids, next_cursor_str };
+      return { response };
     })
     .catch(twitterClientErrorHandler);
 };
