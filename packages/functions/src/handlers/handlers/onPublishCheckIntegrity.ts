@@ -66,9 +66,9 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
               }
             : {
                 id: diff.uid,
-                screenName: user.data.screenName,
-                displayName: user.data.name,
-                photoUrl: user.data.photoUrl,
+                screenName: user.screenName,
+                displayName: user.name,
+                photoUrl: user.photoUrl,
                 maybeDeletedOrSuspended: true,
               };
         return {

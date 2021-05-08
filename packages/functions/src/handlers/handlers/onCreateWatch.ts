@@ -134,10 +134,10 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     }
 
     const item: RecordUserData = {
-      id: user.data.id,
-      screenName: user.data.screenName,
-      displayName: user.data.name,
-      photoUrl: user.data.photoUrl,
+      id: user.id,
+      screenName: user.screenName,
+      displayName: user.name,
+      photoUrl: user.photoUrl,
       maybeDeletedOrSuspended: true,
     };
     return item;

@@ -1,4 +1,4 @@
-import { FirestoreDateLike, FirestoreIdData, TwUserData } from '@yukukuru/types';
+import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
 import { firestore } from '../../firebase';
 import { TwitterUserInterface } from '../../twitter';
 import { bulkWriterErrorHandler } from '../error';
@@ -76,15 +76,12 @@ export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
  *
  * @param id 取得するユーザーID
  */
-export const getTwUser = async (id: string): Promise<FirestoreIdData<TwUserData> | null> => {
+export const getTwUser = async (id: string): Promise<TwUserData | null> => {
   const snapshot = await collection.doc(id).get();
 
   if (!snapshot.exists) {
     return null;
   }
 
-  return {
-    id: snapshot.id,
-    data: snapshot.data() as TwUserData,
-  };
+  return snapshot.data() as TwUserData;
 };
