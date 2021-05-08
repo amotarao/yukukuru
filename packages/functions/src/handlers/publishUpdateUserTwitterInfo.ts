@@ -24,4 +24,6 @@ export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (co
 
   const items: UpdateUserTwitterInfoMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishUpdateUserTwitterInfo(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };

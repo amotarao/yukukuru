@@ -33,4 +33,6 @@ export const publishCheckIntegrityHandler: PubSubOnRunHandler = async () => {
 
   const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id }));
   await publishCheckIntegrity(items);
+
+  console.log(`✔️ Completed publish ${items.length} message.`);
 };
