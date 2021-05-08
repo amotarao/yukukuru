@@ -18,13 +18,13 @@ export type TwitterGetFollowersIdsResponse = {
 type PickedTwitterGetFollowersIdsResponse = Pick<TwitterGetFollowersIdsResponse, 'ids' | 'next_cursor_str'>;
 
 /**
- * userId のフォロワーの IDリストを取得
+ * 指定したユーザーのフォロワーの IDリストを取得
  * 5,000人まで 取得可能
- * 15分につき 15回取得可能
+ * 15分につき 15回実行可能
  *
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
  */
-export const getFollowersIdsSingle = (
+const getFollowersIdsSingle = (
   client: Twitter,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
 ): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
@@ -44,8 +44,13 @@ export const getFollowersIdsSingle = (
 };
 
 /**
- * userId のフォロワーの IDリストを取得
- * 15分につき 75,000人まで 取得可能
+ * 指定したユーザーのフォロワーの IDリストを取得
+ * 15分につき 最大75,000人まで 取得可能
+ *
+ * count は 5000 の倍数で入力
+ *
+ * @param client Twitter Client
+ * @param param パラメータ
  */
 export const getFollowersIds = async (
   client: Twitter,
