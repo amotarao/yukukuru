@@ -4,8 +4,7 @@ import { firestore } from '../../modules/firebase';
 import { addEmptyRecord, addRecords } from '../../modules/firestore/records/add';
 import { existsRecords } from '../../modules/firestore/records/get';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
-import { setTwUsers } from '../../modules/firestore/twUsers';
-import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { getUsersLookup } from '../../modules/twitter';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidToken, checkNoUserMatches } from '../../modules/twitter/error';
@@ -135,10 +134,10 @@ export const onCreateWatchHandler: FirestoreOnCreateHandler = async (snapshot, c
     }
 
     const item: RecordUserData = {
-      id: user.data.id,
-      screenName: user.data.screenName,
-      displayName: user.data.name,
-      photoUrl: user.data.photoUrl,
+      id: user.id,
+      screenName: user.screenName,
+      displayName: user.name,
+      photoUrl: user.photoUrl,
       maybeDeletedOrSuspended: true,
     };
     return item;

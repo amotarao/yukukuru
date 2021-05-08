@@ -4,7 +4,7 @@ import { addRecords } from '../../modules/firestore/records/add';
 import { getRecords } from '../../modules/firestore/records/get';
 import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
-import { getTwUser } from '../../modules/firestore/twUsers/getTwUser';
+import { getTwUser } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
 import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
@@ -66,9 +66,9 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
               }
             : {
                 id: diff.uid,
-                screenName: user.data.screenName,
-                displayName: user.data.name,
-                photoUrl: user.data.photoUrl,
+                screenName: user.screenName,
+                displayName: user.name,
+                photoUrl: user.photoUrl,
                 maybeDeletedOrSuspended: true,
               };
         return {
