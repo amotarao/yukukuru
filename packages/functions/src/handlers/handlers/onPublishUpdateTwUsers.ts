@@ -1,12 +1,11 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
-import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { getUsersLookup } from '../../modules/twitter';
+import { getClient } from '../../modules/twitter/client';
 import { PubSubOnPublishHandler } from '../../types/functions';
 
 type Props = UpdateTwUsersMessage['data'];
@@ -27,9 +26,7 @@ export const onPublishUpdateTwUsersHandler: PubSubOnPublishHandler = async (mess
 
   console.log(`⏳ Got watches and token from Firestore.`);
 
-  const client = new Twitter({
-    consumer_key: functions.config().twitter.consumer_key as string,
-    consumer_secret: functions.config().twitter.consumer_secret as string,
+  const client = getClient({
     access_token_key: token.twitterAccessToken,
     access_token_secret: token.twitterAccessTokenSecret,
   });

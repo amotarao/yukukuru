@@ -1,8 +1,7 @@
 import { UpdateUserTwitterInfoMessage, UserData } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
 import { getToken } from '../../modules/firestore/tokens';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
+import { getClient } from '../../modules/twitter/client';
 import { getVerifyCredentials } from '../../modules/twitter/verifyCredentials';
 import { PubSubOnPublishHandler } from '../../types/functions';
 
@@ -22,9 +21,7 @@ export const onPublishUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = asy
   }
   console.log(`⏳ Got watches and token from Firestore.`);
 
-  const client = new Twitter({
-    consumer_key: functions.config().twitter.consumer_key as string,
-    consumer_secret: functions.config().twitter.consumer_secret as string,
+  const client = getClient({
     access_token_key: token.twitterAccessToken,
     access_token_secret: token.twitterAccessTokenSecret,
   });
