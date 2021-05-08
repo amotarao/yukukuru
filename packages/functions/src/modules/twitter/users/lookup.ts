@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as Twitter from 'twitter';
+import { TwitterUserInterface } from '..';
 import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 export type TwitterGetUsersLookupParameters = {
