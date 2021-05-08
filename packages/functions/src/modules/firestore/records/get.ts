@@ -3,18 +3,14 @@ import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
 
-interface Props {
-  uid: string;
-  cursor: Date;
-  max?: Date;
-}
-
-type Response = FirestoreIdData<RecordData | RecordDataOld>[];
-
 /**
  * Records を古い順に取得する
  */
-export const getRecords = async ({ uid, cursor, max }: Props): Promise<Response> => {
+export const getRecords = async (
+  uid: string,
+  cursor: Date,
+  max?: Date
+): Promise<FirestoreIdData<RecordData | RecordDataOld>[]> => {
   const collection = usersCollection.doc(uid).collection('records');
   const request = max
     ? collection.orderBy('durationEnd').startAfter(cursor).endAt(max).get()
