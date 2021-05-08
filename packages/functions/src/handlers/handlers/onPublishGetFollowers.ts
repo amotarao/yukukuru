@@ -44,10 +44,4 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
   const ended = newNextCursor === '0' || newNextCursor === '-1';
   const watchId = await setWatch(uid, ids, now, ended);
   await setUserResult(uid, watchId, ended, newNextCursor, now);
-
-  return {
-    userId: uid,
-    watchId,
-    newNextCursor,
-  };
 };
