@@ -1,10 +1,9 @@
 import { GetFollowersMessage } from '@yukukuru/types';
-import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
 import { getToken, setTokenInvalid } from '../../modules/firestore/tokens';
 import { setUserResult, setUserResultWithNoChange } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getFollowersIdList } from '../../modules/twitter';
+import { getClient } from '../../modules/twitter/client';
 import { checkInvalidToken, checkProtectedUser } from '../../modules/twitter/error';
 import { PubSubOnPublishHandler } from '../../types/functions';
 import { log, errorLog } from '../../utils/log';
@@ -23,13 +22,10 @@ export const onPublishGetFollowersHandler: PubSubOnPublishHandler = async (messa
   }
   const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
 
-  const client = new Twitter({
-    consumer_key: functions.config().twitter.consumer_key as string,
-    consumer_secret: functions.config().twitter.consumer_secret as string,
+  const client = getClient({
     access_token_key: twitterAccessToken,
     access_token_secret: twitterAccessTokenSecret,
   });
-
   const result = await getFollowersIdList(client, {
     userId: twitterId,
     cursor: nextCursor,

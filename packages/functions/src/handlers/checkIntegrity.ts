@@ -3,7 +3,7 @@ import { Topic } from '../modules/pubsub/topics';
 import { checkIntegrityHandler } from './handlers/checkIntegrity';
 import { onPublishCheckIntegrityHandler } from './handlers/onPublishCheckIntegrity';
 
-/** PubSub: 整合性チェック 定期実行 */
+/** 整合性チェック 定期実行 */
 export const checkIntegrity = functions
   .region('asia-northeast1')
   .runWith({

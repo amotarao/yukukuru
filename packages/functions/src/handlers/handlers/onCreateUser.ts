@@ -1,8 +1,7 @@
-import * as functions from 'firebase-functions';
-import * as Twitter from 'twitter';
 import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
 import { getUsersLookup } from '../../modules/twitter';
+import { getClient } from '../../modules/twitter/client';
 import { AuthOnCreateHandler } from '../../types/functions';
 
 export const onCreateUserHandler: AuthOnCreateHandler = async (user) => {
@@ -18,7 +17,7 @@ export const onCreateUserHandler: AuthOnCreateHandler = async (user) => {
     return;
   }
 
-  const client = new Twitter(functions.config().twitter as Twitter.AccessTokenOptions);
+  const client = getClient();
   const result = await getUsersLookup(client, { usersId: [twitterId] });
 
   if ('errors' in result || result.response.length !== 1) {

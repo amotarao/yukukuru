@@ -3,7 +3,7 @@ import { Topic } from '../modules/pubsub/topics';
 import { getFollowersHandler } from './handlers/getFollowers';
 import { onPublishGetFollowersHandler } from './handlers/onPublishGetFollowers';
 
-/** PubSub: フォロワー取得 定期実行 */
+/** フォロワー取得 定期実行 */
 export const getFollowers = functions
   .region('asia-northeast1')
   .runWith({
@@ -18,8 +18,8 @@ export const getFollowers = functions
 export const onPublishGetFollowers = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
-    memory: '1GB',
+    timeoutSeconds: 20,
+    memory: '256MB',
   })
   .pubsub.topic(Topic.GetFollowers)
   .onPublish(onPublishGetFollowersHandler);
