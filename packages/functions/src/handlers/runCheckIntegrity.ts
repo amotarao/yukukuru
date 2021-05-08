@@ -20,6 +20,8 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   const { uid } = message.json as Props;
   const now = new Date(context.timestamp);
 
+  console.log(`⚙️ Starting check integrity for [${uid}].`);
+
   const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
 
   if (watches.length < 5) {
@@ -134,4 +136,6 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   }
 
   await updateUserCheckIntegrity(uid, now);
+
+  console.log(`✔️ Completed check integrity for [${uid}].`);
 };
