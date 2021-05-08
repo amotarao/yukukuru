@@ -80,9 +80,8 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
   }
 
   const token = await getToken(uid);
-  if (!token) {
+  if (token === null) {
     console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
-    await setTokenInvalid(uid);
     return;
   }
 
