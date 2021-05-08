@@ -3,10 +3,10 @@ import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
 
-interface Props {
+type Props = {
   uid: string;
   count: number;
-}
+};
 
 type Response = FirestoreIdData<WatchData>[];
 

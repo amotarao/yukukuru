@@ -1,6 +1,6 @@
 import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { addRecords } from '../../modules/firestore/records/addRecords';
+import { addRecords } from '../../modules/firestore/records/add';
 import { getRecords } from '../../modules/firestore/records/getRecords';
 import { removeRecords } from '../../modules/firestore/records/removeRecords';
 import { updateRecordsStart } from '../../modules/firestore/records/updateRecordsStart';
@@ -79,7 +79,7 @@ export const onPublishCheckIntegrityHandler: PubSubOnPublishHandler = async (mes
         };
       }
     );
-    await addRecords({ uid, items: await Promise.all(items) });
+    await addRecords(uid, await Promise.all(items));
   }
 
   // 存在しないドキュメントがある場合は追加する
