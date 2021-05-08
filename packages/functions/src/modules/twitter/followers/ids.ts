@@ -15,6 +15,8 @@ export type TwitterGetFollowersIdsResponse = {
   previous_cursor_str: string;
 };
 
+type PickedTwitterGetFollowersIdsResponse = Pick<TwitterGetFollowersIdsResponse, 'ids' | 'next_cursor_str'>;
+
 /**
  * userId のフォロワーの IDリストを取得
  * 5,000人まで 取得可能
@@ -25,7 +27,7 @@ export type TwitterGetFollowersIdsResponse = {
 export const getFollowersIdsSingle = (
   client: Twitter,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: TwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
+): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   return client
     .get('followers/ids', {
       user_id: userId,
@@ -35,7 +37,7 @@ export const getFollowersIdsSingle = (
     })
     .then((res) => {
       const { ids, next_cursor_str } = res;
-      const response: TwitterGetFollowersIdsResponse = { ids, next_cursor_str };
+      const response: PickedTwitterGetFollowersIdsResponse = { ids, next_cursor_str };
       return { response };
     })
     .catch(twitterClientErrorHandler);
@@ -48,7 +50,7 @@ export const getFollowersIdsSingle = (
 export const getFollowersIds = async (
   client: Twitter,
   { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: TwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
+): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -84,7 +86,7 @@ export const getFollowersIds = async (
     getCount++;
   }
 
-  const response: TwitterGetFollowersIdsResponse = {
+  const response: PickedTwitterGetFollowersIdsResponse = {
     ids,
     next_cursor_str: nextCursor,
   };
