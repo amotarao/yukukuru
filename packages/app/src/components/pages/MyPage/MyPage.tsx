@@ -78,7 +78,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
           <li data-type="kuru">くるひと</li>
         </ul>
       </nav>
-      <div className={styles.noticeWrapper} style={{ marginTop: -54 }}>
+      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
         <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
       </div>
       {items.map((item, itemIndex) => {
