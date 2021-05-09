@@ -1,7 +1,9 @@
+import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { publishGetFollowersHandler } from '../handlers/publishGetFollowers';
 import { runGetFollowersHandler } from '../handlers/runGetFollowers';
-import { Topic } from '../modules/pubsub/topics';
+
+const topicName: MessageTopicName = 'getFollowers';
 
 /** フォロワー取得 定期実行 */
 export const publish = functions
@@ -21,5 +23,5 @@ export const run = functions
     timeoutSeconds: 20,
     memory: '256MB',
   })
-  .pubsub.topic(Topic.GetFollowers)
+  .pubsub.topic(topicName)
   .onPublish(runGetFollowersHandler);

@@ -7,11 +7,15 @@ import { checkInvalidToken } from '../modules/twitter/error';
 import { getFollowersIds } from '../modules/twitter/followers/ids';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = GetFollowersMessage['data'];
-
 export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
-  const { uid, nextCursor } = message.json as Props;
+  const { uid, nextCursor, publishedAt } = message.json as GetFollowersMessage['data'];
   const now = new Date(context.timestamp);
+
+  // 10秒以内の実行に限る
+  if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
+    console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+    return;
+  }
 
   console.log(`⚙️ Starting get followers for [${uid}].`);
 

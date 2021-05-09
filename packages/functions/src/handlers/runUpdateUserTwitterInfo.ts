@@ -5,11 +5,15 @@ import { getAccountVerifyCredentials } from '../modules/twitter/account/verifyCr
 import { getClient } from '../modules/twitter/client';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = UpdateUserTwitterInfoMessage['data'];
-
 export const runUpdateUserTwitterInfoHandler: PubSubOnPublishHandler = async (message, context) => {
-  const { uid } = message.json as Props;
+  const { uid, publishedAt } = message.json as UpdateUserTwitterInfoMessage['data'];
   const now = new Date(context.timestamp);
+
+  // 10秒以内の実行に限る
+  if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
+    console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+    return;
+  }
 
   console.log(`⚙️ Starting update user document twitter info for [${uid}].`);
 

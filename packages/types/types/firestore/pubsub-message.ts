@@ -1,6 +1,6 @@
-export interface GetFollowersMessage {
-  /** キュータイプ */
-  type: 'getFollowers';
+export type GetFollowersMessage = {
+  /** トピック名 */
+  topicName: 'getFollowers';
 
   data: {
     /** Firebase UID */
@@ -8,39 +8,51 @@ export interface GetFollowersMessage {
 
     /** カーソル */
     nextCursor: string;
-  };
-}
 
-export interface CheckIntegrityMessage {
-  /** キュータイプ */
-  type: 'checkIntegrity';
+    /** 送信日時 */
+    publishedAt: Date;
+  };
+};
+
+export type CheckIntegrityMessage = {
+  /** トピック名 */
+  topicName: 'checkIntegrity';
 
   data: {
     /** Firebase UID */
     uid: string;
-  };
-}
 
-export interface UpdateTwUsersMessage {
-  /** キュータイプ */
-  type: 'updateTwUsers';
+    /** 送信日時 */
+    publishedAt: Date;
+  };
+};
+
+export type UpdateTwUsersMessage = {
+  /** トピック名 */
+  topicName: 'updateTwUsers';
 
   data: {
     /** Firebase UID */
     uid: string;
-  };
-}
 
-export interface UpdateUserTwitterInfoMessage {
-  /** キュータイプ */
-  type: 'updateUserTwitterInfo';
+    /** 送信日時 */
+    publishedAt: Date;
+  };
+};
+
+export type UpdateUserTwitterInfoMessage = {
+  /** トピック名 */
+  topicName: 'updateUserTwitterInfo';
 
   data: {
     /** Firebase UID */
     uid: string;
+
+    /** 送信日時 */
+    publishedAt: Date;
   };
-}
+};
 
 export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | UpdateUserTwitterInfoMessage;
 
-export type MessageType = Message['type'];
+export type MessageTopicName = Message['topicName'];

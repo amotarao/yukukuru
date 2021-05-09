@@ -8,11 +8,15 @@ import { getClient } from '../modules/twitter/client';
 import { getUsersLookup } from '../modules/twitter/users/lookup';
 import { PubSubOnPublishHandler } from '../types/functions';
 
-type Props = UpdateTwUsersMessage['data'];
-
 export const runUpdateTwUsersHandler: PubSubOnPublishHandler = async (message, context) => {
-  const { uid } = message.json as Props;
+  const { uid, publishedAt } = message.json as UpdateTwUsersMessage['data'];
   const now = new Date(context.timestamp);
+
+  // 10秒以内の実行に限る
+  if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
+    console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+    return;
+  }
 
   console.log(`⚙️ Starting update twUser documents for [${uid}].`);
 
