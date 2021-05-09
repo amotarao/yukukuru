@@ -14,7 +14,7 @@ const Page: React.FC = () => {
   const router = useRouter();
   const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const [
-    { isFirstLoading, isFirstLoaded, isNextLoading, items, hasOnlyEmptyItems, hasNext },
+    { isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext },
     { setUid: setRecordsUid, getNextRecords },
   ] = useRecords();
   const [{ isLoading: userIsLoading, lastRunnedGetFollowers }, { setUid: setUserUid }] = useUser();
@@ -57,7 +57,6 @@ const Page: React.FC = () => {
     isLoading,
     isNextLoading,
     items,
-    hasOnlyEmptyItems,
     hasNext,
     hasToken,
     lastRunnedGetFollowers,

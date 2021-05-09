@@ -15,7 +15,6 @@ export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordData[];
-  hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
@@ -86,16 +85,13 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems' | 'lastRunnedGetFollowers'>> = ({
-  items,
-  hasOnlyEmptyItems,
-  lastRunnedGetFollowers,
-}) => {
-  if (hasOnlyEmptyItems) {
-    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
-  }
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
   if (items.length === 0) {
-    return <NoItem />;
+    // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
+    if (lastRunnedGetFollowers.getTime() === 0) {
+      return <NoItem />;
+    }
+    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
   let currentDate = '';
@@ -137,7 +133,6 @@ export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
   items,
-  hasOnlyEmptyItems,
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
@@ -195,7 +190,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} lastRunnedGetFollowers={lastRunnedGetFollowers} />
+            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
