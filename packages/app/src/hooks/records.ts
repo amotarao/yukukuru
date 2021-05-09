@@ -28,9 +28,6 @@ type State = {
   /** 続きデータがあるかどうか */
   hasNext: boolean;
 
-  /** 空のアイテムだけがあるかどうか */
-  hasOnlyEmptyItems: boolean;
-
   /** UID */
   uid: string | null;
 
@@ -44,7 +41,6 @@ const initialState: State = {
   isFirstLoaded: false,
   items: [],
   hasNext: true,
-  hasOnlyEmptyItems: true,
   uid: null,
   cursor: null,
 };
@@ -105,7 +101,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         items: [...state.items, ...items],
         hasNext: items.length >= 50,
-        hasOnlyEmptyItems: items.length === 0 && cursor !== null,
         cursor,
       };
     }

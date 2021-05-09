@@ -13,9 +13,9 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
 
   const data: UserData<FirestoreDateLike> = {
     active: true,
-    lastUpdated: now,
-    lastUpdatedTwUsers: now,
-    lastUpdatedCheckIntegrity: now,
+    lastUpdated: new Date(0),
+    lastUpdatedTwUsers: new Date(0),
+    lastUpdatedCheckIntegrity: new Date(0),
     lastUpdatedUserTwitterInfo: now,
     nextCursor: '-1',
     currentWatchesId: '',
