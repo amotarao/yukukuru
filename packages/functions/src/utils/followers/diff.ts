@@ -1,17 +1,17 @@
 import { RecordData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 
-export interface Diff {
+export type Diff = {
   type: RecordData['type'];
   uid: string;
   durationStart: Date;
   durationEnd: Date;
-}
+};
 
-export interface DiffWithId {
+export type DiffWithId = {
   id: string;
   diff: Diff;
-}
+};
 
 const getDiffFollowersSingle = (start: WatchData, end: WatchData): Diff[] => {
   const yuku = _.difference(start.followers, end.followers);

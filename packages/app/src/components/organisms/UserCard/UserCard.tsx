@@ -11,12 +11,12 @@ const convertDateText = (date: Timestamp): string => {
   return `${h}:${m}`;
 };
 
-export interface UserCardProps {
+export type UserCardProps = {
   user: RecordUserData;
   type: RecordData['type'];
   durationStart: RecordData['durationStart'];
   durationEnd: RecordData['durationEnd'];
-}
+};
 
 export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, durationEnd }) => {
   const hasDetail = 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
@@ -47,7 +47,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
   );
 };
 
-export interface DummyUserCardProps {
+export type DummyUserCardProps = {
   user: {
     screenName: string;
     displayName: string;
@@ -56,7 +56,7 @@ export interface DummyUserCardProps {
   type: RecordData['type'];
   durationStart: string;
   durationEnd: string;
-}
+};
 
 export const DummyUserCard: React.FC<DummyUserCardProps> = ({ user, type, durationStart, durationEnd }) => {
   const duration = `${durationStart} から ${durationEnd} までの間`;
