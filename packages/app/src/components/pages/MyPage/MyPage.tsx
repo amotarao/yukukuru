@@ -27,11 +27,7 @@ export type MyPageProps = {
 const NoItem: React.FC = () => {
   return (
     <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>
-        データ取得までに時間が掛かります。
-        <wbr />
-        気長にお待ちください。
-      </p>
+      <p className={styles.noticeText}>最初の取得まで1時間ほどお待ちください。</p>
       <p className={styles.noticeText}>
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
