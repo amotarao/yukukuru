@@ -15,7 +15,7 @@ const Page: React.FC = () => {
   const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { setUid: setRecordsUid, getNextRecords }] =
     useRecords();
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }, { setUid: setUserUid }] = useUser();
+  const [{ isLoading: userIsLoading, twitter, lastRunnedGetFollowers }, { setUid: setUserUid }] = useUser();
   const [{ isLoading: tokenIsLoading, hasToken }, { setUid: setTokenUid }] = useToken();
 
   const uid = user?.uid ?? null;
@@ -65,6 +65,11 @@ const Page: React.FC = () => {
     hasNext,
     hasToken,
     lastRunnedGetFollowers,
+    user: {
+      name: twitter?.name ?? '',
+      screenName: twitter?.screenName ?? '',
+      photoUrl: twitter?.photoUrl ?? '',
+    },
     getNextRecords,
     signOut,
   };
