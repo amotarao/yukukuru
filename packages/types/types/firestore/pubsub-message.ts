@@ -1,6 +1,6 @@
-export interface GetFollowersMessage {
-  /** キュータイプ */
-  type: 'getFollowers';
+export type GetFollowersMessage = {
+  /** トピック */
+  topic: 'getFollowers';
 
   data: {
     /** Firebase UID */
@@ -9,38 +9,38 @@ export interface GetFollowersMessage {
     /** カーソル */
     nextCursor: string;
   };
-}
+};
 
-export interface CheckIntegrityMessage {
-  /** キュータイプ */
-  type: 'checkIntegrity';
-
-  data: {
-    /** Firebase UID */
-    uid: string;
-  };
-}
-
-export interface UpdateTwUsersMessage {
-  /** キュータイプ */
-  type: 'updateTwUsers';
+export type CheckIntegrityMessage = {
+  /** トピック */
+  topic: 'checkIntegrity';
 
   data: {
     /** Firebase UID */
     uid: string;
   };
-}
+};
 
-export interface UpdateUserTwitterInfoMessage {
-  /** キュータイプ */
-  type: 'updateUserTwitterInfo';
+export type UpdateTwUsersMessage = {
+  /** トピック */
+  topic: 'updateTwUsers';
 
   data: {
     /** Firebase UID */
     uid: string;
   };
-}
+};
+
+export type UpdateUserTwitterInfoMessage = {
+  /** トピック */
+  topic: 'updateUserTwitterInfo';
+
+  data: {
+    /** Firebase UID */
+    uid: string;
+  };
+};
 
 export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | UpdateUserTwitterInfoMessage;
 
-export type MessageType = Message['type'];
+export type MessageTopic = Message['topic'];
