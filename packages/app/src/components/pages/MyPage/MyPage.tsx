@@ -1,4 +1,5 @@
 import { RecordData } from '@yukukuru/types';
+import dayjs from 'dayjs';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
@@ -17,8 +18,35 @@ export type MyPageProps = {
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
+  lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   signOut: () => void | Promise<void>;
+};
+
+/**
+ * 最終取得日時
+ */
+const LastUpdatedText: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+  const now = dayjs();
+  const diff = now.diff(lastRunnedGetFollowers);
+
+  let text = '';
+
+  if (diff < 1000 * 60 * 60) {
+    text = `${now.diff(lastRunnedGetFollowers, 'm')}分前`;
+  } else if (diff < 1000 * 60 * 60 * 24) {
+    text = `${now.diff(lastRunnedGetFollowers, 'h')}時間前`;
+  } else {
+    text = `${now.diff(lastRunnedGetFollowers, 'd')}日前`;
+  }
+
+  return (
+    <p className={styles.noticeText}>
+      最終取得：
+      <wbr />
+      {text}
+    </p>
+  );
 };
 
 /**
@@ -42,7 +70,7 @@ const NoItem: React.FC = () => {
 /**
  * 表示するデータがないことを表示するコンポーネント
  */
-const NoViewItem: React.FC = () => {
+const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div className={styles.noticeWrapper}>
       <p className={styles.noticeText}>
@@ -50,6 +78,7 @@ const NoViewItem: React.FC = () => {
         <wbr />
         今のところフォロワーの増減がありません。
       </p>
+      <LastUpdatedText lastRunnedGetFollowers={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -57,9 +86,13 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ items, hasOnlyEmptyItems }) => {
+const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems' | 'lastRunnedGetFollowers'>> = ({
+  items,
+  hasOnlyEmptyItems,
+  lastRunnedGetFollowers,
+}) => {
   if (hasOnlyEmptyItems) {
-    return <NoViewItem />;
+    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
   if (items.length === 0) {
     return <NoItem />;
@@ -75,6 +108,9 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ item
           <li data-type="kuru">くるひと</li>
         </ul>
       </nav>
+      <div className={styles.noticeWrapper} style={{ marginTop: -54 }}>
+        <LastUpdatedText lastRunnedGetFollowers={lastRunnedGetFollowers} />
+      </div>
       {items.map((item, itemIndex) => {
         const date = item.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
@@ -104,6 +140,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
+  lastRunnedGetFollowers,
   getNextRecords,
   signOut,
 }) => {
@@ -158,7 +195,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
