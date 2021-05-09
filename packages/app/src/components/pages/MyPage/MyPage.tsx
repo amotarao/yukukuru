@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
@@ -10,7 +9,7 @@ import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
-import { style } from './style';
+import styles from './styles.module.scss';
 
 export type MyPageProps = {
   isLoading: boolean;
@@ -105,8 +104,8 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ item
   let currentDate = '';
 
   return (
-    <div css={style.homeArea}>
-      <nav css={style.labelNav}>
+    <div className={styles.homeArea}>
+      <nav className={styles.labelNav}>
         <ul>
           <li data-type="yuku">ゆくひと</li>
           <li data-type="kuru">くるひと</li>
@@ -120,8 +119,8 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ item
 
         return (
           <React.Fragment key={itemIndex}>
-            {showDate && <h2 css={style.recordHead}>{dateText}</h2>}
-            <section css={style.userSection} data-type={item.type}>
+            {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
+            <section className={styles.userSection} data-type={item.type}>
               <UserCard {...item} />
             </section>
           </React.Fragment>
@@ -192,14 +191,14 @@ export const MyPage: React.FC<MyPageProps> = ({
   };
 
   return (
-    <div css={style.wrapper}>
+    <div className={styles.wrapper}>
       {!isLoading && !hasToken && (
         <ErrorWrapper onClick={superReload}>
           <p>ログアウトし、再度ログインしてください。</p>
           <p>解消しない場合はこちらをタップしてください。</p>
         </ErrorWrapper>
       )}
-      <main css={style.main}>
+      <main className={styles.main}>
         {isLoading ? (
           <LoadingCircle />
         ) : (
@@ -207,7 +206,7 @@ export const MyPage: React.FC<MyPageProps> = ({
             <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
-              <button css={style.getNextButton} disabled={isNextLoading} onClick={getNext}>
+              <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
                 続きを取得
               </button>
             )}
@@ -215,12 +214,12 @@ export const MyPage: React.FC<MyPageProps> = ({
         )}
       </main>
       {nav === 'notification' && (
-        <section css={style.section}>
+        <section className={styles.section}>
           <NotificationList />
         </section>
       )}
       {nav === 'setting' && (
-        <section css={style.section}>
+        <section className={styles.section}>
           <SettingMenu signOut={signOut} />
         </section>
       )}
