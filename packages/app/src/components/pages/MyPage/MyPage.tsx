@@ -1,8 +1,8 @@
 import { RecordData } from '@yukukuru/types';
-import dayjs from 'dayjs';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
+import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
@@ -23,38 +23,12 @@ export type MyPageProps = {
 };
 
 /**
- * 最終取得日時
- */
-const LastUpdatedText: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
-  const now = dayjs();
-  const diff = now.diff(lastRunnedGetFollowers);
-
-  let text = '';
-
-  if (diff < 1000 * 60 * 60) {
-    text = `${now.diff(lastRunnedGetFollowers, 'm')}分前`;
-  } else if (diff < 1000 * 60 * 60 * 24) {
-    text = `${now.diff(lastRunnedGetFollowers, 'h')}時間前`;
-  } else {
-    text = `${now.diff(lastRunnedGetFollowers, 'd')}日前`;
-  }
-
-  return (
-    <p className={styles.noticeText}>
-      最終取得：
-      <wbr />
-      {text}
-    </p>
-  );
-};
-
-/**
  * アイテムがないことを表示するコンポーネント
  */
 const NoItem: React.FC = () => {
   return (
     <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>最初の取得までしばらくお待ちください。</p>
+      <p className={styles.noticeText}>最初のデータ取得までしばらくお待ちください。</p>
       <p className={styles.noticeText}>
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
@@ -77,7 +51,7 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
         <wbr />
         今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText lastRunnedGetFollowers={lastRunnedGetFollowers} />
+      <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -105,7 +79,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
         </ul>
       </nav>
       <div className={styles.noticeWrapper} style={{ marginTop: -54 }}>
-        <LastUpdatedText lastRunnedGetFollowers={lastRunnedGetFollowers} />
+        <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
       </div>
       {items.map((item, itemIndex) => {
         const date = item.durationEnd.toDate();
