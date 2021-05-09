@@ -1,7 +1,7 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { getGroupFromTime } from '../modules/group';
-import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
+import { publishMessage } from '../modules/pubsub/publish';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
 
@@ -25,7 +25,7 @@ export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) =
   log('updateTwUsers', '', { ids, count: ids.length });
 
   const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
-  await publishUpdateTwUsers(items);
+  await publishMessage('updateTwUsers', items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);
 };

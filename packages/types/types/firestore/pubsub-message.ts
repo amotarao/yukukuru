@@ -1,6 +1,6 @@
 export type GetFollowersMessage = {
-  /** トピック */
-  topic: 'getFollowers';
+  /** トピック名 */
+  topicName: 'getFollowers';
 
   data: {
     /** Firebase UID */
@@ -15,8 +15,8 @@ export type GetFollowersMessage = {
 };
 
 export type CheckIntegrityMessage = {
-  /** トピック */
-  topic: 'checkIntegrity';
+  /** トピック名 */
+  topicName: 'checkIntegrity';
 
   data: {
     /** Firebase UID */
@@ -28,8 +28,8 @@ export type CheckIntegrityMessage = {
 };
 
 export type UpdateTwUsersMessage = {
-  /** トピック */
-  topic: 'updateTwUsers';
+  /** トピック名 */
+  topicName: 'updateTwUsers';
 
   data: {
     /** Firebase UID */
@@ -41,8 +41,8 @@ export type UpdateTwUsersMessage = {
 };
 
 export type UpdateUserTwitterInfoMessage = {
-  /** トピック */
-  topic: 'updateUserTwitterInfo';
+  /** トピック名 */
+  topicName: 'updateUserTwitterInfo';
 
   data: {
     /** Firebase UID */
@@ -55,4 +55,4 @@ export type UpdateUserTwitterInfoMessage = {
 
 export type Message = GetFollowersMessage | CheckIntegrityMessage | UpdateTwUsersMessage | UpdateUserTwitterInfoMessage;
 
-export type MessageTopic = Message['topic'];
+export type MessageTopicName = Message['topicName'];

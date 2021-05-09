@@ -1,7 +1,7 @@
 import { UpdateUserTwitterInfoMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { getGroupFromTime } from '../modules/group';
-import { publishUpdateUserTwitterInfo } from '../modules/pubsub/publish/updateUserTwitterInfo';
+import { publishMessage } from '../modules/pubsub/publish';
 import { PubSubOnRunHandler } from '../types/functions';
 
 export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) => {
@@ -23,7 +23,7 @@ export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (co
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
 
   const items: UpdateUserTwitterInfoMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
-  await publishUpdateUserTwitterInfo(items);
+  await publishMessage('updateUserTwitterInfo', items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);
 };
