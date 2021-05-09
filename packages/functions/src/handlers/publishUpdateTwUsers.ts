@@ -1,12 +1,12 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { getGroupFromTime } from '../modules/group';
-import { publishUpdateTwUsers } from '../modules/pubsub/publish/updateTwUsers';
+import { publishMessage } from '../modules/pubsub/publish';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
 
 export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) => {
-  const now = new Date(context.timestamp || new Date().getTime());
+  const now = new Date(context.timestamp);
   const group = getGroupFromTime(1, now);
 
   // 7日前 (-1m)
@@ -24,8 +24,8 @@ export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) =
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('updateTwUsers', '', { ids, count: ids.length });
 
-  const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id }));
-  await publishUpdateTwUsers(items);
+  const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
+  await publishMessage('updateTwUsers', items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);
 };

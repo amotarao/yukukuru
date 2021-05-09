@@ -2,7 +2,7 @@ import { UserData, GetFollowersMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { getGroupFromTime } from '../modules/group';
-import { publishGetFollowers } from '../modules/pubsub/publish/getFollowers';
+import { publishMessage } from '../modules/pubsub/publish';
 import { PubSubOnRunHandler } from '../types/functions';
 
 export const publishGetFollowersHandler: PubSubOnRunHandler = async (context) => {
@@ -35,8 +35,9 @@ export const publishGetFollowersHandler: PubSubOnRunHandler = async (context) =>
   const items: GetFollowersMessage['data'][] = docs.map((doc) => ({
     uid: doc.id,
     nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+    publishedAt: now,
   }));
-  await publishGetFollowers(items);
+  await publishMessage('getFollowers', items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);
 };

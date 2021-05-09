@@ -1,7 +1,9 @@
+import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { publishCheckIntegrityHandler } from '../handlers/publishCheckIntegrity';
 import { runCheckIntegrityHandler } from '../handlers/runCheckIntegrity';
-import { Topic } from '../modules/pubsub/topics';
+
+const topicName: MessageTopicName = 'checkIntegrity';
 
 /** 整合性チェック 定期実行 */
 export const publish = functions
@@ -21,5 +23,5 @@ export const run = functions
     timeoutSeconds: 30,
     memory: '1GB',
   })
-  .pubsub.topic(Topic.CheckIntegrity)
+  .pubsub.topic(topicName)
   .onPublish(runCheckIntegrityHandler);
