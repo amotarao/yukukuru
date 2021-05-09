@@ -1,4 +1,4 @@
-export interface TokenData {
+export type TokenData = {
   /** アクセストークン */
   twitterAccessToken: string;
 
@@ -7,4 +7,4 @@ export interface TokenData {
 
   /** Twitter UID (ユニークな数字のID) */
   twitterId: string;
-}
+};

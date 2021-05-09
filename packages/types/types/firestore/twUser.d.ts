@@ -1,7 +1,7 @@
 import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
-export interface TwUserData<T extends FirestoreDateLike = Timestamp> {
+export type TwUserData<T extends FirestoreDateLike = Timestamp> = {
   /** Twitter UID (ユニークな数字のID) */
   id: string;
 
@@ -16,4 +16,4 @@ export interface TwUserData<T extends FirestoreDateLike = Timestamp> {
 
   /** 最終更新日時 */
   lastUpdated: T;
-}
+};

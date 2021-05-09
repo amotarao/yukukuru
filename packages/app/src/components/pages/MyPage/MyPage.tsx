@@ -12,7 +12,7 @@ import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import { style } from './style';
 
-export interface MyPageProps {
+export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordData[];
@@ -22,7 +22,7 @@ export interface MyPageProps {
   uid: string | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   signOut: () => void | Promise<void>;
-}
+};
 
 /**
  * アイテムがないことを表示するコンポーネント

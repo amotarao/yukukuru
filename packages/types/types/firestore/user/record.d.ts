@@ -3,7 +3,7 @@ import { FirestoreDateLike } from '../../firestore';
 
 export type RecordType = 'yuku' | 'kuru';
 
-export interface RecordData<T extends FirestoreDateLike = Timestamp> {
+export type RecordData<T extends FirestoreDateLike = Timestamp> = {
   /** record のタイプ */
   type: RecordType;
 
@@ -15,9 +15,9 @@ export interface RecordData<T extends FirestoreDateLike = Timestamp> {
 
   /** record が更新された可能性のある期間の終了日時 */
   durationEnd: T;
-}
+};
 
-export interface RecordUserData {
+export type RecordUserData = {
   /** Twitter UID (ユニークな数字のID) */
   id: string;
 
@@ -32,20 +32,20 @@ export interface RecordUserData {
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: boolean;
-}
+};
 
-export interface RecordUserEmptyData {
+export type RecordUserEmptyData = {
   /** Twitter UID (ユニークな数字のID) */
   id: 'EMPTY';
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: true;
-}
+};
 
 /**
  * Memo: 古い形式のため、移行が完了したら削除する
  */
-export interface RecordDataOld<T extends FirestoreDateLike = Timestamp> {
+export type RecordDataOld<T extends FirestoreDateLike = Timestamp> = {
   /** この期間にフォローされたユーザーリスト (くる) */
   cameUsers: RecordUserDataOld[];
 
@@ -57,12 +57,12 @@ export interface RecordDataOld<T extends FirestoreDateLike = Timestamp> {
 
   /** record が更新された可能性のある期間の終了日時 */
   durationEnd: T;
-}
+};
 
 /**
  * Memo: 古い形式のため、移行が完了したら削除する
  */
-export interface RecordUserDataOld {
+export type RecordUserDataOld = {
   /** Twitter UID (ユニークな数字のID) */
   id: string;
 
@@ -77,4 +77,4 @@ export interface RecordUserDataOld {
 
   /** 削除または凍結された可能性があるかどうか */
   notFounded?: boolean;
-}
+};
