@@ -2,9 +2,9 @@
 import React from 'react';
 import { style } from './style';
 
-export interface ErrorWrapperProps {
+export type ErrorWrapperProps = {
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}
+};
 
 export const ErrorWrapper: React.FC<ErrorWrapperProps> = (props) => {
   return (

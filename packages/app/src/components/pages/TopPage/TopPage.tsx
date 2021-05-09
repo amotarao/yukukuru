@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
 import Button from '@material-ui/core/Button';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { DummyUserCard } from '../../organisms/UserCard';
-import { style as myPageStyle } from '../../pages/MyPage/style';
+import myPageStyles from '../MyPage/styles.module.scss';
 import { style } from './style';
 
 export const TopPage: React.FC = () => {
@@ -39,14 +38,9 @@ export const TopPage: React.FC = () => {
         </p>
         <p css={style.caution}>※ 不具合が発生する場合があります</p>
       </section>
-      <section
-        css={css`
-          ${style.example}
-          ${myPageStyle.homeArea}
-        `}
-      >
-        <p css={myPageStyle.recordHead}>こんな感じで表示します</p>
-        <section css={myPageStyle.userSection} data-type="yuku">
+      <section className={myPageStyles.homeArea} css={style.example}>
+        <p className={myPageStyles.recordHead}>こんな感じで表示します</p>
+        <section className={myPageStyles.userSection} data-type="yuku">
           <DummyUserCard
             {...{
               user: {
@@ -60,7 +54,7 @@ export const TopPage: React.FC = () => {
             }}
           />
         </section>
-        <section css={myPageStyle.userSection} data-type="kuru">
+        <section className={myPageStyles.userSection} data-type="kuru">
           <DummyUserCard
             {...{
               user: {

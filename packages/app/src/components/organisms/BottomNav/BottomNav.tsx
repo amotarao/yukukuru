@@ -7,10 +7,10 @@ import { style } from './style';
 
 export type NavType = 'home' | 'notification' | 'setting';
 
-export interface BottomNavProps {
+export type BottomNavProps = {
   active: NavType;
   onChange: (nav: NavType) => void;
-}
+};
 
 export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
   const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {

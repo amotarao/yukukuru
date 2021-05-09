@@ -1,7 +1,7 @@
 import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
-export interface UserData<T extends FirestoreDateLike = Timestamp> {
+export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** 有効かどうか */
   active: boolean;
 
@@ -49,4 +49,4 @@ export interface UserData<T extends FirestoreDateLike = Timestamp> {
     /** 認証済みユーザーかどうか */
     verified: boolean;
   };
-}
+};

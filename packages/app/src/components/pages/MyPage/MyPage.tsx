@@ -1,63 +1,35 @@
-/** @jsxImportSource @emotion/react */
 import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
-import { setLastViewing } from '../../../modules/firestore/userStatuses';
+import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
-import { style } from './style';
+import styles from './styles.module.scss';
 
-export interface MyPageProps {
+export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
   items: RecordData[];
-  hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
-  uid: string | null;
+  lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   signOut: () => void | Promise<void>;
-}
+};
 
 /**
  * アイテムがないことを表示するコンポーネント
  */
 const NoItem: React.FC = () => {
   return (
-    <div style={{ paddingTop: 32 }}>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        データ取得までに時間が掛かります。
-        <wbr />
-        気長にお待ちください。
-      </p>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        }}
-      >
+    <div className={styles.noticeWrapper}>
+      <p className={styles.noticeText}>最初のデータ取得までしばらくお待ちください。</p>
+      <p className={styles.noticeText}>
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
@@ -71,22 +43,15 @@ const NoItem: React.FC = () => {
 /**
  * 表示するデータがないことを表示するコンポーネント
  */
-const NoViewItem: React.FC = () => {
+const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
-    <div style={{ paddingTop: 32 }}>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-        }}
-      >
-        <span style={{ whiteSpace: 'nowrap' }}>データの取得は完了していますが、</span>
-        <span style={{ whiteSpace: 'nowrap' }}>今のところフォロワーの増減がありません。</span>
+    <div className={styles.noticeWrapper}>
+      <p className={styles.noticeText}>
+        データの取得は完了していますが、
+        <wbr />
+        今のところフォロワーの増減がありません。
       </p>
+      <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -94,24 +59,28 @@ const NoViewItem: React.FC = () => {
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ items, hasOnlyEmptyItems }) => {
-  if (hasOnlyEmptyItems) {
-    return <NoViewItem />;
-  }
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
   if (items.length === 0) {
-    return <NoItem />;
+    // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
+    if (lastRunnedGetFollowers.getTime() === 0) {
+      return <NoItem />;
+    }
+    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
   let currentDate = '';
 
   return (
-    <div css={style.homeArea}>
-      <nav css={style.labelNav}>
+    <div className={styles.homeArea}>
+      <nav className={styles.labelNav}>
         <ul>
           <li data-type="yuku">ゆくひと</li>
           <li data-type="kuru">くるひと</li>
         </ul>
       </nav>
+      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
+        <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
+      </div>
       {items.map((item, itemIndex) => {
         const date = item.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
@@ -120,8 +89,8 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'hasOnlyEmptyItems'>> = ({ item
 
         return (
           <React.Fragment key={itemIndex}>
-            {showDate && <h2 css={style.recordHead}>{dateText}</h2>}
-            <section css={style.userSection} data-type={item.type}>
+            {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
+            <section className={styles.userSection} data-type={item.type}>
               <UserCard {...item} />
             </section>
           </React.Fragment>
@@ -138,23 +107,14 @@ export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
   items,
-  hasOnlyEmptyItems,
   hasNext,
   hasToken,
-  uid,
+  lastRunnedGetFollowers,
   getNextRecords,
   signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
-
-  // lastViewing 送信
-  useEffect(() => {
-    if (!uid) {
-      return;
-    }
-    setLastViewing(uid);
-  }, [uid]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -192,22 +152,22 @@ export const MyPage: React.FC<MyPageProps> = ({
   };
 
   return (
-    <div css={style.wrapper}>
+    <div className={styles.wrapper}>
       {!isLoading && !hasToken && (
         <ErrorWrapper onClick={superReload}>
           <p>ログアウトし、再度ログインしてください。</p>
           <p>解消しない場合はこちらをタップしてください。</p>
         </ErrorWrapper>
       )}
-      <main css={style.main}>
+      <main className={styles.main}>
         {isLoading ? (
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} hasOnlyEmptyItems={hasOnlyEmptyItems} />
+            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
-              <button css={style.getNextButton} disabled={isNextLoading} onClick={getNext}>
+              <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
                 続きを取得
               </button>
             )}
@@ -215,12 +175,12 @@ export const MyPage: React.FC<MyPageProps> = ({
         )}
       </main>
       {nav === 'notification' && (
-        <section css={style.section}>
+        <section className={styles.section}>
           <NotificationList />
         </section>
       )}
       {nav === 'setting' && (
-        <section css={style.section}>
+        <section className={styles.section}>
           <SettingMenu signOut={signOut} />
         </section>
       )}

@@ -1,8 +1,7 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
-import { addEmptyRecord, addRecords } from '../modules/firestore/records/add';
-import { existsRecords } from '../modules/firestore/records/get';
+import { addRecords } from '../modules/firestore/records/add';
 import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
 import { getTwUser, setTwUsers } from '../modules/firestore/twUsers';
 import { getClient } from '../modules/twitter/client';
@@ -69,12 +68,6 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
 
   // 差分なし
   if (!kuru.length && !yuku.length) {
-    const exists = await existsRecords(uid);
-
-    if (!exists) {
-      await addEmptyRecord(uid);
-    }
-
     console.log(`[Info]: Stopped generate records for [${uid}]: Not exists diff.`);
     return;
   }

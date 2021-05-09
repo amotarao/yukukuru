@@ -7,42 +7,59 @@ import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
+import { useUser } from '../../hooks/user';
+import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
   const router = useRouter();
-  const [{ isLoading: userIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
+  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const [
-    { isFirstLoading, isFirstLoaded, isNextLoading, items, hasOnlyEmptyItems, hasNext },
+    { isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext },
     { setUid: setRecordsUid, getNextRecords },
   ] = useRecords();
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }, { setUid: setUserUid }] = useUser();
   const [{ isLoading: tokenIsLoading, hasToken }, { setUid: setTokenUid }] = useToken();
 
   const uid = user?.uid ?? null;
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
-  const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
+  const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
+  // 各 hook に uid セット
   useEffect(() => {
     setRecordsUid(uid);
-    setTokenUid(uid);
-  }, [uid, setRecordsUid, setTokenUid]);
-
+  }, [uid, setRecordsUid]);
   useEffect(() => {
-    if (!userIsLoading && !signingIn && !signedIn && 'login' in router.query) {
+    setTokenUid(uid);
+  }, [uid, setTokenUid]);
+  useEffect(() => {
+    setUserUid(uid);
+  }, [uid, setUserUid]);
+
+  // signin 処理
+  useEffect(() => {
+    if (!authIsLoading && !signingIn && !signedIn && 'login' in router.query) {
       signIn();
     }
     if (signedIn && 'login' in router.query) {
       router.replace('/my');
     }
-  }, [userIsLoading, signingIn, signedIn, router, signIn]);
+  }, [authIsLoading, signingIn, signedIn, router, signIn]);
+
+  // lastViewing 送信
+  useEffect(() => {
+    if (!uid) {
+      return;
+    }
+    setLastViewing(uid);
+  }, [uid]);
 
   const props: MyPageProps = {
     isLoading,
     isNextLoading,
     items,
-    hasOnlyEmptyItems,
     hasNext,
     hasToken,
-    uid,
+    lastRunnedGetFollowers,
     getNextRecords,
     signOut,
   };
@@ -52,7 +69,7 @@ const Page: React.FC = () => {
       <Head>
         <title>マイページ - ゆくくる alpha</title>
       </Head>
-      {userIsLoading || signingIn ? (
+      {authIsLoading || signingIn ? (
         <LoadingCircle />
       ) : signedIn ? (
         <MyPage {...props} />

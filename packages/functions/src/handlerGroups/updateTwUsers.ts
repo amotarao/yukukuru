@@ -1,7 +1,9 @@
+import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { publishUpdateTwUsersHandler } from '../handlers/publishUpdateTwUsers';
 import { runUpdateTwUsersHandler } from '../handlers/runUpdateTwUsers';
-import { Topic } from '../modules/pubsub/topics';
+
+const topicName: MessageTopicName = 'updateTwUsers';
 
 /** Twitter ユーザー情報更新 定期実行 */
 export const publish = functions
@@ -21,5 +23,5 @@ export const run = functions
     timeoutSeconds: 20,
     memory: '256MB',
   })
-  .pubsub.topic(Topic.UpdateTwUsers)
+  .pubsub.topic(topicName)
   .onPublish(runUpdateTwUsersHandler);
