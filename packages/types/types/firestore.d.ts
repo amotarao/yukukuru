@@ -6,13 +6,13 @@ export * from './firestore/user/record';
 export * from './firestore/user/watch';
 export * from './firestore/pubsub-message';
 
-export interface FirestoreIdData<T> {
+export type FirestoreIdData<T> = {
   /** Firestore ドキュメント ID */
   id: string;
 
   /** データ */
   data: T;
-}
+};
 
 export type FirestoreDateLike = Date | Timestamp | FieldValue;
 

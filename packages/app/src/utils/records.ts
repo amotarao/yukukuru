@@ -11,7 +11,7 @@ export const convertRecordsForView = (items: FirestoreIdData<RecordData | Record
   const newItems: RecordData[] = [];
 
   items.forEach(({ data }) => {
-    // 新しい Interface の record はそのまま push
+    // 新しい Type の record はそのまま push
     if ('type' in data) {
       newItems.push(data);
       return;

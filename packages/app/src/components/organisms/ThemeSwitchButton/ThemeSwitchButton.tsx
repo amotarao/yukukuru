@@ -3,10 +3,10 @@ import React from 'react';
 import { ThemeType, ThemeStoreType } from '../../../store/theme';
 import * as style from './style';
 
-export interface ThemeSwitchButtonProps {
+export type ThemeSwitchButtonProps = {
   theme: ThemeType;
   setTheme: ThemeStoreType['setTheme'];
-}
+};
 
 export const ThemeSwitchButton: React.FC<ThemeSwitchButtonProps> = ({ children = 'テーマ変更', theme, setTheme }) => {
   const isDefault = theme === 'default';

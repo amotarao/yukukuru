@@ -4,9 +4,9 @@ import Link from 'next/link';
 import React from 'react';
 import { style } from './style';
 
-export interface LoginPageProps {
+export type LoginPageProps = {
   signIn: () => void;
-}
+};
 
 /**
  * マイページ全体のコンポーネント
