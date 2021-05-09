@@ -7,6 +7,7 @@ import { MyPage, MyPageProps } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
+import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
   const router = useRouter();
@@ -21,11 +22,13 @@ const Page: React.FC = () => {
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = userIsLoading || recordsIsLoading || tokenIsLoading;
 
+  // 各 hook に uid セット
   useEffect(() => {
     setRecordsUid(uid);
     setTokenUid(uid);
   }, [uid, setRecordsUid, setTokenUid]);
 
+  // signin 処理
   useEffect(() => {
     if (!userIsLoading && !signingIn && !signedIn && 'login' in router.query) {
       signIn();
@@ -34,6 +37,14 @@ const Page: React.FC = () => {
       router.replace('/my');
     }
   }, [userIsLoading, signingIn, signedIn, router, signIn]);
+
+  // lastViewing 送信
+  useEffect(() => {
+    if (!uid) {
+      return;
+    }
+    setLastViewing(uid);
+  }, [uid]);
 
   const props: MyPageProps = {
     isLoading,

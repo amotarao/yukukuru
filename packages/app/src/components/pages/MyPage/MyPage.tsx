@@ -2,7 +2,6 @@ import { RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
-import { setLastViewing } from '../../../modules/firestore/userStatuses';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
@@ -18,7 +17,6 @@ export type MyPageProps = {
   hasOnlyEmptyItems: boolean;
   hasNext: boolean;
   hasToken: boolean;
-  uid: string | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   signOut: () => void | Promise<void>;
 };
@@ -110,20 +108,11 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasOnlyEmptyItems,
   hasNext,
   hasToken,
-  uid,
   getNextRecords,
   signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
-
-  // lastViewing 送信
-  useEffect(() => {
-    if (!uid) {
-      return;
-    }
-    setLastViewing(uid);
-  }, [uid]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
