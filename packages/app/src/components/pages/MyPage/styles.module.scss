@@ -68,8 +68,16 @@
   padding-bottom: 40px;
 
   @media screen and (min-width: 640px) {
-    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center center/2px 1px repeat-y;
+    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center 80px/2px 100% no-repeat;
     padding-bottom: 80px;
+  }
+}
+
+.homeNotice {
+  margin-top: -54px;
+
+  @media screen and (min-width: 640px) {
+    margin-top: -63px;
   }
 }
 
