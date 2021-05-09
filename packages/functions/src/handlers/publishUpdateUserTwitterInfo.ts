@@ -5,7 +5,7 @@ import { publishUpdateUserTwitterInfo } from '../modules/pubsub/publish/updateUs
 import { PubSubOnRunHandler } from '../types/functions';
 
 export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) => {
-  const now = new Date(context.timestamp || new Date().getTime());
+  const now = new Date(context.timestamp);
   const group = getGroupFromTime(1, now);
 
   // 1日前 (-1m)
@@ -22,7 +22,7 @@ export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (co
 
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
 
-  const items: UpdateUserTwitterInfoMessage['data'][] = ids.map((id) => ({ uid: id }));
+  const items: UpdateUserTwitterInfoMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
   await publishUpdateUserTwitterInfo(items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);

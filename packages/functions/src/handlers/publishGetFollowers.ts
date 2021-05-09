@@ -35,6 +35,7 @@ export const publishGetFollowersHandler: PubSubOnRunHandler = async (context) =>
   const items: GetFollowersMessage['data'][] = docs.map((doc) => ({
     uid: doc.id,
     nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+    publishedAt: now,
   }));
   await publishGetFollowers(items);
 

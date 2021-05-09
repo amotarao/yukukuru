@@ -12,8 +12,8 @@ import { log } from '../utils/log';
  * 1日に 120回実行
  * ユーザーごとに 1日1回 整合性をチェック
  */
-export const publishCheckIntegrityHandler: PubSubOnRunHandler = async () => {
-  const now = new Date(Math.floor(new Date().getTime() / (60 * 1000)) * 60 * 1000);
+export const publishCheckIntegrityHandler: PubSubOnRunHandler = async (context) => {
+  const now = new Date(context.timestamp);
   const group = getGroupFromTime(12, now);
 
   // 1日前
@@ -31,7 +31,7 @@ export const publishCheckIntegrityHandler: PubSubOnRunHandler = async () => {
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('checkIntegrity', '', { ids, count: ids.length });
 
-  const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id }));
+  const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
   await publishCheckIntegrity(items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);

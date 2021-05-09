@@ -6,7 +6,7 @@ import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
 
 export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) => {
-  const now = new Date(context.timestamp || new Date().getTime());
+  const now = new Date(context.timestamp);
   const group = getGroupFromTime(1, now);
 
   // 7日前 (-1m)
@@ -24,7 +24,7 @@ export const publishUpdateTwUsersHandler: PubSubOnRunHandler = async (context) =
   const ids: string[] = usersSnap.docs.map((doc) => doc.id);
   log('updateTwUsers', '', { ids, count: ids.length });
 
-  const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id }));
+  const items: UpdateTwUsersMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
   await publishUpdateTwUsers(items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);

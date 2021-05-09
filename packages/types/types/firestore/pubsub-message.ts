@@ -8,6 +8,9 @@ export type GetFollowersMessage = {
 
     /** カーソル */
     nextCursor: string;
+
+    /** 送信日時 */
+    publishedAt: Date;
   };
 };
 
@@ -18,6 +21,9 @@ export type CheckIntegrityMessage = {
   data: {
     /** Firebase UID */
     uid: string;
+
+    /** 送信日時 */
+    publishedAt: Date;
   };
 };
 
@@ -28,6 +34,9 @@ export type UpdateTwUsersMessage = {
   data: {
     /** Firebase UID */
     uid: string;
+
+    /** 送信日時 */
+    publishedAt: Date;
   };
 };
 
@@ -38,6 +47,9 @@ export type UpdateUserTwitterInfoMessage = {
   data: {
     /** Firebase UID */
     uid: string;
+
+    /** 送信日時 */
+    publishedAt: Date;
   };
 };
 
