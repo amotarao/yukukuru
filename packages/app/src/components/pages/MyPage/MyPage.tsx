@@ -55,7 +55,7 @@ const LastUpdatedText: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = (
 const NoItem: React.FC = () => {
   return (
     <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>最初の取得まで1時間ほどお待ちください。</p>
+      <p className={styles.noticeText}>最初の取得までしばらくお待ちください。</p>
       <p className={styles.noticeText}>
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
