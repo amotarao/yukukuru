@@ -28,35 +28,13 @@ export type MyPageProps = {
  */
 const NoItem: React.FC = () => {
   return (
-    <div style={{ paddingTop: 32 }}>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        }}
-      >
+    <div className={styles.noticeWrapper}>
+      <p className={styles.noticeText}>
         データ取得までに時間が掛かります。
         <wbr />
         気長にお待ちください。
       </p>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        }}
-      >
+      <p className={styles.noticeText}>
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
@@ -72,19 +50,11 @@ const NoItem: React.FC = () => {
  */
 const NoViewItem: React.FC = () => {
   return (
-    <div style={{ paddingTop: 32 }}>
-      <p
-        style={{
-          fontSize: '0.8em',
-          color: '#999',
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '8px 16px',
-        }}
-      >
-        <span style={{ whiteSpace: 'nowrap' }}>データの取得は完了していますが、</span>
-        <span style={{ whiteSpace: 'nowrap' }}>今のところフォロワーの増減がありません。</span>
+    <div className={styles.noticeWrapper}>
+      <p className={styles.noticeText}>
+        データの取得は完了していますが、
+        <wbr />
+        今のところフォロワーの増減がありません。
       </p>
     </div>
   );
