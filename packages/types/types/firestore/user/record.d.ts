@@ -34,6 +34,11 @@ export type RecordUserData = {
   maybeDeletedOrSuspended: boolean;
 };
 
+/**
+ * 最初の取得を示すためのデータ
+ *
+ * @deprecated 新規データの追加は終了済み
+ */
 export type RecordUserEmptyData = {
   /** Twitter UID (ユニークな数字のID) */
   id: 'EMPTY';
