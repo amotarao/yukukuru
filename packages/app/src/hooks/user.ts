@@ -58,22 +58,16 @@ export const useUser = (): [State, Action] => {
       return;
     }
 
-    const unsubscribe = firestore
-      .collection('users')
-      .doc(uid)
-      .onSnapshot((doc) => {
-        if (!doc.exists) {
-          dispatch({ type: 'FinishLoading' });
-          return;
-        }
+    const ref = firestore.collection('users').doc(uid);
+    ref.get().then((doc) => {
+      if (!doc.exists) {
+        dispatch({ type: 'FinishLoading' });
+        return;
+      }
 
-        const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
-        dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
-      });
-
-    return () => {
-      unsubscribe();
-    };
+      const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
+      dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
+    });
   }, [uid]);
 
   return [state, { setUid }];
