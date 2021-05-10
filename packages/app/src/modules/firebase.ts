@@ -2,6 +2,7 @@ import { getAnalytics } from 'firebase/analytics';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 
 const app = getApps().length
   ? getApp()
@@ -18,3 +19,4 @@ const app = getApps().length
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const analytics = getAnalytics(app);
+export const functions = getFunctions(app, 'asia-northeast1');
