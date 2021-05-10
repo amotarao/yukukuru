@@ -100,7 +100,7 @@ service cloud.firestore {
     }
 
     // Stripe Extension
-    match /customers/{uid} {
+    match /stripeCustomers/{uid} {
       allow read: if request.auth.uid == uid;
 
       match /checkout_sessions/{id} {
@@ -112,7 +112,7 @@ service cloud.firestore {
     }
 
     // Stripe Extension
-    match /pricingPlans/{id} {
+    match /stripePlans/{id} {
       allow read: if true;
 
       match /prices/{id} {
