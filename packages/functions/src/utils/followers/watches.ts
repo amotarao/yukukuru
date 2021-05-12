@@ -9,13 +9,18 @@ type mergeWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate
  */
 export const mergeWatches = (
   watches: FirestoreIdData<WatchData>[],
-  includeFirst = false
+  includeFirst = false,
+  limit = -1
 ): { ids: string[]; watch: mergeWatchData }[] => {
   const uniqWatches = _.uniqBy(watches, (watch) => watch.data.getEndDate.toDate().getTime());
   const currentWatches: FirestoreIdData<WatchData>[] = [];
   const convertedWatchesGroups: FirestoreIdData<WatchData>[][] = [];
 
-  uniqWatches.forEach((watch) => {
+  uniqWatches.map((watch) => {
+    if (-1 < limit && limit <= convertedWatchesGroups.length) {
+      return;
+    }
+
     currentWatches.push(watch);
     if (!('ended' in watch.data) || watch.data.ended) {
       convertedWatchesGroups.push([...currentWatches]);

@@ -26,7 +26,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
 
   console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-  const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
+  const watches = mergeWatches(await getWatches({ uid, count: 80 }), true, 10);
 
   if (watches.length < 5) {
     await updateUserCheckIntegrity(uid, now);
