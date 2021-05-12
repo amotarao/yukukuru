@@ -5,7 +5,10 @@ type MergedWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDat
 
 /**
  * 分散された watches を まとめる
- * includeFirst が true の場合、一番最初のデータは含めない
+ *
+ * @param watches watch リスト
+ * @param includeFirst まとめたあと、一番最初のデータを含めるかどうか
+ * @param limit まとめたあとのデータの最大件数
  */
 export const mergeWatches = (
   watches: FirestoreIdData<WatchData>[],
