@@ -4,7 +4,7 @@ import { addRecords } from '../modules/firestore/records/add';
 import { getRecords } from '../modules/firestore/records/get';
 import { removeRecords } from '../modules/firestore/records/remove';
 import { updateRecordsStart } from '../modules/firestore/records/update';
-import { getTwUser } from '../modules/firestore/twUsers';
+import { getTwUsers } from '../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../modules/firestore/users/state';
 import { getWatches } from '../modules/firestore/watches/getWatches';
 import { removeWatches } from '../modules/firestore/watches/removeWatches';
@@ -54,27 +54,28 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
     },
   }));
 
-  // 存在すべきなのに存在する差分
+  // 存在すべきなのに存在しない差分
   const notExistsDiffs = getDiffWithIdRecords(currentDiffsWithId, firestoreDiffsWithId);
   // 存在すべきではないが何故か存在する差分
   const unknownDiffs = getDiffWithIdRecords(firestoreDiffsWithId, currentDiffsWithId);
 
+  // 存在しないドキュメントは追加する
   if (notExistsDiffs.length !== 0) {
-    // 存在しないドキュメントは追加する
+    const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
     const items = notExistsDiffs.map(
-      async ({ diff }): Promise<RecordData<FirestoreDateLike>> => {
-        const user = await getTwUser(diff.uid);
+      ({ diff }): RecordData<FirestoreDateLike> => {
+        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
         const userData: RecordUserData =
-          user === null
+          twUser === null
             ? {
-                id: diff.uid,
+                id: diff.twitterId,
                 maybeDeletedOrSuspended: true,
               }
             : {
-                id: diff.uid,
-                screenName: user.screenName,
-                displayName: user.name,
-                photoUrl: user.photoUrl,
+                id: diff.twitterId,
+                screenName: twUser.screenName,
+                displayName: twUser.name,
+                photoUrl: twUser.photoUrl,
                 maybeDeletedOrSuspended: false,
               };
         return {
@@ -85,7 +86,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
         };
       }
     );
-    await addRecords(uid, await Promise.all(items));
+    await addRecords(uid, items);
   }
 
   // 存在しないドキュメントがある場合は追加する
