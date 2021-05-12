@@ -20,6 +20,7 @@ export const mergeWatches = (
   const watchesGroups: FirestoreIdData<WatchData>[][] = [];
 
   uniqWatches.map((watch) => {
+    // limit が与えられているとき(0以上)は、そこでマージの処理の実行を終了する
     if (-1 < limit && limit <= watchesGroups.length) {
       return;
     }
