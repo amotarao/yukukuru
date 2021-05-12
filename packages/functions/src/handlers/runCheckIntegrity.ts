@@ -75,7 +75,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
                 screenName: user.screenName,
                 displayName: user.name,
                 photoUrl: user.photoUrl,
-                maybeDeletedOrSuspended: true,
+                maybeDeletedOrSuspended: false,
               };
         return {
           type: diff.type,
