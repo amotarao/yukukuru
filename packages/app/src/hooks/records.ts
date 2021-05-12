@@ -1,13 +1,12 @@
-import { FirestoreIdData, RecordData, RecordDataOld } from '@yukukuru/types';
+import { FirestoreIdData, RecordData } from '@yukukuru/types';
 import type firebase from 'firebase';
 import { useState, useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
-import { convertRecordsForView } from '../utils/records';
 
-const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot) => {
-  const item: FirestoreIdData<RecordData | RecordDataOld> = {
+const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
+  const item: FirestoreIdData<RecordData> = {
     id: snapshot.id,
-    data: snapshot.data() as RecordData | RecordDataOld,
+    data: snapshot.data() as RecordData,
   };
   return item;
 };
@@ -23,7 +22,7 @@ type State = {
   isFirstLoaded: boolean;
 
   /** 記録リスト */
-  items: RecordData[];
+  items: FirestoreIdData<RecordData>[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;
@@ -94,7 +93,7 @@ const reducer = (state: State, action: DispatchAction): State => {
 
     case 'AddItems': {
       const docs = action.payload.docs;
-      const items = convertRecordsForView(docs.map(convertRecordItems)).filter((item) => item.user.id !== 'EMPTY');
+      const items = docs.map(convertRecordItems).filter((item) => item.data.user.id !== 'EMPTY');
       const cursor = docs.length > 0 ? docs[docs.length - 1] : null;
 
       return {
