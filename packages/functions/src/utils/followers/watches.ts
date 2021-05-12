@@ -17,21 +17,21 @@ export const mergeWatches = (
 ): { ids: string[]; watch: MergedWatchData }[] => {
   const uniqWatches = _.uniqBy(watches, (watch) => watch.data.getEndDate.toDate().getTime());
   const currentWatches: FirestoreIdData<WatchData>[] = [];
-  const convertedWatchesGroups: FirestoreIdData<WatchData>[][] = [];
+  const watchesGroups: FirestoreIdData<WatchData>[][] = [];
 
   uniqWatches.map((watch) => {
-    if (-1 < limit && limit <= convertedWatchesGroups.length) {
+    if (-1 < limit && limit <= watchesGroups.length) {
       return;
     }
 
     currentWatches.push(watch);
     if (!('ended' in watch.data) || watch.data.ended) {
-      convertedWatchesGroups.push([...currentWatches]);
+      watchesGroups.push([...currentWatches]);
       currentWatches.splice(0, currentWatches.length);
     }
   });
 
-  const convertedWatches: { ids: string[]; watch: MergedWatchData }[] = convertedWatchesGroups.map((watches) => {
+  const convertedWatches: { ids: string[]; watch: MergedWatchData }[] = watchesGroups.map((watches) => {
     const ids = watches.map((watch) => watch.id);
     const watch = {
       followers: _.uniq(_.flatten(watches.map((watch) => watch.data.followers))),
