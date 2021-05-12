@@ -48,7 +48,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
     id,
     diff: {
       type: record.type,
-      uid: record.user.id,
+      twitterId: record.user.id,
       durationStart: record.durationStart.toDate(),
       durationEnd: record.durationEnd.toDate(),
     },
@@ -64,7 +64,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
     const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
     const items = notExistsDiffs.map(
       ({ diff }): RecordData<FirestoreDateLike> => {
-        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
+        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
         const userData: RecordUserData =
           twUser === null
             ? {
