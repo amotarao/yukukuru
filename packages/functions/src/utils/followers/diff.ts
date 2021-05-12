@@ -18,18 +18,18 @@ const getDiffFollowersSingle = (start: WatchData, end: WatchData): Diff[] => {
   const kuru = _.difference(end.followers, start.followers);
 
   const yukuList = yuku.map(
-    (uid): Diff => ({
+    (twitterId): Diff => ({
       type: 'yuku',
-      twitterId: uid,
+      twitterId,
       durationStart: start.getStartDate.toDate(),
       durationEnd: end.getEndDate.toDate(),
     })
   );
 
   const kuruList = kuru.map(
-    (uid): Diff => ({
+    (twitterId): Diff => ({
       type: 'kuru',
-      twitterId: uid,
+      twitterId,
       durationStart: start.getStartDate.toDate(),
       durationEnd: end.getEndDate.toDate(),
     })
