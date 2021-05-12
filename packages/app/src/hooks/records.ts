@@ -93,7 +93,7 @@ const reducer = (state: State, action: DispatchAction): State => {
 
     case 'AddItems': {
       const docs = action.payload.docs;
-      const items = docs.map(convertRecordItems).filter((item) => item.data.user.id !== 'EMPTY');
+      const items = docs.map(convertRecordItems);
       const cursor = docs.length > 0 ? docs[docs.length - 1] : null;
 
       return {
