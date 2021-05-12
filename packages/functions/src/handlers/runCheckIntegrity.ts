@@ -9,7 +9,6 @@ import { updateUserCheckIntegrity } from '../modules/firestore/users/state';
 import { getWatches } from '../modules/firestore/watches/getWatches';
 import { removeWatches } from '../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../types/functions';
-import { convertRecords } from '../utils/followers/convert';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../utils/followers/diff';
 import { mergeWatches } from '../utils/followers/watches';
 import { log, errorLog } from '../utils/log';
@@ -44,7 +43,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   const currentDiffs = getDiffFollowers(watches.map(({ watch }) => watch));
   const currentDiffsWithId: DiffWithId[] = currentDiffs.map((diff) => ({ id: '', diff }));
 
-  const firestoreDiffsWithId: DiffWithId[] = convertRecords(records).map(({ id, data: record }) => ({
+  const firestoreDiffsWithId: DiffWithId[] = records.map(({ id, data: record }) => ({
     id,
     diff: {
       type: record.type,
