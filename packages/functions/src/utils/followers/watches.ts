@@ -41,5 +41,5 @@ export const mergeWatches = (
   if (includeFirst) {
     return convertedWatches;
   }
-  return convertedWatches.slice(1, convertedWatches.length);
+  return convertedWatches.slice(1);
 };
