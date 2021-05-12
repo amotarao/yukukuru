@@ -112,11 +112,11 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
 
   // durationStart だけ異なるドキュメントがある場合は、アップデートする
   else if (checkSameEndDiff(notExistsDiffs, unknownDiffs)) {
-    const starts = _.sortBy(notExistsDiffs, ({ diff: { type, uid, durationEnd } }) =>
-      JSON.stringify({ type, uid, d: durationEnd.getTime() })
+    const starts = _.sortBy(notExistsDiffs, ({ diff: { type, twitterId, durationEnd } }) =>
+      JSON.stringify({ type, twitterId, d: durationEnd.getTime() })
     );
-    const targets = _.sortBy(unknownDiffs, ({ diff: { type, uid, durationEnd } }) =>
-      JSON.stringify({ type, uid, d: durationEnd.getTime() })
+    const targets = _.sortBy(unknownDiffs, ({ diff: { type, twitterId, durationEnd } }) =>
+      JSON.stringify({ type, twitterId, d: durationEnd.getTime() })
     );
 
     const items = targets.map((target, i) => {
