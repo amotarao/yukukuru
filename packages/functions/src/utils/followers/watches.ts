@@ -1,7 +1,7 @@
 import { FirestoreIdData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 
-type mergeWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
+type MergedWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
 
 /**
  * 分散された watches を まとめる
@@ -11,7 +11,7 @@ export const mergeWatches = (
   watches: FirestoreIdData<WatchData>[],
   includeFirst = false,
   limit = -1
-): { ids: string[]; watch: mergeWatchData }[] => {
+): { ids: string[]; watch: MergedWatchData }[] => {
   const uniqWatches = _.uniqBy(watches, (watch) => watch.data.getEndDate.toDate().getTime());
   const currentWatches: FirestoreIdData<WatchData>[] = [];
   const convertedWatchesGroups: FirestoreIdData<WatchData>[][] = [];
@@ -28,7 +28,7 @@ export const mergeWatches = (
     }
   });
 
-  const convertedWatches: { ids: string[]; watch: mergeWatchData }[] = convertedWatchesGroups.map((watches) => {
+  const convertedWatches: { ids: string[]; watch: MergedWatchData }[] = convertedWatchesGroups.map((watches) => {
     const ids = watches.map((watch) => watch.id);
     const watch = {
       followers: _.uniq(_.flatten(watches.map((watch) => watch.data.followers))),
