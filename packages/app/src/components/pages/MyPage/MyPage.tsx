@@ -81,17 +81,17 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
       <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
         <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
       </div>
-      {items.map(({ id, item }) => {
-        const date = item.durationEnd.toDate();
+      {items.map((item) => {
+        const date = item.data.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         const showDate = currentDate !== dateText;
         currentDate = dateText;
 
         return (
-          <React.Fragment key={id}>
+          <React.Fragment key={item.id}>
             {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
-            <section className={styles.userSection} data-type={item.type}>
-              <UserCard {...item} />
+            <section className={styles.userSection} data-type={item.data.type}>
+              <UserCard {...item.data} />
             </section>
           </React.Fragment>
         );
