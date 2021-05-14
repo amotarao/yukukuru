@@ -20,7 +20,7 @@ export const publish = functions
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 30,
     memory: '256MB',
   })
   .pubsub.topic(topicName)
