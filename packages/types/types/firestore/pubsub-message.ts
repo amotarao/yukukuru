@@ -9,6 +9,9 @@ export type GetFollowersMessage = {
     /** カーソル */
     nextCursor: string;
 
+    /** 最終実行日時 */
+    lastRun: Date;
+
     /** 送信日時 */
     publishedAt: Date;
   };

@@ -1,5 +1,8 @@
 import { GetFollowersMessage } from '@yukukuru/types';
-import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import * as dayjs from 'dayjs';
+import { getStripeRole } from '../modules/auth/claim';
+import { getToken } from '../modules/firestore/tokens/get';
+import { setTokenInvalid } from '../modules/firestore/tokens/set';
 import { setUserResult } from '../modules/firestore/users/state';
 import { setWatch } from '../modules/firestore/watches/setWatch';
 import { getClient } from '../modules/twitter/client';
@@ -8,13 +11,29 @@ import { getFollowersIds } from '../modules/twitter/followers/ids';
 import { PubSubOnPublishHandler } from '../types/functions';
 
 export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
-  const { uid, nextCursor, publishedAt } = message.json as GetFollowersMessage['data'];
+  const { uid, nextCursor, lastRun, publishedAt } = message.json as GetFollowersMessage['data'];
   const now = new Date(context.timestamp);
 
   // 10秒以内の実行に限る
   if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
     console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
     return;
+  }
+
+  // cursor が -1 のとき、サポーター以外は 1時間未満の実行間隔の場合は終了
+  if (nextCursor === '-1') {
+    const role = await getStripeRole(uid);
+    if (role === null) {
+      const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
+
+      // サポーター以外かつ1時間未満なので終了
+      if (minutes < 59) {
+        console.log(`[Info]: Stopped get followers for [${uid}] due to basic user.`);
+        return;
+      }
+    } else {
+      console.log(`[Info]: [${uid}] is ${role}!`);
+    }
   }
 
   console.log(`⚙️ Starting get followers for [${uid}].`);
