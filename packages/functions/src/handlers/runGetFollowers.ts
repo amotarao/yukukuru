@@ -1,5 +1,6 @@
 import { GetFollowersMessage } from '@yukukuru/types';
-import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import { getToken } from '../modules/firestore/tokens/get';
+import { setTokenInvalid } from '../modules/firestore/tokens/set';
 import { setUserResult } from '../modules/firestore/users/state';
 import { setWatch } from '../modules/firestore/watches/setWatch';
 import { getClient } from '../modules/twitter/client';

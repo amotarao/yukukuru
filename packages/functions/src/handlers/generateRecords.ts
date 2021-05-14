@@ -2,7 +2,8 @@ import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukuk
 import * as _ from 'lodash';
 import { firestore } from '../modules/firebase';
 import { addRecords } from '../modules/firestore/records/add';
-import { getToken, setTokenInvalid } from '../modules/firestore/tokens';
+import { getToken } from '../modules/firestore/tokens/get';
+import { setTokenInvalid } from '../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../modules/firestore/twUsers';
 import { getClient } from '../modules/twitter/client';
 import { checkInvalidToken } from '../modules/twitter/error';
