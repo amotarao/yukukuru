@@ -1,7 +1,7 @@
 import { CheckIntegrityMessage } from '@yukukuru/types';
 import { firestore } from '../modules/firebase';
 import { getGroupFromTime } from '../modules/group';
-import { publishMessage } from '../modules/pubsub/publish';
+import { publishMessages } from '../modules/pubsub/publish';
 import { PubSubOnRunHandler } from '../types/functions';
 import { log } from '../utils/log';
 
@@ -32,7 +32,7 @@ export const publishCheckIntegrityHandler: PubSubOnRunHandler = async (context) 
   log('checkIntegrity', '', { ids, count: ids.length });
 
   const items: CheckIntegrityMessage['data'][] = ids.map((id) => ({ uid: id, publishedAt: now }));
-  await publishMessage('checkIntegrity', items);
+  await publishMessages('checkIntegrity', items);
 
   console.log(`✔️ Completed publish ${items.length} message.`);
 };

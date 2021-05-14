@@ -3,7 +3,7 @@ import { Message } from '@yukukuru/types';
 
 const pubsub = new PubSub();
 
-export const publishMessage = async <T extends Message>(
+export const publishMessages = async <T extends Message>(
   topicName: T['topicName'],
   items: T['data'][]
 ): Promise<void> => {
