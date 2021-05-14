@@ -48,7 +48,7 @@ const setTwUsersParallel = async (users: TwitterUserObject[], max = 100, count =
  * @param users 保存するユーザー情報
  */
 export const setTwUsers = async (users: TwitterUserObject[]): Promise<void> => {
-  await setTwUsersParallel(users, 300);
+  await setTwUsersParallel(users, 400);
 };
 
 /**
