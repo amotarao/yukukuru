@@ -8,7 +8,7 @@ export type RecordData<T extends FirestoreDateLike = Timestamp> = {
   type: RecordType;
 
   /** ユーザー情報 */
-  user: RecordUserData | RecordUserEmptyData;
+  user: RecordUserData;
 
   /** record が更新された可能性のある期間の開始日時 */
   durationStart: T;
@@ -32,54 +32,4 @@ export type RecordUserData = {
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: boolean;
-};
-
-/**
- * 最初の取得を示すためのデータ
- *
- * @deprecated 新規データの追加は終了済み
- */
-export type RecordUserEmptyData = {
-  /** Twitter UID (ユニークな数字のID) */
-  id: 'EMPTY';
-
-  /** 削除または凍結された可能性があるかどうか */
-  maybeDeletedOrSuspended: true;
-};
-
-/**
- * Memo: 古い形式のため、移行が完了したら削除する
- */
-export type RecordDataOld<T extends FirestoreDateLike = Timestamp> = {
-  /** この期間にフォローされたユーザーリスト (くる) */
-  cameUsers: RecordUserDataOld[];
-
-  /** この期間にフォロー解除されたユーザーリスト (ゆく) */
-  leftUsers: RecordUserDataOld[];
-
-  /** record が更新された可能性のある期間の開始日時 */
-  durationStart: T;
-
-  /** record が更新された可能性のある期間の終了日時 */
-  durationEnd: T;
-};
-
-/**
- * Memo: 古い形式のため、移行が完了したら削除する
- */
-export type RecordUserDataOld = {
-  /** Twitter UID (ユニークな数字のID) */
-  id: string;
-
-  /** Twitter ID (@から始まるID) */
-  name?: string;
-
-  /** 名前 (プロフィールの名前) */
-  screenName?: string;
-
-  /** プロフィール画像の URL */
-  photoUrl?: string;
-
-  /** 削除または凍結された可能性があるかどうか */
-  notFounded?: boolean;
 };

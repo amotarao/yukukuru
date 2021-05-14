@@ -1,29 +1,38 @@
 import { FirestoreIdData, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 
-type mergeWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
+type MergedWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
 
 /**
  * 分散された watches を まとめる
- * includeFirst が true の場合、一番最初のデータは含めない
+ *
+ * @param watches watch リスト
+ * @param includeFirst まとめたあと、一番最初のデータを含めるかどうか
+ * @param limit まとめたあとのデータの最大件数
  */
 export const mergeWatches = (
   watches: FirestoreIdData<WatchData>[],
-  includeFirst = false
-): { ids: string[]; watch: mergeWatchData }[] => {
+  includeFirst = false,
+  limit = -1
+): { ids: string[]; watch: MergedWatchData }[] => {
   const uniqWatches = _.uniqBy(watches, (watch) => watch.data.getEndDate.toDate().getTime());
   const currentWatches: FirestoreIdData<WatchData>[] = [];
-  const convertedWatchesGroups: FirestoreIdData<WatchData>[][] = [];
+  const watchesGroups: FirestoreIdData<WatchData>[][] = [];
 
-  uniqWatches.forEach((watch) => {
+  uniqWatches.map((watch) => {
+    // limit が与えられているとき(0以上)は、そこでマージの処理の実行を終了する
+    if (-1 < limit && limit <= watchesGroups.length) {
+      return;
+    }
+
     currentWatches.push(watch);
     if (!('ended' in watch.data) || watch.data.ended) {
-      convertedWatchesGroups.push([...currentWatches]);
+      watchesGroups.push([...currentWatches]);
       currentWatches.splice(0, currentWatches.length);
     }
   });
 
-  const convertedWatches: { ids: string[]; watch: mergeWatchData }[] = convertedWatchesGroups.map((watches) => {
+  const convertedWatches: { ids: string[]; watch: MergedWatchData }[] = watchesGroups.map((watches) => {
     const ids = watches.map((watch) => watch.id);
     const watch = {
       followers: _.uniq(_.flatten(watches.map((watch) => watch.data.followers))),
@@ -36,5 +45,5 @@ export const mergeWatches = (
   if (includeFirst) {
     return convertedWatches;
   }
-  return convertedWatches.slice(1, convertedWatches.length);
+  return convertedWatches.slice(1);
 };

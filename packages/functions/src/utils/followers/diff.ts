@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 export type Diff = {
   type: RecordData['type'];
-  uid: string;
+  twitterId: string;
   durationStart: Date;
   durationEnd: Date;
 };
@@ -18,18 +18,18 @@ const getDiffFollowersSingle = (start: WatchData, end: WatchData): Diff[] => {
   const kuru = _.difference(end.followers, start.followers);
 
   const yukuList = yuku.map(
-    (uid): Diff => ({
+    (twitterId): Diff => ({
       type: 'yuku',
-      uid,
+      twitterId,
       durationStart: start.getStartDate.toDate(),
       durationEnd: end.getEndDate.toDate(),
     })
   );
 
   const kuruList = kuru.map(
-    (uid): Diff => ({
+    (twitterId): Diff => ({
       type: 'kuru',
-      uid,
+      twitterId,
       durationStart: start.getStartDate.toDate(),
       durationEnd: end.getEndDate.toDate(),
     })
@@ -63,7 +63,7 @@ export const checkSameEndDiff = (diffsA: DiffWithId[], diffsB: DiffWithId[]): bo
   const stringify = ({ diff }: DiffWithId): string => {
     return JSON.stringify({
       type: diff.type,
-      uid: diff.uid,
+      id: diff.twitterId,
       end: diff.durationEnd.getTime(),
     });
   };

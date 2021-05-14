@@ -4,12 +4,11 @@ import { addRecords } from '../modules/firestore/records/add';
 import { getRecords } from '../modules/firestore/records/get';
 import { removeRecords } from '../modules/firestore/records/remove';
 import { updateRecordsStart } from '../modules/firestore/records/update';
-import { getTwUser } from '../modules/firestore/twUsers';
+import { getTwUsers } from '../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../modules/firestore/users/state';
 import { getWatches } from '../modules/firestore/watches/getWatches';
 import { removeWatches } from '../modules/firestore/watches/removeWatches';
 import { PubSubOnPublishHandler } from '../types/functions';
-import { convertRecords } from '../utils/followers/convert';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../utils/followers/diff';
 import { mergeWatches } from '../utils/followers/watches';
 import { log, errorLog } from '../utils/log';
@@ -26,7 +25,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
 
   console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-  const watches = mergeWatches(await getWatches({ uid, count: 80 }), true);
+  const watches = mergeWatches(await getWatches({ uid, count: 80 }), true, 10);
 
   if (watches.length < 5) {
     await updateUserCheckIntegrity(uid, now);
@@ -44,38 +43,39 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   const currentDiffs = getDiffFollowers(watches.map(({ watch }) => watch));
   const currentDiffsWithId: DiffWithId[] = currentDiffs.map((diff) => ({ id: '', diff }));
 
-  const firestoreDiffsWithId: DiffWithId[] = convertRecords(records).map(({ id, data: record }) => ({
+  const firestoreDiffsWithId: DiffWithId[] = records.map(({ id, data: record }) => ({
     id,
     diff: {
       type: record.type,
-      uid: record.user.id,
+      twitterId: record.user.id,
       durationStart: record.durationStart.toDate(),
       durationEnd: record.durationEnd.toDate(),
     },
   }));
 
-  // 存在すべきなのに存在する差分
+  // 存在すべきなのに存在しない差分
   const notExistsDiffs = getDiffWithIdRecords(currentDiffsWithId, firestoreDiffsWithId);
   // 存在すべきではないが何故か存在する差分
   const unknownDiffs = getDiffWithIdRecords(firestoreDiffsWithId, currentDiffsWithId);
 
+  // 存在しないドキュメントは追加する
   if (notExistsDiffs.length !== 0) {
-    // 存在しないドキュメントは追加する
+    const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
     const items = notExistsDiffs.map(
-      async ({ diff }): Promise<RecordData<FirestoreDateLike>> => {
-        const user = await getTwUser(diff.uid);
+      ({ diff }): RecordData<FirestoreDateLike> => {
+        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
         const userData: RecordUserData =
-          user === null
+          twUser === null
             ? {
-                id: diff.uid,
+                id: diff.twitterId,
                 maybeDeletedOrSuspended: true,
               }
             : {
-                id: diff.uid,
-                screenName: user.screenName,
-                displayName: user.name,
-                photoUrl: user.photoUrl,
-                maybeDeletedOrSuspended: true,
+                id: diff.twitterId,
+                screenName: twUser.screenName,
+                displayName: twUser.name,
+                photoUrl: twUser.photoUrl,
+                maybeDeletedOrSuspended: false,
               };
         return {
           type: diff.type,
@@ -85,7 +85,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
         };
       }
     );
-    await addRecords(uid, await Promise.all(items));
+    await addRecords(uid, items);
   }
 
   // 存在しないドキュメントがある場合は追加する
@@ -111,11 +111,11 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
 
   // durationStart だけ異なるドキュメントがある場合は、アップデートする
   else if (checkSameEndDiff(notExistsDiffs, unknownDiffs)) {
-    const starts = _.sortBy(notExistsDiffs, ({ diff: { type, uid, durationEnd } }) =>
-      JSON.stringify({ type, uid, d: durationEnd.getTime() })
+    const starts = _.sortBy(notExistsDiffs, ({ diff: { type, twitterId, durationEnd } }) =>
+      JSON.stringify({ type, twitterId, d: durationEnd.getTime() })
     );
-    const targets = _.sortBy(unknownDiffs, ({ diff: { type, uid, durationEnd } }) =>
-      JSON.stringify({ type, uid, d: durationEnd.getTime() })
+    const targets = _.sortBy(unknownDiffs, ({ diff: { type, twitterId, durationEnd } }) =>
+      JSON.stringify({ type, twitterId, d: durationEnd.getTime() })
     );
 
     const items = targets.map((target, i) => {
