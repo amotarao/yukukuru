@@ -23,7 +23,7 @@
     "react-dom": "17.0.2",
     "react-github-btn": "^1.2.0",
     "react-responsive": "^8.2.0",
-    "react-transition-group": "^4.4.1",
+    "react-transition-group": "^4.4.2",
     "react-twitter-widgets": "^1.10.0",
     "unstated-next": "^1.1.0"
   },
