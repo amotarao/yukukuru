@@ -78,7 +78,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
           <li data-type="kuru">くるひと</li>
         </ul>
       </nav>
-      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')} style={{ marginTop: -70 }}>
+      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
         <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
       </div>
       {items.map((item) => {
@@ -154,7 +154,6 @@ export const MyPage: React.FC<MyPageProps> = ({
 
   return (
     <div className={styles.wrapper}>
-      <BottomNav active={nav} userImageUrl={user.photoUrl} onChange={setNav} signOut={signOut} />
       {!isLoading && !hasToken && (
         <ErrorWrapper onClick={superReload}>
           <p>ログアウトし、再度ログインしてください。</p>
@@ -181,6 +180,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <SettingMenu />
         </section>
       )}
+      <BottomNav active={nav} userImageUrl={user.photoUrl} onChange={setNav} signOut={signOut} />
     </div>
   );
 };
