@@ -1,6 +1,6 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { getToken } from '../modules/firestore/tokens';
+import { getToken } from '../modules/firestore/tokens/get';
 import { setTwUsers } from '../modules/firestore/twUsers';
 import { updateUserLastUpdatedTwUsers } from '../modules/firestore/users/state';
 import { getLatestWatches } from '../modules/firestore/watches/getWatches';

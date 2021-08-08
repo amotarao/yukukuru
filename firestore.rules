@@ -48,9 +48,12 @@ service cloud.firestore {
     match /stripeCustomers/{uid} {
       allow read: if request.auth.uid == uid;
 
+      // Stripe Extension
       match /checkout_sessions/{id} {
         allow read, write: if request.auth.uid == uid;
       }
+
+      // Stripe Extension
       match /subscriptions/{id} {
         allow read: if request.auth.uid == uid;
       }
@@ -60,10 +63,12 @@ service cloud.firestore {
     match /stripePlans/{id} {
       allow read: if true;
 
+      // Stripe Extension
       match /prices/{id} {
         allow read: if true;
       }
 
+      // Stripe Extension
       match /tax_rates/{id} {
         allow read: if true;
       }

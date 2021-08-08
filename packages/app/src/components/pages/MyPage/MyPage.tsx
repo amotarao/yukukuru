@@ -1,4 +1,4 @@
-import { RecordData } from '@yukukuru/types';
+import { FirestoreIdData, RecordData } from '@yukukuru/types';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
@@ -14,7 +14,7 @@ import styles from './styles.module.scss';
 export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: RecordData[];
+  items: FirestoreIdData<RecordData>[];
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
@@ -81,17 +81,17 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
       <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
         <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
       </div>
-      {items.map((item, itemIndex) => {
-        const date = item.durationEnd.toDate();
+      {items.map((item) => {
+        const date = item.data.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         const showDate = currentDate !== dateText;
         currentDate = dateText;
 
         return (
-          <React.Fragment key={itemIndex}>
+          <React.Fragment key={item.id}>
             {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
-            <section className={styles.userSection} data-type={item.type}>
-              <UserCard {...item} />
+            <section className={styles.userSection} data-type={item.data.type}>
+              <UserCard {...item.data} />
             </section>
           </React.Fragment>
         );

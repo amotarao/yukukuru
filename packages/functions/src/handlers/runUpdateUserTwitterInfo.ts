@@ -1,5 +1,5 @@
 import { UpdateUserTwitterInfoMessage, UserData } from '@yukukuru/types';
-import { getToken } from '../modules/firestore/tokens';
+import { getToken } from '../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../modules/firestore/users/state';
 import { getAccountVerifyCredentials } from '../modules/twitter/account/verifyCredentials';
 import { getClient } from '../modules/twitter/client';
