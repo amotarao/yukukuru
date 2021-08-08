@@ -4,8 +4,8 @@ import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { MyNav, NavType } from '../../organisms/MyNav';
 import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import styles from './styles.module.scss';
@@ -154,7 +154,7 @@ export const MyPage: React.FC<MyPageProps> = ({
 
   return (
     <div className={styles.wrapper}>
-      <MyNav active={nav} userImageUrl={user.photoUrl} onChange={setNav} signOut={signOut} />
+      <BottomNav active={nav} userImageUrl={user.photoUrl} onChange={setNav} signOut={signOut} />
       {!isLoading && !hasToken && (
         <ErrorWrapper onClick={superReload}>
           <p>ログアウトし、再度ログインしてください。</p>

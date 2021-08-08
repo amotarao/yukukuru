@@ -8,14 +8,14 @@ import styles from './styles.module.scss';
 
 export type NavType = 'home' | 'setting';
 
-export type MyNavProps = {
+export type BottomNavProps = {
   active: NavType;
   userImageUrl: string;
   onChange: (nav: NavType) => void;
   signOut: () => void | Promise<void>;
 };
 
-export const MyNav: React.FC<MyNavProps> = ({ active, userImageUrl, onChange, signOut }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ active, userImageUrl, onChange, signOut }) => {
   const router = useRouter();
 
   const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
