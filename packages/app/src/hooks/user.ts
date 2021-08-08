@@ -33,6 +33,7 @@ const reducer = (state: State, action: DispatchAction): State => {
   switch (action.type) {
     case 'SetLastRunnedGetFollowers': {
       return {
+        ...state,
         isLoading: false,
         lastRunnedGetFollowers: action.payload.lastRunnedGetFollowers,
       };
