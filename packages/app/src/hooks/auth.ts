@@ -1,7 +1,7 @@
 import { TokenData } from '@yukukuru/types';
 import {
   onAuthStateChanged,
-  signInWithPopup,
+  signInWithRedirect,
   signOut as authSignOut,
   TwitterAuthProvider,
   UserInfo,
@@ -146,7 +146,7 @@ export const useAuth = (): [State, Action] => {
       lang: 'ja',
     });
 
-    const token = await signInWithPopup(auth, twitterAuthProvider)
+    const token = await signInWithRedirect(auth, twitterAuthProvider)
       .then((result) => {
         const user = result.user;
         const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
