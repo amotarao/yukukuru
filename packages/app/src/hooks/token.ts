@@ -1,4 +1,5 @@
 import { TokenData } from '@yukukuru/types';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useState, useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -55,23 +56,20 @@ export const useToken = (): [State, Action] => {
       return;
     }
 
-    const unsubscribe = firestore
-      .collection('tokens')
-      .doc(uid)
-      .onSnapshot((doc) => {
-        if (!doc.exists) {
-          dispatch({ type: 'ClearHasToken' });
-          return;
-        }
+    const unsubscribe = onSnapshot(doc(firestore, 'tokens', uid), (doc) => {
+      if (!doc.exists) {
+        dispatch({ type: 'ClearHasToken' });
+        return;
+      }
 
-        const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
-        if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
-          dispatch({ type: 'ClearHasToken' });
-          return;
-        }
+      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
+      if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
+        dispatch({ type: 'ClearHasToken' });
+        return;
+      }
 
-        dispatch({ type: 'SetHasToken' });
-      });
+      dispatch({ type: 'SetHasToken' });
+    });
 
     return () => {
       unsubscribe();

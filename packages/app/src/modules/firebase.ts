@@ -1,10 +1,10 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore/memory';
+import { getApp, getApps, initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-const app = firebase.apps.length
-  ? firebase.app()
-  : firebase.initializeApp({
+const app = getApps().length
+  ? getApp()
+  : initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
       databaseURL: process.env.FIREBASE_DATABASE_URL,
@@ -14,14 +14,5 @@ const app = firebase.apps.length
       appId: process.env.FIREBASE_APP_ID,
     });
 
-const twitterAuthProvider = new firebase.auth.TwitterAuthProvider();
-twitterAuthProvider.setCustomParameters({
-  lang: 'ja',
-});
-
-export const auth = app.auth();
-export const firestore = app.firestore();
-
-export const providers = {
-  twitter: twitterAuthProvider,
-};
+export const auth = getAuth(app);
+export const firestore = getFirestore(app);
