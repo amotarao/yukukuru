@@ -1,9 +1,9 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
-import type firebase from 'firebase';
+import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
 
-const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
+const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
   const item: FirestoreIdData<RecordData> = {
     id: snapshot.id,
     data: snapshot.data() as RecordData,
@@ -31,7 +31,7 @@ type State = {
   uid: string | null;
 
   /** カーソル */
-  cursor: firebase.firestore.QueryDocumentSnapshot | null;
+  cursor: QueryDocumentSnapshot | null;
 };
 
 const initialState: State = {
@@ -57,7 +57,7 @@ type DispatchAction =
   | {
       type: 'AddItems';
       payload: {
-        docs: firebase.firestore.QueryDocumentSnapshot[];
+        docs: QueryDocumentSnapshot[];
       };
     }
   | {

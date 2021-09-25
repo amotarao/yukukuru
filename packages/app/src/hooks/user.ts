@@ -1,4 +1,5 @@
 import { Timestamp } from '@yukukuru/types';
+import { doc, getDoc } from 'firebase/firestore';
 import { useState, useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -58,8 +59,7 @@ export const useUser = (): [State, Action] => {
       return;
     }
 
-    const ref = firestore.collection('users').doc(uid);
-    ref.get().then((doc) => {
+    getDoc(doc(firestore, 'users', uid)).then((doc) => {
       if (!doc.exists) {
         dispatch({ type: 'FinishLoading' });
         return;
