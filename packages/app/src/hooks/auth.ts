@@ -1,5 +1,6 @@
 import { TokenData } from '@yukukuru/types';
 import {
+  getRedirectResult,
   onAuthStateChanged,
   signInWithRedirect,
   signOut as authSignOut,
@@ -126,6 +127,27 @@ export const useAuth = (): [State, Action] => {
       dispatch({ type: 'FinishLoading' });
     });
 
+    getRedirectResult(auth)
+      .then((result) => {
+        const user = result.user;
+        const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
+        const credential = TwitterAuthProvider.credentialFromResult(result);
+
+        if (user && credential) {
+          const token: TokenData = {
+            twitterAccessToken: credential.accessToken || '',
+            twitterAccessTokenSecret: credential.secret || '',
+            twitterId,
+          };
+
+          dispatch({ type: 'SetToken', payload: { token } });
+          dispatch({ type: 'FinishSignIn' });
+        }
+      })
+      .catch((error: Error) => {
+        console.error(error.message);
+      });
+
     return () => {
       unsubscribe();
     };
@@ -146,31 +168,7 @@ export const useAuth = (): [State, Action] => {
       lang: 'ja',
     });
 
-    const token = await signInWithRedirect(auth, twitterAuthProvider)
-      .then((result) => {
-        const user = result.user;
-        const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
-        const credential = TwitterAuthProvider.credentialFromResult(result);
-
-        if (user && credential) {
-          const token: TokenData = {
-            twitterAccessToken: credential.accessToken || '',
-            twitterAccessTokenSecret: credential.secret || '',
-            twitterId,
-          };
-          return token;
-        }
-        return null;
-      })
-      .catch((error: Error) => {
-        console.error(error.message);
-        return null;
-      });
-
-    if (token) {
-      dispatch({ type: 'SetToken', payload: { token } });
-    }
-    dispatch({ type: 'FinishSignIn' });
+    await signInWithRedirect(auth, twitterAuthProvider);
   };
 
   const signOut = async () => {

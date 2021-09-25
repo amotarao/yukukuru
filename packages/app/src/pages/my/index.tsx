@@ -43,11 +43,13 @@ const Page: React.FC = () => {
     if (authIsLoading || signingIn) {
       return;
     }
+
+    router.replace('/my');
+
     // 非ログインのときにログイン処理
     if (!signedIn) {
       signIn();
     }
-    router.replace('/my');
   }, [authIsLoading, signingIn, signedIn, router, signIn]);
 
   // lastViewing 送信
