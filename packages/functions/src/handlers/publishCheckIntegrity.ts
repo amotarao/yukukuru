@@ -10,19 +10,19 @@ import { log } from '../utils/log';
  *
  * 12分ごとに 1グループずつ実行
  * 1日に 120回実行
- * ユーザーごとに 1日1回 整合性をチェック
+ * ユーザーごとに 3時間に1回 整合性チェック
  */
 export const publishCheckIntegrityHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp);
   const group = getGroupFromTime(12, now);
 
-  // 1日前
-  const yesterday = new Date(now.getTime() - 23 * 60 * 60 * 1000);
+  // 3時間前
+  const prevDate = new Date(now.getTime() - (3 * 60 * 60 * 1000 - 60 * 1000));
 
   const users = firestore
     .collection('users')
     .where('active', '==', true)
-    .where('lastUpdatedCheckIntegrity', '<', yesterday)
+    .where('lastUpdatedCheckIntegrity', '<', prevDate)
     .where('group', '==', group)
     .get();
 
