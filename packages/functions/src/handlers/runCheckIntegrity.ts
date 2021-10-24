@@ -64,6 +64,12 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   // 存在すべきではないが何故か存在する差分
   const unknownDiffs = getDiffWithIdRecords(firestoreDiffsWithId, currentDiffsWithId);
 
+  console.log({
+    uid,
+    notExistsDiffs: notExistsDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`),
+    unknownDiffs: unknownDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`),
+  });
+
   // 存在しないドキュメントは追加する
   if (notExistsDiffs.length !== 0) {
     const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
