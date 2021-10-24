@@ -13,6 +13,7 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
 
   const data: UserData<FirestoreDateLike> = {
     active: true,
+    deletedAuth: false,
     lastUpdated: new Date(0),
     lastUpdatedTwUsers: new Date(0),
     lastUpdatedCheckIntegrity: new Date(0),
