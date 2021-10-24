@@ -8,7 +8,7 @@ const collection = firestore.collection('users');
  * @param id ユーザーID
  * @returns 存在するかどうか
  */
-export const existsUserDoc = async (id: string): Promise<boolean> => {
+export const existsUserDocument = async (id: string): Promise<boolean> => {
   const snapshot = await collection.doc(id).get();
   return snapshot.exists;
 };

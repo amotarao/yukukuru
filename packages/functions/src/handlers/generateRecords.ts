@@ -129,28 +129,24 @@ export const generateRecordsHandler: FirestoreOnCreateHandler = async (snapshot,
     return item;
   };
 
-  const yukuRecords = yuku.map(
-    async (id): Promise<RecordData> => {
-      const user = await findUser(id);
-      return {
-        type: 'yuku',
-        user,
-        durationStart,
-        durationEnd,
-      };
-    }
-  );
-  const kuruRecords = kuru.map(
-    async (id): Promise<RecordData> => {
-      const user = await findUser(id);
-      return {
-        type: 'kuru',
-        user,
-        durationStart,
-        durationEnd,
-      };
-    }
-  );
+  const yukuRecords = yuku.map(async (id): Promise<RecordData> => {
+    const user = await findUser(id);
+    return {
+      type: 'yuku',
+      user,
+      durationStart,
+      durationEnd,
+    };
+  });
+  const kuruRecords = kuru.map(async (id): Promise<RecordData> => {
+    const user = await findUser(id);
+    return {
+      type: 'kuru',
+      user,
+      durationStart,
+      durationEnd,
+    };
+  });
   const records = await Promise.all([...kuruRecords, ...yukuRecords]);
 
   const addRecordsPromise = addRecords(uid, records);

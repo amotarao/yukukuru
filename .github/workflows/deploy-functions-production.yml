@@ -3,7 +3,7 @@ name: Build and Deploy functions for production
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - firebase.json
       - packages/functions/**

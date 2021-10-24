@@ -61,30 +61,28 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   // 存在しないドキュメントは追加する
   if (notExistsDiffs.length !== 0) {
     const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
-    const items = notExistsDiffs.map(
-      ({ diff }): RecordData<FirestoreDateLike> => {
-        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
-        const userData: RecordUserData =
-          twUser === null
-            ? {
-                id: diff.twitterId,
-                maybeDeletedOrSuspended: true,
-              }
-            : {
-                id: diff.twitterId,
-                screenName: twUser.screenName,
-                displayName: twUser.name,
-                photoUrl: twUser.photoUrl,
-                maybeDeletedOrSuspended: false,
-              };
-        return {
-          type: diff.type,
-          user: userData,
-          durationStart: diff.durationStart,
-          durationEnd: diff.durationEnd,
-        };
-      }
-    );
+    const items = notExistsDiffs.map(({ diff }): RecordData<FirestoreDateLike> => {
+      const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
+      const userData: RecordUserData =
+        twUser === null
+          ? {
+              id: diff.twitterId,
+              maybeDeletedOrSuspended: true,
+            }
+          : {
+              id: diff.twitterId,
+              screenName: twUser.screenName,
+              displayName: twUser.name,
+              photoUrl: twUser.photoUrl,
+              maybeDeletedOrSuspended: false,
+            };
+      return {
+        type: diff.type,
+        user: userData,
+        durationStart: diff.durationStart,
+        durationEnd: diff.durationEnd,
+      };
+    });
     await addRecords(uid, items);
   }
 

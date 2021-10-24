@@ -13,8 +13,7 @@ export const NotificationList: React.FC = () => {
   const items: NotificationItem[] = [
     {
       name: 'ゆくくる運営',
-      text:
-        'データが正常に表示されていないなどのお問い合わせは、Twitterからリプライ・DMにてお知らせください\nTwitterはこちら',
+      text: 'データが正常に表示されていないなどのお問い合わせは、Twitterからリプライ・DMにてお知らせください\nTwitterはこちら',
       url: 'https://twitter.com/yukukuruapp',
     },
   ];

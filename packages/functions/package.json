@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/functions",
-  "version": "0.112.0",
+  "version": "0.113.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "scripts": {
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.168",
     "@types/twitter": "^1.7.0",
-    "eslint": "^7.25.0",
+    "eslint": "^7.32.0",
     "typescript": "^4.3.5"
   }
 }
