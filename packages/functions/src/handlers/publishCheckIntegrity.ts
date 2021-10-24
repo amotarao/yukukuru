@@ -17,12 +17,12 @@ export const publishCheckIntegrityHandler: PubSubOnRunHandler = async (context) 
   const group = getGroupFromTime(12, now);
 
   // 3時間前
-  const yesterday = new Date(now.getTime() - (3 * 60 * 60 * 1000 - 60 * 1000));
+  const prevDate = new Date(now.getTime() - (3 * 60 * 60 * 1000 - 60 * 1000));
 
   const users = firestore
     .collection('users')
     .where('active', '==', true)
-    .where('lastUpdatedCheckIntegrity', '<', yesterday)
+    .where('lastUpdatedCheckIntegrity', '<', prevDate)
     .where('group', '==', group)
     .get();
 
