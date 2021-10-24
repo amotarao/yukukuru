@@ -28,7 +28,7 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
   // watches を 最古のものから 80件取得
   const rawWatches = await getWatches({ uid, count: 80 });
   // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
-  const watches = mergeWatches(rawWatches, true, 10);
+  const watches = mergeWatches(rawWatches, true, 20);
   // 最後の 3件は今回比較しないので取り除く
   watches.splice(watches.length - 3, watches.length);
 
