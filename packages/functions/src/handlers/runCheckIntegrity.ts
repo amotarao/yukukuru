@@ -25,19 +25,25 @@ export const runCheckIntegrityHandler: PubSubOnPublishHandler = async (message, 
 
   console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-  const watches = mergeWatches(await getWatches({ uid, count: 80 }), true, 10);
+  // watches を 最古のものから 80件取得
+  const rawWatches = await getWatches({ uid, count: 80 });
+  // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
+  const watches = mergeWatches(rawWatches, true, 10);
+  // 最後の 3件は今回比較しないので取り除く
+  watches.splice(watches.length - 3, watches.length);
 
-  if (watches.length < 5) {
+  // watches が 2件未満の場合は終了
+  if (watches.length < 2) {
     await updateUserCheckIntegrity(uid, now);
     return;
   }
 
-  // 今回比較する watches 以外を取り除く
-  watches.splice(watches.length - 3, watches.length);
-  // 今回比較する watches のうち、最古のものの取得開始時刻
+  // 最古の watches の取得時刻
   const firstDate = watches[0].watch.getEndDate.toDate();
-  // 今回比較する watches のうち、最新のものの取得開始時刻
+  // 最新の watches の取得時刻 (2つずつ比較していくので、最後から2番目のもの)
   const lastDate = watches[watches.length - 1].watch.getEndDate.toDate();
+
+  // 期間内の records を取得
   const records = await getRecords(uid, firstDate, lastDate);
 
   const currentDiffs = getDiffFollowers(watches.map(({ watch }) => watch));
