@@ -23,14 +23,16 @@ export default class MyApp extends App {
     const { Component, pageProps } = this.props;
 
     return (
-      <ThemeContainer.Provider>
-        <StylesProvider injectFirst>
-          <Head>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-          </Head>
-          <Component {...pageProps} />
-        </StylesProvider>
-      </ThemeContainer.Provider>
+      <React.StrictMode>
+        <ThemeContainer.Provider>
+          <StylesProvider injectFirst>
+            <Head>
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+            </Head>
+            <Component {...pageProps} />
+          </StylesProvider>
+        </ThemeContainer.Provider>
+      </React.StrictMode>
     );
   }
 }
