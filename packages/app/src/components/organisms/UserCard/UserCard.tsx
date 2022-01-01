@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Timestamp, RecordData, RecordUserData } from '@yukukuru/types';
 import React from 'react';
-import { ProfileImage } from '../../atoms/ProfileImage';
+import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import * as style from './style';
 
 const convertDateText = (date: Timestamp): string => {
@@ -31,7 +31,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user, type, durationStart, d
       rel="noopener noreferrer"
     >
       <div css={style.iconWrapper}>
-        <ProfileImage src={user.photoUrl} alt={user.displayName} />
+        <TwitterUserIcon src={user.photoUrl} alt={user.displayName} />
       </div>
       <p css={style.name}>{user.displayName}</p>
       <p css={style.screenName}>@{user.screenName}</p>
@@ -64,7 +64,7 @@ export const DummyUserCard: React.FC<DummyUserCardProps> = ({ user, type, durati
   return (
     <div css={style.wrapper} data-type={type}>
       <div css={style.iconWrapper}>
-        <ProfileImage src={user.photoUrl} alt={user.displayName} />
+        <TwitterUserIcon src={user.photoUrl} alt={user.displayName} />
       </div>
       <p css={style.name}>{user.displayName}</p>
       <p css={style.screenName}>@{user.screenName}</p>
