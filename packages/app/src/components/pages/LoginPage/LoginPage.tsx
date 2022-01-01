@@ -1,8 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import Button from '@material-ui/core/Button';
+import classNames from 'classnames';
 import Link from 'next/link';
 import React from 'react';
-import { style } from './style';
+import styles from './styles.module.scss';
 
 const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
@@ -17,10 +16,10 @@ export type LoginPageProps = {
  */
 export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
   return (
-    <div css={style.wrapper}>
+    <div className={classNames('text-center', styles.wrapper)}>
       <div>
-        <Button
-          css={style.loginButton}
+        <button
+          className="inline-block mb-4 px-4 py-1 rounded border border-primary text-primary"
           variant="outlined"
           color="primary"
           onClick={() => {
@@ -28,13 +27,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
           }}
         >
           {isTouchDevice() && <span>タップして</span>}ログイン
-        </Button>
+        </button>
       </div>
       <div>
         <Link href="/" passHref>
-          <Button css={style.topButton} variant="outlined">
+          <a className="inline-block mb-4 px-4 py-1 rounded border border-sub text-sub" variant="outlined">
             トップページ
-          </Button>
+          </a>
         </Link>
       </div>
     </div>
