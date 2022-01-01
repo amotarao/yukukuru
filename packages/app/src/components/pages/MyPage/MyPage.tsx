@@ -76,8 +76,18 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
     <div className={styles.homeArea}>
       <nav className={styles.labelNav}>
         <ul className="flex justify-between sm:justify-around">
-          <li className="inline-block px-3 py-1 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-white sm:bg-yuku text-xs" data-type="yuku">ゆくひと</li>
-          <li className="inline-block px-3 py-1 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-white sm:bg-kuru text-xs" data-type="kuru">くるひと</li>
+          <li
+            className="inline-block px-3 py-1 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-white sm:bg-yuku text-xs"
+            data-type="yuku"
+          >
+            ゆくひと
+          </li>
+          <li
+            className="inline-block px-3 py-1 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-white sm:bg-kuru text-xs"
+            data-type="kuru"
+          >
+            くるひと
+          </li>
         </ul>
       </nav>
       <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
