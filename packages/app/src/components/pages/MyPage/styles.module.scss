@@ -90,23 +90,8 @@
   z-index: 100;
 
   > ul {
-    display: flex;
-    justify-content: space-between;
-    list-style: none;
-
     > li {
-      border-radius: 8px;
       box-shadow: 0 1px 2px 0 var(--shadow);
-      display: inline-block;
-      font-size: 0.8rem;
-      padding: 4px 16px;
-
-      &[data-type='yuku'] {
-        background: linear-gradient(to right, var(--yuku) 0%, var(--yuku) 100%) left/8px 1px repeat-y var(--back);
-      }
-      &[data-type='kuru'] {
-        background: linear-gradient(to right, var(--kuru) 0%, var(--kuru) 100%) right/8px 1px repeat-y var(--back);
-      }
     }
   }
 
@@ -114,17 +99,11 @@
     margin-bottom: 24px;
 
     > ul {
-      justify-content: space-around;
-
       > li {
-        border-radius: 9999px;
-
         &[data-type='yuku'] {
-          background: var(--yuku);
           margin-right: 32px;
         }
         &[data-type='kuru'] {
-          background: var(--kuru);
           margin-left: 32px;
         }
       }
