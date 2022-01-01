@@ -119,7 +119,7 @@ type Action = {
   setUid: (uid: string | null) => void;
 };
 
-export const useRecords = (): [State, Action] => {
+export const useRecords = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   /** Firebase UID */

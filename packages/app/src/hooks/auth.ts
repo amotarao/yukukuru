@@ -112,7 +112,7 @@ type Action = {
   signOut: () => Promise<void>;
 };
 
-export const useAuth = (): [State, Action] => {
+export const useAuth = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {

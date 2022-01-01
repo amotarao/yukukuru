@@ -47,7 +47,7 @@ type Action = {
   setUid: (uid: string | null) => void;
 };
 
-export const useToken = (): [State, Action] => {
+export const useToken = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [uid, setUid] = useState<string | null>(null);
 
