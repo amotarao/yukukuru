@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage, MyPageProps } from '../../components/pages/MyPage';
@@ -11,8 +10,6 @@ import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const router = useRouter();
-
   const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const uid = user?.uid ?? null;
 
