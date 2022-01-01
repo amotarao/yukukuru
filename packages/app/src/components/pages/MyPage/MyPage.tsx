@@ -1,4 +1,5 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
@@ -6,7 +7,6 @@ import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav, NavType } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { NotificationList } from '../../organisms/NotificationList';
 import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import styles from './styles.module.scss';
@@ -19,6 +19,7 @@ export type MyPageProps = {
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
@@ -73,9 +74,19 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
   return (
     <div className={styles.homeArea}>
       <nav className={styles.labelNav}>
-        <ul>
-          <li data-type="yuku">ゆくひと</li>
-          <li data-type="kuru">くるひと</li>
+        <ul className="flex justify-between sm:justify-around">
+          <li
+            className="inline-block px-3 py-1 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs"
+            data-type="yuku"
+          >
+            ゆくひと
+          </li>
+          <li
+            className="inline-block px-3 py-1 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs"
+            data-type="kuru"
+          >
+            くるひと
+          </li>
         </ul>
       </nav>
       <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
@@ -89,7 +100,16 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 
         return (
           <React.Fragment key={item.id}>
-            {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
+            {showDate && (
+              <h2
+                className={classNames(
+                  'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                  styles.recordHead
+                )}
+              >
+                {dateText}
+              </h2>
+            )}
             <section className={styles.userSection} data-type={item.data.type}>
               <UserCard {...item.data} />
             </section>
@@ -111,6 +131,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   lastRunnedGetFollowers,
   getNextRecords,
+  signIn,
   signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
@@ -148,7 +169,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   };
 
   const superReload = () => {
-    window.location.reload(true);
+    window.location.replace(window.location.href);
   };
 
   return (
@@ -174,14 +195,9 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      {nav === 'notification' && (
-        <section className={styles.section}>
-          <NotificationList />
-        </section>
-      )}
       {nav === 'setting' && (
         <section className={styles.section}>
-          <SettingMenu signOut={signOut} />
+          <SettingMenu signIn={signIn} signOut={signOut} />
         </section>
       )}
       <BottomNav active={nav} onChange={setNav} />

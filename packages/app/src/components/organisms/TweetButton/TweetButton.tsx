@@ -4,14 +4,15 @@ import { Share } from 'react-twitter-widgets';
 import * as style from './style';
 
 interface TweetButtonProps {
+  className?: string;
   size?: 'normal' | 'large';
 }
 
-export const TweetButton: React.FC<TweetButtonProps> = ({ size = 'normal' }) => {
+export const TweetButton: React.FC<TweetButtonProps> = ({ className, size = 'normal' }) => {
   const isNormal = size === 'normal';
 
   return (
-    <div css={style.wrapper} data-size={isNormal ? undefined : size}>
+    <div className={className} css={style.wrapper} data-size={isNormal ? undefined : size}>
       <Share
         url="https://yukukuru.app"
         options={{

@@ -5,23 +5,24 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
-import { style } from './style';
 
 type SettingMenuProps = {
+  signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
-export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
+export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => {
   const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
   return (
     <>
-      <ul css={style.list}>
-        <li css={style.item}>
-          <div css={style.card}>
-            <p>ダークテーマ</p>
+      <ul>
+        <li className="border-b border-b-back-2">
+          <div className="flex items-center">
+            <p className="grow block w-full px-4 py-3 text-left">ダークテーマ</p>
             <Switch
+              className="mr-4"
               checked={theme === 'dark'}
               onChange={() => {
                 setTheme(theme === 'dark' ? 'default' : 'dark');
@@ -31,52 +32,68 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
             />
           </div>
         </li>
-        <li css={style.item}>
+        <li className="border-b border-b-back-2">
           <Link href="/" passHref>
             <a
-              css={style.card}
-              onClick={() => {
-                signOut();
+              className="grow block w-full px-4 py-3 text-left"
+              onClick={async (e) => {
+                e.preventDefault();
+                await signOut();
+                router.push('/');
               }}
             >
               <p>ログアウト</p>
             </a>
           </Link>
         </li>
-        <li css={style.item}>
-          <Link href="/my?login" passHref>
-            <a
-              css={style.card}
-              onClick={async (e) => {
-                e.preventDefault();
-                await signOut();
-                router.replace('/my?login');
-              }}
-            >
-              <p>ログアウト・別のアカウントでログイン</p>
-            </a>
-          </Link>
+        <li className="border-b border-b-back-2">
+          <button
+            className="grow block w-full px-4 py-3 text-left"
+            onClick={async () => {
+              await signIn();
+            }}
+          >
+            <p>
+              別のアカウントでログイン
+              <span className="block mt-1 text-xs">Twitterでアカウントを切り替えたあとに実行</span>
+            </p>
+          </button>
         </li>
       </ul>
-      <div css={style.twitter}>
-        <p>
-          <a href="https://twitter.com/intent/follow?screen_name=yukukuruapp" target="_blank" rel="noopener noreferrer">
+      <section className="mt-4 p-4">
+        <p className="mb-4">
+          <a
+            className="text-primary no-underline"
+            href="https://twitter.com/intent/follow?screen_name=yukukuruapp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             公式Twitterをフォローする @yukukuruapp
           </a>
         </p>
-        <p>
-          <a href="https://twitter.com/yukukuruapp" target="_blank" rel="noopener noreferrer">
+        <p className="mb-4">
+          <a
+            className="text-primary no-underline"
+            href="https://twitter.com/yukukuruapp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             不具合はリプライかDMでお問い合わせください
           </a>
         </p>
-        <p>
-          <a href="https://odaibako.net/u/yukukuruapp" target="_blank" rel="noopener noreferrer">
+        <p className="mb-4">
+          <a
+            className="text-primary no-underline"
+            href="https://odaibako.net/u/yukukuruapp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             お題箱でもご意見受付中！
           </a>
           (お題箱への書き込みは公開されます)
         </p>
         <TweetButton size="large" />
-      </div>
+      </section>
     </>
   );
 };

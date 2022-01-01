@@ -6,22 +6,35 @@ service cloud.firestore {
     function isLoggedIn() {
       return request.auth != null;
     }
+
     function isMe(userID) {
       return isLoggedIn() && request.auth.uid == userID;
     }
 
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/userRoles/$(request.auth.uid))
+             && 'admin' in get(/databases/$(database)/documents/userRoles/$(request.auth.uid)).data
+             && get(/databases/$(database)/documents/userRoles/$(request.auth.uid)).data.admin == true;
+    }
+
     match /users/{userID} {
       allow write: if false;
-      allow read: if isMe(userID);
+      allow read: if isAdmin() || isMe(userID);
 
       match /records/{recordID} {
         allow write: if false;
-        allow read: if isMe(userID);
+        allow read: if isAdmin() || isMe(userID);
       }
 
       match /watches/{watchID} {
-        allow write, read: if false;
+        allow write: if false;
+        allow read: if isAdmin();
       }
+    }
+
+    match /userRoles/{userID} {
+      allow write: if false;
+      allow read: if isAdmin();
     }
 
     match /tokens/{userID} {
@@ -32,7 +45,7 @@ service cloud.firestore {
                       && request.resource.data.twitterAccessToken is string
                       && request.resource.data.twitterAccessTokenSecret is string
                       && request.resource.data.twitterId is string;
-      allow read: if isMe(userID);
+      allow read: if isAdmin() || isMe(userID);
     }
 
     match /userStatuses/{userID} {
@@ -41,7 +54,7 @@ service cloud.firestore {
                       && request.resource.data.keys().hasAll(['lastViewing'])
                       && request.resource.data.keys().hasOnly(['lastViewing'])
                       && request.resource.data.lastViewing == request.time;
-      allow read: if false;
+      allow read: if isAdmin();
     }
 
     // Stripe Extension
