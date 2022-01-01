@@ -1,6 +1,6 @@
 import { TokenData } from '@yukukuru/types';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useState, useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
 type State = {

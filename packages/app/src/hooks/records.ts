@@ -1,6 +1,6 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
-import { useState, useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
 
 const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
