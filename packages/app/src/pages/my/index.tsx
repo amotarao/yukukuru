@@ -12,26 +12,16 @@ import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
   const router = useRouter();
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { setUid: setRecordsUid, getNextRecords }] =
-    useRecords();
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }, { setUid: setUserUid }] = useUser();
-  const [{ isLoading: tokenIsLoading, hasToken }, { setUid: setTokenUid }] = useToken();
 
+  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
   const uid = user?.uid ?? null;
+
+  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(uid);
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(uid);
+  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(uid);
+
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
-
-  // 各 hook に uid セット
-  useEffect(() => {
-    setRecordsUid(uid);
-  }, [uid, setRecordsUid]);
-  useEffect(() => {
-    setTokenUid(uid);
-  }, [uid, setTokenUid]);
-  useEffect(() => {
-    setUserUid(uid);
-  }, [uid, setUserUid]);
 
   // login クエリがついている場合のログイン処理
   useEffect(() => {

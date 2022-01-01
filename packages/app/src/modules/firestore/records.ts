@@ -22,7 +22,6 @@ export const getRecords = async (
   startAfterDoc: QueryDocumentSnapshot | null
 ): Promise<QuerySnapshot<DocumentData>> => {
   const ref = collection(firestore, 'users', uid, 'records');
-  console.log(ref.path);
   let q = query(ref, orderBy('durationEnd', 'desc'));
   if (startAfterDoc) {
     q = query(q, startAfter(startAfterDoc));

@@ -1,6 +1,6 @@
 import { TokenData } from '@yukukuru/types';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useState, useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
 type State = {
@@ -43,13 +43,8 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-type Action = {
-  setUid: (uid: string | null) => void;
-};
-
-export const useToken = (): [State, Action] => {
+export const useToken = (uid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     if (!uid) {
@@ -76,5 +71,5 @@ export const useToken = (): [State, Action] => {
     };
   }, [uid]);
 
-  return [state, { setUid }];
+  return [state];
 };
