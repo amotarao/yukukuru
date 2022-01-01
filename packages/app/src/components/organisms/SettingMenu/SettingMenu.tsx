@@ -8,10 +8,11 @@ import { TweetButton } from '../TweetButton';
 import { style } from './style';
 
 type SettingMenuProps = {
+  signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
-export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
+export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => {
   const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
@@ -35,8 +36,10 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           <Link href="/" passHref>
             <a
               css={style.card}
-              onClick={() => {
-                signOut();
+              onClick={async (e) => {
+                e.preventDefault();
+                await signOut();
+                router.push('/');
               }}
             >
               <p>ログアウト</p>
@@ -44,18 +47,14 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </Link>
         </li>
         <li css={style.item}>
-          <Link href="/my?login" passHref>
-            <a
-              css={style.card}
-              onClick={async (e) => {
-                e.preventDefault();
-                await signOut();
-                router.replace('/my?login');
-              }}
-            >
-              <p>ログアウト・別のアカウントでログイン</p>
-            </a>
-          </Link>
+          <button
+            css={style.card}
+            onClick={async () => {
+              await signIn();
+            }}
+          >
+            <p>別のアカウントでログイン (twitter.com でアカウントを切り替えたあとに実行)</p>
+          </button>
         </li>
       </ul>
       <div css={style.twitter}>

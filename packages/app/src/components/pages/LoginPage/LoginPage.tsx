@@ -4,6 +4,10 @@ import Link from 'next/link';
 import React from 'react';
 import { style } from './style';
 
+const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+};
+
 export type LoginPageProps = {
   signIn: () => void;
 };
@@ -23,7 +27,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
             signIn();
           }}
         >
-          ログイン
+          {isTouchDevice() && <span>タップして</span>}ログイン
         </Button>
       </div>
       <div>
