@@ -35,8 +35,10 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           <Link href="/" passHref>
             <a
               css={style.card}
-              onClick={() => {
-                signOut();
+              onClick={async (e) => {
+                e.preventDefault();
+                await signOut();
+                router.push('/');
               }}
             >
               <p>ログアウト</p>
