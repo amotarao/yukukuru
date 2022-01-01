@@ -44,13 +44,13 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signOut }) => {
           </Link>
         </li>
         <li css={style.item}>
-          <Link href="/my?login" passHref>
+          <Link href="/my" passHref>
             <a
               css={style.card}
               onClick={async (e) => {
                 e.preventDefault();
                 await signOut();
-                router.replace('/my?login');
+                router.replace('/my');
               }}
             >
               <p>ログアウト・別のアカウントでログイン</p>
