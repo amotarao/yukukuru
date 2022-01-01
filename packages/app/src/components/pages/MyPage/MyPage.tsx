@@ -1,4 +1,5 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
@@ -90,7 +91,16 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 
         return (
           <React.Fragment key={item.id}>
-            {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
+            {showDate && (
+              <h2
+                className={classNames(
+                  'w-fit mx-auto my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                  styles.recordHead
+                )}
+              >
+                {dateText}
+              </h2>
+            )}
             <section className={styles.userSection} data-type={item.data.type}>
               <UserCard {...item.data} />
             </section>
@@ -150,7 +160,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   };
 
   const superReload = () => {
-    window.location.reload(true);
+    window.location.replace(window.location.href);
   };
 
   return (
