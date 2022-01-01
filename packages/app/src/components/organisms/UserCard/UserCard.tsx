@@ -37,7 +37,6 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
           alt={displayName}
           width="48"
           height="48"
-          loading="lazy"
         />
       </div>
       {displayName && <p className="col-start-2 mb-1 leading-normal line-clamp-3">{displayName}</p>}
