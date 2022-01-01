@@ -39,6 +39,7 @@ const Page: React.FC = () => {
     hasToken,
     lastRunnedGetFollowers,
     getNextRecords,
+    signIn,
     signOut,
   };
 

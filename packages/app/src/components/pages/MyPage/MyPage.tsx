@@ -19,6 +19,7 @@ export type MyPageProps = {
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
@@ -111,6 +112,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   lastRunnedGetFollowers,
   getNextRecords,
+  signIn,
   signOut,
 }) => {
   const [nav, setNav] = useState<NavType>('home');
@@ -181,7 +183,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       )}
       {nav === 'setting' && (
         <section className={styles.section}>
-          <SettingMenu signOut={signOut} />
+          <SettingMenu signIn={signIn} signOut={signOut} />
         </section>
       )}
       <BottomNav active={nav} onChange={setNav} />
