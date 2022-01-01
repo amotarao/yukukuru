@@ -18,7 +18,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => 
   return (
     <>
       <ul>
-        <li className="border-b border-b-back2">
+        <li className="border-b border-b-back-2">
           <div className="flex items-center">
             <p className="grow block w-full px-4 py-3 text-left">ダークテーマ</p>
             <Switch
@@ -32,7 +32,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => 
             />
           </div>
         </li>
-        <li className="border-b border-b-back2">
+        <li className="border-b border-b-back-2">
           <Link href="/" passHref>
             <a
               className="grow block w-full px-4 py-3 text-left"
@@ -46,7 +46,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => 
             </a>
           </Link>
         </li>
-        <li className="border-b border-b-back2">
+        <li className="border-b border-b-back-2">
           <button
             className="grow block w-full px-4 py-3 text-left"
             onClick={async () => {
