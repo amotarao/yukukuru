@@ -160,7 +160,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   };
 
   const superReload = () => {
-    window.location.reload(true);
+    window.location.replace(window.location.href);
   };
 
   return (

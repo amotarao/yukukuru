@@ -31,13 +31,7 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
       rel={href && 'noopener noreferrer'}
     >
       <div className="row-span-full w-12 h-12 rounded-full float-left overflow-hidden">
-        <TwitterUserIcon
-          className="w-full h-full"
-          src={iconSrc}
-          alt={displayName}
-          width="48"
-          height="48"
-        />
+        <TwitterUserIcon className="w-full h-full" src={iconSrc} alt={displayName} width="48" height="48" />
       </div>
       {displayName && <p className="col-start-2 mb-1 leading-normal line-clamp-3">{displayName}</p>}
       {screenName && <p className="col-start-2 font-bold leading-tight text-xs">{screenName}</p>}
@@ -74,7 +68,7 @@ export const UserCard: React.FC<UserCardProps> = ({ className, user, type, durat
       iconSrc={user.photoUrl}
       href={`https://twitter.com/${user.screenName}`}
       type={type}
-      notice={user.maybeDeletedOrSuspended && '⚠️ 削除または凍結の可能性有り'}
+      notice={user.maybeDeletedOrSuspended ? '⚠️ 削除または凍結の可能性有り' : undefined}
       duration={duration}
     />
   ) : (
