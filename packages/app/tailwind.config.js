@@ -18,5 +18,8 @@ module.exports = {
         danger: 'var(--danger)',
       },
     },
+    screens: {
+      sm: '640px',
+    },
   },
 };
