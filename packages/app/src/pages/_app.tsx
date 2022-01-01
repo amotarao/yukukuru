@@ -5,6 +5,7 @@ import Router from 'next/router';
 import React from 'react';
 import * as gtag from '../libs/gtag';
 import { ThemeContainer } from '../store/theme';
+import '../styles/globals.css';
 
 Router.events.on('routeChangeComplete', (url) => {
   gtag.pageview(url);
