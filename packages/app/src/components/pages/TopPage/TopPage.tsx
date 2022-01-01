@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import Button from '@material-ui/core/Button';
+import classNames from 'classnames';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { DummyUserCard } from '../../organisms/UserCard';
@@ -15,31 +16,43 @@ export const TopPage: React.FC = () => {
   }, []);
 
   return (
-    <div css={style.wrapper}>
-      <section css={style.name}>
-        <h1 css={style.title}>ゆくくる alpha</h1>
-        <p css={style.text}>フォロワーがいつきたか・いなくなったかを記録します</p>
+    <div
+      className="flex flex-col justify-center items-center w-full h-screen min-h-max py-6 bg-top-bg"
+      css={style.wrapper}
+    >
+      <section className="flex flex-col justify-center items-center w-full p-8 bg-back-shadow text-center">
+        <h1 className="mb-4 text-3xl">ゆくくる alpha</h1>
+        <p className="mb-4 text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
         <Link href="/my" passHref>
           <Button css={style.button} variant="outlined" color="primary">
             マイページ・ログイン
           </Button>
         </Link>
-        <p css={style.caution}>
+        <p className="flex flex-wrap justify-center mt-2 text-xs text-sub whitespace-nowrap">
           現在、フォロワー数1万人以上のアカウントの
           <wbr />
           新規登録を停止しています。
           <wbr />
           (2021.5.8)
         </p>
-        <p css={style.caution}>
+        <p className="flex flex-wrap justify-center mt-2 text-xs text-sub whitespace-nowrap">
           ツイートする権限はありませんので
           <wbr />
           安心してご利用ください
         </p>
-        <p css={style.caution}>※ 不具合が発生する場合があります</p>
+        <p className="flex flex-wrap justify-center mt-2 text-xs text-sub whitespace-nowrap">
+          ※ 不具合が発生する場合があります
+        </p>
       </section>
       <section className={myPageStyles.homeArea} css={style.example}>
-        <p className={myPageStyles.recordHead}>こんな感じで表示します</p>
+        <p
+          className={classNames(
+            'w-fit mx-auto my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+            myPageStyles.recordHead
+          )}
+        >
+          こんな感じで表示します
+        </p>
         <section className={myPageStyles.userSection} data-type="yuku">
           <DummyUserCard
             {...{

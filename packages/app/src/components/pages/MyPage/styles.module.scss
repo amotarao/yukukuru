@@ -133,17 +133,7 @@
 }
 
 .recordHead {
-  background: var(--primary);
-  color: var(--back);
-  font-size: 0.8rem;
-  font-weight: normal;
-  margin: 8px auto;
-  padding: 4px 16px;
   flex: 0 0 100%;
-  text-align: center;
-  width: fit-content;
-  border-radius: 9999px;
-  letter-spacing: 0.1em;
 
   *:not(nav) + & {
     margin-top: 40px;
