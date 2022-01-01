@@ -46,13 +46,8 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-type Action = {
-  setUid: (uid: string | null) => void;
-};
-
-export const useUser = (): [Readonly<State>, Action] => {
+export const useUser = (uid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     if (!uid) {
@@ -70,5 +65,5 @@ export const useUser = (): [Readonly<State>, Action] => {
     });
   }, [uid]);
 
-  return [state, { setUid }];
+  return [state];
 };

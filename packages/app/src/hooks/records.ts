@@ -114,16 +114,10 @@ const reducer = (state: State, action: DispatchAction): State => {
 type Action = {
   /** 続きのデータを取得する */
   getNextRecords: () => void;
-
-  /** uid をセットする */
-  setUid: (uid: string | null) => void;
 };
 
-export const useRecords = (): [Readonly<State>, Action] => {
+export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  /** Firebase UID */
-  const [uid, setUid] = useState<string | null>(null);
 
   /**
    * Records を取得し処理する
@@ -170,5 +164,5 @@ export const useRecords = (): [Readonly<State>, Action] => {
     getRecords();
   };
 
-  return [state, { getNextRecords, setUid }];
+  return [state, { getNextRecords }];
 };
