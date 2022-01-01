@@ -41,7 +41,14 @@ const Card: React.FC<CardProps> = ({
       rel={href && 'noopener noreferrer'}
     >
       <div className="row-span-full w-12 h-12 rounded-full float-left overflow-hidden">
-        <TwitterUserIcon className="w-full h-full" src={iconSrc} alt={displayName} width="48" height="48" loading="lazy" />
+        <TwitterUserIcon
+          className="w-full h-full"
+          src={iconSrc}
+          alt={displayName}
+          width="48"
+          height="48"
+          loading="lazy"
+        />
       </div>
       {displayName && <p className="col-start-2 mb-1 leading-normal line-clamp-3">{displayName}</p>}
       {screenName && <p className="col-start-2 font-bold leading-tight text-xs">{screenName}</p>}
