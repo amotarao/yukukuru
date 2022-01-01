@@ -15,17 +15,7 @@ export type CardProps = {
   duration?: string;
 };
 
-const Card: React.FC<CardProps> = ({
-  className,
-  displayName,
-  screenName,
-  iconSrc,
-  iconAlt,
-  href,
-  type,
-  notice,
-  duration,
-}) => {
+const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc, href, type, notice, duration }) => {
   const Tag: keyof JSX.IntrinsicElements = href ? 'a' : 'div';
 
   return (
