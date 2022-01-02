@@ -1,11 +1,10 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { Message } from '@yukukuru/types';
 
 const pubsub = new PubSub();
 
-export const publishMessages = async <T extends Message>(
-  topicName: T['topicName'],
-  items: T['data'][]
+export const publishMessages = async <T extends Record<string, unknown>>(
+  topicName: string,
+  items: T[]
 ): Promise<void> => {
   const topic = pubsub.topic(topicName);
   const publishes = items.map(async (item) => {

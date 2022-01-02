@@ -4,7 +4,6 @@ export * from './firestore/twUser';
 export * from './firestore/user';
 export * from './firestore/user/record';
 export * from './firestore/user/watch';
-export * from './firestore/pubsub-message';
 
 export type FirestoreIdData<T> = {
   /** Firestore ドキュメント ID */
