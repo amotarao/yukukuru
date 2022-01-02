@@ -45,9 +45,13 @@ export const create = functions
           contentType: 'text/csv',
         });
 
+        const now = new Date();
+        const expires = new Date();
+        expires.setHours(now.getHours() + 24);
+
         const [downloadUrl] = await file.getSignedUrl({
           action: 'read',
-          expires: new Date(2100, 0, 1),
+          expires,
         });
         await snapshot.ref.update({ downloadUrl });
       }
