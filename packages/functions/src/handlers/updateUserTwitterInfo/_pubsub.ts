@@ -1,3 +1,9 @@
-import { MessageTopicName } from '@yukukuru/types';
+export const topicName = 'updateUserTwitterInfo';
 
-export const topicName: MessageTopicName = 'updateUserTwitterInfo';
+export type Message = {
+  /** Firebase UID */
+  uid: string;
+
+  /** 送信日時 */
+  publishedAt: Date;
+};

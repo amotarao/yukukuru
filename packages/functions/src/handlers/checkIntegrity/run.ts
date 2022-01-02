@@ -1,4 +1,4 @@
-import { RecordUserData, RecordData, FirestoreDateLike, CheckIntegrityMessage } from '@yukukuru/types';
+import { RecordUserData, RecordData, FirestoreDateLike } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { addRecords } from '../../modules/firestore/records/add';
@@ -12,6 +12,7 @@ import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
 import { log, errorLog } from '../../utils/log';
+import { topicName, Message } from './_pubsub';
 
 /** PubSub: 整合性チェック 個々の実行 */
 export const run = functions
@@ -22,7 +23,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, publishedAt } = message.json as CheckIntegrityMessage['data'];
+    const { uid, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る

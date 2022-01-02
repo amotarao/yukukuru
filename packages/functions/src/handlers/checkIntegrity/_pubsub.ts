@@ -1,3 +1,9 @@
-import { MessageTopicName } from '@yukukuru/types';
+export const topicName = 'checkIntegrity';
 
-export const topicName: MessageTopicName = 'checkIntegrity';
+export type Message = {
+  /** Firebase UID */
+  uid: string;
+
+  /** 送信日時 */
+  publishedAt: Date;
+};

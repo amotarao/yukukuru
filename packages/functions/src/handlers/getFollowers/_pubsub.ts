@@ -1,3 +1,15 @@
-import { MessageTopicName } from '@yukukuru/types';
+export const topicName = 'getFollowers';
 
-export const topicName: MessageTopicName = 'getFollowers';
+export type Message = {
+  /** Firebase UID */
+  uid: string;
+
+  /** カーソル */
+  nextCursor: string;
+
+  /** 最終実行日時 */
+  lastRun: Date;
+
+  /** 送信日時 */
+  publishedAt: Date;
+};

@@ -1,4 +1,3 @@
-import { GetFollowersMessage } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
@@ -9,7 +8,7 @@ import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidToken } from '../../modules/twitter/error';
 import { getFollowersIds } from '../../modules/twitter/followers/ids';
-import { topicName } from './_pubsub';
+import { topicName, Message } from './_pubsub';
 
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions
@@ -20,7 +19,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, nextCursor, lastRun, publishedAt } = message.json as GetFollowersMessage['data'];
+    const { uid, nextCursor, lastRun, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る

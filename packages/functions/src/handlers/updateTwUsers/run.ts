@@ -1,4 +1,3 @@
-import { UpdateTwUsersMessage } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { getToken } from '../../modules/firestore/tokens/get';
@@ -7,7 +6,7 @@ import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/stat
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
-import { topicName } from './_pubsub';
+import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */
 export const run = functions
@@ -18,7 +17,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, publishedAt } = message.json as UpdateTwUsersMessage['data'];
+    const { uid, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る

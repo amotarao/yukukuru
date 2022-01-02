@@ -1,10 +1,11 @@
-import { UserData, GetFollowersMessage } from '@yukukuru/types';
+import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { Message } from './_pubsub';
 
 /** フォロワー取得 定期実行 */
 export const publish = functions
@@ -42,7 +43,7 @@ export const publish = functions
     const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
     const docs = _.uniqBy(_.flatten([allUsersSnap.docs, pausedUsersSnap.docs]), 'id');
 
-    const items: GetFollowersMessage['data'][] = docs.map((doc) => ({
+    const items: Message[] = docs.map((doc) => ({
       uid: doc.id,
       nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
       lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
