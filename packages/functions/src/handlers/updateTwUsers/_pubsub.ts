@@ -5,5 +5,5 @@ export type Message = {
   uid: string;
 
   /** 送信日時 */
-  publishedAt: Date;
+  publishedAt: Date | string;
 };
