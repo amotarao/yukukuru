@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/admin-app",
-  "private": true,
+  "version": "0.115.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
