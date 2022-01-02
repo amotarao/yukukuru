@@ -125,7 +125,7 @@ const WatchesSection: React.FC<WatchesSectionProps> = ({ className, userId }) =>
                         {(doc.get('getEndDate') as Timestamp).toDate().toLocaleString('ja-JP', dateOptions)}
                       </td>
                       <td className="p-2 px-3 text-sm whitespace-nowrap">
-                        {(doc.get('followers') as any[]).length.toLocaleString()}
+                        {(doc.get('followers') as string[]).length.toLocaleString()}
                       </td>
                     </tr>
                   );
