@@ -1,7 +1,7 @@
 import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { publishCheckIntegrityHandler } from '../handlers/publishCheckIntegrity';
-import { runCheckIntegrityHandler } from '../handlers/runCheckIntegrity';
+import { publishCheckIntegrityHandler } from './publishCheckIntegrity';
+import { runCheckIntegrityHandler } from './runCheckIntegrity';
 
 const topicName: MessageTopicName = 'checkIntegrity';
 

@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { generateRecordsHandler } from '../handlers/generateRecords';
+import { generateRecordsHandler } from './generateRecords';
 
 /** Firestore: watch が作成されたときの処理 */
 export const generate = functions

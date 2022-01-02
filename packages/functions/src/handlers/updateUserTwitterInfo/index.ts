@@ -1,7 +1,7 @@
 import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { publishUpdateUserTwitterInfoHandler } from '../handlers/publishUpdateUserTwitterInfo';
-import { runUpdateUserTwitterInfoHandler } from '../handlers/runUpdateUserTwitterInfo';
+import { publishUpdateUserTwitterInfoHandler } from './publishUpdateUserTwitterInfo';
+import { runUpdateUserTwitterInfoHandler } from './runUpdateUserTwitterInfo';
 
 const topicName: MessageTopicName = 'updateUserTwitterInfo';
 

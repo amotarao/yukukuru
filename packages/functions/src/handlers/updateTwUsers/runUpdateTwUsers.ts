@@ -1,12 +1,12 @@
 import { UpdateTwUsersMessage } from '@yukukuru/types';
 import * as _ from 'lodash';
-import { getToken } from '../modules/firestore/tokens/get';
-import { setTwUsers } from '../modules/firestore/twUsers';
-import { updateUserLastUpdatedTwUsers } from '../modules/firestore/users/state';
-import { getLatestWatches } from '../modules/firestore/watches/getWatches';
-import { getClient } from '../modules/twitter/client';
-import { getUsersLookup } from '../modules/twitter/users/lookup';
-import { PubSubOnPublishHandler } from '../types/functions';
+import { getToken } from '../../modules/firestore/tokens/get';
+import { setTwUsers } from '../../modules/firestore/twUsers';
+import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
+import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
+import { getClient } from '../../modules/twitter/client';
+import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
 export const runUpdateTwUsersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid, publishedAt } = message.json as UpdateTwUsersMessage['data'];

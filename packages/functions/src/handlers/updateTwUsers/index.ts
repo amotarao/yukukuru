@@ -1,11 +1,11 @@
 import { MessageTopicName } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { publishGetFollowersHandler } from '../handlers/publishGetFollowers';
-import { runGetFollowersHandler } from '../handlers/runGetFollowers';
+import { publishUpdateTwUsersHandler } from './publishUpdateTwUsers';
+import { runUpdateTwUsersHandler } from './runUpdateTwUsers';
 
-const topicName: MessageTopicName = 'getFollowers';
+const topicName: MessageTopicName = 'updateTwUsers';
 
-/** フォロワー取得 定期実行 */
+/** Twitter ユーザー情報更新 定期実行 */
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
@@ -14,14 +14,14 @@ export const publish = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(publishGetFollowersHandler);
+  .onRun(publishUpdateTwUsersHandler);
 
-/** PubSub: フォロワー取得 個々の実行 */
+/** PubSub: Twitter ユーザー情報更新 個々の実行 */
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 30,
     memory: '256MB',
   })
   .pubsub.topic(topicName)
-  .onPublish(runGetFollowersHandler);
+  .onPublish(runUpdateTwUsersHandler);

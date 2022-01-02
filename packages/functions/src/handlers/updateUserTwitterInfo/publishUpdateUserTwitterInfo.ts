@@ -1,8 +1,8 @@
 import { UpdateUserTwitterInfoMessage } from '@yukukuru/types';
-import { firestore } from '../modules/firebase';
-import { getGroupFromTime } from '../modules/group';
-import { publishMessages } from '../modules/pubsub/publish';
-import { PubSubOnRunHandler } from '../types/functions';
+import { firestore } from '../../modules/firebase';
+import { getGroupFromTime } from '../../modules/group';
+import { publishMessages } from '../../modules/pubsub/publish';
+import { PubSubOnRunHandler } from '../../types/functions';
 
 export const publishUpdateUserTwitterInfoHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp);

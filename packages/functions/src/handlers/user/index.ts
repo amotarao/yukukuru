@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import { initializeUserHandler } from '../handlers/initializeUser';
-import { updateUserActiveByDeleteUserHandler } from '../handlers/updateUserActiveByDeleteUser';
+import { initializeUserHandler } from './initializeUser';
+import { updateUserActiveByDeleteUserHandler } from './updateUserActiveByDeleteUser';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const initialize = functions

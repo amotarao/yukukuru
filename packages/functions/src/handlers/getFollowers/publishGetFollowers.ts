@@ -1,10 +1,10 @@
 import { UserData, GetFollowersMessage } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import * as _ from 'lodash';
-import { firestore } from '../modules/firebase';
-import { getGroupFromTime } from '../modules/group';
-import { publishMessages } from '../modules/pubsub/publish';
-import { PubSubOnRunHandler } from '../types/functions';
+import { firestore } from '../../modules/firebase';
+import { getGroupFromTime } from '../../modules/group';
+import { publishMessages } from '../../modules/pubsub/publish';
+import { PubSubOnRunHandler } from '../../types/functions';
 
 export const publishGetFollowersHandler: PubSubOnRunHandler = async (context) => {
   const now = new Date(context.timestamp);

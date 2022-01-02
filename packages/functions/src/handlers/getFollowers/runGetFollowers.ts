@@ -1,14 +1,14 @@
 import { GetFollowersMessage } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
-import { getStripeRole } from '../modules/auth/claim';
-import { getToken } from '../modules/firestore/tokens/get';
-import { setTokenInvalid } from '../modules/firestore/tokens/set';
-import { setUserResult } from '../modules/firestore/users/state';
-import { setWatch } from '../modules/firestore/watches/setWatch';
-import { getClient } from '../modules/twitter/client';
-import { checkInvalidToken } from '../modules/twitter/error';
-import { getFollowersIds } from '../modules/twitter/followers/ids';
-import { PubSubOnPublishHandler } from '../types/functions';
+import { getStripeRole } from '../../modules/auth/claim';
+import { getToken } from '../../modules/firestore/tokens/get';
+import { setTokenInvalid } from '../../modules/firestore/tokens/set';
+import { setUserResult } from '../../modules/firestore/users/state';
+import { setWatch } from '../../modules/firestore/watches/setWatch';
+import { getClient } from '../../modules/twitter/client';
+import { checkInvalidToken } from '../../modules/twitter/error';
+import { getFollowersIds } from '../../modules/twitter/followers/ids';
+import { PubSubOnPublishHandler } from '../../types/functions';
 
 export const runGetFollowersHandler: PubSubOnPublishHandler = async (message, context) => {
   const { uid, nextCursor, lastRun, publishedAt } = message.json as GetFollowersMessage['data'];
