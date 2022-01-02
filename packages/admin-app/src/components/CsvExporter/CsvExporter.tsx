@@ -1,6 +1,6 @@
 import { collection, doc, addDoc } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { firestore, storage } from '../../modules/firebase';
 

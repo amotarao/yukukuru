@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { getAuth, signInWithPopup, signOut, TwitterAuthProvider } from 'firebase/auth';
 import Link from 'next/link';
-import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseApp } from '../../modules/firebase';
 

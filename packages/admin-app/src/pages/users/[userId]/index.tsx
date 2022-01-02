@@ -1,8 +1,7 @@
 import classNames from 'classnames';
-import { collection, query, orderBy, limitToLast, Timestamp } from 'firebase/firestore';
+import { collection, doc, query, orderBy, limitToLast, Timestamp, CollectionReference } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React from 'react';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { TwitterUserIcon } from '../../../components/TwitterUserIcon';
 import { CsvExporter } from '../../../components/CsvExporter';
@@ -26,7 +25,7 @@ type RecordsSectionProps = {
 
 const RecordsSection: React.FC<RecordsSectionProps> = ({ className, userId }) => {
   const q = query<RecordData>(
-    collection(firestore, 'users', userId, 'records'),
+    collection(firestore, 'users', userId, 'records') as CollectionReference<RecordData>,
     orderBy('durationEnd'),
     limitToLast(100)
   );
@@ -142,7 +141,7 @@ const WatchesSection: React.FC<WatchesSectionProps> = ({ className, userId }) =>
 
 const Page: NextPage = () => {
   const router = useRouter();
-  const userId = router.query.userId;
+  const userId = router.query.userId as string;
 
   return (
     <div>

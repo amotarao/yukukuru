@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, query, orderBy, limit, Timestamp, OrderByDirection } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
@@ -14,11 +14,25 @@ const Page: NextPage = () => {
 
   let q = query(collection(firestore, 'twUsers'));
 
-  const orderByValue = 'orderBy' in router.query ? router.query.orderBy : '__name__';
-  const direction = 'orderByDirection' in router.query ? router.query.orderByDirection : 'asc';
+  const orderByValue =
+    'orderBy' in router.query && router.query.orderBy
+      ? Array.isArray(router.query.orderBy)
+        ? router.query.orderBy[0]
+        : router.query.orderBy
+      : '__name__';
+  const direction = (
+    'orderByDirection' in router.query && router.query.orderByDirection
+      ? Array.isArray(router.query.orderByDirection)
+        ? router.query.orderByDirection[0]
+        : router.query.orderByDirection
+      : 'asc'
+  ) as OrderByDirection;
   q = query(q, orderBy(orderByValue, direction));
 
-  const limitValue = 'limit' in router.query ? parseInt(router.query.limit) : 100;
+  const limitValue =
+    'limit' in router.query && router.query.limit
+      ? parseInt(Array.isArray(router.query.limit) ? router.query.limit[0] : router.query.limit)
+      : 100;
   q = query(q, limit(limitValue));
 
   const [snapshot, loading, error] = useCollectionOnce(q);

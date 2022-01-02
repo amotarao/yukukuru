@@ -1,10 +1,9 @@
 import classNames from 'classnames';
-import React from 'react';
 
 export type SortButtonProps = {
   className?: string;
   direction?: 'asc' | 'desc';
-  onClick?: MouseEventHandler<HTMLButtonElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const SortButton: React.FC<SortButtonProps> = ({ className, direction = 'asc', onClick }) => {

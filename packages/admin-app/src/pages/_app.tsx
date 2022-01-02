@@ -1,6 +1,5 @@
 import { getAuth } from 'firebase/auth';
 import type { AppProps } from 'next/app';
-import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { SideNav } from '../components/SideNav';
 import { TopNav } from '../components/TopNav';
