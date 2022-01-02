@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { collection, doc, query, orderBy, limitToLast, Timestamp, CollectionReference } from 'firebase/firestore';
+import { collection, query, orderBy, limitToLast, Timestamp, CollectionReference } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
