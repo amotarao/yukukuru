@@ -8,14 +8,7 @@ import { TwitterUserIcon } from '../../../components/TwitterUserIcon';
 import { CsvExporter } from '../../../components/CsvExporter';
 // import { RecordsBarGraph } from '../../../components/RecordsBarGraph';
 import { firestore } from '../../../modules/firebase';
-
-const dateOptions: Intl.DateTimeFormatOptions = {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-};
+import { dateOptions } from '../../../modules/date';
 
 type RecordData = {
   durationStart: Timestamp;

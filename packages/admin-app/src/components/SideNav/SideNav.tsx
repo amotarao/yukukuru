@@ -9,7 +9,10 @@ export type SideNavProps = {
 
 export const SideNav: React.FC<SideNavProps> = ({ className }) => {
   const router = useRouter();
-  const menuItems = [{ href: '/users', name: 'Users' }];
+  const menuItems = [
+    { href: '/users', name: 'Users' },
+    { href: '/twUsers', name: 'Tw Users' },
+  ];
 
   return (
     <aside className={classNames('px-8 py-10', className)}>
