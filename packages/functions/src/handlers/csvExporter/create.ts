@@ -46,7 +46,8 @@ export const create = functions
         });
 
         const now = new Date();
-        const expires = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+        const expires = new Date();
+        expires.setHours(now.getHours() + 24);
 
         const [downloadUrl] = await file.getSignedUrl({
           action: 'read',
