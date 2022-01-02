@@ -6,7 +6,7 @@ import React from 'react';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { TwitterUserIcon } from '../../../components/TwitterUserIcon';
 import { CsvExporter } from '../../../components/CsvExporter';
-import { RecordsBarGraph } from '../../../components/RecordsBarGraph';
+// import { RecordsBarGraph } from '../../../components/RecordsBarGraph';
 import { firestore } from '../../../modules/firebase';
 
 const dateOptions: Intl.DateTimeFormatOptions = {
