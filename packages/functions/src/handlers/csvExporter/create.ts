@@ -45,11 +45,7 @@ export const create = functions
           contentType: 'text/csv',
         });
 
-        const [downloadUrl] = await file.getSignedUrl({
-          action: 'read',
-          expires: new Date(2100, 0, 1),
-        });
-        await snapshot.ref.update({ downloadUrl });
+        await snapshot.ref.update({ storageRef });
       }
     }
   });
