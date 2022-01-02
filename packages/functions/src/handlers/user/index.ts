@@ -1,2 +1,2 @@
-export * from './updateUserActiveByDeleteUser';
-export * from './initializeUser';
+export * from './updateActive';
+export * from './initialize';

@@ -1,1 +1,1 @@
-export * from './updateUserActiveByUpdateToken';
+export * from './updateActive';

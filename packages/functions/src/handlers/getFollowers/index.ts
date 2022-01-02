@@ -1,2 +1,2 @@
-export * from './publishGetFollowers';
-export * from './runGetFollowers';
+export * from './publish';
+export * from './run';

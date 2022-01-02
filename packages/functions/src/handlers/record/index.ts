@@ -1,1 +1,1 @@
-export * from './generateRecords';
+export * from './generate';

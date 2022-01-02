@@ -1,2 +1,2 @@
-export * from './publishUpdateUserTwitterInfo';
-export * from './runUpdateUserTwitterInfo';
+export * from './publish';
+export * from './run';

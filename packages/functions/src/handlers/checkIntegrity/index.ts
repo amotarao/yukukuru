@@ -1,2 +1,2 @@
-export * from './publishCheckIntegrity';
-export * from './runCheckIntegrity';
+export * from './publish';
+export * from './run';
