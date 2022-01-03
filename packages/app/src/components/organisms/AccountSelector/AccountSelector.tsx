@@ -35,20 +35,20 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, scr
         <KeyboardArrowDownIcon className="text-base ml-2" />
       </button>
       {shown && (
-        <div
-          ref={modalRef}
-          className="absolute flex justify-center w-full p-4"
-          tabIndex={0}
-          onBlur={(e) => {
-            if (e.relatedTarget === switchRef.current) {
-              return;
-            }
-            if (!e.currentTarget.contains(e.relatedTarget)) {
-              setShown(false);
-            }
-          }}
-        >
-          <div className="w-10/12 sm:w-80 rounded-lg bg-back shadow shadow-shadow">
+        <div className="absolute flex justify-center w-full p-4">
+          <div
+            ref={modalRef}
+            className="w-10/12 sm:w-80 rounded-lg bg-back shadow shadow-shadow"
+            tabIndex={0}
+            onBlur={(e) => {
+              if (e.relatedTarget === switchRef.current) {
+                return;
+              }
+              if (!e.currentTarget.contains(e.relatedTarget)) {
+                setShown(false);
+              }
+            }}
+          >
             <button
               className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
               onClick={() => {
