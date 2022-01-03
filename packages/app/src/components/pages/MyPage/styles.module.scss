@@ -81,36 +81,6 @@
   }
 }
 
-.labelNav {
-  margin: 0 16px 16px;
-  pointer-events: none;
-  position: sticky;
-  top: 16px;
-  width: auto;
-  z-index: 10;
-
-  > ul {
-    > li {
-      box-shadow: 0 1px 2px 0 var(--shadow);
-    }
-  }
-
-  @media screen and (min-width: 640px) {
-    margin-bottom: 24px;
-
-    > ul {
-      > li {
-        &[data-type='yuku'] {
-          margin-right: 32px;
-        }
-        &[data-type='kuru'] {
-          margin-left: 32px;
-        }
-      }
-    }
-  }
-}
-
 .recordHead {
   flex: 0 0 100%;
 
@@ -214,7 +184,7 @@
 
 .noticeText {
   font-size: 0.8em;
-  color: #999;
+  color: var(--sub);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

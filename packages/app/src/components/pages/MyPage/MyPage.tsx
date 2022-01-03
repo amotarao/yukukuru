@@ -70,25 +70,17 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 
   return (
     <div className={styles.homeArea}>
-      <nav className={styles.labelNav}>
-        <ul className="flex justify-between sm:justify-around">
-          <li
-            className="inline-block px-3 py-1 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs"
-            data-type="yuku"
-          >
+      <nav className="sticky top-0 z-10 flex w-full -mb-12 sm:-mb-16 px-4 py-3 sm:py-5 pointer-events-none">
+        <ul className="flex justify-between sm:justify-around w-full">
+          <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
             ゆくひと
           </li>
-          <li
-            className="inline-block px-3 py-1 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs"
-            data-type="kuru"
-          >
+          <li className="inline-block px-3 py-1 sm:ml-8 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs shadow-sm shadow-shadow">
             くるひと
           </li>
         </ul>
       </nav>
-      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
-        <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
-      </div>
+      <LastUpdatedText className="my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
         const date = item.data.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
