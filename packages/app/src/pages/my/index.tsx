@@ -29,7 +29,7 @@ const Page: React.FC = () => {
 
   const authAccount = user && twitter ? { id: user.uid, twitter } : null;
   const multiAccounts = [authAccount, ...accounts].filter((account) => account !== null);
-  const currentAccount = multiAccounts.find((account) => account.id === currentUid) || null;
+  const currentAccount = multiAccounts.find((account) => account?.id === currentUid) || null;
 
   // lastViewing 送信
   useEffect(() => {
