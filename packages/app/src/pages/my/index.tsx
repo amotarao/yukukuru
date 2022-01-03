@@ -14,7 +14,7 @@ const Page: React.FC = () => {
   const uid = user?.uid ?? null;
 
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(uid);
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(uid);
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers, twitter }] = useUser(uid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(uid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
@@ -35,6 +35,7 @@ const Page: React.FC = () => {
     hasNext,
     hasToken,
     lastRunnedGetFollowers,
+    twitter,
     getNextRecords,
   };
 

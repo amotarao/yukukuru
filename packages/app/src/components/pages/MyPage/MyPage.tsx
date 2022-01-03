@@ -1,4 +1,4 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, UserData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
@@ -18,6 +18,7 @@ export type MyPageProps = {
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
+  twitter: UserData['twitter'] | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
 };
 
@@ -58,7 +59,11 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twitter'>> = ({
+  items,
+  lastRunnedGetFollowers,
+  twitter,
+}) => {
   if (items.length === 0) {
     // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
     if (lastRunnedGetFollowers.getTime() === 0) {
@@ -83,8 +88,8 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
       </nav>
       <AccountSelector
         className="sticky top-0 z-10 h-12 sm:h-16 py-2 sm:py-3"
-        screenName="amotarao"
-        imageSrc="https://placehold.jp/3d4070/ffffff/150x150.png"
+        screenName={twitter?.screenName ?? undefined}
+        imageSrc={twitter?.photoUrl ?? undefined}
       />
       <LastUpdatedText className="my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
@@ -125,6 +130,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
+  twitter,
   getNextRecords,
 }) => {
   const [paging, setPaging] = useState<number>(1);
@@ -170,7 +176,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
+            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} twitter={twitter} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>

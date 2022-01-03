@@ -1,4 +1,4 @@
-import { Timestamp } from '@yukukuru/types';
+import { Timestamp, UserData } from '@yukukuru/types';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
@@ -6,11 +6,13 @@ import { firestore } from '../modules/firebase';
 type State = {
   isLoading: boolean;
   lastRunnedGetFollowers: Date;
+  twitter: UserData['twitter'] | null;
 };
 
 const initialState: State = {
   isLoading: true,
   lastRunnedGetFollowers: new Date(0),
+  twitter: null,
 };
 
 type DispatchAction =
@@ -21,6 +23,12 @@ type DispatchAction =
       };
     }
   | {
+      type: 'SetTwitter';
+      payload: {
+        twitter: UserData['twitter'];
+      };
+    }
+  | {
       type: 'FinishLoading';
     };
 
@@ -28,8 +36,16 @@ const reducer = (state: State, action: DispatchAction): State => {
   switch (action.type) {
     case 'SetLastRunnedGetFollowers': {
       return {
+        ...state,
         isLoading: false,
         lastRunnedGetFollowers: action.payload.lastRunnedGetFollowers,
+      };
+    }
+
+    case 'SetTwitter': {
+      return {
+        ...state,
+        twitter: action.payload.twitter,
       };
     }
 
@@ -59,6 +75,9 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
         dispatch({ type: 'FinishLoading' });
         return;
       }
+
+      const twitter = doc.get('twitter') as UserData['twitter'];
+      dispatch({ type: 'SetTwitter', payload: { twitter } });
 
       const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
       dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
