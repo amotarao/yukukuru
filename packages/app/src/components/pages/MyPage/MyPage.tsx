@@ -29,8 +29,8 @@ export type MyPageProps = {
 const NoItemView: React.FC = () => {
   return (
     <div>
-      <p className="mx-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
-      <p className="mx-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(2021.5.8)
       </p>
     </div>
@@ -43,10 +43,10 @@ const NoItemView: React.FC = () => {
 const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div>
-      <p className="mx-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className="mx-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -72,7 +72,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="mx-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
           const date = item.data.durationEnd.toDate();
