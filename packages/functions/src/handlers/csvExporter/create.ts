@@ -9,8 +9,8 @@ const toDateText = (timestamp: Timestamp): string => {
 export const create = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
-    memory: '512MB',
+    timeoutSeconds: 60,
+    memory: '2GB',
   })
   .firestore.document('csvExportRequests/{id}')
   .onCreate(async (snapshot, context) => {
