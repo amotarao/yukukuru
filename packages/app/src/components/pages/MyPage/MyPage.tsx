@@ -5,9 +5,8 @@ import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
-import { BottomNav, NavType } from '../../organisms/BottomNav';
+import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import styles from './styles.module.scss';
 
@@ -19,8 +18,6 @@ export type MyPageProps = {
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  signIn: () => void;
-  signOut: () => void | Promise<void>;
 };
 
 /**
@@ -131,18 +128,8 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   lastRunnedGetFollowers,
   getNextRecords,
-  signIn,
-  signOut,
 }) => {
-  const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : '';
-  }, [nav]);
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
@@ -195,12 +182,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      {nav === 'setting' && (
-        <section className={styles.section}>
-          <SettingMenu signIn={signIn} signOut={signOut} />
-        </section>
-      )}
-      <BottomNav active={nav} onChange={setNav} />
+      <BottomNav active="my" />
     </div>
   );
 };
