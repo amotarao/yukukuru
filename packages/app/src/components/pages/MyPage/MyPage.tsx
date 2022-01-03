@@ -167,7 +167,7 @@ export const MyPage: React.FC<MyPageProps> = ({
 
   return (
     <div className={styles.wrapper}>
-      {!isLoading && (
+      {currentAccount && (
         <AccountSelector
           className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
           currentAccount={currentAccount}

@@ -36,9 +36,12 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
           setShown(!shown);
         }}
       >
-        <TwitterUserIcon className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full" src={currentAccount?.twitter.photoUrl} />
+        <TwitterUserIcon
+          className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full"
+          src={currentAccount?.twitter.photoUrl ?? ''}
+        />
         <span className="flex-1 text-xs sm:text-sm text-center line-clamp-1">
-          @{currentAccount?.twitter.screenName}
+          @{currentAccount?.twitter.screenName ?? ''}
         </span>
         <KeyboardArrowDownIcon className="text-base ml-2" />
       </button>

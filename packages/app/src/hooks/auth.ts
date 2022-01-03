@@ -1,4 +1,4 @@
-import { TokenData } from '@yukukuru/types';
+import { TokenData, UserData } from '@yukukuru/types';
 import {
   onAuthStateChanged,
   signInWithPopup,

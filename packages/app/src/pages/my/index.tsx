@@ -27,9 +27,9 @@ const Page: React.FC = () => {
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
-  const authAccount = { id: user?.uid ?? '', twitter };
-  const multiAccounts = [authAccount, ...accounts];
-  const currentAccount = multiAccounts.find((account) => account.id === currentUid);
+  const authAccount = user && twitter ? { id: user.uid, twitter } : null;
+  const multiAccounts = [authAccount, ...accounts].filter((account) => account !== null);
+  const currentAccount = multiAccounts.find((account) => account.id === currentUid) || null;
 
   // lastViewing 送信
   useEffect(() => {
