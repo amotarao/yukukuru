@@ -26,15 +26,16 @@ export const create = functions
           .orderBy('durationEnd')
           .get();
 
-        const head = 'type,durationStart,durationEnd,id,maybeDeletedOrSuspended';
+        const head = ['id', 'type', 'durationStart', 'durationEnd', 'twitterId', 'maybeDeletedOrSuspended'].join(',');
         const rows = recordsSnapshot.docs.map((doc) => {
+          const id = doc.id;
           const type = doc.get('type') as 'yuku' | 'kuru';
           const durationStart = toDateText(doc.get('durationStart') as Timestamp);
           const durationEnd = toDateText(doc.get('durationEnd') as Timestamp);
-          const id = doc.get('user.id') as string;
+          const twitterId = doc.get('user.id') as string;
           const maybeDeletedOrSuspended = doc.get('user.maybeDeletedOrSuspended') as boolean;
 
-          const row = [type, durationStart, durationEnd, id, maybeDeletedOrSuspended].join(',');
+          const row = [id, type, durationStart, durationEnd, twitterId, maybeDeletedOrSuspended].join(',');
           return row;
         });
         const csv = head + '\n' + rows.join('\n');
