@@ -12,6 +12,9 @@ const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<Re
 };
 
 type State = {
+  /** 初期状態かどうか */
+  initial: boolean;
+
   /** 初期読み込み中かどうか */
   isFirstLoading: boolean;
 
@@ -35,6 +38,7 @@ type State = {
 };
 
 const initialState: State = {
+  initial: true,
   isFirstLoading: false,
   isNextLoading: false,
   isFirstLoaded: false,
@@ -69,6 +73,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'StartLoadInitialRecords': {
       return {
         ...state,
+        initial: false,
         isFirstLoading: true,
         isNextLoading: false,
       };
@@ -77,6 +82,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'StartLoadNextRecords': {
       return {
         ...state,
+        initial: false,
         isFirstLoading: false,
         isNextLoading: true,
       };
@@ -85,6 +91,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'FinishLoadRecords': {
       return {
         ...state,
+        initial: false,
         isFirstLoaded: true,
         isFirstLoading: false,
         isNextLoading: false,
@@ -98,6 +105,7 @@ const reducer = (state: State, action: DispatchAction): State => {
 
       return {
         ...state,
+        initial: false,
         items: [...state.items, ...items],
         hasNext: items.length >= 50,
         cursor,
@@ -137,21 +145,19 @@ export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
    * UID が変更した際は初期化する
    */
   useEffect(() => {
-    if (!uid) {
-      dispatch({ type: 'Initialize' });
-    }
+    dispatch({ type: 'Initialize' });
   }, [uid]);
 
   /**
    * 初回 Records を取得する
    */
   useEffect(() => {
-    if (state.isFirstLoading || state.isFirstLoaded || !uid) {
+    if (!uid || !state.initial) {
       return;
     }
     dispatch({ type: 'StartLoadInitialRecords' });
     getRecords();
-  }, [getRecords, state.isFirstLoading, state.isFirstLoaded, uid]);
+  }, [uid, state.initial, getRecords]);
 
   /**
    * 続きの Records を取得する
