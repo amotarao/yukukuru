@@ -55,7 +55,7 @@
   padding: 1rem calc(50% - 240px) 5rem;
   padding: 1rem calc(50% - 240px) calc(5rem + constant(safe-area-inset-bottom));
   padding: 1rem calc(50% - 240px) calc(5rem + env(safe-area-inset-bottom));
-  z-index: 100;
+  z-index: 10;
 
   @media screen and (min-width: 640px) {
     padding-right: calc(50% - 480px);
@@ -87,7 +87,7 @@
   position: sticky;
   top: 16px;
   width: auto;
-  z-index: 100;
+  z-index: 10;
 
   > ul {
     > li {

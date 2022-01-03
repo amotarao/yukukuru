@@ -1,9 +1,8 @@
-/** @jsxImportSource @emotion/react */
 import HomeIcon from '@material-ui/icons/Home';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Link from 'next/link';
 import React from 'react';
-import { style } from './style';
+import styles from './styles.module.scss';
 
 export type NavType = 'my' | 'settings';
 
@@ -27,20 +26,25 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
   };
 
   return (
-    <nav css={style.nav}>
-      <ul css={style.list}>
-        <li css={style.item}>
+    <nav className="fixed left-0 bottom-0 z-20 w-full bg-back border-t border-t-shadow">
+      <ul className="flex justify-center max-w-xl mx-auto">
+        <li className="flex-auto w-1/2">
           <Link href="/my">
-            <a css={style.button} aria-selected={active === 'my'} data-type="my" onClick={onClick}>
-              <HomeIcon />
+            <a className={styles.button} aria-current={active === 'my' && 'page'} data-type="my" onClick={onClick}>
+              <HomeIcon className="text-2xl" />
               ホーム
             </a>
           </Link>
         </li>
-        <li css={style.item}>
+        <li className="flex-auto w-1/2">
           <Link href="/settings">
-            <a css={style.button} aria-selected={active === 'settings'} data-type="settings" onClick={onClick}>
-              <SettingsIcon />
+            <a
+              className={styles.button}
+              aria-current={active === 'settings' && 'page'}
+              data-type="settings"
+              onClick={onClick}
+            >
+              <SettingsIcon className="text-2xl" />
               設定
             </a>
           </Link>
