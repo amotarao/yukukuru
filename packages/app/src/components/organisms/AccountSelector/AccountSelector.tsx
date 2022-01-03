@@ -55,7 +55,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
               if (e.relatedTarget === switchRef.current) {
                 return;
               }
-              if (!e.currentTarget.contains(e.relatedTarget)) {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
                 setShown(false);
               }
             }}
