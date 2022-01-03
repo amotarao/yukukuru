@@ -7,7 +7,7 @@ import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken } from '../../modules/twitter/error';
+import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
@@ -94,7 +94,7 @@ export const generate = functions
     const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
 
     if ('errors' in result) {
-      if (checkInvalidToken(result.errors)) {
+      if (checkInvalidOrExpiredToken(result.errors)) {
         await setTokenInvalid(uid);
       }
     }
