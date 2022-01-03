@@ -10,10 +10,6 @@ export const style = {
     bottom: 0;
     font-size: 14px;
     z-index: 200;
-
-    a {
-      color: var(--primary);
-    }
   `,
 
   list: css`
