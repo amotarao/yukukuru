@@ -84,7 +84,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           currentDate = dateText;
 
           return (
-            <div key={item.id}>
+            <React.Fragment key={item.id}>
               {showDate && (
                 <h2
                   className={classNames(
@@ -98,7 +98,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
               <div className={styles.userSection} data-type={item.data.type}>
                 <UserCard {...item.data} />
               </div>
-            </div>
+            </React.Fragment>
           );
         })}
       </section>
