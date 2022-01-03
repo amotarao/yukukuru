@@ -1,7 +1,6 @@
 import React from 'react';
 import { BottomNav } from '../../organisms/BottomNav';
 import { SettingsMenu } from '../../organisms/SettingsMenu';
-import styles from './styles.module.scss';
 
 export type SettingsPageProps = {
   signIn: () => void;
@@ -10,10 +9,8 @@ export type SettingsPageProps = {
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({ signIn, signOut }) => {
   return (
-    <div className={styles.wrapper}>
-      <section className={styles.section}>
-        <SettingsMenu signIn={signIn} signOut={signOut} />
-      </section>
+    <div className="max-w-md sm:max-w-xl mx-auto pt-4 pb-16">
+      <SettingsMenu signIn={signIn} signOut={signOut} />
       <BottomNav active="settings" />
     </div>
   );
