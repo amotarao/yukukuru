@@ -55,7 +55,7 @@
   padding: 1rem calc(50% - 240px) 5rem;
   padding: 1rem calc(50% - 240px) calc(5rem + constant(safe-area-inset-bottom));
   padding: 1rem calc(50% - 240px) calc(5rem + env(safe-area-inset-bottom));
-  z-index: 100;
+  z-index: 10;
 
   @media screen and (min-width: 640px) {
     padding-right: calc(50% - 480px);
@@ -78,36 +78,6 @@
 
   @media screen and (min-width: 640px) {
     margin-top: -63px;
-  }
-}
-
-.labelNav {
-  margin: 0 16px 16px;
-  pointer-events: none;
-  position: sticky;
-  top: 16px;
-  width: auto;
-  z-index: 100;
-
-  > ul {
-    > li {
-      box-shadow: 0 1px 2px 0 var(--shadow);
-    }
-  }
-
-  @media screen and (min-width: 640px) {
-    margin-bottom: 24px;
-
-    > ul {
-      > li {
-        &[data-type='yuku'] {
-          margin-right: 32px;
-        }
-        &[data-type='kuru'] {
-          margin-left: 32px;
-        }
-      }
-    }
   }
 }
 
@@ -214,7 +184,7 @@
 
 .noticeText {
   font-size: 0.8em;
-  color: #999;
+  color: var(--sub);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

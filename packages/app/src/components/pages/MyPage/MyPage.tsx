@@ -5,9 +5,8 @@ import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
-import { BottomNav, NavType } from '../../organisms/BottomNav';
+import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import styles from './styles.module.scss';
 
@@ -19,8 +18,6 @@ export type MyPageProps = {
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  signIn: () => void;
-  signOut: () => void | Promise<void>;
 };
 
 /**
@@ -73,25 +70,17 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 
   return (
     <div className={styles.homeArea}>
-      <nav className={styles.labelNav}>
-        <ul className="flex justify-between sm:justify-around">
-          <li
-            className="inline-block px-3 py-1 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs"
-            data-type="yuku"
-          >
+      <nav className="sticky top-0 z-10 flex w-full -mb-12 sm:-mb-16 px-4 py-3 sm:py-5 pointer-events-none">
+        <ul className="flex justify-between sm:justify-around w-full">
+          <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
             ゆくひと
           </li>
-          <li
-            className="inline-block px-3 py-1 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs"
-            data-type="kuru"
-          >
+          <li className="inline-block px-3 py-1 sm:ml-8 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs shadow-sm shadow-shadow">
             くるひと
           </li>
         </ul>
       </nav>
-      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
-        <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
-      </div>
+      <LastUpdatedText className="my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
         const date = item.data.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
@@ -131,18 +120,8 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   lastRunnedGetFollowers,
   getNextRecords,
-  signIn,
-  signOut,
 }) => {
-  const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : '';
-  }, [nav]);
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
@@ -195,12 +174,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      {nav === 'setting' && (
-        <section className={styles.section}>
-          <SettingMenu signIn={signIn} signOut={signOut} />
-        </section>
-      )}
-      <BottomNav active={nav} onChange={setNav} />
+      <BottomNav active="my" />
     </div>
   );
 };
