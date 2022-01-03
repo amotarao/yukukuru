@@ -97,11 +97,11 @@ export const run = functions
     });
 
     if ('errors' in result) {
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
-
       if (checkInvalidToken(result.errors)) {
         await setTokenInvalid(uid);
       }
+
+      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
@@ -111,7 +111,6 @@ export const run = functions
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await setWatch(uid, ids, now, ended);
     await setUserResult(uid, watchId, ended, newNextCursor, now);
-
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
     console.log(`✔️ Completed get followers of [${uid}].`);
