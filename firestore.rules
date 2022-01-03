@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     allow write, read: if false;
@@ -54,6 +55,11 @@ service cloud.firestore {
                       && request.resource.data.keys().hasAll(['lastViewing'])
                       && request.resource.data.keys().hasOnly(['lastViewing'])
                       && request.resource.data.lastViewing == request.time;
+      allow read: if isAdmin();
+    }
+
+    match /csvExportRequests/{requestID} {
+      allow write: if isAdmin();
       allow read: if isAdmin();
     }
 

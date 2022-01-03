@@ -4,6 +4,7 @@ import { setUserToNotActive } from '../users/active';
 
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = setUserToNotActive(userId);
+
   const data: Pick<TokenData, 'twitterAccessToken' | 'twitterAccessTokenSecret'> = {
     twitterAccessToken: '',
     twitterAccessTokenSecret: '',
