@@ -161,11 +161,6 @@ export const useAuth = (): [Readonly<State>, Action] => {
     }
 
     getDoc(doc(firestore, 'users', state.user.uid)).then((doc) => {
-      if (!doc.exists) {
-        dispatch({ type: 'StartLoading' });
-        return;
-      }
-
       const twitter: State['twitter'] = doc.get('twitter') as UserData['twitter'];
       dispatch({ type: 'SetTwitter', payload: { twitter } });
     });
