@@ -51,6 +51,9 @@ const Page: React.FC = () => {
             lastRunnedGetFollowers,
             twitter,
             getNextRecords,
+            changeCurrentUid: (uid) => {
+              setCurrentUid(uid);
+            },
           }}
         />
       ) : (

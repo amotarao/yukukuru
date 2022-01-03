@@ -20,6 +20,7 @@ export type MyPageProps = {
   lastRunnedGetFollowers: Date;
   twitter: UserData['twitter'] | null;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  changeCurrentUid: (uid: string) => void;
 };
 
 /**
@@ -59,10 +60,11 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twitter'>> = ({
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twitter' | 'changeCurrentUid'>> = ({
   items,
   lastRunnedGetFollowers,
   twitter,
+  changeCurrentUid,
 }) => {
   if (items.length === 0) {
     // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
@@ -90,6 +92,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twi
         className="sticky top-0 z-10 h-12 sm:h-16 py-2 sm:py-3"
         screenName={twitter?.screenName ?? undefined}
         imageSrc={twitter?.photoUrl ?? undefined}
+        change={changeCurrentUid}
       />
       <LastUpdatedText className="my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
@@ -132,6 +135,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   lastRunnedGetFollowers,
   twitter,
   getNextRecords,
+  changeCurrentUid,
 }) => {
   const [paging, setPaging] = useState<number>(1);
 
@@ -176,7 +180,12 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} twitter={twitter} />
+            <Home
+              items={items}
+              lastRunnedGetFollowers={lastRunnedGetFollowers}
+              twitter={twitter}
+              changeCurrentUid={changeCurrentUid}
+            />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>

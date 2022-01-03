@@ -7,9 +7,10 @@ export type AccountSelectorProps = {
   className?: string;
   screenName?: string;
   imageSrc?: string;
+  change: (uid: string) => void;
 };
 
-export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, screenName, imageSrc }) => {
+export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, screenName, imageSrc, change }) => {
   const [shown, setShown] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
