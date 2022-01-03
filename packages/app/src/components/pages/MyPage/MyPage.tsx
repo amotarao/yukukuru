@@ -60,12 +60,7 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twitter' | 'changeCurrentUid'>> = ({
-  items,
-  lastRunnedGetFollowers,
-  twitter,
-  changeCurrentUid,
-}) => {
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
   if (items.length === 0) {
     // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
     if (lastRunnedGetFollowers.getTime() === 0) {
@@ -78,7 +73,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twi
 
   return (
     <div className={styles.homeArea}>
-      <nav className="sticky top-0 z-10 flex w-full -mb-12 sm:-mb-16 px-4 py-3 sm:py-5 pointer-events-none">
+      <nav className="sticky top-0 z-10 flex w-full -mt-12 sm:-mt-16 px-4 py-3 sm:py-5 pointer-events-none">
         <ul className="flex justify-between sm:justify-around w-full">
           <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
             ゆくひと
@@ -88,12 +83,6 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers' | 'twi
           </li>
         </ul>
       </nav>
-      <AccountSelector
-        className="sticky top-0 z-10 h-12 sm:h-16 py-2 sm:py-3"
-        screenName={twitter?.screenName ?? undefined}
-        imageSrc={twitter?.photoUrl ?? undefined}
-        change={changeCurrentUid}
-      />
       <LastUpdatedText className="my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
         const date = item.data.durationEnd.toDate();
@@ -180,12 +169,13 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home
-              items={items}
-              lastRunnedGetFollowers={lastRunnedGetFollowers}
-              twitter={twitter}
-              changeCurrentUid={changeCurrentUid}
+            <AccountSelector
+              className="sticky top-0 z-10 h-12 sm:h-16 py-2 sm:py-3"
+              screenName={twitter?.screenName ?? undefined}
+              imageSrc={twitter?.photoUrl ?? undefined}
+              change={changeCurrentUid}
             />
+            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
