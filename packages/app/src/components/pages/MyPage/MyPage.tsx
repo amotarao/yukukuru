@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
+import { dateOptions } from '../../../modules/date';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav } from '../../organisms/BottomNav';
@@ -31,8 +32,7 @@ const NoItem: React.FC = () => {
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
-        <wbr />
-        (2021.5.8)
+        <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
       </p>
     </div>
   );
@@ -83,7 +83,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
       <LastUpdatedText className="my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
         const date = item.data.durationEnd.toDate();
-        const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        const dateText = date.toLocaleDateString(undefined, dateOptions);
         const showDate = currentDate !== dateText;
         currentDate = dateText;
 

@@ -1,6 +1,7 @@
 import { Timestamp, RecordData, RecordUserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import React from 'react';
+import { timeOptions } from '../../../modules/date';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import styles from './styles.module.scss';
 
@@ -44,9 +45,7 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
 
 const convertDateText = (date: Timestamp): string => {
   const d = date.toDate();
-  const h = d.getHours();
-  const m = `0${d.getMinutes()}`.slice(-2);
-  return `${h}:${m}`;
+  return d.toLocaleTimeString(undefined, timeOptions);
 };
 
 export type UserCardProps = {

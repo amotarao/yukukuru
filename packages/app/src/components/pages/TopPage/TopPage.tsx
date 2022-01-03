@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
+import { dateOptions } from '../../../modules/date';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
@@ -31,8 +32,7 @@ export const TopPage: React.FC = () => {
             現在、フォロワー数1万人以上のアカウントの
             <wbr />
             新規登録を停止しています。
-            <wbr />
-            (2021.5.8)
+            <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
           </p>
           <p className="flex flex-wrap justify-center text-xs text-sub whitespace-nowrap">
             ツイートする権限はありませんので
