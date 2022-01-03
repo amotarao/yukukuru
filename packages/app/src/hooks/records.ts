@@ -112,9 +112,12 @@ const reducer = (state: State, action: DispatchAction): State => {
       };
     }
 
-    case 'Initialize':
-    default: {
+    case 'Initialize': {
       return initialState;
+    }
+
+    default: {
+      return state;
     }
   }
 };
