@@ -173,22 +173,3 @@
     cursor: not-allowed;
   }
 }
-
-.noticeWrapper {
-  padding-top: 32px;
-}
-
-.noticeText {
-  font-size: 0.8em;
-  color: var(--sub);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0 16px;
-  text-align: center;
-  white-space: nowrap;
-
-  & + .noticeText {
-    margin-top: 16px;
-  }
-}
