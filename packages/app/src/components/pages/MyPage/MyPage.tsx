@@ -5,6 +5,7 @@ import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { AccountSelector } from '../../organisms/AccountSelector';
 import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { UserCard } from '../../organisms/UserCard';
@@ -80,7 +81,12 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <AccountSelector
+        className="sticky top-0 z-10 h-12 sm:h-16 py-2 sm:py-3"
+        screenName="amotarao"
+        imageSrc="https://placehold.jp/3d4070/ffffff/150x150.png"
+      />
+      <LastUpdatedText className="my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       {items.map((item) => {
         const date = item.data.durationEnd.toDate();
         const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
