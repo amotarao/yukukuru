@@ -72,10 +72,10 @@ export const run = functions
     // 実行可能かを確認
     const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
     if (!executable) {
-      console.log(`[Info]: Canceled get followers for [${uid}].`);
+      console.log(`[Info]: Canceled get followers of [${uid}].`);
       return;
     }
-    console.log(`⚙️ Starting get followers for [${uid}].`);
+    console.log(`⚙️ Starting get followers of [${uid}].`);
 
     // Twitter Token を取得
     const token = await getToken(uid);
@@ -114,5 +114,5 @@ export const run = functions
 
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
-    console.log(`✔️ Completed get followers for [${uid}].`);
+    console.log(`✔️ Completed get followers of [${uid}].`);
   });
