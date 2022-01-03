@@ -1,13 +1,18 @@
 import { UserData } from '@yukukuru/types';
-import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { Message } from './_pubsub';
 
-/** フォロワー取得 定期実行 */
+/**
+ * フォロワー取得 定期実行
+ *
+ * 処理を実行するかどうかは run でチェック
+ *
+ * 毎分実行
+ * グループ毎に 15分おきに実行
+ */
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
@@ -18,38 +23,25 @@ export const publish = functions
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
+
+    // 対象ユーザーの取得
+    // 実行するかどうかは run で確認
     const group = getGroupFromTime(1, now);
-
-    // 15分前 (-1m)
-    const time15 = dayjs(now).subtract(14, 'minutes').toDate();
-
-    const allUsers = firestore
+    const snapshot = await firestore
       .collection('users')
       .where('active', '==', true)
-      .where('pausedGetFollower', '==', false)
-      .where('lastUpdated', '<', time15)
       .where('group', '==', group)
       .select('nextCursor', 'lastUpdated')
       .get();
 
-    const pausedUsers = firestore
-      .collection('users')
-      .where('active', '==', true)
-      .where('pausedGetFollower', '==', true)
-      .where('group', '==', group)
-      .select('nextCursor', 'lastUpdated')
-      .get();
-
-    const [allUsersSnap, pausedUsersSnap] = await Promise.all([allUsers, pausedUsers]);
-    const docs = _.uniqBy(_.flatten([allUsersSnap.docs, pausedUsersSnap.docs]), 'id');
-
-    const items: Message[] = docs.map((doc) => ({
+    // publish データ作成・送信
+    const messages: Message[] = snapshot.docs.map((doc) => ({
       uid: doc.id,
       nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
       lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
       publishedAt: now,
     }));
-    await publishMessages('getFollowers', items);
+    await publishMessages('getFollowers', messages);
 
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });

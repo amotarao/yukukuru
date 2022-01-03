@@ -10,6 +10,47 @@ import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIds } from '../../modules/twitter/followers/ids';
 import { topicName, Message } from './_pubsub';
 
+/**
+ * 直前に publish されたかどうかを確認
+ */
+const checkJustPublished = (now: string | Date, published: string | Date, diffMs: number = 1000 * 10): boolean => {
+  return new Date(now).getTime() - new Date(published).getTime() > diffMs;
+};
+
+/**
+ * 実行可能かどうかを確認
+ */
+const checkExecutable = async (params: {
+  uid: string;
+  nextCursor: string;
+  lastRun: string | Date;
+  publishedAt: string | Date;
+}): Promise<boolean> => {
+  const { uid, nextCursor, lastRun, publishedAt } = params;
+
+  // 取得途中のユーザーは許可
+  if (nextCursor !== '-1') {
+    return true;
+  }
+
+  const role = await getStripeRole(uid);
+  const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
+
+  // サポーターの場合、前回の実行から15分経過していれば実行
+  if (role === 'supporter') {
+    if (minutes < 15 - 1) {
+      return false;
+    }
+    return true;
+  }
+
+  // サポーター以外の場合、前回の実行から60分経過していれば実行
+  if (minutes < 60 - 1) {
+    return false;
+  }
+  return true;
+};
+
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions
   .region('asia-northeast1')
@@ -23,29 +64,20 @@ export const run = functions
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
-    if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
+    if (checkJustPublished(now, publishedAt)) {
       console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
       return;
     }
 
-    // cursor が -1 のとき、サポーター以外は 1時間未満の実行間隔の場合は終了
-    if (nextCursor === '-1') {
-      const role = await getStripeRole(uid);
-      if (role === null) {
-        const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
-
-        // サポーター以外かつ1時間未満なので終了
-        if (minutes < 59) {
-          console.log(`[Info]: Stopped get followers for [${uid}] due to basic user.`);
-          return;
-        }
-      } else {
-        console.log(`[Info]: [${uid}] is ${role}!`);
-      }
+    // 実行可能かを確認
+    const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
+    if (!executable) {
+      console.log(`[Info]: Canceled get followers of [${uid}].`);
+      return;
     }
+    console.log(`⚙️ Starting get followers of [${uid}].`);
 
-    console.log(`⚙️ Starting get followers for [${uid}].`);
-
+    // Twitter Token を取得
     const token = await getToken(uid);
     if (token === null) {
       console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
@@ -53,33 +85,33 @@ export const run = functions
     }
     console.log(`⏳ Got token from Firestore.`);
 
-    const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = token;
+    // フォロワーIDリストを取得
     const client = getClient({
-      access_token_key: twitterAccessToken,
-      access_token_secret: twitterAccessTokenSecret,
+      access_token_key: token.twitterAccessToken,
+      access_token_secret: token.twitterAccessTokenSecret,
     });
     const result = await getFollowersIds(client, {
-      userId: twitterId,
+      userId: token.twitterId,
       cursor: nextCursor,
       count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
     if ('errors' in result) {
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
-
       if (checkInvalidOrExpiredToken(result.errors)) {
         await setTokenInvalid(uid);
       }
+
+      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
 
+    // 保存
     const { ids, next_cursor_str: newNextCursor } = result.response;
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await setWatch(uid, ids, now, ended);
     await setUserResult(uid, watchId, ended, newNextCursor, now);
-
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
-    console.log(`✔️ Completed get followers for [${uid}].`);
+    console.log(`✔️ Completed get followers of [${uid}].`);
   });
