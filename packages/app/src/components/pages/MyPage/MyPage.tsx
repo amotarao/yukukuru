@@ -18,7 +18,8 @@ export type MyPageProps = {
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
-  twitter: UserData['twitter'] | null;
+  currentAccount: { id: string; twitter: UserData['twitter'] } | null;
+  multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   changeCurrentUid: (uid: string) => void;
 };
@@ -81,10 +82,9 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           currentDate = dateText;
 
           return (
-            <>
+            <div key={item.id}>
               {showDate && (
                 <h2
-                  key={`head-${item.id}`}
                   className={classNames(
                     'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
                     styles.recordHead
@@ -93,10 +93,10 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
                   {dateText}
                 </h2>
               )}
-              <div key={`div-${item.id}`} className={styles.userSection} data-type={item.data.type}>
+              <div className={styles.userSection} data-type={item.data.type}>
                 <UserCard {...item.data} />
               </div>
-            </>
+            </div>
           );
         })}
       </section>
@@ -130,7 +130,8 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
-  twitter,
+  currentAccount,
+  multiAccounts,
   getNextRecords,
   changeCurrentUid,
 }) => {
@@ -169,8 +170,8 @@ export const MyPage: React.FC<MyPageProps> = ({
       {!isLoading && (
         <AccountSelector
           className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
-          screenName={twitter?.screenName ?? undefined}
-          imageSrc={twitter?.photoUrl ?? undefined}
+          currentAccount={currentAccount}
+          multiAccounts={multiAccounts}
           change={changeCurrentUid}
         />
       )}

@@ -1,16 +1,22 @@
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { UserData } from '@yukukuru/types';
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 
 export type AccountSelectorProps = {
   className?: string;
-  screenName?: string;
-  imageSrc?: string;
+  currentAccount: { id: string; twitter: UserData['twitter'] } | null;
+  multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   change: (uid: string) => void;
 };
 
-export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, screenName, imageSrc, change }) => {
+export const AccountSelector: React.FC<AccountSelectorProps> = ({
+  className,
+  currentAccount,
+  multiAccounts,
+  change,
+}) => {
   const [shown, setShown] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -30,8 +36,10 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, scr
           setShown(!shown);
         }}
       >
-        <TwitterUserIcon className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full" src={imageSrc} />
-        <span className="flex-1 text-xs sm:text-sm text-center line-clamp-1">@{screenName}</span>
+        <TwitterUserIcon className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full" src={currentAccount?.twitter.photoUrl} />
+        <span className="flex-1 text-xs sm:text-sm text-center line-clamp-1">
+          @{currentAccount?.twitter.screenName}
+        </span>
         <KeyboardArrowDownIcon className="text-base ml-2" />
       </button>
       {shown && (
@@ -49,44 +57,30 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, scr
               }
             }}
           >
-            <button
-              className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
-              onClick={() => {
-                setShown(false);
-              }}
-            >
-              <TwitterUserIcon className="w-8 h-8 mr-2 rounded-full" src={imageSrc} />
-              <span className="flex-1 text-xs sm:text-sm line-clamp-1">@{screenName}</span>
-              <CheckCircleIcon className="ml-2 text-base text-primary" />
-            </button>
-            <button
-              className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
-              onClick={() => {
-                setShown(false);
-              }}
-            >
-              <TwitterUserIcon className="w-8 h-8 mr-2 rounded-full" src={imageSrc} />
-              <span className="flex-1 text-xs sm:text-sm line-clamp-1">@{screenName}</span>
-              <CheckCircleIcon className="ml-2 text-base text-primary" />
-            </button>
-            <button
-              className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
-              onClick={() => {
-                setShown(false);
-              }}
-            >
-              <TwitterUserIcon className="w-8 h-8 mr-2 rounded-full" src={imageSrc} />
-              <span className="flex-1 text-xs sm:text-sm line-clamp-1">@{screenName}</span>
-              <CheckCircleIcon className="ml-2 text-base text-primary" />
-            </button>
-            <button
+            {multiAccounts.map((account) => {
+              return (
+                <button
+                  key={account.id}
+                  className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
+                  onClick={() => {
+                    change(account.id);
+                    setShown(false);
+                  }}
+                >
+                  <TwitterUserIcon className="w-8 h-8 mr-2 rounded-full" src={account.twitter.photoUrl} />
+                  <span className="flex-1 text-xs sm:text-sm line-clamp-1">@{account.twitter.screenName}</span>
+                  {account.id === currentAccount?.id && <CheckCircleIcon className="ml-2 text-base text-primary" />}
+                </button>
+              );
+            })}
+            {/* <button
               className="flex items-center w-full mx-auto p-4 py-3 border-b border-b-shadow last:border-b-0 text-left text-sm text-primary"
               onClick={() => {
                 setShown(false);
               }}
             >
               アカウントを追加
-            </button>
+            </button> */}
           </div>
         </div>
       )}

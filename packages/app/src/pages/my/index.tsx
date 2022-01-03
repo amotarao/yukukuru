@@ -4,13 +4,14 @@ import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
+import { useMultiUsers } from '../../hooks/multiUsers';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
+  const [{ isLoading: authIsLoading, signedIn, signingIn, user, twitter }, { signIn }] = useAuth();
   const authUid = user?.uid ?? null;
 
   const [currentUid, setCurrentUid] = useState(authUid);
@@ -18,12 +19,17 @@ const Page: React.FC = () => {
     setCurrentUid(authUid);
   }, [authUid]);
 
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(currentUid);
+  const [{ users: accounts }] = useMultiUsers(authUid);
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers, twitter }] = useUser(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
+
+  const authAccount = { id: user?.uid ?? '', twitter };
+  const multiAccounts = [authAccount, ...accounts];
+  const currentAccount = multiAccounts.find((account) => account.id === currentUid);
 
   // lastViewing 送信
   useEffect(() => {
@@ -49,7 +55,8 @@ const Page: React.FC = () => {
             hasNext,
             hasToken,
             lastRunnedGetFollowers,
-            twitter,
+            currentAccount,
+            multiAccounts,
             getNextRecords,
             changeCurrentUid: (uid) => {
               setCurrentUid(uid);

@@ -6,8 +6,10 @@ import {
   TwitterAuthProvider,
   UserInfo,
 } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { auth } from '../modules/firebase';
+import { firestore } from '../modules/firebase';
 import { setToken } from '../modules/firestore/tokens';
 
 type User = Pick<UserInfo, 'uid'>;
@@ -17,6 +19,7 @@ type State = {
   signedIn: boolean;
   signingIn: boolean;
   user: User | null;
+  twitter: UserData['twitter'] | null;
   token: TokenData | null;
 };
 
@@ -25,6 +28,7 @@ const initialState: State = {
   signedIn: false,
   signingIn: false,
   user: null,
+  twitter: null,
   token: null,
 };
 
@@ -33,6 +37,12 @@ type DispatchAction =
       type: 'SetUser';
       payload: {
         user: User;
+      };
+    }
+  | {
+      type: 'SetTwitter';
+      payload: {
+        twitter: State['twitter'];
       };
     }
   | {
@@ -61,6 +71,13 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: true,
         user: action.payload.user,
+      };
+    }
+
+    case 'SetTwitter': {
+      return {
+        ...state,
+        twitter: action.payload.twitter,
       };
     }
 
@@ -137,6 +154,22 @@ export const useAuth = (): [Readonly<State>, Action] => {
     }
     setToken(state.user.uid, state.token);
   }, [state.token, state.user]);
+
+  useEffect(() => {
+    if (!state.user) {
+      return;
+    }
+
+    getDoc(doc(firestore, 'users', state.user.uid)).then((doc) => {
+      if (!doc.exists) {
+        dispatch({ type: 'StartLoading' });
+        return;
+      }
+
+      const twitter: State['twitter'] = doc.get('twitter') as UserData['twitter'];
+      dispatch({ type: 'SetTwitter', payload: { twitter } });
+    });
+  }, [state.user]);
 
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
