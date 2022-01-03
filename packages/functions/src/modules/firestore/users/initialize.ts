@@ -22,6 +22,7 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     currentWatchesId: '',
     pausedGetFollower: false,
     group: getGroupIndex(id),
+    allowedAccessUsers: [],
     twitter,
   };
   await collection.doc(id).set(data, { merge: true });
