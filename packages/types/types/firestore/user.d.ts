@@ -32,6 +32,9 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** グループ番号 0-14 のいずれか */
   group: number;
 
+  /** アクセス許可されたユーザーリスト */
+  allowedAccessUsers?: string[];
+
   /** Twitter情報 */
   twitter: {
     /** Twitter UID (ユニークな数字のID) */
