@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import * as gtag from '../../../libs/gtag';
+import { dateOptions } from '../../../modules/date';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { AccountSelector } from '../../organisms/AccountSelector';
@@ -32,7 +33,8 @@ const NoItemView: React.FC = () => {
     <div>
       <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
       <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
-        現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(2021.5.8)
+        現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
+        {new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
       </p>
     </div>
   );
@@ -77,7 +79,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
           const date = item.data.durationEnd.toDate();
-          const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+          const dateText = date.toLocaleDateString(undefined, dateOptions);
           const showDate = currentDate !== dateText;
           currentDate = dateText;
 
