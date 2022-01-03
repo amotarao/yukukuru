@@ -38,7 +38,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({ className, scr
         <div className="absolute flex justify-center w-full p-4">
           <div
             ref={modalRef}
-            className="w-10/12 sm:w-80 rounded-lg bg-back shadow shadow-shadow"
+            className="w-10/12 sm:w-80 max-h-64 overflow-y-auto rounded-lg bg-back shadow shadow-shadow"
             tabIndex={0}
             onBlur={(e) => {
               if (e.relatedTarget === switchRef.current) {
