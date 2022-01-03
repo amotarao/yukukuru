@@ -48,7 +48,7 @@ export const checkRateLimitExceeded = (errors: TwitterClientError[]): boolean =>
  *
  * @param errors エラーリスト
  */
-export const checkInvalidToken = (errors: TwitterClientError[]): boolean => {
+export const checkInvalidOrExpiredToken = (errors: TwitterClientError[]): boolean => {
   return checkError(errors, 89);
 };
 
@@ -57,6 +57,6 @@ export const checkInvalidToken = (errors: TwitterClientError[]): boolean => {
  *
  * @param errors エラーリスト
  */
-export const checkProtectedUser = (errors: TwitterClientError[]): boolean => {
+export const checkTemporarilyLocked = (errors: TwitterClientError[]): boolean => {
   return checkError(errors, 326);
 };

@@ -6,7 +6,7 @@ import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidToken } from '../../modules/twitter/error';
+import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIds } from '../../modules/twitter/followers/ids';
 import { topicName, Message } from './_pubsub';
 
@@ -67,7 +67,7 @@ export const run = functions
     if ('errors' in result) {
       console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
 
-      if (checkInvalidToken(result.errors)) {
+      if (checkInvalidOrExpiredToken(result.errors)) {
         await setTokenInvalid(uid);
       }
       return;
