@@ -1,6 +1,6 @@
 import React from 'react';
 import { BottomNav } from '../../organisms/BottomNav';
-import { SettingMenu } from '../../organisms/SettingMenu';
+import { SettingsMenu } from '../../organisms/SettingsMenu';
 import styles from './styles.module.scss';
 
 export type SettingsPageProps = {
@@ -12,7 +12,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ signIn, signOut }) =
   return (
     <div className={styles.wrapper}>
       <section className={styles.section}>
-        <SettingMenu signIn={signIn} signOut={signOut} />
+        <SettingsMenu signIn={signIn} signOut={signOut} />
       </section>
       <BottomNav active="settings" />
     </div>

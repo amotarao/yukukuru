@@ -6,12 +6,12 @@ import React from 'react';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 
-type SettingMenuProps = {
+type SettingsMenuProps = {
   signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
-export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => {
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) => {
   const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
