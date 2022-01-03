@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
-import { MyPage, MyPageProps } from '../../components/pages/MyPage';
+import { MyPage } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
@@ -33,17 +33,6 @@ const Page: React.FC = () => {
     setLastViewing(currentUid);
   }, [currentUid]);
 
-  const props: MyPageProps = {
-    isLoading,
-    isNextLoading,
-    items,
-    hasNext,
-    hasToken,
-    lastRunnedGetFollowers,
-    twitter,
-    getNextRecords,
-  };
-
   return (
     <>
       <Head>
@@ -52,7 +41,18 @@ const Page: React.FC = () => {
       {authIsLoading || signingIn ? (
         <LoadingCircle />
       ) : signedIn ? (
-        <MyPage {...props} />
+        <MyPage
+          {...{
+            isLoading,
+            isNextLoading,
+            items,
+            hasNext,
+            hasToken,
+            lastRunnedGetFollowers,
+            twitter,
+            getNextRecords,
+          }}
+        />
       ) : (
         <LoginPage signIn={signIn} />
       )}
