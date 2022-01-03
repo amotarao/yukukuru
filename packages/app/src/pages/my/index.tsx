@@ -1,3 +1,4 @@
+import { UserData } from '@yukukuru/types';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
