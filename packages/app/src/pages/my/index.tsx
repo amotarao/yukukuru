@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage, MyPageProps } from '../../components/pages/MyPage';
@@ -11,22 +11,27 @@ import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
   const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
-  const uid = user?.uid ?? null;
+  const authUid = user?.uid ?? null;
 
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(uid);
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers, twitter }] = useUser(uid);
-  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(uid);
+  const [currentUid, setCurrentUid] = useState(authUid);
+  useEffect(() => {
+    setCurrentUid(authUid);
+  }, [authUid]);
+
+  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers, twitter }] = useUser(currentUid);
+  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
   // lastViewing 送信
   useEffect(() => {
-    if (!uid) {
+    if (!currentUid) {
       return;
     }
-    setLastViewing(uid);
-  }, [uid]);
+    setLastViewing(currentUid);
+  }, [currentUid]);
 
   const props: MyPageProps = {
     isLoading,
