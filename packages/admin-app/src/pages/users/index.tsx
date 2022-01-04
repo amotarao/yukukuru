@@ -122,7 +122,7 @@ const Page: NextPage = () => {
                     {(doc.get('twitter.followersCount') as number).toLocaleString()}
                   </td>
                   <td className="px-3">
-                    <Link href={`/users/${doc.id}`} passHref>
+                    <Link href={`/users/${doc.id}`}>
                       <a className={classNames('inline-block text-sm px-3 py-1 rounded bg-slate-700 text-slate-50')}>
                         More
                       </a>
