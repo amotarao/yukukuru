@@ -46,6 +46,9 @@ type DispatchAction =
       type: 'ClearUser';
     }
   | {
+      type: 'StartLoading';
+    }
+  | {
       type: 'FinishLoading';
     }
   | {
@@ -77,6 +80,13 @@ const reducer = (state: State, action: DispatchAction): State => {
         signedIn: false,
         user: null,
         token: null,
+      };
+    }
+
+    case 'StartLoading': {
+      return {
+        ...state,
+        isLoading: true,
       };
     }
 
@@ -123,6 +133,8 @@ export const useAuth = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    dispatch({ type: 'StartLoading' });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
