@@ -15,6 +15,6 @@ export const firebaseApp = getApps().length
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     });
 
-export const auth = getAuth(app);
-export const firestore = getFirestore(app);
-export const functions = getFunctions(app, 'asia-northeast1');
+export const auth = getAuth(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
+export const functions = getFunctions(firebaseApp, 'asia-northeast1');
