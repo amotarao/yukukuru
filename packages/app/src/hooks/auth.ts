@@ -21,6 +21,9 @@ type State = {
 
   /** ユーザーデータ */
   user: Pick<UserInfo, 'uid'> | null;
+
+  /** UID */
+  uid: string | null;
 };
 
 const initialState: State = {
@@ -28,6 +31,7 @@ const initialState: State = {
   signingIn: false,
   signedIn: false,
   user: null,
+  uid: null,
 };
 
 type DispatchAction =
@@ -35,6 +39,7 @@ type DispatchAction =
       type: 'SetUser';
       payload: {
         user: State['user'];
+        uid: State['uid'];
       };
     }
   | {
@@ -60,6 +65,7 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: true,
         user: action.payload.user,
+        uid: action.payload.uid,
       };
     }
 
@@ -68,6 +74,7 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: false,
         user: null,
+        uid: null,
       };
     }
 
@@ -120,7 +127,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
-        dispatch({ type: 'SetUser', payload: { user: { uid } } });
+        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
       } else {
         dispatch({ type: 'ClearUser' });
       }
