@@ -54,18 +54,10 @@ const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({
   );
 };
 
-/**
- * メインエリア
- */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length === 0) {
-    // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
-    if (lastRunnedGetFollowers.getTime() === 0) {
-      return <NoItemView />;
-    }
-    return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
-  }
-
+const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
+  items,
+  lastRunnedGetFollowers,
+}) => {
   let currentDate = '';
 
   return (
@@ -107,6 +99,22 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
       })}
     </div>
   );
+};
+
+/**
+ * メインエリア
+ */
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
+  if (items.length > 0) {
+    return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  }
+
+  // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
+  if (lastRunnedGetFollowers.getTime() === 0) {
+    return <NoItemView />;
+  }
+
+  return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
 };
 
 /**
