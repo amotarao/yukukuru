@@ -1,42 +1,40 @@
 import Head from 'next/head';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
-import { MyPage, MyPageProps } from '../../components/pages/MyPage';
+import { MyPage } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
+import { useMultiAccounts } from '../../hooks/multiAccounts';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
-  const uid = user?.uid ?? null;
+  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid }, { signIn }] = useAuth();
 
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(uid);
-  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(uid);
-  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(uid);
+  const [currentUid, setCurrentUid] = useState(authUid);
+  useEffect(() => {
+    setCurrentUid(authUid);
+  }, [authUid]);
+
+  const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(currentUid);
+  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
+  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
+  const [{ accounts: multiAccounts }] = useMultiAccounts(authUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
+  const currentAccount = multiAccounts.find((account) => account?.id === currentUid) || null;
+
   // lastViewing 送信
   useEffect(() => {
-    if (!uid) {
+    if (!currentUid) {
       return;
     }
-    setLastViewing(uid);
-  }, [uid]);
-
-  const props: MyPageProps = {
-    isLoading,
-    isNextLoading,
-    items,
-    hasNext,
-    hasToken,
-    lastRunnedGetFollowers,
-    getNextRecords,
-  };
+    setLastViewing(currentUid);
+  }, [currentUid]);
 
   return (
     <>
@@ -46,7 +44,22 @@ const Page: React.FC = () => {
       {authIsLoading || signingIn ? (
         <LoadingCircle />
       ) : signedIn ? (
-        <MyPage {...props} />
+        <MyPage
+          {...{
+            isLoading,
+            isNextLoading,
+            items,
+            hasNext,
+            hasToken,
+            lastRunnedGetFollowers,
+            currentAccount,
+            multiAccounts,
+            getNextRecords,
+            onChangeCurrentUid: (uid) => {
+              setCurrentUid(uid);
+            },
+          }}
+        />
       ) : (
         <LoginPage signIn={signIn} />
       )}

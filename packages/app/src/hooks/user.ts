@@ -21,19 +21,20 @@ type DispatchAction =
       };
     }
   | {
-      type: 'FinishLoading';
+      type: 'StartLoading';
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
   switch (action.type) {
     case 'SetLastRunnedGetFollowers': {
       return {
+        ...state,
         isLoading: false,
         lastRunnedGetFollowers: action.payload.lastRunnedGetFollowers,
       };
     }
 
-    case 'FinishLoading': {
+    case 'StartLoading': {
       return {
         ...state,
         isLoading: true,
@@ -56,7 +57,7 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
 
     getDoc(doc(firestore, 'users', uid)).then((doc) => {
       if (!doc.exists) {
-        dispatch({ type: 'FinishLoading' });
+        dispatch({ type: 'StartLoading' });
         return;
       }
 
