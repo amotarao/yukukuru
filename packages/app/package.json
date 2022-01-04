@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build && next export && next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
@@ -40,6 +40,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "next-sitemap": "^1.6.203",
     "postcss": "^8.4.5",
     "prettier": "^2.3.2",
     "sass": "^1.32.12",
