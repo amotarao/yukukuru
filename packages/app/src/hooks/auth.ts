@@ -13,17 +13,26 @@ import { setToken } from '../modules/firestore/tokens';
 type User = Pick<UserInfo, 'uid'>;
 
 type State = {
+  /** 読み込み中かどうか */
   isLoading: boolean;
-  signedIn: boolean;
+
+  /** サインイン処理中かどうか */
   signingIn: boolean;
+
+  /** サインイン済みかどうか */
+  signedIn: boolean;
+
+  /** ユーザーデータ */
   user: User | null;
+
+  /** トークンデータ */
   token: TokenData | null;
 };
 
 const initialState: State = {
   isLoading: true,
-  signedIn: false,
   signingIn: false,
+  signedIn: false,
   user: null,
   token: null,
 };
