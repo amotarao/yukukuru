@@ -1,8 +1,7 @@
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { MembershipSubscriptionPage } from '../../components/pages/MembershipSubscriptionPage';
 import { useAuth } from '../../hooks/auth';
@@ -10,18 +9,7 @@ import { useAuth } from '../../hooks/auth';
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_API_KEY as string);
 
 const Page: React.FC = () => {
-  const router = useRouter();
-  const [{ isLoading, signedIn, user }] = useAuth();
-
-  // ログインしていないときは、トップページにリダイレクト
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-    if (!signedIn) {
-      router.replace('/');
-    }
-  }, [isLoading, signedIn, router]);
+  const [{ isLoading, user }] = useAuth();
 
   return (
     <>
