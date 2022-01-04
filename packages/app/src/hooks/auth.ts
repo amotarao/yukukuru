@@ -132,6 +132,7 @@ type Action = {
 export const useAuth = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // ログイン状態の監視
   useEffect(() => {
     dispatch({ type: 'StartLoading' });
 
@@ -150,6 +151,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     };
   }, []);
 
+  // Twitter Token の監視
   useEffect(() => {
     if (!state.token || !state.user) {
       return;
@@ -157,6 +159,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     setToken(state.user.uid, state.token);
   }, [state.token, state.user]);
 
+  // サインイン処理
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
 
@@ -192,6 +195,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     dispatch({ type: 'FinishSignIn' });
   };
 
+  // サインアウト処理
   const signOut = async () => {
     await authSignOut(auth);
   };
