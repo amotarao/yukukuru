@@ -81,14 +81,14 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 </button>
               );
             })}
-            <button
+            {/* <button
               className="flex items-center w-full mx-auto p-4 py-3 border-b border-b-shadow last:border-b-0 text-left text-sm text-primary"
               onClick={() => {
                 setShown(false);
               }}
             >
               アカウントを追加
-            </button>
+            </button> */}
           </div>
         </div>
       )}
