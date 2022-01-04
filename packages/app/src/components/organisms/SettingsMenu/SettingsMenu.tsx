@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
