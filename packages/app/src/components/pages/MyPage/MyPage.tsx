@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
+import { useAnalytics } from '../../../modules/analytics';
 import { dateOptions } from '../../../modules/date';
-import { analytics } from '../../../modules/firebase';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav } from '../../organisms/BottomNav';
@@ -133,6 +133,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   getNextRecords,
 }) => {
   const [paging, setPaging] = useState<number>(1);
+  const analytics = useAnalytics()
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
@@ -144,7 +145,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
       value: 100,
     });
-  }, [isLoading, isNextLoading, hasNext, paging]);
+  }, [analytics, isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();

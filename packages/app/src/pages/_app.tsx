@@ -3,11 +3,13 @@ import { logEvent } from 'firebase/analytics';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { useEffect } from 'react';
-import { analytics } from '../modules/firebase';
+import { useAnalytics } from '../modules/analytics';
 import { ThemeContainer } from '../store/theme';
 import '../styles/globals.css';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
+  const analytics = useAnalytics()
+
   useEffect(() => {
     const handleRouteChange = () => {
       analytics && logEvent(analytics, 'page_view');
@@ -18,7 +20,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [router.events]);
+  }, [analytics, router.events]);
 
   return (
     <ThemeContainer.Provider>
