@@ -24,11 +24,11 @@ export type MyPageProps = {
 /**
  * アイテムがないことを表示するコンポーネント
  */
-const NoItem: React.FC = () => {
+const NoItemView: React.FC = () => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>最初のデータ取得までしばらくお待ちください。</p>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
@@ -41,36 +41,28 @@ const NoItem: React.FC = () => {
 /**
  * 表示するデータがないことを表示するコンポーネント
  */
-const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         データの取得は完了していますが、
         <wbr />
         今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
     </div>
   );
 };
 
-/**
- * メインエリア
- */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length === 0) {
-    // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
-    if (lastRunnedGetFollowers.getTime() === 0) {
-      return <NoItem />;
-    }
-    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
-  }
-
+const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
+  items,
+  lastRunnedGetFollowers,
+}) => {
   let currentDate = '';
 
   return (
-    <div className={styles.homeArea}>
-      <nav className="sticky top-0 z-10 flex w-full -mb-12 sm:-mb-16 px-4 py-3 sm:py-5 pointer-events-none">
+    <div className="pb-10 sm:pb-20">
+      <nav className="sticky top-0 z-10 flex w-full -mt-12 sm:-mt-16 px-4 py-3 sm:py-5 pointer-events-none">
         <ul className="flex justify-between sm:justify-around w-full">
           <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
             ゆくひと
@@ -80,33 +72,51 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
-      {items.map((item) => {
-        const date = item.data.durationEnd.toDate();
-        const dateText = date.toLocaleDateString(undefined, dateOptions);
-        const showDate = currentDate !== dateText;
-        currentDate = dateText;
+      <LastUpdatedText className="px-4 my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
+        {items.map((item) => {
+          const date = item.data.durationEnd.toDate();
+          const dateText = date.toLocaleDateString(undefined, dateOptions);
+          const showDate = currentDate !== dateText;
+          currentDate = dateText;
 
-        return (
-          <React.Fragment key={item.id}>
-            {showDate && (
-              <h2
-                className={classNames(
-                  'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
-                  styles.recordHead
-                )}
-              >
-                {dateText}
-              </h2>
-            )}
-            <section className={styles.userSection} data-type={item.data.type}>
-              <UserCard {...item.data} />
-            </section>
-          </React.Fragment>
-        );
-      })}
+          return (
+            <React.Fragment key={item.id}>
+              {showDate && (
+                <h2
+                  className={classNames(
+                    'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                    styles.recordHead
+                  )}
+                >
+                  {dateText}
+                </h2>
+              )}
+              <div className={styles.userSection} data-type={item.data.type}>
+                <UserCard {...item.data} />
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </section>
     </div>
   );
+};
+
+/**
+ * メインエリア
+ */
+const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
+  if (items.length > 0) {
+    return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  }
+
+  // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
+  if (lastRunnedGetFollowers.getTime() === 0) {
+    return <NoItemView />;
+  }
+
+  return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
 };
 
 /**

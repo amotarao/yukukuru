@@ -63,13 +63,9 @@
   }
 }
 
-.homeArea {
-  background: none;
-  padding-bottom: 40px;
-
+.listWrapper {
   @media screen and (min-width: 640px) {
-    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center 80px/2px 100% no-repeat;
-    padding-bottom: 80px;
+    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center top/2px 100% no-repeat;
   }
 }
 
@@ -175,24 +171,5 @@
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-  }
-}
-
-.noticeWrapper {
-  padding-top: 32px;
-}
-
-.noticeText {
-  font-size: 0.8em;
-  color: var(--sub);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0 16px;
-  text-align: center;
-  white-space: nowrap;
-
-  & + .noticeText {
-    margin-top: 16px;
   }
 }
