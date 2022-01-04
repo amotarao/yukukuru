@@ -4,9 +4,9 @@ import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
-import { firebaseApp } from '../../modules/firebase';
-import { TwitterUserIcon } from '../../components/TwitterUserIcon';
 import { SortButton } from '../../components/SortButton';
+import { TwitterUserIcon } from '../../components/TwitterUserIcon';
+import { firebaseApp } from '../../modules/firebase';
 
 const firestore = getFirestore(firebaseApp);
 
