@@ -30,9 +30,6 @@ type State = {
   /** 続きデータがあるかどうか */
   hasNext: boolean;
 
-  /** UID */
-  uid: string | null;
-
   /** カーソル */
   cursor: QueryDocumentSnapshot | null;
 };
@@ -44,7 +41,6 @@ const initialState: State = {
   isFirstLoaded: false,
   items: [],
   hasNext: true,
-  uid: null,
   cursor: null,
 };
 
