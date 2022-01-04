@@ -31,7 +31,7 @@ export const addCheckoutSession = async (uid: string, price: string, taxRates: s
 
   return new Promise((resolve, reject) => {
     const unsubscribe = onSnapshot(ref, (snap) => {
-      const { error, sessionId } = snap.data();
+      const { error, sessionId } = snap.data() as { error: { message: string }; sessionId: string };
 
       if (error) {
         unsubscribe();
