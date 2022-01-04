@@ -4,7 +4,7 @@ export const pageview = (url: string): void => {
     return;
   }
 
-  (window as any).gtag('config', process.env.GOOGLE_ANALYTICS, {
+  window.gtag('config', process.env.GOOGLE_ANALYTICS as string, {
     page_path: url,
   });
 };
@@ -22,7 +22,7 @@ export const event = (options: EventOptions): void => {
     return;
   }
 
-  (window as any).gtag('event', options.action, {
+  window.gtag('event', options.action, {
     event_category: options.category,
     event_label: options.label,
     value: options.value,
