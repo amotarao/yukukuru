@@ -7,8 +7,7 @@ import { useAuth } from '../../hooks/auth';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn, signOut }] = useAuth();
-  const uid = user?.uid ?? null;
+  const [{ isLoading: authIsLoading, signedIn, signingIn, uid }, { signIn, signOut }] = useAuth();
 
   // lastViewing 送信
   useEffect(() => {
