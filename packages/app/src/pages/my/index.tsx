@@ -27,7 +27,7 @@ const Page: React.FC = () => {
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
-  const authAccount = user && twitter ? { id: user.uid, twitter } : null;
+  const authAccount = uid && twitter ? { id: uid, twitter } : null;
   const multiAccounts = [authAccount, ...accounts].filter(
     (
       account
