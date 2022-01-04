@@ -4,7 +4,7 @@ import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
-import { useMultiUsers } from '../../hooks/multiUsers';
+import { useMultiAccounts } from '../../hooks/multiAccounts';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 import { useUser } from '../../hooks/user';
@@ -21,7 +21,7 @@ const Page: React.FC = () => {
   const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(currentUid);
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
-  const [{ accounts: multiAccounts }] = useMultiUsers(authUid);
+  const [{ accounts: multiAccounts }] = useMultiAccounts(authUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;

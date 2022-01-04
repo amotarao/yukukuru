@@ -93,7 +93,7 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-export const useMultiUsers = (authUid: string | null): [Readonly<State>] => {
+export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // authUid に変更があれば初期化
