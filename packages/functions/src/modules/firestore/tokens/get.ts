@@ -8,7 +8,8 @@ export const getToken = async (userId: string): Promise<TokenData | null> => {
     return null;
   }
   const { twitterAccessToken = null, twitterAccessTokenSecret = null } = tokenDoc.data() as TokenData;
-  if (!twitterAccessToken || !twitterAccessTokenSecret ) {
+  const invalid = !twitterAccessToken || !twitterAccessTokenSecret;
+  if (invalid) {
     return null;
   }
   return { twitterAccessToken, twitterAccessTokenSecret };
