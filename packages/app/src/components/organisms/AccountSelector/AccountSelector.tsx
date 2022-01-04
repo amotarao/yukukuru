@@ -8,14 +8,14 @@ export type AccountSelectorProps = {
   className?: string;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
-  change: (uid: string) => void;
+  onChange: (uid: string) => void;
 };
 
 export const AccountSelector: React.FC<AccountSelectorProps> = ({
   className,
   currentAccount,
   multiAccounts,
-  change,
+  onChange,
 }) => {
   const [shown, setShown] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
@@ -66,7 +66,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                   key={account.id}
                   className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
                   onClick={() => {
-                    change(account.id);
+                    onChange(account.id);
                     setShown(false);
                   }}
                 >

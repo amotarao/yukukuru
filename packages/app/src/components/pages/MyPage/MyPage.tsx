@@ -23,7 +23,7 @@ export type MyPageProps = {
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  changeCurrentUid: (uid: string) => void;
+  onChangeCurrentUid: (uid: string) => void;
 };
 
 /**
@@ -136,7 +136,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   currentAccount,
   multiAccounts,
   getNextRecords,
-  changeCurrentUid,
+  onChangeCurrentUid,
 }) => {
   const [paging, setPaging] = useState<number>(1);
 
@@ -173,7 +173,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
-          change={changeCurrentUid}
+          onChange={onChangeCurrentUid}
         />
       )}
       {!isLoading && !hasToken && (

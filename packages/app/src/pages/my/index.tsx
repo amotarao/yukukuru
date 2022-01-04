@@ -66,7 +66,7 @@ const Page: React.FC = () => {
             currentAccount,
             multiAccounts,
             getNextRecords,
-            changeCurrentUid: (uid) => {
+            onChangeCurrentUid: (uid) => {
               setCurrentUid(uid);
             },
           }}
