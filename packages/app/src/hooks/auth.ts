@@ -28,7 +28,7 @@ type State = {
   /** UID */
   uid: string | null;
 
-  /** Twitter データ */
+  /** Twitter プロフィール */
   twitter: UserData['twitter'] | null;
 };
 
@@ -159,6 +159,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     };
   }, []);
 
+  // Twitter プロフィール取得処理
   useEffect(() => {
     if (!state.user) {
       return;
@@ -170,6 +171,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
     });
   }, [state.user]);
 
+  // サインイン処理
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
 
