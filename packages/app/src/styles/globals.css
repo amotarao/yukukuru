@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 :root {
   --main: #333;
   --sub: #999;
@@ -43,22 +35,10 @@ html[data-theme='dark'] {
 html {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Yu Gothic', YuGothic, Verdana, Meiryo, 'M+ 1p',
     sans-serif;
-  font-size: 1em;
 }
 
 html,
 body {
   background: var(--back);
   color: var(--main);
-  height: 100%;
-  width: 100%;
-}
-
-img,
-svg {
-  display: block;
-}
-
-#__next {
-  height: 100%;
 }
