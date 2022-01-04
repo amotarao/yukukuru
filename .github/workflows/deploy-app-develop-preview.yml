@@ -1,7 +1,7 @@
-name: Build and Deploy app for develop
+name: Build and Deploy app for develop preview
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
     paths:
@@ -51,7 +51,8 @@ jobs:
           SITE_ID: ${{ secrets.FIREBASE_HOSTING_APP_SITE_ID_DEVELOP }}
 
       - name: Deploy to Firebase
-        run: npx firebase deploy --only hosting:app --project $PROJECT_ID
+        run: npx firebase hosting:channel:deploy $CHANNEL_ID --only app --project $PROJECT_ID
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
+          CHANNEL_ID: pr-${{ github.event.number }}
