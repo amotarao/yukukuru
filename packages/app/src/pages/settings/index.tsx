@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useEffect } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
-import { SettingsPage, SettingsPageProps } from '../../components/pages/SettingsPage';
+import { SettingsPage } from '../../components/pages/SettingsPage';
 import { useAuth } from '../../hooks/auth';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
@@ -17,11 +17,6 @@ const Page: React.FC = () => {
     setLastViewing(uid);
   }, [uid]);
 
-  const props: SettingsPageProps = {
-    signIn,
-    signOut,
-  };
-
   return (
     <>
       <Head>
@@ -30,7 +25,12 @@ const Page: React.FC = () => {
       {authIsLoading || signingIn ? (
         <LoadingCircle />
       ) : signedIn ? (
-        <SettingsPage {...props} />
+        <SettingsPage
+          {...{
+            signIn,
+            signOut,
+          }}
+        />
       ) : (
         <LoginPage signIn={signIn} />
       )}

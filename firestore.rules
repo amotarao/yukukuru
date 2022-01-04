@@ -26,7 +26,8 @@ service cloud.firestore {
 
     match /users/{userID} {
       allow write: if false;
-      allow read: if isAdmin() || ('allowedAccessUsers' in resource.data && request.auth.uid in resource.data.allowedAccessUsers) || isMe(userID);
+      allow list: if isAdmin() || ('allowedAccessUsers' in resource.data && request.auth.uid in resource.data.allowedAccessUsers) || isMe(userID);
+      allow get: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
 
       match /records/{recordID} {
         allow write: if false;
