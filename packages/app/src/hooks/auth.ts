@@ -1,4 +1,3 @@
-import { TokenData } from '@yukukuru/types';
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -22,9 +21,6 @@ type State = {
 
   /** ユーザーデータ */
   user: Pick<UserInfo, 'uid'> | null;
-
-  /** トークンデータ */
-  token: TokenData | null;
 };
 
 const initialState: State = {
@@ -32,7 +28,6 @@ const initialState: State = {
   signingIn: false,
   signedIn: false,
   user: null,
-  token: null,
 };
 
 type DispatchAction =
@@ -56,12 +51,6 @@ type DispatchAction =
     }
   | {
       type: 'FinishSignIn';
-    }
-  | {
-      type: 'SetToken';
-      payload: {
-        token: State['token'];
-      };
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
@@ -111,13 +100,6 @@ const reducer = (state: State, action: DispatchAction): State => {
       };
     }
 
-    case 'SetToken': {
-      return {
-        ...state,
-        token: action.payload.token,
-      };
-    }
-
     default: {
       return state;
     }
@@ -164,34 +146,13 @@ export const useAuth = (): [Readonly<State>, Action] => {
     dispatch({ type: 'StartSignIn' });
 
     const twitterAuthProvider = new TwitterAuthProvider();
-    twitterAuthProvider.setCustomParameters({
-      lang: 'ja',
+    twitterAuthProvider.setCustomParameters({ lang: 'ja' });
+
+    const userCredential = await signInWithPopup(auth, twitterAuthProvider).catch((error: Error) => {
+      console.error(error.message);
     });
+    await setToken(userCredential);
 
-    const token = await signInWithPopup(auth, twitterAuthProvider)
-      .then((result) => {
-        const user = result.user;
-        const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
-        const credential = TwitterAuthProvider.credentialFromResult(result);
-
-        if (user && credential) {
-          const token: TokenData = {
-            twitterAccessToken: credential.accessToken || '',
-            twitterAccessTokenSecret: credential.secret || '',
-            twitterId,
-          };
-          return token;
-        }
-        return null;
-      })
-      .catch((error: Error) => {
-        console.error(error.message);
-        return null;
-      });
-
-    if (token) {
-      dispatch({ type: 'SetToken', payload: { token } });
-    }
     dispatch({ type: 'FinishSignIn' });
   };
 
