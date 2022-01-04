@@ -1,4 +1,5 @@
 import { Timestamp } from '@firebase/firestore-types';
+import { RecordData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore, bucket } from '../../modules/firebase';
 
@@ -29,11 +30,13 @@ export const create = functions
         const head = ['id', 'type', 'durationStart', 'durationEnd', 'twitterId', 'maybeDeletedOrSuspended'].join(',');
         const rows = recordsSnapshot.docs.map((doc) => {
           const id = doc.id;
-          const type = doc.get('type') as 'yuku' | 'kuru';
-          const durationStart = toDateText(doc.get('durationStart') as Timestamp);
-          const durationEnd = toDateText(doc.get('durationEnd') as Timestamp);
-          const twitterId = doc.get('user.id') as string;
-          const maybeDeletedOrSuspended = doc.get('user.maybeDeletedOrSuspended') as boolean;
+          const type = doc.get('type') as RecordData['type'];
+          const durationStart = toDateText(doc.get('durationStart') as RecordData['durationStart']);
+          const durationEnd = toDateText(doc.get('durationEnd') as RecordData['durationEnd']);
+          const twitterId = doc.get('user.id') as RecordData['user']['id'];
+          const maybeDeletedOrSuspended = doc.get(
+            'user.maybeDeletedOrSuspended'
+          ) as RecordData['user']['maybeDeletedOrSuspended'];
 
           const row = [id, type, durationStart, durationEnd, twitterId, maybeDeletedOrSuspended].join(',');
           return row;

@@ -10,7 +10,6 @@ export const setToken = async (userCredential?: UserCredential): Promise<void> =
   }
 
   const { user } = userCredential;
-  const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
   const credential = TwitterAuthProvider.credentialFromResult(userCredential);
 
   if (!credential) {
@@ -20,7 +19,6 @@ export const setToken = async (userCredential?: UserCredential): Promise<void> =
   const token: TokenData = {
     twitterAccessToken: credential.accessToken || '',
     twitterAccessTokenSecret: credential.secret || '',
-    twitterId,
   };
   const docRef = doc(firestore, 'tokens', user.uid);
   await setDoc(docRef, token, { merge: true });
