@@ -9,11 +9,11 @@ import {
 } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
 
-export type MembershipSubscriptionPageProps = {
+export type SupporterPageProps = {
   uid: string | null;
 };
 
-export const MembershipSubscriptionPage: React.FC<MembershipSubscriptionPageProps> = ({ uid }) => {
+export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
   const stripe = useStripe();
   const [subscriptions, setSubscriptions] = useState<{ status: string; role: string }[]>([]);
   const [prices, setPrices] = useState<{ id: string; role: string }[]>([]);
