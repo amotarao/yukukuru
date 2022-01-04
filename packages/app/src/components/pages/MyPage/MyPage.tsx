@@ -1,8 +1,10 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
+import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { dateOptions } from '../../../modules/date';
+import { analytics } from '../../../modules/firebase';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { BottomNav } from '../../organisms/BottomNav';
@@ -137,22 +139,20 @@ export const MyPage: React.FC<MyPageProps> = ({
       return;
     }
 
-    // gtag.event({
-    //   action: 'element_show',
-    //   category: 'has_next',
-    //   label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
-    //   value: 100,
-    // });
+    logEvent(analytics, 'element_show', {
+      event_category: 'has_next',
+      event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+      value: 100,
+    });
   }, [isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    // gtag.event({
-    //   action: 'button_click',
-    //   category: 'click_next',
-    //   label: `click_next_p-${paging}`,
-    //   value: 100,
-    // });
+    logEvent(analytics, 'button_click', {
+      event_category: 'click_next',
+      event_label: `click_next_p-${paging}`,
+      value: 100,
+    });
     setPaging(paging + 1);
   };
 
