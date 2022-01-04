@@ -4,7 +4,7 @@ export const pageview = (url: string): void => {
     return;
   }
 
-  window.gtag('config', process.env.GOOGLE_ANALYTICS, {
+  window.gtag('config', process.env.GOOGLE_ANALYTICS as string, {
     page_path: url,
   });
 };
