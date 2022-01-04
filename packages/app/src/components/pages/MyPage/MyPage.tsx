@@ -139,7 +139,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       return;
     }
 
-    logEvent(analytics, 'element_show', {
+    analytics && logEvent(analytics, 'element_show', {
       event_category: 'has_next',
       event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
       value: 100,
@@ -148,7 +148,7 @@ export const MyPage: React.FC<MyPageProps> = ({
 
   const getNext = () => {
     getNextRecords();
-    logEvent(analytics, 'button_click', {
+    analytics && logEvent(analytics, 'button_click', {
       event_category: 'click_next',
       event_label: `click_next_p-${paging}`,
       value: 100,

@@ -10,7 +10,7 @@ import '../styles/globals.css';
 const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
   useEffect(() => {
     const handleRouteChange = () => {
-      logEvent(analytics, 'page_view');
+      analytics && logEvent(analytics, 'page_view');
     };
 
     router.events.on('routeChangeComplete', handleRouteChange);
