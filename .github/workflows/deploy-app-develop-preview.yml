@@ -33,7 +33,6 @@ jobs:
         run: yarn workspace @yukukuru/app build
         env:
           PUBLIC_URL: ${{ secrets.PUBLIC_URL_DEVELOP }}
-          GOOGLE_ANALYTICS: ${{ secrets.GOOGLE_ANALYTICS_DEVELOP }}
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY_DEVELOP }}
           FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN_DEVELOP }}
           FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL_DEVELOP }}
