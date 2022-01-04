@@ -21,5 +21,5 @@ export const setToken = async (userCredential?: UserCredential): Promise<void> =
     twitterAccessTokenSecret: credential.secret || '',
   };
   const docRef = doc(firestore, 'tokens', user.uid);
-  await setDoc(docRef, token, { merge: true });
+  await setDoc(docRef, token);
 };
