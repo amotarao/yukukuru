@@ -1,9 +1,8 @@
-import { getAnalytics } from 'firebase/analytics';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-const app = getApps().length
+export const firebaseApp = getApps().length
   ? getApp()
   : initializeApp({
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,6 +14,5 @@ const app = getApps().length
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     });
 
-export const auth = getAuth(app);
-export const firestore = getFirestore(app);
-export const analytics = getAnalytics(app);
+export const auth = getAuth(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
