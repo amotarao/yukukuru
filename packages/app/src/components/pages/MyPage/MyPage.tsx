@@ -171,6 +171,7 @@ export const MyPage: React.FC<MyPageProps> = ({
       {currentAccount && (
         <AccountSelector
           className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
+          active={multiAccounts.length > 1}
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
           onChange={onChangeCurrentUid}

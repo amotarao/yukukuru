@@ -1,11 +1,15 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { UserData } from '@yukukuru/types';
+import classNames from 'classnames'
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 
 export type AccountSelectorProps = {
   className?: string;
+
+  /** AccountSelector が有効かどうか */
+  active: boolean;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   onChange: (uid: string) => void;
@@ -13,6 +17,7 @@ export type AccountSelectorProps = {
 
 export const AccountSelector: React.FC<AccountSelectorProps> = ({
   className,
+  active,
   currentAccount,
   multiAccounts,
   onChange,
@@ -31,19 +36,19 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     <div className={className}>
       <button
         ref={switchRef}
-        className="flex items-center max-w-36 sm:max-w-48 mx-auto p-1 rounded-full bg-back shadow-sm shadow-shadow"
+        className={classNames("flex items-center max-w-36 sm:max-w-48 mx-auto p-1 rounded-full bg-back shadow-sm shadow-shadow", !active && 'cursor-default')}
         onClick={() => {
-          setShown(!shown);
+          active && setShown(!shown);
         }}
       >
         <TwitterUserIcon
           className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full"
           src={currentAccount?.twitter.photoUrl ?? ''}
         />
-        <span className="flex-1 text-xs sm:text-sm text-center line-clamp-1">
+        <span className="flex-1 mr-2 text-xs sm:text-sm text-center line-clamp-1">
           @{currentAccount?.twitter.screenName ?? ''}
         </span>
-        <KeyboardArrowDownIcon className="text-base ml-2" />
+        {active && <KeyboardArrowDownIcon className="text-base" />}
       </button>
       {shown && (
         <div className="absolute flex justify-center w-full p-4">
