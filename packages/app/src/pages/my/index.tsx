@@ -12,8 +12,7 @@ import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user, twitter }, { signIn }] = useAuth();
-  const authUid = user?.uid ?? null;
+  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid, twitter }, { signIn }] = useAuth();
 
   const [currentUid, setCurrentUid] = useState(authUid);
   useEffect(() => {

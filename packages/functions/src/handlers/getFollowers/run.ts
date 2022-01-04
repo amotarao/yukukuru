@@ -60,7 +60,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, nextCursor, lastRun, publishedAt } = message.json as Message;
+    const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -91,7 +91,7 @@ export const run = functions
       access_token_secret: token.twitterAccessTokenSecret,
     });
     const result = await getFollowersIds(client, {
-      userId: token.twitterId,
+      userId: twitterId,
       cursor: nextCursor,
       count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });

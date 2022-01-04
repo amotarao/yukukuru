@@ -31,12 +31,13 @@ export const publish = functions
       .collection('users')
       .where('active', '==', true)
       .where('group', '==', group)
-      .select('nextCursor', 'lastUpdated')
+      .select('twitter.id', 'nextCursor', 'lastUpdated')
       .get();
 
     // publish データ作成・送信
     const messages: Message[] = snapshot.docs.map((doc) => ({
       uid: doc.id,
+      twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
       nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
       lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
       publishedAt: now,

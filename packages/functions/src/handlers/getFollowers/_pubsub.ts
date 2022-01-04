@@ -4,6 +4,9 @@ export type Message = {
   /** Firebase UID */
   uid: string;
 
+  /** Twitter UID */
+  twitterId: string;
+
   /** カーソル */
   nextCursor: string;
 
