@@ -110,7 +110,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
     dispatch({ type: 'StartLoading' });
 
     getDoc(doc(firestore, 'users', authUid)).then((doc) => {
-      const twitter: State['twitter'] = doc.get('twitter') as UserData['twitter'];
+      const twitter = doc.get('twitter') as UserData['twitter'];
       const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
