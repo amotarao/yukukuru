@@ -101,7 +101,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
     dispatch({ type: 'Initialize' });
   }, [authUid]);
 
-  // 自分の Twitter プロフィール取得処理
+  // Twitter プロフィール取得処理
   useEffect(() => {
     if (!authUid) {
       return;
@@ -109,20 +109,15 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
 
     dispatch({ type: 'StartLoading' });
 
+    // 認証ユーザー
     getDoc(doc(firestore, 'users', authUid)).then((doc) => {
       const twitter = doc.get('twitter') as UserData['twitter'];
       const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
     });
-  }, [authUid]);
 
-  // 閲覧可能ユーザーの Twitter プロフィール取得処理
-  useEffect(() => {
-    if (!authUid) {
-      return;
-    }
-
+    // 閲覧可能ユーザー
     const q = query(collection(firestore, 'users'), where('allowedAccessUsers', 'array-contains', authUid));
     getDocs(q).then((snapshot) => {
       const users = snapshot.docs.map((doc) => {
