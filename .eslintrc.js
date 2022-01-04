@@ -5,14 +5,8 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   rules: {
-    'prettier/prettier': 'error',
     'import/order': [
       'error',
       {
@@ -20,6 +14,6 @@ module.exports = {
           order: 'asc',
         },
       },
-    ]
+    ],
   },
 };

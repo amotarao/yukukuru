@@ -1,20 +1,26 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "packages/app"
-		},
-		{
-			"path": "packages/functions"
-		},
-		{
-			"path": "packages/types"
-		},
-		{
-			"path": "packages/admin-app"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "packages/app"
+    },
+    {
+      "path": "packages/functions"
+    },
+    {
+      "path": "packages/types"
+    },
+    {
+      "path": "packages/admin-app"
+    }
+  ],
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    }
+  }
 }
