@@ -68,7 +68,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: false,
         user: null,
-        token: null,
       };
     }
 
@@ -132,14 +131,6 @@ export const useAuth = (): [Readonly<State>, Action] => {
       unsubscribe();
     };
   }, []);
-
-  // Twitter Token の監視
-  useEffect(() => {
-    if (!state.token || !state.user) {
-      return;
-    }
-    setToken(state.user.uid, state.token);
-  }, [state.token, state.user]);
 
   // サインイン処理
   const signIn = async () => {
