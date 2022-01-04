@@ -1,4 +1,4 @@
-import { StylesProvider } from '@material-ui/core/styles';
+import { StylesProvider } from '@mui/styles';
 import { logEvent } from 'firebase/analytics';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
