@@ -3,11 +3,10 @@ import { collection, query, orderBy, limitToLast, Timestamp, CollectionReference
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
-import { TwitterUserIcon } from '../../../components/TwitterUserIcon';
 import { CsvExporter } from '../../../components/CsvExporter';
-// import { RecordsBarGraph } from '../../../components/RecordsBarGraph';
-import { firestore } from '../../../modules/firebase';
+import { TwitterUserIcon } from '../../../components/TwitterUserIcon';
 import { dateOptions } from '../../../modules/date';
+import { firestore } from '../../../modules/firebase';
 
 type RecordData = {
   durationStart: Timestamp;

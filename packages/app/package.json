@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build && next export",
     "start": "next start",
+    "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
@@ -37,7 +38,6 @@
     "eslint": "^7.32.0",
     "eslint-config-next": "12.0.7",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "postcss": "^8.4.5",

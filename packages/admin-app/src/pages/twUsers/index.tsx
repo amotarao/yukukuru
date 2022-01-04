@@ -2,10 +2,10 @@ import { getFirestore, collection, query, orderBy, limit, Timestamp, OrderByDire
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
-import { firebaseApp } from '../../modules/firebase';
-import { TwitterUserIcon } from '../../components/TwitterUserIcon';
 import { SortButton } from '../../components/SortButton';
+import { TwitterUserIcon } from '../../components/TwitterUserIcon';
 import { dateOptions } from '../../modules/date';
+import { firebaseApp } from '../../modules/firebase';
 
 const firestore = getFirestore(firebaseApp);
 
