@@ -18,6 +18,24 @@
       ],
       "headers": [
         {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store, no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(html)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store, no-cache"
+            }
+          ]
+        },
+        {
           "source": "**/*.@(jpg|jpeg|gif|png)",
           "headers": [
             {
@@ -32,24 +50,6 @@
             {
               "key": "Cache-Control",
               "value": "max-age=604800"
-            }
-          ]
-        },
-        {
-          "source": "/",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-store, no-cache"
-            }
-          ]
-        },
-        {
-          "source": "/my",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-store, no-cache"
             }
           ]
         }
