@@ -1,9 +1,9 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
-import type firebase from 'firebase';
-import { useState, useEffect, useCallback, useReducer } from 'react';
+import { QueryDocumentSnapshot } from 'firebase/firestore';
+import { useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
 
-const convertRecordItems = (snapshot: firebase.firestore.QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
+const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
   const item: FirestoreIdData<RecordData> = {
     id: snapshot.id,
     data: snapshot.data() as RecordData,
@@ -31,7 +31,7 @@ type State = {
   uid: string | null;
 
   /** カーソル */
-  cursor: firebase.firestore.QueryDocumentSnapshot | null;
+  cursor: QueryDocumentSnapshot | null;
 };
 
 const initialState: State = {
@@ -57,7 +57,7 @@ type DispatchAction =
   | {
       type: 'AddItems';
       payload: {
-        docs: firebase.firestore.QueryDocumentSnapshot[];
+        docs: QueryDocumentSnapshot[];
       };
     }
   | {
@@ -114,16 +114,10 @@ const reducer = (state: State, action: DispatchAction): State => {
 type Action = {
   /** 続きのデータを取得する */
   getNextRecords: () => void;
-
-  /** uid をセットする */
-  setUid: (uid: string | null) => void;
 };
 
-export const useRecords = (): [State, Action] => {
+export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  /** Firebase UID */
-  const [uid, setUid] = useState<string | null>(null);
 
   /**
    * Records を取得し処理する
@@ -170,5 +164,5 @@ export const useRecords = (): [State, Action] => {
     getRecords();
   };
 
-  return [state, { getNextRecords, setUid }];
+  return [state, { getNextRecords }];
 };

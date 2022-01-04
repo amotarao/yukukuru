@@ -1,13 +1,14 @@
 import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import classNames from 'classnames';
+import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
-import * as gtag from '../../../libs/gtag';
+import { dateOptions } from '../../../modules/date';
+import { analytics } from '../../../modules/firebase';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
-import { BottomNav, NavType } from '../../organisms/BottomNav';
+import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { NotificationList } from '../../organisms/NotificationList';
-import { SettingMenu } from '../../organisms/SettingMenu';
 import { UserCard } from '../../organisms/UserCard';
 import styles from './styles.module.scss';
 
@@ -19,22 +20,20 @@ export type MyPageProps = {
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
-  signOut: () => void | Promise<void>;
 };
 
 /**
  * アイテムがないことを表示するコンポーネント
  */
-const NoItem: React.FC = () => {
+const NoItemView: React.FC = () => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>最初のデータ取得までしばらくお待ちください。</p>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
-        <wbr />
-        (2021.5.8)
+        <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
       </p>
     </div>
   );
@@ -43,15 +42,64 @@ const NoItem: React.FC = () => {
 /**
  * 表示するデータがないことを表示するコンポーネント
  */
-const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         データの取得は完了していますが、
         <wbr />
         今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+    </div>
+  );
+};
+
+const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
+  items,
+  lastRunnedGetFollowers,
+}) => {
+  let currentDate = '';
+
+  return (
+    <div className="pb-10 sm:pb-20">
+      <nav className="sticky top-0 z-10 flex w-full -mt-12 sm:-mt-16 px-4 py-3 sm:py-5 pointer-events-none">
+        <ul className="flex justify-between sm:justify-around w-full">
+          <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
+            ゆくひと
+          </li>
+          <li className="inline-block px-3 py-1 sm:ml-8 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs shadow-sm shadow-shadow">
+            くるひと
+          </li>
+        </ul>
+      </nav>
+      <LastUpdatedText className="px-4 my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
+        {items.map((item) => {
+          const date = item.data.durationEnd.toDate();
+          const dateText = date.toLocaleDateString(undefined, dateOptions);
+          const showDate = currentDate !== dateText;
+          currentDate = dateText;
+
+          return (
+            <React.Fragment key={item.id}>
+              {showDate && (
+                <h2
+                  className={classNames(
+                    'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                    styles.recordHead
+                  )}
+                >
+                  {dateText}
+                </h2>
+              )}
+              <div className={styles.userSection} data-type={item.data.type}>
+                <UserCard {...item.data} />
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </section>
     </div>
   );
 };
@@ -60,44 +108,16 @@ const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
  * メインエリア
  */
 const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length === 0) {
-    // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
-    if (lastRunnedGetFollowers.getTime() === 0) {
-      return <NoItem />;
-    }
-    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  if (items.length > 0) {
+    return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
-  let currentDate = '';
+  // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
+  if (lastRunnedGetFollowers.getTime() === 0) {
+    return <NoItemView />;
+  }
 
-  return (
-    <div className={styles.homeArea}>
-      <nav className={styles.labelNav}>
-        <ul>
-          <li data-type="yuku">ゆくひと</li>
-          <li data-type="kuru">くるひと</li>
-        </ul>
-      </nav>
-      <div className={[styles.noticeWrapper, styles.homeNotice].join(' ')}>
-        <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
-      </div>
-      {items.map((item) => {
-        const date = item.data.durationEnd.toDate();
-        const dateText = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
-        const showDate = currentDate !== dateText;
-        currentDate = dateText;
-
-        return (
-          <React.Fragment key={item.id}>
-            {showDate && <h2 className={styles.recordHead}>{dateText}</h2>}
-            <section className={styles.userSection} data-type={item.data.type}>
-              <UserCard {...item.data} />
-            </section>
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
+  return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
 };
 
 /**
@@ -111,44 +131,33 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasToken,
   lastRunnedGetFollowers,
   getNextRecords,
-  signOut,
 }) => {
-  const [nav, setNav] = useState<NavType>('home');
   const [paging, setPaging] = useState<number>(1);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    document.documentElement.style.overflow = nav !== 'home' ? 'hidden' : '';
-  }, [nav]);
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
       return;
     }
 
-    gtag.event({
-      action: 'element_show',
-      category: 'has_next',
-      label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+    logEvent(analytics, 'element_show', {
+      event_category: 'has_next',
+      event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
       value: 100,
     });
   }, [isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    gtag.event({
-      action: 'button_click',
-      category: 'click_next',
-      label: `click_next_p-${paging}`,
+    logEvent(analytics, 'button_click', {
+      event_category: 'click_next',
+      event_label: `click_next_p-${paging}`,
       value: 100,
     });
     setPaging(paging + 1);
   };
 
   const superReload = () => {
-    window.location.reload(true);
+    window.location.replace(window.location.href);
   };
 
   return (
@@ -174,17 +183,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      {nav === 'notification' && (
-        <section className={styles.section}>
-          <NotificationList />
-        </section>
-      )}
-      {nav === 'setting' && (
-        <section className={styles.section}>
-          <SettingMenu signOut={signOut} />
-        </section>
-      )}
-      <BottomNav active={nav} onChange={setNav} />
+      <BottomNav active="my" />
     </div>
   );
 };

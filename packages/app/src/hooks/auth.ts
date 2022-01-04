@@ -1,10 +1,16 @@
 import { TokenData } from '@yukukuru/types';
-import type firebase from 'firebase';
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut as authSignOut,
+  TwitterAuthProvider,
+  UserInfo,
+} from 'firebase/auth';
 import { useEffect, useReducer } from 'react';
-import { auth, providers } from '../modules/firebase';
+import { auth } from '../modules/firebase';
 import { setToken } from '../modules/firestore/tokens';
 
-type User = Pick<firebase.User, 'uid'>;
+type User = Pick<UserInfo, 'uid'>;
 
 type State = {
   isLoading: boolean;
@@ -106,11 +112,11 @@ type Action = {
   signOut: () => Promise<void>;
 };
 
-export const useAuth = (): [State, Action] => {
+export const useAuth = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
         dispatch({ type: 'SetUser', payload: { user: { uid } } });
@@ -135,14 +141,21 @@ export const useAuth = (): [State, Action] => {
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
 
-    const token = await auth
-      .signInWithPopup(providers.twitter)
-      .then(({ additionalUserInfo, credential, user }) => {
-        if (additionalUserInfo && credential && user) {
-          const twitterId = (additionalUserInfo.profile as { id_str?: string }).id_str ?? '';
+    const twitterAuthProvider = new TwitterAuthProvider();
+    twitterAuthProvider.setCustomParameters({
+      lang: 'ja',
+    });
+
+    const token = await signInWithPopup(auth, twitterAuthProvider)
+      .then((result) => {
+        const user = result.user;
+        const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
+        const credential = TwitterAuthProvider.credentialFromResult(result);
+
+        if (user && credential) {
           const token: TokenData = {
-            twitterAccessToken: (credential as any).accessToken,
-            twitterAccessTokenSecret: (credential as any).secret,
+            twitterAccessToken: credential.accessToken || '',
+            twitterAccessTokenSecret: credential.secret || '',
             twitterId,
           };
           return token;
@@ -161,7 +174,7 @@ export const useAuth = (): [State, Action] => {
   };
 
   const signOut = async () => {
-    await auth.signOut();
+    await authSignOut(auth);
   };
 
   return [state, { signIn, signOut }];

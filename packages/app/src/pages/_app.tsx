@@ -1,36 +1,35 @@
 import { StylesProvider } from '@material-ui/core/styles';
-import App from 'next/app';
+import { logEvent } from 'firebase/analytics';
+import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import Router from 'next/router';
-import React from 'react';
-import * as gtag from '../libs/gtag';
+import React, { useEffect } from 'react';
+import { analytics } from '../modules/firebase';
 import { ThemeContainer } from '../store/theme';
+import '../styles/globals.css';
 
-Router.events.on('routeChangeComplete', (url) => {
-  gtag.pageview(url);
-});
+const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
+  useEffect(() => {
+    const handleRouteChange = () => {
+      logEvent(analytics, 'page_view');
+    };
 
-export default class MyApp extends App {
-  static async getInitialProps(ctx: any): Promise<any> {
-    if (ctx.Component.getInitialProps) {
-      const pageProps = await ctx.Component.getInitialProps(ctx);
-      return { pageProps };
-    }
-    return {};
-  }
+    router.events.on('routeChangeComplete', handleRouteChange);
 
-  render(): JSX.Element {
-    const { Component, pageProps } = this.props;
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
 
-    return (
-      <ThemeContainer.Provider>
-        <StylesProvider injectFirst>
-          <Head>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-          </Head>
-          <Component {...pageProps} />
-        </StylesProvider>
-      </ThemeContainer.Provider>
-    );
-  }
-}
+  return (
+    <ThemeContainer.Provider>
+      <StylesProvider injectFirst>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <Component {...pageProps} />
+      </StylesProvider>
+    </ThemeContainer.Provider>
+  );
+};
+
+export default MyApp;

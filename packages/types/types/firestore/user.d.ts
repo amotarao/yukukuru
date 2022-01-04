@@ -5,6 +5,9 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** 有効かどうか */
   active: boolean;
 
+  /** auth が削除されているかどうか */
+  deletedAuth: boolean;
+
   /** フォロワー一覧取得 最終実行日時 */
   lastUpdated: T;
 
@@ -28,6 +31,9 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
 
   /** グループ番号 0-14 のいずれか */
   group: number;
+
+  /** アクセス許可されたユーザーリスト */
+  allowedAccessUsers?: string[];
 
   /** Twitter情報 */
   twitter: {

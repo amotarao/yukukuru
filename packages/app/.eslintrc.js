@@ -30,6 +30,6 @@ module.exports = {
           order: 'asc',
         },
       },
-    ]
+    ],
   },
 };

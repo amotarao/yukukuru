@@ -1,7 +1,15 @@
-import type firebase from 'firebase';
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  startAfter,
+} from 'firebase/firestore';
 import { firestore } from '../firebase';
-
-const usersCollection = firestore.collection('users');
 
 /**
  * Firestore から Records を取得
@@ -11,16 +19,15 @@ const usersCollection = firestore.collection('users');
  */
 export const getRecords = async (
   uid: string,
-  startAfter: firebase.firestore.QueryDocumentSnapshot | null
-): Promise<firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>> => {
-  let query = usersCollection.doc(uid).collection('records').orderBy('durationEnd', 'desc');
-
-  if (startAfter) {
-    query = query.startAfter(startAfter);
+  startAfterDoc: QueryDocumentSnapshot | null
+): Promise<QuerySnapshot<DocumentData>> => {
+  const ref = collection(firestore, 'users', uid, 'records');
+  let q = query(ref, orderBy('durationEnd', 'desc'));
+  if (startAfterDoc) {
+    q = query(q, startAfter(startAfterDoc));
   }
+  q = query(q, limit(50));
 
-  query = query.limit(50);
-
-  const qs = await query.get();
+  const qs = await getDocs(q);
   return qs;
 };

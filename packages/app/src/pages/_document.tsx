@@ -8,15 +8,6 @@ export default class MyDocument extends Document {
       <Html lang="ja-jp">
         <GlobalStyle />
         <Head>
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS}`} />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${process.env.GOOGLE_ANALYTICS}');`,
-            }}
-          />
           <script
             dangerouslySetInnerHTML={{
               __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));`,

@@ -3,13 +3,22 @@ export type TwitterClientError = {
   message: string;
 };
 
+const logError = (error: unknown): void => {
+  try {
+    const detail = JSON.stringify(error);
+    console.error(`❗️[Twitter Error] Failed to run Twitter API: ${detail}`);
+  } catch (e) {
+    console.error(`❗️[Twitter Error] Failed to run Twitter API. (Check next log.)`);
+    console.error(error);
+  }
+};
+
 export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientError[] } => {
-  console.error(`❗️[Twitter Error] Failed to run Twitter API.`, error);
+  logError(error);
 
   if (Array.isArray(error)) {
     return { errors: error as TwitterClientError[] };
   }
-
   return { errors: [error] as TwitterClientError[] };
 };
 
@@ -48,7 +57,7 @@ export const checkRateLimitExceeded = (errors: TwitterClientError[]): boolean =>
  *
  * @param errors エラーリスト
  */
-export const checkInvalidToken = (errors: TwitterClientError[]): boolean => {
+export const checkInvalidOrExpiredToken = (errors: TwitterClientError[]): boolean => {
   return checkError(errors, 89);
 };
 
@@ -57,6 +66,6 @@ export const checkInvalidToken = (errors: TwitterClientError[]): boolean => {
  *
  * @param errors エラーリスト
  */
-export const checkProtectedUser = (errors: TwitterClientError[]): boolean => {
+export const checkTemporarilyLocked = (errors: TwitterClientError[]): boolean => {
   return checkError(errors, 326);
 };

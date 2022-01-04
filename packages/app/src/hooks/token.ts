@@ -1,5 +1,6 @@
 import { TokenData } from '@yukukuru/types';
-import { useState, useEffect, useReducer } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
 type State = {
@@ -42,41 +43,33 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-type Action = {
-  setUid: (uid: string | null) => void;
-};
-
-export const useToken = (): [State, Action] => {
+export const useToken = (uid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     if (!uid) {
       return;
     }
 
-    const unsubscribe = firestore
-      .collection('tokens')
-      .doc(uid)
-      .onSnapshot((doc) => {
-        if (!doc.exists) {
-          dispatch({ type: 'ClearHasToken' });
-          return;
-        }
+    const unsubscribe = onSnapshot(doc(firestore, 'tokens', uid), (doc) => {
+      if (!doc.exists) {
+        dispatch({ type: 'ClearHasToken' });
+        return;
+      }
 
-        const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
-        if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
-          dispatch({ type: 'ClearHasToken' });
-          return;
-        }
+      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
+      if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
+        dispatch({ type: 'ClearHasToken' });
+        return;
+      }
 
-        dispatch({ type: 'SetHasToken' });
-      });
+      dispatch({ type: 'SetHasToken' });
+    });
 
     return () => {
       unsubscribe();
     };
   }, [uid]);
 
-  return [state, { setUid }];
+  return [state];
 };
