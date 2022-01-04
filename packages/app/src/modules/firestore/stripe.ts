@@ -1,15 +1,27 @@
-import type firebase from 'firebase/app';
+import {
+  addDoc,
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+  DocumentReference,
+  QuerySnapshot,
+} from 'firebase/firestore';
 import { firestore } from '../firebase';
 
-const customersCollection = firestore.collection('stripeCustomers');
-const plansCollection = firestore.collection('stripePlans');
+const customersCollection = collection(firestore, 'stripeCustomers');
+const plansCollection = collection(firestore, 'stripePlans');
 
-export const getOwnActiveSubscriptions = (uid: string): Promise<firebase.firestore.QuerySnapshot> => {
-  return customersCollection.doc(uid).collection('subscriptions').where('status', 'in', ['trialing', 'active']).get();
+export const getOwnActiveSubscriptions = (uid: string): Promise<QuerySnapshot> => {
+  const c = collection(customersCollection, uid, 'subscriptions');
+  const q = query(c, where('status', 'in', ['trialing', 'active']));
+  return getDocs(q);
 };
 
 export const addCheckoutSession = async (uid: string, price: string, taxRates: string[]): Promise<string> => {
-  const ref = await customersCollection.doc(uid).collection('checkout_sessions').add({
+  const c = collection(customersCollection, uid, 'checkout_sessions');
+  const ref = await addDoc(c, {
     price: price,
     tax_rates: taxRates,
     success_url: window.location.origin,
@@ -18,7 +30,7 @@ export const addCheckoutSession = async (uid: string, price: string, taxRates: s
   });
 
   return new Promise((resolve, reject) => {
-    const unsubscribe = ref.onSnapshot((snap) => {
+    const unsubscribe = onSnapshot(ref, (snap) => {
       const { error, sessionId } = snap.data();
 
       if (error) {
@@ -34,16 +46,17 @@ export const addCheckoutSession = async (uid: string, price: string, taxRates: s
   });
 };
 
-export const getActivePlans = (): Promise<firebase.firestore.QuerySnapshot> => {
-  return plansCollection.where('active', '==', true).get();
+export const getActivePlans = (): Promise<QuerySnapshot> => {
+  const q = query(plansCollection, where('active', '==', true));
+  return getDocs(q);
 };
 
-export const getActivePlanPrices = (
-  ref: firebase.firestore.DocumentReference
-): Promise<firebase.firestore.QuerySnapshot> => {
-  return ref.collection('prices').where('active', '==', true).get();
+export const getActivePlanPrices = (ref: DocumentReference): Promise<QuerySnapshot> => {
+  const q = query(collection(ref, 'prices'), where('active', '==', true));
+  return getDocs(q);
 };
 
-export const getActiveTaxRates = (): Promise<firebase.firestore.QuerySnapshot> => {
-  return plansCollection.doc('tax_rates').collection('tax_rates').where('active', '==', true).get();
+export const getActiveTaxRates = (): Promise<QuerySnapshot> => {
+  const q = query(collection(plansCollection, 'tax_rates', 'tax_rates'), where('active', '==', true));
+  return getDocs(q);
 };
