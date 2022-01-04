@@ -7,7 +7,7 @@ import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { MembershipSubscriptionPage } from '../../components/pages/MembershipSubscriptionPage';
 import { useAuth } from '../../hooks/auth';
 
-const stripePromise = loadStripe(process.env.STRIPE_API_KEY);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_API_KEY);
 
 const Page: React.FC = () => {
   const router = useRouter();
