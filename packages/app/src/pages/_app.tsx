@@ -9,16 +9,16 @@ import '../styles/globals.css';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
   useEffect(() => {
-    const logPageView = () => {
+    const handleRouteChange = () => {
       logEvent(analytics, 'page_view');
     };
 
-    router.events.on('routeChangeComplete', logPageView);
+    router.events.on('routeChangeComplete', handleRouteChange);
 
     return () => {
-      router.events.off('routeChangeComplete', logPageView);
+      router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [router]);
+  }, [router.events]);
 
   return (
     <ThemeContainer.Provider>
