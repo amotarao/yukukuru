@@ -110,7 +110,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
  * メインエリア
  */
 const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length) {
+  if (items.length > 0) {
     return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
