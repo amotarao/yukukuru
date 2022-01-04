@@ -1,4 +1,3 @@
-import { TokenData } from '@yukukuru/types';
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -10,33 +9,44 @@ import { useEffect, useReducer } from 'react';
 import { auth } from '../modules/firebase';
 import { setToken } from '../modules/firestore/tokens';
 
-type User = Pick<UserInfo, 'uid'>;
-
 type State = {
+  /** 読み込み中かどうか */
   isLoading: boolean;
-  signedIn: boolean;
+
+  /** サインイン処理中かどうか */
   signingIn: boolean;
-  user: User | null;
-  token: TokenData | null;
+
+  /** サインイン済みかどうか */
+  signedIn: boolean;
+
+  /** ユーザーデータ */
+  user: Pick<UserInfo, 'uid'> | null;
+
+  /** UID */
+  uid: string | null;
 };
 
 const initialState: State = {
   isLoading: true,
-  signedIn: false,
   signingIn: false,
+  signedIn: false,
   user: null,
-  token: null,
+  uid: null,
 };
 
 type DispatchAction =
   | {
       type: 'SetUser';
       payload: {
-        user: User;
+        user: State['user'];
+        uid: State['uid'];
       };
     }
   | {
       type: 'ClearUser';
+    }
+  | {
+      type: 'StartLoading';
     }
   | {
       type: 'FinishLoading';
@@ -46,12 +56,6 @@ type DispatchAction =
     }
   | {
       type: 'FinishSignIn';
-    }
-  | {
-      type: 'SetToken';
-      payload: {
-        token: TokenData;
-      };
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
@@ -61,6 +65,7 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: true,
         user: action.payload.user,
+        uid: action.payload.uid,
       };
     }
 
@@ -69,7 +74,14 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         signedIn: false,
         user: null,
-        token: null,
+        uid: null,
+      };
+    }
+
+    case 'StartLoading': {
+      return {
+        ...state,
+        isLoading: true,
       };
     }
 
@@ -94,13 +106,6 @@ const reducer = (state: State, action: DispatchAction): State => {
       };
     }
 
-    case 'SetToken': {
-      return {
-        ...state,
-        token: action.payload.token,
-      };
-    }
-
     default: {
       return state;
     }
@@ -115,11 +120,14 @@ type Action = {
 export const useAuth = (): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // ログイン状態の監視
   useEffect(() => {
+    dispatch({ type: 'StartLoading' });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
-        dispatch({ type: 'SetUser', payload: { user: { uid } } });
+        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
       } else {
         dispatch({ type: 'ClearUser' });
       }
@@ -131,48 +139,23 @@ export const useAuth = (): [Readonly<State>, Action] => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!state.token || !state.user) {
-      return;
-    }
-    setToken(state.user.uid, state.token);
-  }, [state.token, state.user]);
-
+  // サインイン処理
   const signIn = async () => {
     dispatch({ type: 'StartSignIn' });
 
     const twitterAuthProvider = new TwitterAuthProvider();
-    twitterAuthProvider.setCustomParameters({
-      lang: 'ja',
+    twitterAuthProvider.setCustomParameters({ lang: 'ja' });
+
+    const userCredential = await signInWithPopup(auth, twitterAuthProvider).catch((error: Error) => {
+      console.error(error.message);
+      return undefined;
     });
+    await setToken(userCredential);
 
-    const token = await signInWithPopup(auth, twitterAuthProvider)
-      .then((result) => {
-        const user = result.user;
-        const twitterId = user.providerData.find((provider) => provider.providerId === 'twitter.com')?.uid ?? '';
-        const credential = TwitterAuthProvider.credentialFromResult(result);
-
-        if (user && credential) {
-          const token: TokenData = {
-            twitterAccessToken: credential.accessToken || '',
-            twitterAccessTokenSecret: credential.secret || '',
-            twitterId,
-          };
-          return token;
-        }
-        return null;
-      })
-      .catch((error: Error) => {
-        console.error(error.message);
-        return null;
-      });
-
-    if (token) {
-      dispatch({ type: 'SetToken', payload: { token } });
-    }
     dispatch({ type: 'FinishSignIn' });
   };
 
+  // サインアウト処理
   const signOut = async () => {
     await authSignOut(auth);
   };

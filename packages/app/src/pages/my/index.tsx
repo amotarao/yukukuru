@@ -10,9 +10,7 @@ import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, user }, { signIn }] = useAuth();
-  const uid = user?.uid ?? null;
-
+  const [{ isLoading: authIsLoading, signingIn, signedIn, uid }, { signIn }] = useAuth();
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(uid);
   const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(uid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(uid);
