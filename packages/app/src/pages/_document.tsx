@@ -8,7 +8,7 @@ export default class MyDocument extends Document {
         <Head>
           <script
             dangerouslySetInnerHTML={{
-              __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));`,
+              __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default');`,
             }}
           />
           <meta name="theme-color" content="#000000" />
