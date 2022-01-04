@@ -9,6 +9,9 @@
     "packages/app",
     "packages/types"
   ],
+  "scripts": {
+    "start": "firebase emulators:start"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",

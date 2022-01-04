@@ -1,0 +1,27 @@
+.button {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.4rem 0;
+  padding: 0.4rem 0 calc(0.4rem + constant(safe-area-inset-bottom));
+  padding: 0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+  transition: height 0.3s ease-out, padding 0.3s ease-out;
+  font-size: 0.6rem;
+  font-family: inherit;
+
+  &[aria-current='page'] {
+    color: var(--primary);
+  }
+
+  &:focus {
+    background-color: var(--primary-bg);
+    outline: none;
+  }
+}

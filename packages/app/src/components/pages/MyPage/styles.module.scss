@@ -55,7 +55,7 @@
   padding: 1rem calc(50% - 240px) 5rem;
   padding: 1rem calc(50% - 240px) calc(5rem + constant(safe-area-inset-bottom));
   padding: 1rem calc(50% - 240px) calc(5rem + env(safe-area-inset-bottom));
-  z-index: 100;
+  z-index: 10;
 
   @media screen and (min-width: 640px) {
     padding-right: calc(50% - 480px);
@@ -63,13 +63,9 @@
   }
 }
 
-.homeArea {
-  background: none;
-  padding-bottom: 40px;
-
+.listWrapper {
   @media screen and (min-width: 640px) {
-    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center 80px/2px 100% no-repeat;
-    padding-bottom: 80px;
+    background: linear-gradient(to bottom, var(--back-2), var(--back-2)) center top/2px 100% no-repeat;
   }
 }
 
@@ -78,36 +74,6 @@
 
   @media screen and (min-width: 640px) {
     margin-top: -63px;
-  }
-}
-
-.labelNav {
-  margin: 0 16px 16px;
-  pointer-events: none;
-  position: sticky;
-  top: 16px;
-  width: auto;
-  z-index: 100;
-
-  > ul {
-    > li {
-      box-shadow: 0 1px 2px 0 var(--shadow);
-    }
-  }
-
-  @media screen and (min-width: 640px) {
-    margin-bottom: 24px;
-
-    > ul {
-      > li {
-        &[data-type='yuku'] {
-          margin-right: 32px;
-        }
-        &[data-type='kuru'] {
-          margin-left: 32px;
-        }
-      }
-    }
   }
 }
 
@@ -205,24 +171,5 @@
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-  }
-}
-
-.noticeWrapper {
-  padding-top: 32px;
-}
-
-.noticeText {
-  font-size: 0.8em;
-  color: #999;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0 16px;
-  text-align: center;
-  white-space: nowrap;
-
-  & + .noticeText {
-    margin-top: 16px;
   }
 }

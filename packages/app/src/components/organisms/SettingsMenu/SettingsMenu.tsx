@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import Switch from '@material-ui/core/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -6,12 +5,12 @@ import React from 'react';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 
-type SettingMenuProps = {
+type SettingsMenuProps = {
   signIn: () => void;
   signOut: () => void | Promise<void>;
 };
 
-export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => {
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) => {
   const router = useRouter();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
@@ -33,7 +32,7 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => 
           </div>
         </li>
         <li className="border-b border-b-back-2">
-          <Link href="/" passHref>
+          <Link href="/">
             <a
               className="grow block w-full px-4 py-3 text-left"
               onClick={async (e) => {
@@ -47,17 +46,21 @@ export const SettingMenu: React.FC<SettingMenuProps> = ({ signIn, signOut }) => 
           </Link>
         </li>
         <li className="border-b border-b-back-2">
-          <button
-            className="grow block w-full px-4 py-3 text-left"
-            onClick={async () => {
-              await signIn();
-            }}
-          >
-            <p>
-              別のアカウントでログイン
-              <span className="block mt-1 text-xs">Twitterでアカウントを切り替えたあとに実行</span>
-            </p>
-          </button>
+          <Link href="/my">
+            <a
+              className="grow block w-full px-4 py-3 text-left"
+              onClick={async (e) => {
+                e.preventDefault();
+                await signIn();
+                router.push('/my');
+              }}
+            >
+              <p>
+                別のアカウントでログイン
+                <span className="block mt-1 text-xs">Twitterでアカウントを切り替えたあとに実行</span>
+              </p>
+            </a>
+          </Link>
         </li>
       </ul>
       <section className="mt-4 p-4">

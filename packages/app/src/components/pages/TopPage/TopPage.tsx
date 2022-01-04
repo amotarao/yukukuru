@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
+import { dateOptions } from '../../../modules/date';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
@@ -23,7 +24,7 @@ export const TopPage: React.FC = () => {
       <section className="flex flex-col justify-center items-center gap-4 w-full p-8 bg-back-shadow text-center">
         <h1 className="text-3xl">ゆくくる alpha</h1>
         <p className="text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
-        <Link href="/my" passHref>
+        <Link href="/my">
           <a className="px-4 py-1 rounded border border-primary text-primary">マイページ・ログイン</a>
         </Link>
         <div className="flex flex-col gap-2">
@@ -31,8 +32,7 @@ export const TopPage: React.FC = () => {
             現在、フォロワー数1万人以上のアカウントの
             <wbr />
             新規登録を停止しています。
-            <wbr />
-            (2021.5.8)
+            <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
           </p>
           <p className="flex flex-wrap justify-center text-xs text-sub whitespace-nowrap">
             ツイートする権限はありませんので

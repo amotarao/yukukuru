@@ -18,6 +18,24 @@
       ],
       "headers": [
         {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store, no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(html)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-store, no-cache"
+            }
+          ]
+        },
+        {
           "source": "**/*.@(jpg|jpeg|gif|png)",
           "headers": [
             {
@@ -34,24 +52,6 @@
               "value": "max-age=604800"
             }
           ]
-        },
-        {
-          "source": "/",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-store, no-cache"
-            }
-          ]
-        },
-        {
-          "source": "/my",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-store, no-cache"
-            }
-          ]
         }
       ],
       "rewrites": [
@@ -60,6 +60,7 @@
           "destination": "/index.html"
         }
       ],
+      "cleanUrls": true,
       "trailingSlash": false
     }
   ],
