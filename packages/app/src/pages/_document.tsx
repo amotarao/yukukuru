@@ -1,12 +1,10 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import React from 'react';
-import { GlobalStyle } from '../components/GlobalStyle';
 
 export default class MyDocument extends Document {
   render(): JSX.Element {
     return (
       <Html lang="ja-jp">
-        <GlobalStyle />
         <Head>
           <script
             dangerouslySetInnerHTML={{
