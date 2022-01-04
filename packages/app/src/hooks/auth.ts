@@ -50,13 +50,13 @@ type DispatchAction =
       };
     }
   | {
+      type: 'ClearUser';
+    }
+  | {
       type: 'SetTwitter';
       payload: {
         twitter: State['twitter'];
       };
-    }
-  | {
-      type: 'ClearUser';
     }
   | {
       type: 'StartLoading';
