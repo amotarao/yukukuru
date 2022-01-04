@@ -72,7 +72,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="px-4 my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />{' '}
+      <LastUpdatedText className="px-4 my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
           const date = item.data.durationEnd.toDate();
