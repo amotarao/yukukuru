@@ -2,7 +2,6 @@ import { FirestoreIdData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
-import * as gtag from '../../../libs/gtag';
 import { dateOptions } from '../../../modules/date';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
@@ -138,22 +137,22 @@ export const MyPage: React.FC<MyPageProps> = ({
       return;
     }
 
-    gtag.event({
-      action: 'element_show',
-      category: 'has_next',
-      label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
-      value: 100,
-    });
+    // gtag.event({
+    //   action: 'element_show',
+    //   category: 'has_next',
+    //   label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+    //   value: 100,
+    // });
   }, [isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    gtag.event({
-      action: 'button_click',
-      category: 'click_next',
-      label: `click_next_p-${paging}`,
-      value: 100,
-    });
+    // gtag.event({
+    //   action: 'button_click',
+    //   category: 'click_next',
+    //   label: `click_next_p-${paging}`,
+    //   value: 100,
+    // });
     setPaging(paging + 1);
   };
 
