@@ -24,11 +24,11 @@ export type MyPageProps = {
 /**
  * アイテムがないことを表示するコンポーネント
  */
-const NoItem: React.FC = () => {
+const NoItemView: React.FC = () => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>最初のデータ取得までしばらくお待ちください。</p>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         現在、フォロワー数1万人以上のアカウントの
         <wbr />
         新規登録を停止しています。
@@ -41,15 +41,15 @@ const NoItem: React.FC = () => {
 /**
  * 表示するデータがないことを表示するコンポーネント
  */
-const NoViewItem: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
-    <div className={styles.noticeWrapper}>
-      <p className={styles.noticeText}>
+    <div>
+      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
         データの取得は完了していますが、
         <wbr />
         今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className={styles.noticeText} date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -61,9 +61,9 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
   if (items.length === 0) {
     // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
     if (lastRunnedGetFollowers.getTime() === 0) {
-      return <NoItem />;
+      return <NoItemView />;
     }
-    return <NoViewItem lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+    return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
   let currentDate = '';
