@@ -1,4 +1,4 @@
-import { getAnalytics } from 'firebase/analytics';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
@@ -17,4 +17,4 @@ const app = getApps().length
 
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
-export const analytics = getAnalytics(app);
+export const analytics = isSupported() ? getAnalytics(app) : null;
