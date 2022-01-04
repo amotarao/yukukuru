@@ -8,7 +8,6 @@ import {
   getOwnActiveSubscriptions,
 } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
-import styles from './styles.module.scss';
 
 export type MembershipSubscriptionPageProps = {
   uid: string | null;
@@ -69,55 +68,39 @@ export const MembershipSubscriptionPage: React.FC<MembershipSubscriptionPageProp
   };
 
   return (
-    <main className={styles.wrapper}>
-      <header className={styles.header}>
-        <h1 className={styles.head}>ゆくくるメンバーシップ</h1>
+    <main>
+      <header className="mb-8 px-4 bg-top-bg">
+        <div className="max-w-xl mx-auto py-8">
+          <h1 className="text-4xl mt-4 mb-8 tracking-tight">ゆくくるサポーター</h1>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm leading-6">
+              ゆくくるの開発・運営を支援できる「ゆくくるサポーター」制度をご用意しました
+            </p>
+            <p className="text-sm leading-6">月額○円で登録でき、お礼にいくつかの機能をご提供します</p>
+          </div>
+        </div>
       </header>
-      <section className={[styles.section, styles.free].join(' ')}>
-        <h2 className={styles.subHead}>無料プラン</h2>
-        <p className={styles.price}>
-          <small>¥</small>0
-        </p>
+      <section>
+        <dl>
+          <div className="flex">
+            <dt>取得頻度</dt>
+            <dd>15分おき</dd>
+          </div>
+          <div className="flex">
+            <dt>アカウント切り替え</dt>
+            <dd>○</dd>
+          </div>
+        </dl>
       </section>
-      <section className={[styles.section, styles.supporter].join(' ')}>
-        <h2 className={styles.subHead}>
-          サポーター
-          <wbr />
-          プラン
-        </h2>
-        <p className={styles.price}>
-          <small>¥</small>99<small>/月</small>
-        </p>
-        {isSupporter ? (
-          <>
-            <p>登録済み</p>
-          </>
-        ) : (
-          <button className={styles.button} onClick={checkoutSupporter}>
-            登録
-          </button>
-        )}
-        <button className={styles.button} onClick={checkoutSupporter}>
+      <div>
+        {isSupporter ? <p>登録済み</p> : <p>未登録</p>}
+        <button className="flex px-4 py-1 rounded border" onClick={checkoutSupporter}>
           登録
         </button>
-        <button className={styles.button} onClick={portal}>
+        <button className="flex px-4 py-1 rounded border" onClick={portal}>
           登録情報確認・解約など
         </button>
-      </section>
-      <section className={styles.comparison}>
-        <dl className={styles.featureList}>
-          <div className={styles.featureItem}>
-            <dt className={styles.featureItemTitle}>フォロワー取得頻度</dt>
-            <dd className={styles.featureItemText}>最短60分おき</dd>
-          </div>
-        </dl>
-        <dl className={styles.featureList}>
-          <div className={styles.featureItem}>
-            <dt className={styles.featureItemTitle}>フォロワー取得頻度</dt>
-            <dd className={styles.featureItemText}>最短15分おき</dd>
-          </div>
-        </dl>
-      </section>
+      </div>
     </main>
   );
 };
