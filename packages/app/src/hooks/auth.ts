@@ -1,4 +1,3 @@
-import { UserData } from '@yukukuru/types';
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -6,10 +5,8 @@ import {
   TwitterAuthProvider,
   UserInfo,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { auth } from '../modules/firebase';
-import { firestore } from '../modules/firebase';
 import { setToken } from '../modules/firestore/tokens';
 
 type State = {
@@ -27,9 +24,6 @@ type State = {
 
   /** UID */
   uid: string | null;
-
-  /** Twitter プロフィール */
-  twitter: UserData['twitter'] | null;
 };
 
 const initialState: State = {
@@ -38,7 +32,6 @@ const initialState: State = {
   signedIn: false,
   user: null,
   uid: null,
-  twitter: null,
 };
 
 type DispatchAction =
@@ -51,12 +44,6 @@ type DispatchAction =
     }
   | {
       type: 'ClearUser';
-    }
-  | {
-      type: 'SetTwitter';
-      payload: {
-        twitter: State['twitter'];
-      };
     }
   | {
       type: 'StartLoading';
@@ -79,13 +66,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         signedIn: true,
         user: action.payload.user,
         uid: action.payload.uid,
-      };
-    }
-
-    case 'SetTwitter': {
-      return {
-        ...state,
-        twitter: action.payload.twitter,
       };
     }
 
@@ -158,18 +138,6 @@ export const useAuth = (): [Readonly<State>, Action] => {
       unsubscribe();
     };
   }, []);
-
-  // Twitter プロフィール取得処理
-  useEffect(() => {
-    if (!state.user) {
-      return;
-    }
-
-    getDoc(doc(firestore, 'users', state.user.uid)).then((doc) => {
-      const twitter: State['twitter'] = doc.get('twitter') as UserData['twitter'];
-      dispatch({ type: 'SetTwitter', payload: { twitter } });
-    });
-  }, [state.user]);
 
   // サインイン処理
   const signIn = async () => {

@@ -1,4 +1,3 @@
-import { UserData } from '@yukukuru/types';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
@@ -12,7 +11,7 @@ import { useUser } from '../../hooks/user';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid, twitter }, { signIn }] = useAuth();
+  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid }, { signIn }] = useAuth();
 
   const [currentUid, setCurrentUid] = useState(authUid);
   useEffect(() => {
@@ -20,22 +19,13 @@ const Page: React.FC = () => {
   }, [authUid]);
 
   const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(currentUid);
-  const [{ users: accounts }] = useMultiUsers(authUid);
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
+  const [{ accounts: multiAccounts }] = useMultiUsers(authUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
 
-  const authAccount = uid && twitter ? { id: uid, twitter } : null;
-  const multiAccounts = [authAccount, ...accounts].filter(
-    (
-      account
-    ): account is {
-      id: string;
-      twitter: UserData['twitter'];
-    } => account !== null
-  );
   const currentAccount = multiAccounts.find((account) => account?.id === currentUid) || null;
 
   // lastViewing 送信

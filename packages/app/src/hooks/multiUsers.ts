@@ -1,39 +1,71 @@
 import { UserData } from '@yukukuru/types';
-import { collection, getDocs, where, query } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, where, query } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
+type User = {
+  id: string;
+  twitter: UserData['twitter'];
+};
+
 type State = {
   isLoading: boolean;
-  users: {
-    id: string;
-    twitter: UserData['twitter'];
-  }[];
+  accounts: User[];
+  _authUser: User | null;
+  _users: User[];
 };
 
 const initialState: State = {
   isLoading: true,
-  users: [],
+  accounts: [],
+  _authUser: null,
+  _users: [],
 };
 
 type DispatchAction =
   | {
+      type: 'SetAuthUser';
+      payload: {
+        _authUser: NonNullable<State['_authUser']>;
+      };
+    }
+  | {
       type: 'SetUsers';
       payload: {
-        users: State['users'];
+        _users: State['_users'];
       };
     }
   | {
       type: 'StartLoading';
+    }
+  | {
+      type: 'FinishLoading';
+    }
+  | {
+      type: 'Initialize';
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
   switch (action.type) {
-    case 'SetUsers': {
+    case 'SetAuthUser': {
+      const authUser = action.payload._authUser;
+
       return {
         ...state,
-        isLoading: false,
-        users: action.payload.users,
+        _authUser: authUser,
+        accounts: [authUser, ...state._users],
+      };
+    }
+
+    case 'SetUsers': {
+      const users = action.payload._users;
+      const accounts = state._authUser ? [state._authUser] : [];
+      accounts.push(...users);
+
+      return {
+        ...state,
+        _users: users,
+        accounts,
       };
     }
 
@@ -42,6 +74,17 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         isLoading: true,
       };
+    }
+
+    case 'FinishLoading': {
+      return {
+        ...state,
+        isLoading: false,
+      };
+    }
+
+    case 'Initialize': {
+      return initialState;
     }
 
     default: {
@@ -53,9 +96,29 @@ const reducer = (state: State, action: DispatchAction): State => {
 export const useMultiUsers = (authUid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // authUid に変更があれば初期化
   useEffect(() => {
+    dispatch({ type: 'Initialize' });
+  }, [authUid]);
+
+  // 自分の Twitter プロフィール取得処理
+  useEffect(() => {
+    if (!authUid) {
+      return;
+    }
+
     dispatch({ type: 'StartLoading' });
 
+    getDoc(doc(firestore, 'users', authUid)).then((doc) => {
+      const twitter: State['twitter'] = doc.get('twitter') as UserData['twitter'];
+      const user: User = { id: authUid, twitter };
+      dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
+      dispatch({ type: 'FinishLoading' });
+    });
+  }, [authUid]);
+
+  // 閲覧可能ユーザーの Twitter プロフィール取得処理
+  useEffect(() => {
     if (!authUid) {
       return;
     }
@@ -67,7 +130,7 @@ export const useMultiUsers = (authUid: string | null): [Readonly<State>] => {
         const twitter = doc.get('twitter') as UserData['twitter'];
         return { id, twitter };
       });
-      dispatch({ type: 'SetUsers', payload: { users: users } });
+      dispatch({ type: 'SetUsers', payload: { _users: users } });
     });
   }, [authUid]);
 
