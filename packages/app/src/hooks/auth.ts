@@ -10,8 +10,6 @@ import { useEffect, useReducer } from 'react';
 import { auth } from '../modules/firebase';
 import { setToken } from '../modules/firestore/tokens';
 
-type User = Pick<UserInfo, 'uid'>;
-
 type State = {
   /** 読み込み中かどうか */
   isLoading: boolean;
@@ -23,7 +21,7 @@ type State = {
   signedIn: boolean;
 
   /** ユーザーデータ */
-  user: User | null;
+  user: Pick<UserInfo, 'uid'> | null;
 
   /** トークンデータ */
   token: TokenData | null;
@@ -41,7 +39,7 @@ type DispatchAction =
   | {
       type: 'SetUser';
       payload: {
-        user: User;
+        user: State['user'];
       };
     }
   | {
@@ -59,7 +57,7 @@ type DispatchAction =
   | {
       type: 'SetToken';
       payload: {
-        token: TokenData;
+        token: State['token'];
       };
     };
 
