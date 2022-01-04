@@ -4,7 +4,4 @@ export type TokenData = {
 
   /** アクセストークンシークレット */
   twitterAccessTokenSecret: string;
-
-  /** Twitter UID (ユニークな数字のID) */
-  twitterId: string;
 };

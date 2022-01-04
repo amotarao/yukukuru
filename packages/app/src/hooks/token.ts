@@ -57,8 +57,8 @@ export const useToken = (uid: string | null): [Readonly<State>] => {
         return;
       }
 
-      const { twitterAccessToken, twitterAccessTokenSecret, twitterId } = doc.data() as TokenData;
-      if (!twitterAccessToken || !twitterAccessTokenSecret || !twitterId) {
+      const { twitterAccessToken, twitterAccessTokenSecret } = doc.data() as TokenData;
+      if (!twitterAccessToken || !twitterAccessTokenSecret) {
         dispatch({ type: 'ClearHasToken' });
         return;
       }
