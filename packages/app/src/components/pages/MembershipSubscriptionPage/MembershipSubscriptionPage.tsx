@@ -27,7 +27,7 @@ export const MembershipSubscriptionPage: React.FC<MembershipSubscriptionPageProp
   useEffect(() => {
     if (!uid) return;
     getOwnActiveSubscriptions(uid).then((querySnapshot) => {
-      setSubscriptions(querySnapshot.docs.map((doc) => doc.data()));
+      setSubscriptions(querySnapshot.docs.map((doc) => doc.data() as { status: string; role: string }));
     });
   }, [uid]);
 
@@ -54,8 +54,10 @@ export const MembershipSubscriptionPage: React.FC<MembershipSubscriptionPageProp
     });
   }, []);
 
-  const checkoutSupporter: React.FormEventHandler<HTMLFormElement> = async (event) => {
-    event.preventDefault();
+  const checkoutSupporter = async () => {
+    if (!stripe || !uid || !supporterPriceId) {
+      return;
+    }
     const sessionId = await addCheckoutSession(uid, supporterPriceId, taxRates).catch(alert);
     if (sessionId) {
       stripe.redirectToCheckout({ sessionId });
@@ -94,10 +96,20 @@ export const MembershipSubscriptionPage: React.FC<MembershipSubscriptionPageProp
       </section>
       <div>
         {isSupporter ? <p>登録済み</p> : <p>未登録</p>}
-        <button className="flex px-4 py-1 rounded border" onClick={checkoutSupporter}>
+        <button
+          className="flex px-4 py-1 rounded border"
+          onClick={() => {
+            checkoutSupporter();
+          }}
+        >
           登録
         </button>
-        <button className="flex px-4 py-1 rounded border" onClick={portal}>
+        <button
+          className="flex px-4 py-1 rounded border"
+          onClick={() => {
+            portal();
+          }}
+        >
           登録情報確認・解約など
         </button>
       </div>
