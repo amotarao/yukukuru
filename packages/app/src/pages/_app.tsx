@@ -1,17 +1,25 @@
 import { StylesProvider } from '@material-ui/core/styles';
+import { logEvent } from 'firebase/analytics';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import Router from 'next/router';
-import React from 'react';
-import * as gtag from '../libs/gtag';
+import React, { useEffect } from 'react';
+import { analytics } from '../modules/firebase';
 import { ThemeContainer } from '../store/theme';
 import '../styles/globals.css';
 
-Router.events.on('routeChangeComplete', (url) => {
-  gtag.pageview(url);
-});
+const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
+  useEffect(() => {
+    const handleRouteChange = () => {
+      logEvent(analytics, 'page_view');
+    };
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <ThemeContainer.Provider>
       <StylesProvider injectFirst>
