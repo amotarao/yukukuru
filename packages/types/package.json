@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/types",
-  "version": "0.117.0",
+  "version": "0.118.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
@@ -8,6 +8,7 @@
   },
   "types": "types/index.d.ts",
   "scripts": {
+    "format": "prettier --write .",
     "lint": "eslint types --ext .ts,.js"
   },
   "dependencies": {

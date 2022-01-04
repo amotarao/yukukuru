@@ -26,7 +26,8 @@ service cloud.firestore {
 
     match /users/{userID} {
       allow write: if false;
-      allow read: if isAdmin() || ('allowedAccessUsers' in resource.data && request.auth.uid in resource.data.allowedAccessUsers) || isMe(userID);
+      allow list: if isAdmin() || ('allowedAccessUsers' in resource.data && request.auth.uid in resource.data.allowedAccessUsers) || isMe(userID);
+      allow get: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
 
       match /records/{recordID} {
         allow write: if false;
@@ -46,12 +47,11 @@ service cloud.firestore {
 
     match /tokens/{userID} {
       allow write: if isMe(userID)
-                      && request.resource.data.size() == 3
-                      && request.resource.data.keys().hasAll(['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'])
-                      && request.resource.data.keys().hasOnly(['twitterAccessToken', 'twitterAccessTokenSecret', 'twitterId'])
+                      && request.resource.data.size() == 2
+                      && request.resource.data.keys().hasAll(['twitterAccessToken', 'twitterAccessTokenSecret'])
+                      && request.resource.data.keys().hasOnly(['twitterAccessToken', 'twitterAccessTokenSecret'])
                       && request.resource.data.twitterAccessToken is string
-                      && request.resource.data.twitterAccessTokenSecret is string
-                      && request.resource.data.twitterId is string;
+                      && request.resource.data.twitterAccessTokenSecret is string;
       allow read: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
     }
 

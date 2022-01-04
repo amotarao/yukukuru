@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/admin-app",
-  "version": "0.117.0",
+  "version": "0.118.0",
   "engines": {
     "node": "16"
   },

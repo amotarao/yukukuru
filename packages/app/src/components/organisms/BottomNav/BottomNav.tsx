@@ -1,5 +1,5 @@
-import HomeIcon from '@material-ui/icons/Home';
-import SettingsIcon from '@material-ui/icons/Settings';
+import HomeIcon from '@mui/icons-material/Home';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
 import React from 'react';
 import styles from './styles.module.scss';

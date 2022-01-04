@@ -1,12 +1,13 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, UserData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
+import { useAnalytics } from '../../../modules/analytics';
 import { dateOptions } from '../../../modules/date';
-import { analytics } from '../../../modules/firebase';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
+import { AccountSelector } from '../../organisms/AccountSelector';
 import { BottomNav } from '../../organisms/BottomNav';
 import { ErrorWrapper } from '../../organisms/ErrorWrapper';
 import { UserCard } from '../../organisms/UserCard';
@@ -19,7 +20,10 @@ export type MyPageProps = {
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
+  currentAccount: { id: string; twitter: UserData['twitter'] } | null;
+  multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  onChangeCurrentUid: (uid: string) => void;
 };
 
 /**
@@ -30,10 +34,8 @@ const NoItemView: React.FC = () => {
     <div>
       <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
       <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
-        現在、フォロワー数1万人以上のアカウントの
-        <wbr />
-        新規登録を停止しています。
-        <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
+        現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
+        {new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
       </p>
     </div>
   );
@@ -46,15 +48,16 @@ const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({
   return (
     <div>
       <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
-        データの取得は完了していますが、
-        <wbr />
-        今のところフォロワーの増減がありません。
+        データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
       <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
     </div>
   );
 };
 
+/**
+ * リストコンポーネント
+ */
 const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
   items,
   lastRunnedGetFollowers,
@@ -73,7 +76,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="px-4 my-4 sm:my-6 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
           const date = item.data.durationEnd.toDate();
@@ -130,25 +133,29 @@ export const MyPage: React.FC<MyPageProps> = ({
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
+  currentAccount,
+  multiAccounts,
   getNextRecords,
+  onChangeCurrentUid,
 }) => {
   const [paging, setPaging] = useState<number>(1);
+  const analytics = useAnalytics()
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
       return;
     }
 
-    logEvent(analytics, 'element_show', {
+    analytics && logEvent(analytics, 'element_show', {
       event_category: 'has_next',
       event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
       value: 100,
     });
-  }, [isLoading, isNextLoading, hasNext, paging]);
+  }, [analytics, isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    logEvent(analytics, 'button_click', {
+    analytics && logEvent(analytics, 'button_click', {
       event_category: 'click_next',
       event_label: `click_next_p-${paging}`,
       value: 100,
@@ -162,6 +169,15 @@ export const MyPage: React.FC<MyPageProps> = ({
 
   return (
     <div className={styles.wrapper}>
+      {currentAccount && (
+        <AccountSelector
+          className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
+          active={multiAccounts.length > 1}
+          currentAccount={currentAccount}
+          multiAccounts={multiAccounts}
+          onChange={onChangeCurrentUid}
+        />
+      )}
       {!isLoading && !hasToken && (
         <ErrorWrapper onClick={superReload}>
           <p>ログアウトし、再度ログインしてください。</p>

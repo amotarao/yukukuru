@@ -11,8 +11,8 @@ export const updateActive = functions
   })
   .firestore.document('tokens/{userId}')
   .onUpdate(async ({ after }) => {
-    const { twitterAccessToken = null, twitterAccessTokenSecret = null, twitterId = null } = after.data() as TokenData;
-    const invalid = !twitterAccessToken || !twitterAccessTokenSecret || !twitterId;
+    const { twitterAccessToken = null, twitterAccessTokenSecret = null } = after.data() as TokenData;
+    const invalid = !twitterAccessToken || !twitterAccessTokenSecret;
     if (invalid) {
       await setUserToNotActive(after.id);
     } else {
