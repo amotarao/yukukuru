@@ -148,6 +148,7 @@ export const useAuth = (): [Readonly<State>, Action] => {
 
     const userCredential = await signInWithPopup(auth, twitterAuthProvider).catch((error: Error) => {
       console.error(error.message);
+      return undefined;
     });
     await setToken(userCredential);
 
