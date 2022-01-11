@@ -111,7 +111,7 @@ export const generate = functions
       .where('ended', '==', true)
       .orderBy('getEndDate', 'desc') // 降順であることに注意する
       .startAfter(data.getEndDate)
-      .select('getStartDate', 'getEndDate')
+      .select('getEndDate')
       .limit(2)
       .get();
 
@@ -121,10 +121,11 @@ export const generate = functions
       return;
     }
 
-    const endedData = endedQuerySnapshot.docs.map(
-      (snap) => snap.data() as Pick<WatchData, 'getStartDate' | 'getEndDate'>
-    );
-    const startAfter: FirestoreDateLike = endedQuerySnapshot.size === 2 ? endedData[1].getEndDate : new Date(2000, 0);
+    // 降順なので [1] の getEndDate を取得する
+    const startAfter: FirestoreDateLike =
+      endedQuerySnapshot.size === 2
+        ? (endedQuerySnapshot.docs[1].data() as Pick<WatchData, 'getEndDate'>).getEndDate
+        : new Date(2000, 0);
 
     const targetQuerySnapshot = await firestore
       .collection('users')
