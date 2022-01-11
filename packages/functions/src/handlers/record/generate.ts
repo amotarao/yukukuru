@@ -42,7 +42,7 @@ export const generate = functions
       .get();
 
     // 比較できるデータがない場合、終了する
-    if (endedQuerySnapshot.empty) {
+    if (endedQuerySnapshot.empty || endedQuerySnapshot.size < 2) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
       return;
     }
