@@ -38,6 +38,7 @@ export const generate = functions
       .where('ended', '==', true)
       .orderBy('getEndDate', 'desc') // 降順であることに注意する
       .startAfter(data.getEndDate)
+      .select('getStartDate', 'getEndDate')
       .limit(2)
       .get();
 
