@@ -25,7 +25,7 @@ export const generate = functions
 
     console.log(`⚙️ Starting generate records for [${uid}].`);
 
-    // 終了している watch でなければ終了
+    // ended が false の場合、終了している watch でないので終了
     if (data.ended === false) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended.`);
       return;
