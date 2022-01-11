@@ -11,6 +11,7 @@ import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
+/** Twitter から ユーザー情報リストを取得する */
 const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUserData[] | null> => {
   const token = await getToken(uid);
   if (token === null) {
@@ -47,6 +48,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   return usersFromTw;
 };
 
+/** Record データの生成 */
 const generateRecord =
   (type: RecordData['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUserData[]) =>
   async (id: string): Promise<RecordData> => {
