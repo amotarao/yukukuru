@@ -75,7 +75,7 @@ export const generate = functions
     const yuku = _.difference(oldFollowers, newFollowers);
     const kuru = _.difference(newFollowers, oldFollowers);
 
-    // 差分なし
+    // フォロワーの差分がない場合は終了する
     if (!kuru.length && !yuku.length) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not exists diff.`);
       return;
