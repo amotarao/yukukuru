@@ -1,4 +1,4 @@
-import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
+import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
@@ -46,6 +46,43 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
 
   return usersFromTw;
 };
+
+const generateRecord =
+  (type: RecordData['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUserData[]) =>
+  async (id: string): Promise<RecordData> => {
+    const findUser = async (userId: string): Promise<RecordUserData> => {
+      const userFromTw = usersFromTwitter.find((e) => e.id === userId);
+      if (userFromTw) {
+        return userFromTw;
+      }
+
+      const user = await getTwUser(userId);
+      if (user === null) {
+        const item: RecordUserData = {
+          id: userId,
+          maybeDeletedOrSuspended: true,
+        };
+        return item;
+      }
+
+      const item: RecordUserData = {
+        id: user.id,
+        screenName: user.screenName,
+        displayName: user.name,
+        photoUrl: user.photoUrl,
+        maybeDeletedOrSuspended: true,
+      };
+      return item;
+    };
+
+    const user = await findUser(id);
+    return {
+      type,
+      user,
+      durationStart,
+      durationEnd,
+    };
+  };
 
 /** Firestore: watch が作成されたときの処理 */
 export const generate = functions
@@ -123,53 +160,12 @@ export const generate = functions
       return;
     }
 
-    const findUser = async (userId: string): Promise<RecordUserData> => {
-      const userFromTw = usersFromTwitter.find((e) => e.id === userId);
-      if (userFromTw) {
-        return userFromTw;
-      }
-
-      const user = await getTwUser(userId);
-      if (user === null) {
-        const item: RecordUserData = {
-          id: userId,
-          maybeDeletedOrSuspended: true,
-        };
-        return item;
-      }
-
-      const item: RecordUserData = {
-        id: user.id,
-        screenName: user.screenName,
-        displayName: user.name,
-        photoUrl: user.photoUrl,
-        maybeDeletedOrSuspended: true,
-      };
-      return item;
-    };
-
     const durationStart = endedData[0].getStartDate;
     const durationEnd = data.getEndDate;
 
-    const yukuRecords = yuku.map(async (id): Promise<RecordData> => {
-      const user = await findUser(id);
-      return {
-        type: 'yuku',
-        user,
-        durationStart,
-        durationEnd,
-      };
-    });
-    const kuruRecords = kuru.map(async (id): Promise<RecordData> => {
-      const user = await findUser(id);
-      return {
-        type: 'kuru',
-        user,
-        durationStart,
-        durationEnd,
-      };
-    });
-    const records = await Promise.all([...kuruRecords, ...yukuRecords]);
+    const yukuRecordsPromise = yuku.map(generateRecord('yuku', durationStart, durationEnd, usersFromTwitter));
+    const kuruRecordsPromise = kuru.map(generateRecord('kuru', durationStart, durationEnd, usersFromTwitter));
+    const records = await Promise.all([...kuruRecordsPromise, ...yukuRecordsPromise]);
 
     await addRecords(uid, records);
 
