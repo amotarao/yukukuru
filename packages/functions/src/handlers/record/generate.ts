@@ -11,6 +11,42 @@ import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
+const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUserData[] | null> => {
+  const token = await getToken(uid);
+  if (token === null) {
+    console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
+    return null;
+  }
+
+  const client = getClient({
+    access_token_key: token.twitterAccessToken,
+    access_token_secret: token.twitterAccessTokenSecret,
+  });
+  const result = await getUsersLookup(client, { usersId: userIds });
+
+  if ('errors' in result) {
+    if (checkInvalidOrExpiredToken(result.errors)) {
+      await setTokenInvalid(uid);
+    }
+  }
+
+  const twUsers = 'errors' in result ? [] : result.response;
+  await setTwUsers(twUsers);
+
+  const usersFromTw = twUsers.map((user) => {
+    const convertedUser: RecordUserData = {
+      id: user.id_str,
+      screenName: user.screen_name,
+      displayName: user.name,
+      photoUrl: user.profile_image_url_https,
+      maybeDeletedOrSuspended: false,
+    };
+    return convertedUser;
+  });
+
+  return usersFromTw;
+};
+
 /** Firestore: watch が作成されたときの処理 */
 export const generate = functions
   .region('asia-northeast1')
@@ -81,39 +117,14 @@ export const generate = functions
       return;
     }
 
-    const token = await getToken(uid);
-    if (token === null) {
-      console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
+    const userIds = [...kuru, ...yuku];
+    const usersFromTwitter = await fetchUsersFromTwitter(uid, userIds);
+    if (usersFromTwitter === null) {
       return;
     }
 
-    const client = getClient({
-      access_token_key: token.twitterAccessToken,
-      access_token_secret: token.twitterAccessTokenSecret,
-    });
-    const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
-
-    if ('errors' in result) {
-      if (checkInvalidOrExpiredToken(result.errors)) {
-        await setTokenInvalid(uid);
-      }
-    }
-
-    const twUsers = 'errors' in result ? [] : result.response;
-
-    const usersFromTw = twUsers.map((user) => {
-      const convertedUser: RecordUserData = {
-        id: user.id_str,
-        screenName: user.screen_name,
-        displayName: user.name,
-        photoUrl: user.profile_image_url_https,
-        maybeDeletedOrSuspended: false,
-      };
-      return convertedUser;
-    });
-
     const findUser = async (userId: string): Promise<RecordUserData> => {
-      const userFromTw = usersFromTw.find((e) => e.id === userId);
+      const userFromTw = usersFromTwitter.find((e) => e.id === userId);
       if (userFromTw) {
         return userFromTw;
       }
@@ -160,10 +171,7 @@ export const generate = functions
     });
     const records = await Promise.all([...kuruRecords, ...yukuRecords]);
 
-    const addRecordsPromise = addRecords(uid, records);
-    const setTwUsersPromise = setTwUsers(twUsers);
-
-    await Promise.all([addRecordsPromise, setTwUsersPromise]);
+    await addRecords(uid, records);
 
     console.log(`✔️ Completed generate records for [${uid}].`);
   });
