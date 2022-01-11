@@ -160,7 +160,7 @@ export const generate = functions
       return;
     }
 
-    const durationStart = endedData[0].getStartDate;
+    const durationStart = watches[0].data.getStartDate;
     const durationEnd = data.getEndDate;
 
     const yukuRecordsPromise = yuku.map(generateRecord('yuku', durationStart, durationEnd, usersFromTwitter));
