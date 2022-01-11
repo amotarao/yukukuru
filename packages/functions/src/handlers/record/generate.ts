@@ -31,43 +31,42 @@ export const generate = functions
       return;
     }
 
-    const endedQuery = await firestore
+    const endedQuerySnapshot = await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
       .where('ended', '==', true)
-      .orderBy('getEndDate', 'desc')
+      .orderBy('getEndDate', 'desc') // 降順であることに注意する
       .startAfter(data.getEndDate)
       .limit(2)
       .get();
 
-    // 比較できるデータがない
-    if (endedQuery.empty) {
+    // 比較できるデータがない場合、終了する
+    if (endedQuerySnapshot.empty) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
       return;
     }
-    const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
-    const endDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getEndDate);
 
-    const durationStart = startDates[0];
-    const durationEnd = data.getEndDate;
+    const endedData = endedQuerySnapshot.docs.map(
+      (snap) => snap.data() as Pick<WatchData, 'getStartDate' | 'getEndDate'>
+    );
+    const startAfter: FirestoreDateLike = endedQuerySnapshot.size === 2 ? endedData[1].getEndDate : new Date(2000, 0);
 
-    const startAfter: FirestoreDateLike = endedQuery.size === 2 ? endDates[1] : new Date(2000, 0);
-    const targetQuery = await firestore
+    const targetQuerySnapshot = await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
-      .orderBy('getEndDate')
+      .orderBy('getEndDate') // 昇順であることに注意する
       .startAfter(startAfter)
       .get();
 
-    const watchDocs = targetQuery.docs.map((doc) => {
+    const watches = targetQuerySnapshot.docs.map((doc) => {
       return {
         id: doc.id,
         data: doc.data() as WatchData,
       };
     });
-    const [oldWatch, newWatch] = mergeWatches(watchDocs, true);
+    const [oldWatch, newWatch] = mergeWatches(watches, true);
 
     const oldFollowers = oldWatch.watch.followers;
     const newFollowers = newWatch.watch.followers;
@@ -136,6 +135,9 @@ export const generate = functions
       };
       return item;
     };
+
+    const durationStart = endedData[0].getStartDate;
+    const durationEnd = data.getEndDate;
 
     const yukuRecords = yuku.map(async (id): Promise<RecordData> => {
       const user = await findUser(id);
