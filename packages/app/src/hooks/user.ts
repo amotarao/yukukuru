@@ -56,7 +56,7 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
     }
 
     getDoc(doc(firestore, 'users', uid)).then((doc) => {
-      if (!doc.exists) {
+      if (!doc.exists()) {
         dispatch({ type: 'StartLoading' });
         return;
       }
