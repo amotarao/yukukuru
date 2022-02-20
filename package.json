@@ -6,8 +6,7 @@
   "repository": "git@github.com:amotarao/yukukuru.git",
   "author": "Amon Sawamura <amon.sawamura@gmail.com>",
   "workspaces": [
-    "packages/app",
-    "packages/types"
+    "packages/*"
   ],
   "scripts": {
     "start": "firebase emulators:start"
