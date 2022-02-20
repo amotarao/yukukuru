@@ -1,7 +1,7 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { UserData } from '@yukukuru/types';
-import classNames from 'classnames'
+import classNames from 'classnames';
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 
