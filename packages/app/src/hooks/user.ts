@@ -64,6 +64,7 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
 
       const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
       dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
+      unsubscribe();
     });
 
     return () => {

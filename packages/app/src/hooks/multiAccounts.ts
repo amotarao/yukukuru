@@ -119,6 +119,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
       const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
+      unsubscribe();
     });
 
     // 閲覧可能ユーザー
