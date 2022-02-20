@@ -52,7 +52,7 @@ export const useToken = (uid: string | null): [Readonly<State>] => {
     }
 
     const unsubscribe = onSnapshot(doc(firestore, 'tokens', uid), (doc) => {
-      if (!doc.exists) {
+      if (!doc.exists()) {
         dispatch({ type: 'ClearHasToken' });
         return;
       }

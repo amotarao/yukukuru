@@ -1,5 +1,5 @@
 import { Timestamp } from '@yukukuru/types';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -55,15 +55,21 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
       return;
     }
 
-    getDoc(doc(firestore, 'users', uid)).then((doc) => {
-      if (!doc.exists) {
-        dispatch({ type: 'StartLoading' });
+    dispatch({ type: 'StartLoading' });
+
+    const unsubscribe = onSnapshot(doc(firestore, 'users', uid), (doc) => {
+      if (!doc.exists()) {
         return;
       }
 
       const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
       dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
+      unsubscribe();
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, [uid]);
 
   return [state];

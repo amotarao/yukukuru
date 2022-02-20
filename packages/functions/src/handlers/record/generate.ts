@@ -1,4 +1,4 @@
-import { FirestoreDateLike, WatchData, RecordData, RecordUserData } from '@yukukuru/types';
+import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
@@ -11,109 +11,49 @@ import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
-/** Firestore: watch が作成されたときの処理 */
-export const generate = functions
-  .region('asia-northeast1')
-  .runWith({
-    timeoutSeconds: 20,
-    memory: '512MB',
-  })
-  .firestore.document('users/{userId}/watches/{watchId}')
-  .onCreate(async (snapshot, context) => {
-    const data = snapshot.data() as WatchData;
-    const uid = context.params.userId as string;
+/** Twitter から ユーザー情報リストを取得する */
+const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUserData[] | null> => {
+  const token = await getToken(uid);
+  if (token === null) {
+    console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
+    return null;
+  }
 
-    console.log(`⚙️ Starting generate records for [${uid}].`);
+  const client = getClient({
+    access_token_key: token.twitterAccessToken,
+    access_token_secret: token.twitterAccessTokenSecret,
+  });
+  const result = await getUsersLookup(client, { usersId: userIds });
 
-    // 終了している watch でなければ終了
-    if (data.ended === false) {
-      console.log(`[Info]: Stopped generate records for [${uid}]: Not ended.`);
-      return;
+  if ('errors' in result) {
+    if (checkInvalidOrExpiredToken(result.errors)) {
+      await setTokenInvalid(uid);
     }
+  }
 
-    const endedQuery = await firestore
-      .collection('users')
-      .doc(uid)
-      .collection('watches')
-      .where('ended', '==', true)
-      .orderBy('getEndDate', 'desc')
-      .startAfter(data.getEndDate)
-      .limit(2)
-      .get();
+  const twUsers = 'errors' in result ? [] : result.response;
+  await setTwUsers(twUsers);
 
-    // 比較できるデータがない
-    if (endedQuery.empty) {
-      console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
-      return;
-    }
-    const startDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getStartDate);
-    const endDates = endedQuery.docs.map((snap) => (snap.data() as WatchData).getEndDate);
+  const usersFromTw = twUsers.map((user) => {
+    const convertedUser: RecordUserData = {
+      id: user.id_str,
+      screenName: user.screen_name,
+      displayName: user.name,
+      photoUrl: user.profile_image_url_https,
+      maybeDeletedOrSuspended: false,
+    };
+    return convertedUser;
+  });
 
-    const durationStart = startDates[0];
-    const durationEnd = data.getEndDate;
+  return usersFromTw;
+};
 
-    const startAfter: FirestoreDateLike = endedQuery.size === 2 ? endDates[1] : new Date(2000, 0);
-    const targetQuery = await firestore
-      .collection('users')
-      .doc(uid)
-      .collection('watches')
-      .orderBy('getEndDate')
-      .startAfter(startAfter)
-      .get();
-
-    const watchDocs = targetQuery.docs.map((doc) => {
-      return {
-        id: doc.id,
-        data: doc.data() as WatchData,
-      };
-    });
-    const [oldWatch, newWatch] = mergeWatches(watchDocs, true);
-
-    const oldFollowers = oldWatch.watch.followers;
-    const newFollowers = newWatch.watch.followers;
-
-    const yuku = _.difference(oldFollowers, newFollowers);
-    const kuru = _.difference(newFollowers, oldFollowers);
-
-    // 差分なし
-    if (!kuru.length && !yuku.length) {
-      console.log(`[Info]: Stopped generate records for [${uid}]: Not exists diff.`);
-      return;
-    }
-
-    const token = await getToken(uid);
-    if (token === null) {
-      console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
-      return;
-    }
-
-    const client = getClient({
-      access_token_key: token.twitterAccessToken,
-      access_token_secret: token.twitterAccessTokenSecret,
-    });
-    const result = await getUsersLookup(client, { usersId: [...kuru, ...yuku] });
-
-    if ('errors' in result) {
-      if (checkInvalidOrExpiredToken(result.errors)) {
-        await setTokenInvalid(uid);
-      }
-    }
-
-    const twUsers = 'errors' in result ? [] : result.response;
-
-    const usersFromTw = twUsers.map((user) => {
-      const convertedUser: RecordUserData = {
-        id: user.id_str,
-        screenName: user.screen_name,
-        displayName: user.name,
-        photoUrl: user.profile_image_url_https,
-        maybeDeletedOrSuspended: false,
-      };
-      return convertedUser;
-    });
-
+/** Record データの生成 */
+const generateRecord =
+  (type: RecordData['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUserData[]) =>
+  async (id: string): Promise<RecordData> => {
     const findUser = async (userId: string): Promise<RecordUserData> => {
-      const userFromTw = usersFromTw.find((e) => e.id === userId);
+      const userFromTw = usersFromTwitter.find((e) => e.id === userId);
       if (userFromTw) {
         return userFromTw;
       }
@@ -137,30 +77,100 @@ export const generate = functions
       return item;
     };
 
-    const yukuRecords = yuku.map(async (id): Promise<RecordData> => {
-      const user = await findUser(id);
+    const user = await findUser(id);
+    return {
+      type,
+      user,
+      durationStart,
+      durationEnd,
+    };
+  };
+
+/** Firestore: watch が作成されたときの処理 */
+export const generate = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 20,
+    memory: '512MB',
+  })
+  .firestore.document('users/{userId}/watches/{watchId}')
+  .onCreate(async (snapshot, context) => {
+    const data = snapshot.data() as WatchData;
+    const uid = context.params.userId as string;
+
+    console.log(`⚙️ Starting generate records for [${uid}].`);
+
+    // ended が false の場合、終了している watch でないので終了
+    if (data.ended === false) {
+      console.log(`[Info]: Stopped generate records for [${uid}]: Not ended.`);
+      return;
+    }
+
+    const endedQuerySnapshot = await firestore
+      .collection('users')
+      .doc(uid)
+      .collection('watches')
+      .where('ended', '==', true)
+      .orderBy('getEndDate', 'desc') // 降順であることに注意する
+      .startAfter(data.getEndDate)
+      .select('getEndDate')
+      .limit(2)
+      .get();
+
+    // 比較できるデータがない場合、終了する
+    if (endedQuerySnapshot.empty || endedQuerySnapshot.size < 2) {
+      console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
+      return;
+    }
+
+    // 降順なので [1] の getEndDate を取得する
+    const startAfter: FirestoreDateLike =
+      endedQuerySnapshot.size === 2
+        ? (endedQuerySnapshot.docs[1].data() as Pick<WatchData, 'getEndDate'>).getEndDate
+        : new Date(2000, 0);
+
+    const targetQuerySnapshot = await firestore
+      .collection('users')
+      .doc(uid)
+      .collection('watches')
+      .orderBy('getEndDate') // 昇順であることに注意する
+      .startAfter(startAfter)
+      .get();
+
+    const watches = targetQuerySnapshot.docs.map((doc) => {
       return {
-        type: 'yuku',
-        user,
-        durationStart,
-        durationEnd,
+        id: doc.id,
+        data: doc.data() as WatchData,
       };
     });
-    const kuruRecords = kuru.map(async (id): Promise<RecordData> => {
-      const user = await findUser(id);
-      return {
-        type: 'kuru',
-        user,
-        durationStart,
-        durationEnd,
-      };
-    });
-    const records = await Promise.all([...kuruRecords, ...yukuRecords]);
+    const [oldWatch, newWatch] = mergeWatches(watches, true);
 
-    const addRecordsPromise = addRecords(uid, records);
-    const setTwUsersPromise = setTwUsers(twUsers);
+    const oldFollowers = oldWatch.watch.followers;
+    const newFollowers = newWatch.watch.followers;
 
-    await Promise.all([addRecordsPromise, setTwUsersPromise]);
+    const yuku = _.difference(oldFollowers, newFollowers);
+    const kuru = _.difference(newFollowers, oldFollowers);
+
+    // フォロワーの差分がない場合、終了する
+    if (!kuru.length && !yuku.length) {
+      console.log(`[Info]: Stopped generate records for [${uid}]: Not exists diff.`);
+      return;
+    }
+
+    const userIds = [...kuru, ...yuku];
+    const usersFromTwitter = await fetchUsersFromTwitter(uid, userIds);
+    if (usersFromTwitter === null) {
+      return;
+    }
+
+    const durationStart = watches[0].data.getStartDate;
+    const durationEnd = data.getEndDate;
+
+    const yukuRecordsPromise = yuku.map(generateRecord('yuku', durationStart, durationEnd, usersFromTwitter));
+    const kuruRecordsPromise = kuru.map(generateRecord('kuru', durationStart, durationEnd, usersFromTwitter));
+    const records = await Promise.all([...kuruRecordsPromise, ...yukuRecordsPromise]);
+
+    await addRecords(uid, records);
 
     console.log(`✔️ Completed generate records for [${uid}].`);
   });
