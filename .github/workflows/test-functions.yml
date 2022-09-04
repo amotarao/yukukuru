@@ -21,14 +21,8 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Install dependencies on functions
-        run: yarn --frozen-lockfile
-        working-directory: packages/functions
-
       - name: Run lint
-        run: yarn lint
-        working-directory: packages/functions
+        run: yarn workspace @yukukuru/functions lint
 
       - name: Run build
-        run: yarn build
-        working-directory: packages/functions
+        run: yarn workspace @yukukuru/functions build
