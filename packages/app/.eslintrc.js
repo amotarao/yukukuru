@@ -19,6 +19,9 @@ module.exports = {
   ],
   rules: {
     'react/prop-types': 'off',
+    'react/no-unknown-property': 'off',
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     '@typescript-eslint/explicit-function-return-type': 'off',

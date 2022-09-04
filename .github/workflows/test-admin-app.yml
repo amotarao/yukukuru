@@ -20,16 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        working-directory: packages/admin-app
 
       - name: Run format
-        run: yarn format
-        working-directory: packages/admin-app
+        run: yarn workspace @yukukuru/admin-app format
 
       - name: Run lint
-        run: yarn lint
-        working-directory: packages/admin-app
+        run: yarn workspace @yukukuru/admin-app lint
 
       - name: Run build
-        run: yarn build
-        working-directory: packages/admin-app
+        run: yarn workspace @yukukuru/admin-app build

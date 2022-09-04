@@ -12,9 +12,9 @@
     "lint": "eslint types --ext .ts,.js"
   },
   "dependencies": {
-    "@firebase/firestore-types": "^2.2.0"
+    "@firebase/firestore-types": "^2.5.0"
   },
   "devDependencies": {
-    "eslint": "^7.32.0"
+    "eslint": "^8.23.0"
   }
 }

@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import React from 'react';
 import { style } from './style';
 
 export const LoadingCircle: React.FC = () => {
