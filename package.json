@@ -7,6 +7,7 @@
   "author": "Amon Sawamura <amon.sawamura@gmail.com>",
   "workspaces": [
     "packages/app",
+    "packages/admin-app",
     "packages/types"
   ],
   "scripts": {
