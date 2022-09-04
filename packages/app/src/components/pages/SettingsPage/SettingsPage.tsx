@@ -1,4 +1,3 @@
-import React from 'react';
 import { BottomNav } from '../../organisms/BottomNav';
 import { SettingsMenu } from '../../organisms/SettingsMenu';
 

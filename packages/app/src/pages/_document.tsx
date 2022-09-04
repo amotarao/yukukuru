@@ -1,5 +1,4 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-import React from 'react';
 
 export default class MyDocument extends Document {
   render(): JSX.Element {
@@ -8,7 +7,7 @@ export default class MyDocument extends Document {
         <Head>
           <script
             dangerouslySetInnerHTML={{
-              __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default');`,
+              __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'));`,
             }}
           />
           <meta name="theme-color" content="#000000" />

@@ -1,5 +1,5 @@
 import { UserData } from '@yukukuru/types';
-import { collection, getDocs, doc, getDoc, where, query } from 'firebase/firestore';
+import { collection, getDocs, doc, where, query, onSnapshot } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -110,11 +110,16 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
     dispatch({ type: 'StartLoading' });
 
     // 認証ユーザー
-    getDoc(doc(firestore, 'users', authUid)).then((doc) => {
+    const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
+      if (!doc.exists()) {
+        return;
+      }
+
       const twitter = doc.get('twitter') as UserData['twitter'];
       const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
+      unsubscribe();
     });
 
     // 閲覧可能ユーザー
@@ -127,6 +132,10 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
       });
       dispatch({ type: 'SetUsers', payload: { _users: users } });
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, [authUid]);
 
   return [state];

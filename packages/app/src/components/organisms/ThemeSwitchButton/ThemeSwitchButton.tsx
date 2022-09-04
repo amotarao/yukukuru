@@ -1,9 +1,8 @@
-/** @jsxImportSource @emotion/react */
-import React from 'react';
 import { ThemeType, ThemeStoreType } from '../../../store/theme';
 import * as style from './style';
 
 export type ThemeSwitchButtonProps = {
+  children?: React.ReactNode;
   theme: ThemeType;
   setTheme: ThemeStoreType['setTheme'];
 };
