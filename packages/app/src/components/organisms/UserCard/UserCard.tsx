@@ -1,8 +1,6 @@
-import { Timestamp, RecordData, RecordUserData } from '@yukukuru/types';
+import { RecordData, RecordUserData } from '@yukukuru/types';
 import classNames from 'classnames';
-import { timeOptions } from '../../../modules/date';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
-import styles from './styles.module.scss';
 
 export type CardProps = {
   className?: string;
@@ -11,19 +9,25 @@ export type CardProps = {
   iconSrc?: string;
   href?: string;
   type: 'yuku' | 'kuru';
-  notice?: string;
-  duration?: string;
+  maybeDeletedOrSuspended?: boolean;
 };
 
-const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc, href, type, notice, duration }) => {
-  const Tag: keyof JSX.IntrinsicElements = href ? 'a' : 'div';
+const Card: React.FC<CardProps> = ({
+  className,
+  displayName,
+  screenName,
+  iconSrc,
+  href,
+  type,
+  maybeDeletedOrSuspended = false,
+}) => {
+  const Tag: keyof HTMLElementTagNameMap = href ? 'a' : 'div';
 
   return (
     <Tag
       className={classNames(
-        'mx-4 mb-4 grid w-4/5 grid-cols-[40px_1fr] grid-rows-[repeat(4,auto)] gap-x-3 rounded bg-back p-3 text-inherit no-underline sm:m-4 sm:grid-cols-[48px_1fr] sm:rounded-lg sm:p-4',
-        type === 'yuku' ? 'border-l-4 border-l-yuku sm:border-l-0' : 'border-r-4 border-r-kuru sm:border-r-0',
-        styles.wrapper,
+        'relative grid grid-cols-[40px_1fr] gap-x-3 rounded-full bg-back p-3 text-inherit no-underline shadow shadow-shadow transition-shadow duration-200 before:absolute before:top-1/2 before:h-3 before:w-3 before:-translate-y-1/2 before:rounded-full before:content-[""] hover:shadow-md hover:shadow-shadow sm:grid-cols-[48px_1fr] sm:p-3 sm:before:content-none',
+        type === 'yuku' ? 'before:-left-1.5 before:bg-yuku' : 'before:-right-1.5 before:bg-kuru',
         className
       )}
       data-type={type}
@@ -31,33 +35,32 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
       target={href && '_blank'}
       rel={href && 'noopener noreferrer'}
     >
-      <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
-        <TwitterUserIcon className="h-full w-full" src={iconSrc} alt={displayName} width="48" height="48" />
+      <div className="flex items-center">
+        <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
+          <TwitterUserIcon className="h-full w-full" src={iconSrc} alt="" width="48" height="48" />
+        </div>
       </div>
-      {displayName && <p className="col-start-2 mb-1 leading-normal line-clamp-3">{displayName}</p>}
-      {screenName && <p className="col-start-2 text-xs font-bold leading-tight">{screenName}</p>}
-      {notice && <p className="col-start-2 mt-2 text-xs">{notice}</p>}
-      {duration && <p className="col-start-2 mt-2 text-xs text-sub">{duration}</p>}
+      <div className="flex flex-col justify-center gap-1">
+        {displayName && (
+          <p className="col-start-2 overflow-hidden text-sm leading-normal line-clamp-1">{displayName}</p>
+        )}
+        <div className="flex gap-2">
+          {screenName && <p className="col-start-2 text-xs font-bold leading-tight">{screenName}</p>}
+          {maybeDeletedOrSuspended && <p className="col-start-2 text-xs">⚠️削除/凍結</p>}
+        </div>
+      </div>
     </Tag>
   );
-};
-
-const convertDateText = (date: Timestamp): string => {
-  const d = date.toDate();
-  return d.toLocaleTimeString(undefined, timeOptions);
 };
 
 export type UserCardProps = {
   className?: string;
   user: RecordUserData;
   type: RecordData['type'];
-  durationStart: RecordData['durationStart'];
-  durationEnd: RecordData['durationEnd'];
 };
 
-export const UserCard: React.FC<UserCardProps> = ({ className, user, type, durationStart, durationEnd }) => {
+export const UserCard: React.FC<UserCardProps> = ({ className, user, type }) => {
   const hasDetail = 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
-  const duration = `${convertDateText(durationStart)} から ${convertDateText(durationEnd)} までの間`;
 
   return hasDetail ? (
     <Card
@@ -67,17 +70,10 @@ export const UserCard: React.FC<UserCardProps> = ({ className, user, type, durat
       iconSrc={user.photoUrl}
       href={`https://twitter.com/${user.screenName}`}
       type={type}
-      notice={user.maybeDeletedOrSuspended ? '⚠️ 削除または凍結の可能性有り' : undefined}
-      duration={duration}
+      maybeDeletedOrSuspended={user.maybeDeletedOrSuspended}
     />
   ) : (
-    <Card
-      className={className}
-      displayName={'情報の取得ができないユーザー'}
-      type={type}
-      notice={'⚠️ 削除または凍結の可能性有り'}
-      duration={duration}
-    />
+    <Card className={className} displayName={'情報の取得ができないユーザー'} type={type} maybeDeletedOrSuspended />
   );
 };
 
@@ -89,13 +85,9 @@ export type DummyUserCardProps = {
     photoUrl: string;
   };
   type: RecordData['type'];
-  durationStart: string;
-  durationEnd: string;
 };
 
-export const DummyUserCard: React.FC<DummyUserCardProps> = ({ className, user, type, durationStart, durationEnd }) => {
-  const duration = `${durationStart} から ${durationEnd} までの間`;
-
+export const DummyUserCard: React.FC<DummyUserCardProps> = ({ className, user, type }) => {
   return (
     <Card
       className={className}
@@ -103,7 +95,6 @@ export const DummyUserCard: React.FC<DummyUserCardProps> = ({ className, user, t
       screenName={`@${user.screenName}`}
       iconSrc={user.photoUrl}
       type={type}
-      duration={duration}
     />
   );
 };
