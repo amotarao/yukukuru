@@ -1,7 +1,6 @@
 import { RecordData, RecordUserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
-import styles from './styles.module.scss';
 
 export type CardProps = {
   className?: string;
@@ -19,9 +18,8 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
   return (
     <Tag
       className={classNames(
-        'mx-4 mb-4 grid w-4/5 grid-cols-[40px_1fr] gap-x-3 rounded bg-back p-3 text-inherit no-underline sm:m-4 sm:grid-cols-[48px_1fr] sm:rounded-lg sm:p-4',
+        'grid w-4/5 max-w-[400px] grid-cols-[40px_1fr] gap-x-3 rounded-sm bg-back p-3 text-inherit no-underline shadow shadow-shadow transition-shadow duration-200 hover:shadow-md hover:shadow-shadow sm:w-[400px] sm:max-w-[calc(50%-40px)] sm:grid-cols-[48px_1fr] sm:rounded-full sm:p-3',
         type === 'yuku' ? 'border-l-4 border-l-yuku sm:border-l-0' : 'border-r-4 border-r-kuru sm:border-r-0',
-        styles.wrapper,
         className
       )}
       data-type={type}
@@ -32,7 +30,7 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
       <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
         <TwitterUserIcon className="h-full w-full" src={iconSrc} alt={displayName} width="48" height="48" />
       </div>
-      <div>
+      <div className="flex flex-col justify-center">
         {displayName && <p className="col-start-2 text-sm leading-normal line-clamp-3">{displayName}</p>}
         {screenName && <p className="col-start-2 mt-1 text-xs font-bold leading-tight">{screenName}</p>}
         {notice && <p className="col-start-2 mt-2 text-xs">{notice}</p>}

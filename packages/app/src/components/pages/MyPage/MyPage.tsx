@@ -106,11 +106,11 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
                 </h2>
               )}
               {isShownTime && (
-                <p className="my-4 mx-auto w-fit rounded-full bg-white px-4 py-1 text-center text-xs text-sub sm:-mb-2 sm:mt-8">
+                <p className="mx-auto mt-6 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-8">
                   {timeText}
                 </p>
               )}
-              <div className={styles.userSection} data-type={item.data.type}>
+              <div className={classNames('mb-4 px-4 sm:mb-6', styles.userSection)} data-type={item.data.type}>
                 <UserCard className={item.data.type === 'yuku' ? 'self-start' : 'self-end'} {...item.data} />
               </div>
             </React.Fragment>
