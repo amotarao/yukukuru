@@ -55,7 +55,7 @@ export const TopPage: React.FC = () => {
         </p>
         <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userSection)} data-type="yuku">
           <DummyUserCard
-            className="self-start"
+            className="w-11/12 max-w-[400px] self-start sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{
               user: {
                 screenName: 'Twitter',
@@ -70,7 +70,7 @@ export const TopPage: React.FC = () => {
         </section>
         <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userSection)} data-type="kuru">
           <DummyUserCard
-            className="self-end"
+            className="w-11/12 max-w-[400px] self-end sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{
               user: {
                 screenName: 'TwitterJP',

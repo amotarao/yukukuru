@@ -98,7 +98,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
               {isShownDate && (
                 <h2
                   className={classNames(
-                    'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:mt-2 sm:-mb-8',
+                    'mx-auto mt-16 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back first:mt-0 sm:mt-20 sm:-mb-8 sm:first:mt-0',
                     styles.recordHead
                   )}
                   key={`${item.id}-head`}
