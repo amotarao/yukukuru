@@ -67,18 +67,18 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
 
   return (
     <div className="pb-10 sm:pb-20">
-      <nav className="pointer-events-none sticky top-0 z-10 -mt-12 flex w-full px-4 py-3 sm:-mt-16 sm:py-5">
+      <nav className="pointer-events-none sticky top-0 z-10 -mt-12 flex w-full px-6 py-3 sm:-mt-16 sm:py-5">
         <ul className="flex w-full justify-between sm:justify-around">
-          <li className="inline-block rounded border-l-4 border-l-yuku bg-back px-3 py-1 text-xs shadow-sm shadow-shadow sm:mr-8 sm:rounded-full sm:border-l-0 sm:bg-yuku">
+          <li className="relative inline-block rounded-full bg-back px-3 py-1 text-xs shadow-sm shadow-shadow before:absolute before:-left-1 before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-yuku before:content-[''] sm:mr-8 sm:bg-yuku sm:before:content-none">
             ゆくひと
           </li>
-          <li className="inline-block rounded border-r-4 border-r-kuru bg-back px-3 py-1 text-xs shadow-sm shadow-shadow sm:ml-8 sm:rounded-full sm:border-r-0 sm:bg-kuru">
+          <li className="relative inline-block rounded-full bg-back px-3 py-1 text-xs shadow-sm shadow-shadow before:absolute before:-right-1 before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-kuru before:content-[''] sm:ml-8 sm:bg-kuru sm:before:content-none">
             くるひと
           </li>
         </ul>
       </nav>
       <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
-      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
+      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
         {items.map((item) => {
           const date = dayjs(item.data.durationEnd.toDate());
           const dateText = date.format('L');
@@ -98,7 +98,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
               {isShownDate && (
                 <h2
                   className={classNames(
-                    'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:my-2',
+                    'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:mt-2 sm:-mb-8',
                     styles.recordHead
                   )}
                   key={`${item.id}-head`}
@@ -108,18 +108,24 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
               )}
               {isShownTime && (
                 <p
-                  className="mx-auto mt-6 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-8"
+                  className="mx-auto mt-8 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-16"
                   key={`${item.id}-time`}
                 >
                   {timeText}
                 </p>
               )}
               <div
-                className={classNames('mb-4 px-4 sm:mb-6', styles.userSection)}
+                className={classNames('mb-4 px-6 sm:px-4', styles.userSection)}
                 data-type={item.data.type}
                 key={`${item.id}-card`}
               >
-                <UserCard className={item.data.type === 'yuku' ? 'self-start' : 'self-end'} {...item.data} />
+                <UserCard
+                  className={classNames(
+                    'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
+                    item.data.type === 'yuku' ? 'self-start' : 'self-end'
+                  )}
+                  {...item.data}
+                />
               </div>
             </>
           );
