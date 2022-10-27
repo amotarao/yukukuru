@@ -21,7 +21,7 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
   return (
     <Tag
       className={classNames(
-        'grid grid-cols-[40px_1fr] sm:grid-cols-[48px_1fr] grid-rows-[repeat(4,auto)] gap-x-3 w-4/5 mx-4 mb-4 sm:m-4 p-3 sm:p-4 rounded sm:rounded-lg bg-back text-inherit no-underline',
+        'mx-4 mb-4 grid w-4/5 grid-cols-[40px_1fr] grid-rows-[repeat(4,auto)] gap-x-3 rounded bg-back p-3 text-inherit no-underline sm:m-4 sm:grid-cols-[48px_1fr] sm:rounded-lg sm:p-4',
         type === 'yuku' ? 'border-l-4 border-l-yuku sm:border-l-0' : 'border-r-4 border-r-kuru sm:border-r-0',
         styles.wrapper,
         className
@@ -31,11 +31,11 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
       target={href && '_blank'}
       rel={href && 'noopener noreferrer'}
     >
-      <div className="row-span-full w-10 sm:w-12 h-10 sm:h-12 rounded-full overflow-hidden">
-        <TwitterUserIcon className="w-full h-full" src={iconSrc} alt={displayName} width="48" height="48" />
+      <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
+        <TwitterUserIcon className="h-full w-full" src={iconSrc} alt={displayName} width="48" height="48" />
       </div>
       {displayName && <p className="col-start-2 mb-1 leading-normal line-clamp-3">{displayName}</p>}
-      {screenName && <p className="col-start-2 font-bold leading-tight text-xs">{screenName}</p>}
+      {screenName && <p className="col-start-2 text-xs font-bold leading-tight">{screenName}</p>}
       {notice && <p className="col-start-2 mt-2 text-xs">{notice}</p>}
       {duration && <p className="col-start-2 mt-2 text-xs text-sub">{duration}</p>}
     </Tag>

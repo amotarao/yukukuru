@@ -8,7 +8,7 @@ import { ThemeContainer } from '../store/theme';
 import '../styles/globals.css';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
-  const analytics = useAnalytics()
+  const analytics = useAnalytics();
 
   useEffect(() => {
     const handleRouteChange = () => {

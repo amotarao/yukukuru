@@ -17,37 +17,37 @@ export const TopPage: React.FC = () => {
   return (
     <div
       className={classNames(
-        'flex flex-col justify-center items-center w-full h-screen min-h-max py-6 bg-top-bg',
+        'flex h-screen min-h-max w-full flex-col items-center justify-center bg-top-bg py-6',
         styles.wrapper
       )}
     >
-      <section className="flex flex-col justify-center items-center gap-4 w-full p-8 bg-back-shadow text-center">
+      <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
         <h1 className="text-3xl">ゆくくる alpha</h1>
         <p className="text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
         <Link href="/my">
-          <a className="px-4 py-1 rounded border border-primary text-primary">マイページ・ログイン</a>
+          <a className="rounded border border-primary px-4 py-1 text-primary">マイページ・ログイン</a>
         </Link>
         <div className="flex flex-col gap-2">
-          <p className="flex flex-wrap justify-center text-xs text-sub whitespace-nowrap">
+          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             現在、フォロワー数1万人以上のアカウントの
             <wbr />
             新規登録を停止しています。
             <wbr />({new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
           </p>
-          <p className="flex flex-wrap justify-center text-xs text-sub whitespace-nowrap">
+          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ツイートする権限はありませんので
             <wbr />
             安心してご利用ください
           </p>
-          <p className="flex flex-wrap justify-center text-xs text-sub whitespace-nowrap">
+          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ※ 不具合が発生する場合があります
           </p>
         </div>
       </section>
-      <section className={classNames('mt-16 pb-8 w-full', styles.example, myPageStyles.homeArea)}>
+      <section className={classNames('mt-16 w-full pb-8', styles.example, myPageStyles.homeArea)}>
         <p
           className={classNames(
-            'w-fit mx-auto my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+            'mx-auto my-2 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back',
             myPageStyles.recordHead
           )}
         >

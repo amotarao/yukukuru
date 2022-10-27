@@ -32,8 +32,8 @@ export type MyPageProps = {
 const NoItemView: React.FC = () => {
   return (
     <div>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
         {new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
       </p>
@@ -47,10 +47,10 @@ const NoItemView: React.FC = () => {
 const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -66,17 +66,17 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
 
   return (
     <div className="pb-10 sm:pb-20">
-      <nav className="sticky top-0 z-10 flex w-full -mt-12 sm:-mt-16 px-4 py-3 sm:py-5 pointer-events-none">
-        <ul className="flex justify-between sm:justify-around w-full">
-          <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
+      <nav className="pointer-events-none sticky top-0 z-10 -mt-12 flex w-full px-4 py-3 sm:-mt-16 sm:py-5">
+        <ul className="flex w-full justify-between sm:justify-around">
+          <li className="inline-block rounded border-l-4 border-l-yuku bg-back px-3 py-1 text-xs shadow-sm shadow-shadow sm:mr-8 sm:rounded-full sm:border-l-0 sm:bg-yuku">
             ゆくひと
           </li>
-          <li className="inline-block px-3 py-1 sm:ml-8 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs shadow-sm shadow-shadow">
+          <li className="inline-block rounded border-r-4 border-r-kuru bg-back px-3 py-1 text-xs shadow-sm shadow-shadow sm:ml-8 sm:rounded-full sm:border-r-0 sm:bg-kuru">
             くるひと
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
           const date = item.data.durationEnd.toDate();
@@ -89,7 +89,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
               {showDate && (
                 <h2
                   className={classNames(
-                    'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                    'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:my-2',
                     styles.recordHead
                   )}
                 >
@@ -139,27 +139,29 @@ export const MyPage: React.FC<MyPageProps> = ({
   onChangeCurrentUid,
 }) => {
   const [paging, setPaging] = useState<number>(1);
-  const analytics = useAnalytics()
+  const analytics = useAnalytics();
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
       return;
     }
 
-    analytics && logEvent(analytics, 'element_show', {
-      event_category: 'has_next',
-      event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
-      value: 100,
-    });
+    analytics &&
+      logEvent(analytics, 'element_show', {
+        event_category: 'has_next',
+        event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+        value: 100,
+      });
   }, [analytics, isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    analytics && logEvent(analytics, 'button_click', {
-      event_category: 'click_next',
-      event_label: `click_next_p-${paging}`,
-      value: 100,
-    });
+    analytics &&
+      logEvent(analytics, 'button_click', {
+        event_category: 'click_next',
+        event_label: `click_next_p-${paging}`,
+        value: 100,
+      });
     setPaging(paging + 1);
   };
 
@@ -171,7 +173,7 @@ export const MyPage: React.FC<MyPageProps> = ({
     <div className={styles.wrapper}>
       {currentAccount && (
         <AccountSelector
-          className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
+          className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
           active={multiAccounts.length > 1}
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
