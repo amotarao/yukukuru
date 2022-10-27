@@ -9,10 +9,18 @@ export type CardProps = {
   iconSrc?: string;
   href?: string;
   type: 'yuku' | 'kuru';
-  notice?: string;
+  maybeDeletedOrSuspended?: boolean;
 };
 
-const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc, href, type, notice }) => {
+const Card: React.FC<CardProps> = ({
+  className,
+  displayName,
+  screenName,
+  iconSrc,
+  href,
+  type,
+  maybeDeletedOrSuspended = false,
+}) => {
   const Tag: keyof HTMLElementTagNameMap = href ? 'a' : 'div';
 
   return (
@@ -27,13 +35,17 @@ const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc
       target={href && '_blank'}
       rel={href && 'noopener noreferrer'}
     >
-      <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
-        <TwitterUserIcon className="h-full w-full" src={iconSrc} alt={displayName} width="48" height="48" />
+      <div className="flex items-center">
+        <div className="row-span-full h-10 w-10 overflow-hidden rounded-full sm:h-12 sm:w-12">
+          <TwitterUserIcon className="h-full w-full" src={iconSrc} alt={displayName} width="48" height="48" />
+        </div>
       </div>
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center gap-1">
         {displayName && <p className="col-start-2 text-sm leading-normal line-clamp-3">{displayName}</p>}
-        {screenName && <p className="col-start-2 mt-1 text-xs font-bold leading-tight">{screenName}</p>}
-        {notice && <p className="col-start-2 mt-2 text-xs">{notice}</p>}
+        <div className="flex gap-2">
+          {screenName && <p className="col-start-2 text-xs font-bold leading-tight">{screenName}</p>}
+          {maybeDeletedOrSuspended && <p className="col-start-2 text-xs">⚠️削除/凍結</p>}
+        </div>
       </div>
     </Tag>
   );
@@ -56,15 +68,10 @@ export const UserCard: React.FC<UserCardProps> = ({ className, user, type }) => 
       iconSrc={user.photoUrl}
       href={`https://twitter.com/${user.screenName}`}
       type={type}
-      notice={user.maybeDeletedOrSuspended ? '⚠️ 削除または凍結の可能性有り' : undefined}
+      maybeDeletedOrSuspended={user.maybeDeletedOrSuspended}
     />
   ) : (
-    <Card
-      className={className}
-      displayName={'情報の取得ができないユーザー'}
-      type={type}
-      notice={'⚠️ 削除または凍結の可能性有り'}
-    />
+    <Card className={className} displayName={'情報の取得ができないユーザー'} type={type} maybeDeletedOrSuspended />
   );
 };
 
