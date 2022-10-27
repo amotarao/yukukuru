@@ -8,7 +8,7 @@ export type SettingsPageProps = {
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({ signIn, signOut }) => {
   return (
-    <div className="max-w-md sm:max-w-xl mx-auto pt-4 pb-16">
+    <div className="mx-auto max-w-md pt-4 pb-16 sm:max-w-xl">
       <SettingsMenu signIn={signIn} signOut={signOut} />
       <BottomNav active="settings" />
     </div>

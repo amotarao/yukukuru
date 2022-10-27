@@ -4,7 +4,7 @@ import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
-import { dateOptions } from '../../../modules/date';
+import { dayjs } from '../../../modules/dayjs';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { AccountSelector } from '../../organisms/AccountSelector';
@@ -32,10 +32,10 @@ export type MyPageProps = {
 const NoItemView: React.FC = () => {
   return (
     <div>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">最初のデータ取得までしばらくお待ちください。</p>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
-        {new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
+        {dayjs('2021-05-08').format('L')})
       </p>
     </div>
   );
@@ -47,10 +47,10 @@ const NoItemView: React.FC = () => {
 const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div>
-      <p className="px-4 my-3 sm:my-4 text-center text-xs text-sub">
+      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
+      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
     </div>
   );
 };
@@ -63,43 +63,71 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
   lastRunnedGetFollowers,
 }) => {
   let currentDate = '';
+  let currentTime = '';
 
   return (
     <div className="pb-10 sm:pb-20">
-      <nav className="sticky top-0 z-10 flex w-full -mt-12 sm:-mt-16 px-4 py-3 sm:py-5 pointer-events-none">
-        <ul className="flex justify-between sm:justify-around w-full">
-          <li className="inline-block px-3 py-1 sm:mr-8 rounded sm:rounded-full border-l-4 border-l-yuku sm:border-l-0 bg-back sm:bg-yuku text-xs shadow-sm shadow-shadow">
+      <nav className="pointer-events-none sticky top-0 z-10 -mt-12 flex w-full px-6 py-3 sm:-mt-16 sm:py-5">
+        <ul className="flex w-full justify-between sm:justify-around">
+          <li className="relative inline-block rounded-full bg-back px-3 py-1 text-xs shadow-sm shadow-shadow before:absolute before:-left-1 before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-yuku before:content-[''] sm:mr-8 sm:bg-yuku sm:before:content-none">
             ゆくひと
           </li>
-          <li className="inline-block px-3 py-1 sm:ml-8 rounded sm:rounded-full border-r-4 border-r-kuru sm:border-r-0 bg-back sm:bg-kuru text-xs shadow-sm shadow-shadow">
+          <li className="relative inline-block rounded-full bg-back px-3 py-1 text-xs shadow-sm shadow-shadow before:absolute before:-right-1 before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-kuru before:content-[''] sm:ml-8 sm:bg-kuru sm:before:content-none">
             くるひと
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="px-4 my-3 sm:my-4 text-center text-xs text-sub" date={lastRunnedGetFollowers} />
-      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
+      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
+      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
         {items.map((item) => {
-          const date = item.data.durationEnd.toDate();
-          const dateText = date.toLocaleDateString(undefined, dateOptions);
-          const showDate = currentDate !== dateText;
+          const date = dayjs(item.data.durationEnd.toDate());
+          const dateText = date.format('L');
+          const isShownDate = currentDate !== dateText;
           currentDate = dateText;
 
+          if (isShownDate) {
+            currentTime = '';
+          }
+
+          const timeText = date.format('LT');
+          const isShownTime = currentTime !== timeText;
+          currentTime = timeText;
+
           return (
-            <React.Fragment key={item.id}>
-              {showDate && (
+            <>
+              {isShownDate && (
                 <h2
                   className={classNames(
-                    'w-fit mx-auto my-2 mb-4 sm:my-2 px-4 py-1 rounded-full bg-primary text-back text-center text-xs tracking-widest',
+                    'mx-auto mt-16 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back first:mt-0 sm:mt-20 sm:-mb-8 sm:first:mt-0',
                     styles.recordHead
                   )}
+                  key={`${item.id}-head`}
                 >
                   {dateText}
                 </h2>
               )}
-              <div className={styles.userSection} data-type={item.data.type}>
-                <UserCard {...item.data} />
+              {isShownTime && (
+                <p
+                  className="mx-auto mt-8 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-16"
+                  key={`${item.id}-time`}
+                >
+                  {timeText}
+                </p>
+              )}
+              <div
+                className={classNames('mb-4 px-6 sm:px-4', styles.userSection)}
+                data-type={item.data.type}
+                key={`${item.id}-card`}
+              >
+                <UserCard
+                  className={classNames(
+                    'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
+                    item.data.type === 'yuku' ? 'self-start' : 'self-end'
+                  )}
+                  {...item.data}
+                />
               </div>
-            </React.Fragment>
+            </>
           );
         })}
       </section>
@@ -139,27 +167,29 @@ export const MyPage: React.FC<MyPageProps> = ({
   onChangeCurrentUid,
 }) => {
   const [paging, setPaging] = useState<number>(1);
-  const analytics = useAnalytics()
+  const analytics = useAnalytics();
 
   useEffect(() => {
     if (isLoading || isNextLoading) {
       return;
     }
 
-    analytics && logEvent(analytics, 'element_show', {
-      event_category: 'has_next',
-      event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
-      value: 100,
-    });
+    analytics &&
+      logEvent(analytics, 'element_show', {
+        event_category: 'has_next',
+        event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
+        value: 100,
+      });
   }, [analytics, isLoading, isNextLoading, hasNext, paging]);
 
   const getNext = () => {
     getNextRecords();
-    analytics && logEvent(analytics, 'button_click', {
-      event_category: 'click_next',
-      event_label: `click_next_p-${paging}`,
-      value: 100,
-    });
+    analytics &&
+      logEvent(analytics, 'button_click', {
+        event_category: 'click_next',
+        event_label: `click_next_p-${paging}`,
+        value: 100,
+      });
     setPaging(paging + 1);
   };
 
@@ -171,7 +201,7 @@ export const MyPage: React.FC<MyPageProps> = ({
     <div className={styles.wrapper}>
       {currentAccount && (
         <AccountSelector
-          className="sticky top-0 z-30 h-12 sm:h-16 py-2 sm:py-3"
+          className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
           active={multiAccounts.length > 1}
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
