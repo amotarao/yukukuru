@@ -94,26 +94,34 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           currentTime = timeText;
 
           return (
-            <React.Fragment key={item.id}>
+            <>
               {isShownDate && (
                 <h2
                   className={classNames(
                     'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:my-2',
                     styles.recordHead
                   )}
+                  key={`${item.id}-head`}
                 >
                   {dateText}
                 </h2>
               )}
               {isShownTime && (
-                <p className="mx-auto mt-6 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-8">
+                <p
+                  className="mx-auto mt-6 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-8"
+                  key={`${item.id}-time`}
+                >
                   {timeText}
                 </p>
               )}
-              <div className={classNames('mb-4 px-4 sm:mb-6', styles.userSection)} data-type={item.data.type}>
+              <div
+                className={classNames('mb-4 px-4 sm:mb-6', styles.userSection)}
+                data-type={item.data.type}
+                key={`${item.id}-card`}
+              >
                 <UserCard className={item.data.type === 'yuku' ? 'self-start' : 'self-end'} {...item.data} />
               </div>
-            </React.Fragment>
+            </>
           );
         })}
       </section>
