@@ -4,7 +4,7 @@ import { logEvent } from 'firebase/analytics';
 import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
-import { dateOptions } from '../../../modules/date';
+import { dayjs } from '../../../modules/dayjs';
 import { LastUpdatedText } from '../../atoms/LastUpdatedText';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
 import { AccountSelector } from '../../organisms/AccountSelector';
@@ -35,7 +35,7 @@ const NoItemView: React.FC = () => {
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
-        {new Date('2021-05-08').toLocaleDateString(undefined, dateOptions)})
+        {dayjs('2021-05-08').format('L')})
       </p>
     </div>
   );
@@ -63,6 +63,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
   lastRunnedGetFollowers,
 }) => {
   let currentDate = '';
+  let currentTime = '';
 
   return (
     <div className="pb-10 sm:pb-20">
@@ -79,14 +80,22 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
       <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12')}>
         {items.map((item) => {
-          const date = item.data.durationEnd.toDate();
-          const dateText = date.toLocaleDateString(undefined, dateOptions);
-          const showDate = currentDate !== dateText;
+          const date = dayjs(item.data.durationEnd.toDate());
+          const dateText = date.format('L');
+          const isShownDate = currentDate !== dateText;
           currentDate = dateText;
+
+          if (isShownDate) {
+            currentTime = '';
+          }
+
+          const timeText = date.format('LT');
+          const isShownTime = currentTime !== timeText;
+          currentTime = timeText;
 
           return (
             <React.Fragment key={item.id}>
-              {showDate && (
+              {isShownDate && (
                 <h2
                   className={classNames(
                     'mx-auto my-2 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back sm:my-2',
@@ -96,8 +105,13 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
                   {dateText}
                 </h2>
               )}
+              {isShownTime && (
+                <p className="my-4 mx-auto w-fit rounded-full bg-white px-4 py-1 text-center text-xs text-sub sm:-mb-2 sm:mt-8">
+                  {timeText}
+                </p>
+              )}
               <div className={styles.userSection} data-type={item.data.type}>
-                <UserCard {...item.data} />
+                <UserCard className={item.data.type === 'yuku' ? 'self-start' : 'self-end'} {...item.data} />
               </div>
             </React.Fragment>
           );
