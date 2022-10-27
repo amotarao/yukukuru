@@ -1,7 +1,6 @@
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
-import React from 'react';
 import styles from './styles.module.scss';
 
 export type NavType = 'my' | 'settings';

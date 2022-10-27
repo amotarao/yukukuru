@@ -1,6 +1,5 @@
 import { Timestamp, RecordData, RecordUserData } from '@yukukuru/types';
 import classNames from 'classnames';
-import React from 'react';
 import { timeOptions } from '../../../modules/date';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import styles from './styles.module.scss';

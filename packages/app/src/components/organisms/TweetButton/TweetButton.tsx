@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import React from 'react';
 import { Share } from 'react-twitter-widgets';
 import * as style from './style';
 

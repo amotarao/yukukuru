@@ -1,8 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import React from 'react';
 import { style } from './style';
 
 export type ErrorWrapperProps = {
+  children?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
