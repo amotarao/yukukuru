@@ -18,7 +18,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
       <ul>
         <li className="border-b border-b-back-2">
           <div className="flex items-center">
-            <p className="grow block w-full px-4 py-3 text-left">ダークテーマ</p>
+            <p className="block w-full grow px-4 py-3 text-left">ダークテーマ</p>
             <Switch
               className="mr-4"
               checked={theme === 'dark'}
@@ -33,7 +33,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
         <li className="border-b border-b-back-2">
           <Link href="/">
             <a
-              className="grow block w-full px-4 py-3 text-left"
+              className="block w-full grow px-4 py-3 text-left"
               onClick={async (e) => {
                 e.preventDefault();
                 await signOut();
@@ -47,7 +47,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
         <li className="border-b border-b-back-2">
           <Link href="/my">
             <a
-              className="grow block w-full px-4 py-3 text-left"
+              className="block w-full grow px-4 py-3 text-left"
               onClick={async (e) => {
                 e.preventDefault();
                 await signIn();
@@ -56,7 +56,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
             >
               <p>
                 別のアカウントでログイン
-                <span className="block mt-1 text-xs">Twitterでアカウントを切り替えたあとに実行</span>
+                <span className="mt-1 block text-xs">Twitterでアカウントを切り替えたあとに実行</span>
               </p>
             </a>
           </Link>

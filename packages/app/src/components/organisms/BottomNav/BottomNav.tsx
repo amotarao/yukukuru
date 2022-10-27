@@ -25,9 +25,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
   };
 
   return (
-    <nav className="fixed left-0 bottom-0 z-20 w-full bg-back border-t border-t-shadow">
-      <ul className="flex justify-center max-w-md sm:max-w-xl mx-auto">
-        <li className="flex-auto w-1/2">
+    <nav className="fixed left-0 bottom-0 z-20 w-full border-t border-t-shadow bg-back">
+      <ul className="mx-auto flex max-w-md justify-center sm:max-w-xl">
+        <li className="w-1/2 flex-auto">
           <Link href="/my">
             <a className={styles.button} aria-current={active === 'my' && 'page'} data-type="my" onClick={onClick}>
               <HomeIcon className="text-2xl" />
@@ -35,7 +35,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
             </a>
           </Link>
         </li>
-        <li className="flex-auto w-1/2">
+        <li className="w-1/2 flex-auto">
           <Link href="/settings">
             <a
               className={styles.button}
