@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { deleteAuth } from '../../modules/auth/delete';
+import { getUserLastViewing } from '../../modules/firestore/userStatuses/lastViewing';
 import { getWatchesIds } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { topicName, Message } from './_pubsub';
@@ -16,27 +17,40 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
  * 実行可能かどうかを確認
  */
 
-const checkExecutable = (params: {
+const checkExecutable = async (params: {
+  uid: string;
   active: boolean;
   deletedAuth: boolean;
   lastUpdated: string | Date;
+  followersCount: number;
   now: Date;
-}): boolean => {
-  const { active, deletedAuth, lastUpdated, now } = params;
+}): Promise<boolean> => {
+  const { uid, active, deletedAuth, lastUpdated, followersCount, now } = params;
 
   // 既に削除されている場合は実行しない
   if (deletedAuth) {
     return false;
   }
 
-  // active が false で lastUpdated が 30日以上前
+  // active が false かつ lastUpdated が 30日以上前
   if (!active && dayjs(now).diff(lastUpdated, 'day') >= 30) {
     return true;
   }
 
-  // active が true で lastUpdated が 90日以上前
+  // active が true かつ lastUpdated が 90日以上前
   if (active && dayjs(now).diff(lastUpdated, 'day') >= 90) {
     return true;
+  }
+
+  // フォロワー 1000 人以上 かつ 最終閲覧日時が 180日以上前
+  const lastViewing = await getUserLastViewing(uid);
+  if (followersCount >= 1000) {
+    if (!lastViewing) {
+      return true;
+    }
+    if (dayjs(now).diff(lastViewing, 'day') >= 180) {
+      return true;
+    }
   }
 
   return false;
@@ -51,7 +65,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, active, deletedAuth, lastUpdated, publishedAt } = message.json as Message;
+    const { uid, active, deletedAuth, lastUpdated, followersCount, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -60,7 +74,7 @@ export const run = functions
       return;
     }
 
-    const executable = checkExecutable({ active, deletedAuth, lastUpdated, now });
+    const executable = await checkExecutable({ uid, active, deletedAuth, lastUpdated, followersCount, now });
     if (!executable) {
       return;
     }

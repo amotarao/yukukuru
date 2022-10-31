@@ -1,5 +1,4 @@
 import { UserData } from '@yukukuru/types';
-import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -31,9 +30,8 @@ export const publish = functions
 
     const snapshot = await firestore
       .collection('users')
-      .where('lastUpdated', '<=', dayjs(now).subtract(30, 'day').toDate())
       .where('group', '==', group)
-      .select('active', 'deletedAuth', 'lastUpdated')
+      .select('active', 'deletedAuth', 'lastUpdated', 'twitter.followersCount')
       .get();
 
     // publish データ作成・送信
@@ -42,6 +40,7 @@ export const publish = functions
       active: doc.get('active') as UserData['active'],
       deletedAuth: doc.get('deletedAuth') as UserData['deletedAuth'],
       lastUpdated: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
+      followersCount: doc.get('twitter.followersCount') as UserData['twitter']['followersCount'],
       publishedAt: now,
     }));
     await publishMessages(topicName, messages);

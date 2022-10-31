@@ -13,6 +13,9 @@ export type Message = {
   /** フォロワー一覧取得 最終実行日時 */
   lastUpdated: Date | string;
 
+  /** フォロワー数 */
+  followersCount: number;
+
   /** 送信日時 */
   publishedAt: Date | string;
 };
