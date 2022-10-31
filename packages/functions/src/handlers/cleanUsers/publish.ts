@@ -1,5 +1,5 @@
 import { UserData } from '@yukukuru/types';
-import dayjs = require('dayjs');
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
