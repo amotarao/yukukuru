@@ -11,8 +11,8 @@ import { Message, topicName } from './_pubsub';
  *
  * 処理を実行するかどうかは run でチェック
  *
- * 12分おきに実行
- * グループ毎に 3時間おきに実行
+ * 1時間おきに実行
+ * グループ毎に 1日おきに実行
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -20,14 +20,14 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('0 0-14 * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
 
     // 対象ユーザーの取得
     // 実行するかどうかは run で確認
-    const group = getGroupFromTime(12, now);
+    const group = getGroupFromTime(60, now);
 
     const snapshot = await firestore
       .collection('users')
