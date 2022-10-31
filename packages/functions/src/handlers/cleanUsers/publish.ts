@@ -31,7 +31,7 @@ export const publish = functions
 
     const snapshot = await firestore
       .collection('users')
-      .where('lastUpdated', '<=', dayjs(group).subtract(30, 'day').toDate())
+      .where('lastUpdated', '<=', dayjs(now).subtract(30, 'day').toDate())
       .where('group', '==', group)
       .select('active', 'deletedAuth', 'lastUpdated')
       .get();
