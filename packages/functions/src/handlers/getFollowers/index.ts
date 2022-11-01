@@ -1,2 +1,2 @@
-export { publish } from './publish';
-export { run } from './run';
+export * from './publish';
+export * from './run';
