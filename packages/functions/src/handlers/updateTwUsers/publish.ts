@@ -3,7 +3,7 @@ import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { log } from '../../utils/log';
-import { Message } from './_pubsub';
+import { Message, topicName } from './_pubsub';
 
 /** Twitter ユーザー情報更新 定期実行 */
 export const publish = functions
@@ -34,7 +34,7 @@ export const publish = functions
     log('updateTwUsers', '', { ids, count: ids.length });
 
     const items: Message[] = ids.map((id) => ({ uid: id, publishedAt: now }));
-    await publishMessages('updateTwUsers', items);
+    await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);
   });
