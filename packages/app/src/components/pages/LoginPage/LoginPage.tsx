@@ -27,8 +27,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
         </button>
       </div>
       <div>
-        <Link href="/">
-          <a className="mb-4 inline-block rounded border border-sub px-4 py-1 text-sub">トップページ</a>
+        <Link className="mb-4 inline-block rounded border border-sub px-4 py-1 text-sub" href="/">
+          トップページ
         </Link>
       </div>
     </div>
