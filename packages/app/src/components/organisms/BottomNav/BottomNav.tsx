@@ -28,24 +28,27 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
     <nav className="fixed left-0 bottom-0 z-20 w-full border-t border-t-shadow bg-back">
       <ul className="mx-auto flex max-w-md justify-center sm:max-w-xl">
         <li className="w-1/2 flex-auto">
-          <Link href="/my">
-            <a className={styles.button} aria-current={active === 'my' && 'page'} data-type="my" onClick={onClick}>
-              <HomeIcon className="text-2xl" />
-              ホーム
-            </a>
+          <Link
+            className={styles.button}
+            href="/my"
+            aria-current={active === 'my' && 'page'}
+            data-type="my"
+            onClick={onClick}
+          >
+            <HomeIcon className="text-2xl" />
+            ホーム
           </Link>
         </li>
         <li className="w-1/2 flex-auto">
-          <Link href="/settings">
-            <a
-              className={styles.button}
-              aria-current={active === 'settings' && 'page'}
-              data-type="settings"
-              onClick={onClick}
-            >
-              <SettingsIcon className="text-2xl" />
-              設定
-            </a>
+          <Link
+            className={styles.button}
+            href="/settings"
+            aria-current={active === 'settings' && 'page'}
+            data-type="settings"
+            onClick={onClick}
+          >
+            <SettingsIcon className="text-2xl" />
+            設定
           </Link>
         </li>
       </ul>

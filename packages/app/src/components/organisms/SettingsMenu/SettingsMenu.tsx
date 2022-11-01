@@ -31,34 +31,32 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
           </div>
         </li>
         <li className="border-b border-b-back-2">
-          <Link href="/">
-            <a
-              className="block w-full grow px-4 py-3 text-left"
-              onClick={async (e) => {
-                e.preventDefault();
-                await signOut();
-                router.push('/');
-              }}
-            >
-              <p>ログアウト</p>
-            </a>
+          <Link
+            className="block w-full grow px-4 py-3 text-left"
+            href="/"
+            onClick={async (e) => {
+              e.preventDefault();
+              await signOut();
+              router.push('/');
+            }}
+          >
+            <p>ログアウト</p>
           </Link>
         </li>
         <li className="border-b border-b-back-2">
-          <Link href="/my">
-            <a
-              className="block w-full grow px-4 py-3 text-left"
-              onClick={async (e) => {
-                e.preventDefault();
-                await signIn();
-                router.push('/my');
-              }}
-            >
-              <p>
-                別のアカウントでログイン
-                <span className="mt-1 block text-xs">Twitterでアカウントを切り替えたあとに実行</span>
-              </p>
-            </a>
+          <Link
+            className="block w-full grow px-4 py-3 text-left"
+            href="/my"
+            onClick={async (e) => {
+              e.preventDefault();
+              await signIn();
+              router.push('/my');
+            }}
+          >
+            <p>
+              別のアカウントでログイン
+              <span className="mt-1 block text-xs">Twitterでアカウントを切り替えたあとに実行</span>
+            </p>
           </Link>
         </li>
       </ul>
