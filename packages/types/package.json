@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/types",
-  "version": "0.121.0",
+  "version": "0.122.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
@@ -12,9 +12,9 @@
     "lint": "eslint types --ext .ts,.js"
   },
   "dependencies": {
-    "@firebase/firestore-types": "^2.5.0"
+    "@firebase/firestore-types": "^2.5.1"
   },
   "devDependencies": {
-    "eslint": "^8.23.0"
+    "eslint": "^8.26.0"
   }
 }
