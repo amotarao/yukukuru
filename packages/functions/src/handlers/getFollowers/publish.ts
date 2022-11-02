@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
-import { Message } from './_pubsub';
+import { Message, topicName } from './_pubsub';
 
 /**
  * フォロワー取得 定期実行
@@ -42,7 +42,7 @@ export const publish = functions
       lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
       publishedAt: now,
     }));
-    await publishMessages('getFollowers', messages);
+    await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);
   });

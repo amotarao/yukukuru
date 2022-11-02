@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/app",
-  "version": "0.123.0",
+  "version": "0.124.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
@@ -14,18 +14,19 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
-    "@mui/icons-material": "^5.2.5",
-    "@mui/material": "^5.2.7",
-    "@mui/styles": "^5.2.3",
-    "classnames": "^2.3.1",
-    "dayjs": "^1.10.4",
-    "firebase": "^9.9.4",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.12",
+    "@mui/styles": "^5.10.10",
+    "classnames": "^2.3.2",
+    "dayjs": "^1.11.6",
+    "firebase": "^9.13.0",
     "next": "13.0.1",
+    "next-sitemap": "^3.1.30",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-twitter-widgets": "^1.10.0",
+    "react-twitter-widgets": "^1.11.0",
     "unstated-next": "^1.1.0"
   },
   "devDependencies": {
@@ -34,18 +35,17 @@
     "@types/react": "^18.0.24",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
-    "autoprefixer": "^10.4.8",
+    "autoprefixer": "^10.4.13",
     "eslint": "^8.26.0",
     "eslint-config-next": "13.0.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "next-sitemap": "^1.6.203",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
-    "sass": "^1.54.8",
-    "tailwindcss": "^3.1.8",
-    "typescript": "4.8.2"
+    "sass": "^1.55.0",
+    "tailwindcss": "^3.2.1",
+    "typescript": "4.8.4"
   }
 }
