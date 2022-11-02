@@ -1,5 +1,4 @@
 import LinkIcon from '@mui/icons-material/Link';
-import { style } from './style';
 
 interface NotificationItem {
   name: string;
@@ -17,12 +16,17 @@ export const NotificationList: React.FC = () => {
   ];
 
   return (
-    <ul css={style.list}>
+    <ul className="list-none">
       {items.map((item, i) => (
-        <li css={style.item} key={i}>
-          <a css={style.card} href={item.url} target="_blank" rel="noopener noreferrer">
-            <p css={style.name}>{item.name}</p>
-            <p css={style.text}>
+        <li className="border-b border-back-2" key={i}>
+          <a
+            className="block p-[1rem] text-inherit no-underline"
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <p className="mb-[0.5rem]">{item.name}</p>
+            <p className="whitespace-pre-line text-[0.8rem] [&_svg]:ml-[2em] [&_svg]:align-middle [&_svg]:text-[1em] [&_svg]:text-sub">
               {item.text}
               <LinkIcon />
             </p>
