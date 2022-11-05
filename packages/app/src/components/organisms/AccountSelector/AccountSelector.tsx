@@ -1,9 +1,8 @@
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
+import { Icon } from '../../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;
@@ -51,7 +50,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         <span className="mr-2 flex-1 text-center text-xs line-clamp-1 sm:text-sm">
           @{currentAccount?.twitter.screenName ?? ''}
         </span>
-        {active && <KeyboardArrowDownIcon className="text-base" />}
+        {active && <Icon className="text-base" type="arrow_down" />}
       </button>
       {shown && (
         <div className="absolute flex w-full justify-center p-4">
@@ -80,7 +79,9 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 >
                   <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
                   <span className="flex-1 text-xs line-clamp-1 sm:text-sm">@{account.twitter.screenName}</span>
-                  {account.id === currentAccount?.id && <CheckCircleIcon className="ml-2 text-base text-primary" />}
+                  {account.id === currentAccount?.id && (
+                    <Icon className="ml-2 text-base text-primary" type="check_circle" />
+                  )}
                 </button>
               );
             })}
