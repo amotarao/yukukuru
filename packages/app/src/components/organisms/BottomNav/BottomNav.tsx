@@ -1,6 +1,5 @@
-import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
+import { Icon } from '../../shared/Icon';
 import styles from './styles.module.scss';
 
 export type NavType = 'my' | 'settings';
@@ -35,7 +34,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
             data-type="my"
             onClick={onClick}
           >
-            <HomeIcon className="text-2xl" />
+            <Icon className="text-2xl" type="home" />
             ホーム
           </Link>
         </li>
@@ -47,7 +46,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
             data-type="settings"
             onClick={onClick}
           >
-            <SettingsIcon className="text-2xl" />
+            <Icon className="text-2xl" type="cog" />
             設定
           </Link>
         </li>
