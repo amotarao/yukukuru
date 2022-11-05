@@ -19,7 +19,12 @@ export const Icon: React.FC<IconProps> = ({ className, type }) => {
   const icon = icons[type];
 
   return (
-    <svg className={classNames('h-[1em] w-[1em]', className)} focusable="false" aria-hidden="true" viewBox="0 0 24 24">
+    <svg
+      className={classNames('where:h-[1em] where:w-[1em]', className)}
+      viewBox="0 0 24 24"
+      focusable="false"
+      aria-hidden="true"
+    >
       <path d={icon} fill="currentColor"></path>
     </svg>
   );
