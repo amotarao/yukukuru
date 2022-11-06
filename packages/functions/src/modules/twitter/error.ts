@@ -34,38 +34,18 @@ const checkError = (error: ApiResponseError, code: number): boolean => {
   return error.hasErrorCode(code);
 };
 
-/**
- * No user matches for specified terms.
- *
- * @param errors エラーリスト
- */
 export const checkNoUserMatches = (error: ApiResponseError): boolean => {
   return checkError(error, EApiV1ErrorCode.NoUserMatch);
 };
 
-/**
- * Rate limit exceeded
- *
- * @param errors エラーリスト
- */
 export const checkRateLimitExceeded = (error: ApiResponseError): boolean => {
   return checkError(error, EApiV1ErrorCode.RateLimitExceeded);
 };
 
-/**
- * Invalid or expired token
- *
- * @param errors エラーリスト
- */
 export const checkInvalidOrExpiredToken = (error: ApiResponseError): boolean => {
   return checkError(error, EApiV1ErrorCode.InvalidOrExpiredToken);
 };
 
-/**
- * To protect our users from spam and other malicious activity, this account is temporarily locked.
- *
- * @param errors エラーリスト
- */
 export const checkTemporarilyLocked = (error: ApiResponseError): boolean => {
   return checkError(error, EApiV1ErrorCode.AccountLocked);
 };
