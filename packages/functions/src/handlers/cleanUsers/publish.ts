@@ -35,16 +35,14 @@ export const publish = functions
       .get();
 
     // publish データ作成・送信
-    const messages: Message[] = snapshot.docs
-      .filter((doc) => !(doc.get('deletedAuth') as boolean | undefined))
-      .map((doc) => ({
-        uid: doc.id,
-        active: doc.get('active') as UserData['active'],
-        deletedAuth: doc.get('deletedAuth') as UserData['deletedAuth'],
-        lastUpdated: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
-        followersCount: doc.get('twitter.followersCount') as UserData['twitter']['followersCount'],
-        publishedAt: now,
-      }));
+    const messages: Message[] = snapshot.docs.map((doc) => ({
+      uid: doc.id,
+      active: doc.get('active') as UserData['active'],
+      deletedAuth: (doc.get('deletedAuth') as UserData['deletedAuth']) || false,
+      lastUpdated: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
+      followersCount: doc.get('twitter.followersCount') as UserData['twitter']['followersCount'],
+      publishedAt: now,
+    }));
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);
