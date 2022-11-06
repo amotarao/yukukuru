@@ -14,8 +14,6 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.6",
     "firebase": "^9.13.0",
