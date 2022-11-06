@@ -1,7 +1,7 @@
 import { ApiResponseError, EApiV1ErrorCode } from 'twitter-api-v2';
 
 const logError = (error: unknown): void => {
-  if (error && typeof error === 'object' && 'message' in error && error.message && typeof error.message === 'string') {
+  if (error && error instanceof ApiResponseError) {
     console.error(`❗️[Twitter Error] Failed to run Twitter API: ${error.message}.`);
     return;
   }
