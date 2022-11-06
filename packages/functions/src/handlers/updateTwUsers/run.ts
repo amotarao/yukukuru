@@ -39,13 +39,13 @@ export const run = functions
     console.log(`⏳ Got watches and token from Firestore.`);
 
     const client = getClient({
-      accessToken: token.twitterAccessToken,
-      accessSecret: token.twitterAccessTokenSecret,
+      access_token_key: token.twitterAccessToken,
+      access_token_secret: token.twitterAccessTokenSecret,
     });
     const result = await getUsersLookup(client, { usersId: followers });
 
-    if ('error' in result) {
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.error);
+    if ('errors' in result) {
+      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.errors);
       return;
     }
     console.log(`⏳ Got ${result.response.length} users from Twitter.`);
