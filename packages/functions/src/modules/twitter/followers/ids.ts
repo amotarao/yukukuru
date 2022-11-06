@@ -1,5 +1,5 @@
-import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
-import { twitterClientErrorHandler } from '../error';
+import * as Twitter from 'twitter';
+import { TwitterClientError, twitterClientErrorHandler } from '../error';
 
 export type TwitterGetFollowersIdsParameters = {
   userId: string;
@@ -25,9 +25,9 @@ type PickedTwitterGetFollowersIdsResponse = Pick<TwitterGetFollowersIdsResponse,
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
  */
 const getFollowersIdsSingle = (
-  client: TwitterApiReadOnly,
+  client: Twitter,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   return client
     .get('followers/ids', {
       user_id: userId,
@@ -53,9 +53,9 @@ const getFollowersIdsSingle = (
  * @param param パラメータ
  */
 export const getFollowersIds = async (
-  client: TwitterApiReadOnly,
+  client: Twitter,
   { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { errors: TwitterClientError[] }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -70,7 +70,7 @@ export const getFollowersIds = async (
     const result = await getFollowersIdsSingle(client, obj);
 
     // エラーが発生した場合
-    if ('error' in result) {
+    if ('errors' in result) {
       // 1回でも取得が完了している場合は、すでに取得されているデータを返すため、繰り返し処理を終了する
       if (getCount > 0) {
         break;
