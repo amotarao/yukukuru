@@ -21,9 +21,10 @@ export const SideNav: React.FC<SideNavProps> = ({ className }) => {
             <li key={i} className="mb-1">
               <Link href={item.href}>
                 <a
-                  className={classNames('block w-full text-sm px-3 py-1 rounded-full', {
-                    'bg-slate-700 text-slate-50': item.href === router.pathname,
-                  })}
+                  className={classNames(
+                    'block w-full rounded-full px-3 py-1 text-sm',
+                    item.href === router.pathname && 'bg-slate-700 text-slate-50'
+                  )}
                 >
                   {item.name}
                 </a>
