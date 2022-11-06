@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiResponseError, TwitterApiReadOnly, UserV1 } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
 import { TwitterUser } from '..';
 import { twitterClientErrorHandler } from '../error';
 
@@ -15,10 +15,23 @@ export type TwitterGetUsersLookupParameters = {
 const getUsersLookupSingle = (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: UserV1[] } | { error: ApiResponseError }> => {
-  return client.v1
-    .users({ user_id: usersId })
-    .then((response) => ({ response }))
+): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
+  return client.v2
+    .users(usersId, {
+      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
+    })
+    .then((response) => ({
+      response: response.data.map(
+        (user): TwitterUser => ({
+          id_str: user.id,
+          screen_name: user.username,
+          name: user.name,
+          profile_image_url_https: user.profile_image_url || '',
+          followers_count: user.public_metrics?.followers_count || 0,
+          verified: user.verified || false,
+        })
+      ),
+    }))
     .catch(twitterClientErrorHandler);
 };
 
@@ -31,26 +44,13 @@ export const getUsersLookup = async (
   { usersId }: TwitterGetUsersLookupParameters
 ): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
   const lookup = _.chunk(_.uniq(usersId), 100).map(
-    async (usersId): Promise<[TwitterUser[], null] | [null, ApiResponseError]> => {
+    async (usersId): Promise<{ users: TwitterUser[]; error: null } | { users: null; error: ApiResponseError }> => {
       const result = await getUsersLookupSingle(client, { usersId });
 
       if ('error' in result) {
-        return [null, result.error];
+        return { users: null, error: result.error };
       }
-
-      const users = result.response.map((res) => {
-        const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
-        const user: TwitterUser = {
-          id_str,
-          screen_name,
-          name,
-          profile_image_url_https,
-          followers_count,
-          verified,
-        };
-        return user;
-      });
-      return [users, null];
+      return { users: result.response, error: null };
     }
   );
   const lookuped = await Promise.all(lookup);
@@ -59,12 +59,12 @@ export const getUsersLookup = async (
   const errors: ApiResponseError[] = [];
 
   for (const single of lookuped) {
-    if (single[0]) {
-      users.push(...single[0]);
+    if (single.users) {
+      users.push(...single.users);
       continue;
     }
 
-    errors.push(single[1]);
+    errors.push(single.error);
     break;
   }
 
