@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiResponseError, TwitterApiReadOnly, UserV1 } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
 import { TwitterUser } from '..';
 import { twitterClientErrorHandler } from '../error';
 
@@ -12,14 +12,26 @@ export type TwitterGetUsersLookupParameters = {
  * 100人まで 取得可能
  * 15分につき 300回 実行可能
  */
-const getUsersLookupSingle = (
+const getUsersLookupSingle = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: UserV1[] } | { error: ApiResponseError }> => {
-  return client.v1
-    .users({ user_id: usersId })
-    .then((response) => ({ response }))
+): Promise<
+  | { response: Pick<UserV2, 'id' | 'username' | 'name' | 'profile_image_url' | 'public_metrics' | 'verified'>[] }
+  | { error: ApiResponseError }
+> => {
+  const response = await client.v2
+    .users(usersId, {
+      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
+    })
     .catch(twitterClientErrorHandler);
+
+  if ('error' in response) {
+    return response;
+  }
+
+  return {
+    response: response.data,
+  };
 };
 
 /**
@@ -39,14 +51,14 @@ export const getUsersLookup = async (
       }
 
       const users = result.response.map((res) => {
-        const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
+        const { id, username, name, profile_image_url, public_metrics, verified } = res;
         const user: TwitterUser = {
-          id_str,
-          screen_name,
+          id_str: id,
+          screen_name: username,
           name,
-          profile_image_url_https,
-          followers_count,
-          verified,
+          profile_image_url_https: profile_image_url || '',
+          followers_count: public_metrics?.followers_count || 0,
+          verified: verified || false,
         };
         return user;
       });
