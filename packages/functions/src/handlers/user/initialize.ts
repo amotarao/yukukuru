@@ -28,7 +28,7 @@ export const initialize = functions
     const client = getClient();
     const result = await getUsersLookup(client, { usersId: [twitterId] });
 
-    if ('errors' in result || result.response.length !== 1) {
+    if ('error' in result || result.response.length !== 1) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
