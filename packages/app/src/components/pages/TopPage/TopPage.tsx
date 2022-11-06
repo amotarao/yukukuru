@@ -21,7 +21,7 @@ export const TopPage: React.FC = () => {
       )}
     >
       <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
-        <h1 className="text-3xl">ゆくくる alpha</h1>
+        <h1 className="text-3xl">ゆくくる beta</h1>
         <p className="text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
         <Link className="rounded border border-primary px-4 py-1 text-primary" href="/my">
           マイページ・ログイン
