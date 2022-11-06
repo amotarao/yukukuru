@@ -38,10 +38,10 @@ const RecordsSection: React.FC<RecordsSectionProps> = ({ className, userId }) =>
         <p>読み込み中</p>
       ) : snapshot ? (
         <div>
-          <h2 className="text-lg mb-4">Records</h2>
+          <h2 className="mb-4 text-lg">Records</h2>
           <CsvExporter className="mb-6" userId={userId} />
           {/* <RecordsBarGraph className="mb-6" snapshot={snapshot} /> */}
-          <div className="border rounded pb-6">
+          <div className="rounded border pb-6">
             <table className="table w-full">
               <thead>
                 <tr className="border-b">
@@ -56,20 +56,20 @@ const RecordsSection: React.FC<RecordsSectionProps> = ({ className, userId }) =>
                 {snapshot.docs.slice(-30).map((doc) => {
                   return (
                     <tr key={doc.id} className="border-b">
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">{doc.get('type')}</td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">{doc.get('type')}</td>
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {(doc.get('durationStart') as Timestamp).toDate().toLocaleString('ja-JP', dateOptions)}
                       </td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {(doc.get('durationEnd') as Timestamp).toDate().toLocaleString('ja-JP', dateOptions)}
                       </td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         <div className="flex items-center">
-                          <TwitterUserIcon className="w-6 h-6 mr-2" src={doc.get('user.photoUrl')} />
+                          <TwitterUserIcon className="mr-2 h-6 w-6" src={doc.get('user.photoUrl')} />
                           <p>@{doc.get('user.screenName')}</p>
                         </div>
                       </td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {doc.get('user.maybeDeletedOrSuspended') ? 'YES' : 'NO'}
                       </td>
                     </tr>
@@ -101,8 +101,8 @@ const WatchesSection: React.FC<WatchesSectionProps> = ({ className, userId }) =>
         <p>読み込み中</p>
       ) : snapshot ? (
         <div>
-          <h2 className="text-lg mb-4">Watches</h2>
-          <div className="border rounded pb-6">
+          <h2 className="mb-4 text-lg">Watches</h2>
+          <div className="rounded border pb-6">
             <table className="table w-full">
               <thead>
                 <tr className="border-b">
@@ -116,14 +116,14 @@ const WatchesSection: React.FC<WatchesSectionProps> = ({ className, userId }) =>
                 {snapshot.docs.slice(-30).map((doc) => {
                   return (
                     <tr key={doc.id} className="border-b">
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">{doc.get('ended') ? 'YES' : 'NO'}</td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">{doc.get('ended') ? 'YES' : 'NO'}</td>
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {(doc.get('getStartDate') as Timestamp).toDate().toLocaleString('ja-JP', dateOptions)}
                       </td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {(doc.get('getEndDate') as Timestamp).toDate().toLocaleString('ja-JP', dateOptions)}
                       </td>
-                      <td className="p-2 px-3 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-2 px-3 text-sm">
                         {(doc.get('followers') as string[]).length.toLocaleString()}
                       </td>
                     </tr>
