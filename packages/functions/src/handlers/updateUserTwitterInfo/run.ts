@@ -35,13 +35,13 @@ export const run = functions
     console.log(`⏳ Got watches and token from Firestore.`);
 
     const client = getClient({
-      access_token_key: token.twitterAccessToken,
-      access_token_secret: token.twitterAccessTokenSecret,
+      accessToken: token.twitterAccessToken,
+      accessSecret: token.twitterAccessTokenSecret,
     });
     const result = await getAccountVerifyCredentials(client);
 
-    if ('errors' in result) {
-      console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`, result.errors);
+    if ('error' in result) {
+      console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`, result.error);
       return;
     }
     console.log(`⏳ Got user info from Twitter.`);
