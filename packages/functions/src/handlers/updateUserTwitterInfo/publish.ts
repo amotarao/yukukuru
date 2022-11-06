@@ -1,3 +1,4 @@
+import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -30,7 +31,7 @@ export const publish = functions
       .get();
 
     const items: Message[] = usersSnap.docs
-      .filter((doc) => !(doc.get('deletedAuth') as boolean | undefined))
+      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
       .map((doc) => doc.id)
       .map((id) => ({ uid: id, publishedAt: now }));
     await publishMessages(topicName, items);

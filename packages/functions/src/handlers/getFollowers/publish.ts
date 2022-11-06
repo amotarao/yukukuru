@@ -36,7 +36,7 @@ export const publish = functions
 
     // publish データ作成・送信
     const messages: Message[] = snapshot.docs
-      .filter((doc) => !(doc.get('deletedAuth') as boolean | undefined))
+      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
       .map((doc) => ({
         uid: doc.id,
         twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
