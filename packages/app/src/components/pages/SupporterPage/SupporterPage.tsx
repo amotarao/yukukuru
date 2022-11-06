@@ -1,12 +1,9 @@
 import { useStripe } from '@stripe/react-stripe-js';
-import React, { useEffect, useState } from 'react';
-import {
-  addCheckoutSession,
-  getActivePlanPrices,
-  getActivePlans,
-  getActiveTaxRates,
-  getOwnActiveSubscriptions,
-} from '../../../modules/firestore/stripe';
+import classNames from 'classnames';
+import React, { useCallback, useMemo } from 'react';
+import { usePlanPrice } from '../../../hooks/usePlanPrice';
+import { useSubscription } from '../../../hooks/useSubscription';
+import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
 
 export type SupporterPageProps = {
@@ -14,66 +11,18 @@ export type SupporterPageProps = {
 };
 
 export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
-  const stripe = useStripe();
-  const [subscriptions, setSubscriptions] = useState<{ status: string; role: string }[]>([]);
-  const [prices, setPrices] = useState<{ id: string; role: string }[]>([]);
-  const [taxRates, setTaxRates] = useState<string[]>([]);
-
-  const supporterPriceId = prices.find((price) => price.role === 'supporter')?.id ?? null;
-  const isSupporter =
-    (subscriptions.find((subscription) => subscription.role === 'supporter')?.status ?? '') === 'active';
-
-  // 自身の subscription を取得
-  useEffect(() => {
-    if (!uid) return;
-    getOwnActiveSubscriptions(uid).then((querySnapshot) => {
-      setSubscriptions(querySnapshot.docs.map((doc) => doc.data() as { status: string; role: string }));
-    });
-  }, [uid]);
-
-  // プランを取得
-  useEffect(() => {
-    getActivePlans().then((querySnapshot) => {
-      querySnapshot.docs.forEach((doc) => {
-        const role = doc.get('role');
-        getActivePlanPrices(doc.ref).then((priceQuerySnapshot) => {
-          priceQuerySnapshot.docs.forEach((doc) => {
-            setPrices((prices) => {
-              return [...prices, { id: doc.id, role }];
-            });
-          });
-        });
-      });
-    });
-  }, []);
-
-  // 税率を取得
-  useEffect(() => {
-    getActiveTaxRates().then((querySnapshot) => {
-      setTaxRates(querySnapshot.docs.map((doc) => doc.id));
-    });
-  }, []);
-
-  const checkoutSupporter = async () => {
-    if (!stripe || !uid || !supporterPriceId) {
-      return;
-    }
-    const sessionId = await addCheckoutSession(uid, supporterPriceId, taxRates).catch(alert);
-    if (sessionId) {
-      stripe.redirectToCheckout({ sessionId });
-    }
-  };
-
-  const portal = async () => {
-    const url = await getPortalLink();
-    window.location.assign(url);
-  };
+  const { isSupporter } = useSubscription(uid);
+  const { planPrices, taxRates } = usePlanPrice();
+  const supporterPriceId = useMemo(
+    () => planPrices.find((price) => price.role === 'supporter')?.id ?? null,
+    [planPrices]
+  );
 
   return (
     <main>
-      <header className="mb-8 px-4 bg-top-bg">
-        <div className="max-w-xl mx-auto py-8">
-          <h1 className="text-4xl mt-4 mb-8 tracking-tight">ゆくくるサポーター</h1>
+      <header className="mb-8 bg-top-bg px-4">
+        <div className="mx-auto max-w-xl py-8">
+          <h1 className="mt-4 mb-8 text-4xl tracking-tight">ゆくくるサポーター</h1>
           <div className="flex flex-col gap-2">
             <p className="text-sm leading-6">
               ゆくくるの開発・運営を支援できる「ゆくくるサポーター」制度をご用意しました
@@ -90,29 +39,79 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
           </div>
           <div className="flex">
             <dt>アカウント切り替え</dt>
-            <dd>○</dd>
+            <dd>可能</dd>
+          </div>
+        </dl>
+        <dl>
+          <div className="flex">
+            <dt>取得頻度</dt>
+            <dd>6時間おき</dd>
+          </div>
+          <div className="flex">
+            <dt>アカウント切り替え</dt>
+            <dd>不可能</dd>
           </div>
         </dl>
       </section>
       <div>
         {isSupporter ? <p>登録済み</p> : <p>未登録</p>}
-        <button
-          className="flex px-4 py-1 rounded border"
-          onClick={() => {
-            checkoutSupporter();
-          }}
-        >
+        <CheckoutButton uid={uid} priceId={supporterPriceId} taxRates={taxRates.map(({ id }) => id)}>
           登録
-        </button>
-        <button
-          className="flex px-4 py-1 rounded border"
-          onClick={() => {
-            portal();
-          }}
-        >
-          登録情報確認・解約など
-        </button>
+        </CheckoutButton>
+        <ConfirmButton>登録情報確認・解約など</ConfirmButton>
       </div>
     </main>
+  );
+};
+
+const CheckoutButton: React.FC<{
+  className?: string;
+  children: React.ReactNode;
+  uid: string | null;
+  priceId: string | null;
+  taxRates: string[];
+}> = ({ className, children, uid, priceId, taxRates }) => {
+  const stripe = useStripe();
+
+  const checkoutSupporter = useCallback(async () => {
+    if (!stripe || !uid || !priceId) {
+      return;
+    }
+    const sessionId = await addCheckoutSession(uid, priceId, taxRates).catch(alert);
+    if (sessionId) {
+      stripe.redirectToCheckout({ sessionId });
+    }
+  }, [stripe, uid, priceId, taxRates]);
+
+  return (
+    <button
+      className={classNames('flex rounded border px-4 py-1', className)}
+      onClick={() => {
+        checkoutSupporter();
+      }}
+    >
+      {children}
+    </button>
+  );
+};
+
+const ConfirmButton: React.FC<{
+  className?: string;
+  children: React.ReactNode;
+}> = ({ className, children }) => {
+  const portal = useCallback(async () => {
+    const url = await getPortalLink();
+    window.location.assign(url);
+  }, []);
+
+  return (
+    <button
+      className={classNames('flex rounded border px-4 py-1', className)}
+      onClick={() => {
+        portal();
+      }}
+    >
+      {children}
+    </button>
   );
 };
