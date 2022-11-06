@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
-import { dayjs } from '../../../modules/dayjs';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
@@ -28,12 +27,6 @@ export const TopPage: React.FC = () => {
           マイページ・ログイン
         </Link>
         <div className="flex flex-col gap-2">
-          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
-            現在、フォロワー数1万人以上のアカウントの
-            <wbr />
-            新規登録を停止しています。
-            <wbr />({dayjs('2021-05-08').format('L')})
-          </p>
           <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ツイートする権限はありませんので
             <wbr />
