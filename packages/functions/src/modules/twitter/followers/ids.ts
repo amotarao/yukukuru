@@ -1,4 +1,4 @@
-import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly, UserFollowerIdsV1Paginator } from 'twitter-api-v2';
 import { twitterClientErrorHandler } from '../error';
 
 export type TwitterGetFollowersIdsParameters = {
@@ -7,15 +7,9 @@ export type TwitterGetFollowersIdsParameters = {
   count?: number;
 };
 
-export type TwitterGetFollowersIdsResponse = {
-  ids: string[];
-  next_cursor: number;
-  next_cursor_str: string;
-  previous_cursor: number;
-  previous_cursor_str: string;
-};
-
-type PickedTwitterGetFollowersIdsResponse = Pick<TwitterGetFollowersIdsResponse, 'ids' | 'next_cursor_str'>;
+export type TwitterGetFollowersIdsResponse = Required<
+  Pick<UserFollowerIdsV1Paginator['data'], 'ids' | 'next_cursor_str'>
+>;
 
 /**
  * 指定したユーザーのフォロワーの IDリストを取得
@@ -27,7 +21,7 @@ type PickedTwitterGetFollowersIdsResponse = Pick<TwitterGetFollowersIdsResponse,
 const getFollowersIdsSingle = (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+): Promise<{ response: TwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
   return client.v1
     .userFollowerIds({
       user_id: userId,
@@ -37,7 +31,7 @@ const getFollowersIdsSingle = (
     })
     .then((res) => {
       const { ids, next_cursor_str } = res.data;
-      const response: PickedTwitterGetFollowersIdsResponse = { ids, next_cursor_str: next_cursor_str || '0' };
+      const response: TwitterGetFollowersIdsResponse = { ids, next_cursor_str: next_cursor_str || '0' };
       return { response };
     })
     .catch(twitterClientErrorHandler);
@@ -55,7 +49,7 @@ const getFollowersIdsSingle = (
 export const getFollowersIds = async (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+): Promise<{ response: TwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -81,7 +75,7 @@ export const getFollowersIds = async (
     }
 
     ids.push(...result.response.ids);
-    nextCursor = result.response.next_cursor_str;
+    nextCursor = result.response.next_cursor_str || '0';
 
     // カーソルが 0 になった場合は、最終地点のため、繰り返し処理を終了する
     if (result.response.next_cursor_str === '0') {
@@ -91,7 +85,7 @@ export const getFollowersIds = async (
     getCount++;
   }
 
-  const response: PickedTwitterGetFollowersIdsResponse = {
+  const response: TwitterGetFollowersIdsResponse = {
     ids,
     next_cursor_str: nextCursor,
   };
