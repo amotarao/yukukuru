@@ -29,9 +29,10 @@ export const publish = functions
       .limit(10)
       .get();
 
-    const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-
-    const items: Message[] = ids.map((id) => ({ uid: id, publishedAt: now }));
+    const items: Message[] = usersSnap.docs
+      .filter((doc) => !(doc.get('deletedAuth') as boolean | undefined))
+      .map((doc) => doc.id)
+      .map((id) => ({ uid: id, publishedAt: now }));
     await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);

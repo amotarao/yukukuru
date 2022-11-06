@@ -2,7 +2,6 @@ import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
-import { log } from '../../utils/log';
 import { Message, topicName } from './_pubsub';
 
 /**
@@ -35,10 +34,10 @@ export const publish = functions
       .where('group', '==', group)
       .get();
 
-    const ids: string[] = snapshot.docs.map((doc) => doc.id);
-    log('checkIntegrity', '', { ids, count: ids.length });
-
-    const items: Message[] = ids.map((id) => ({ uid: id, publishedAt: now }));
+    const items: Message[] = snapshot.docs
+      .filter((doc) => !(doc.get('deletedAuth') as boolean | undefined))
+      .map((doc) => doc.id)
+      .map((id) => ({ uid: id, publishedAt: now }));
     await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);
