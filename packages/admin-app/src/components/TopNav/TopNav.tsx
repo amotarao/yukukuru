@@ -29,9 +29,7 @@ export const TopNav: React.FC<TopNavProps> = ({ className }) => {
       )}
     >
       <h1 className="text-xl">
-        <Link href="/">
-          <a>Yukukuru Admin</a>
-        </Link>
+        <Link href="/">Yukukuru Admin</Link>
       </h1>
       {loading ? null : user ? (
         <button className="rounded bg-blue-700 px-3 py-1 text-base text-white" onClick={logout}>
