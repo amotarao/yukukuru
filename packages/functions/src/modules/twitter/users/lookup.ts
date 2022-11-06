@@ -12,32 +12,27 @@ export type TwitterGetUsersLookupParameters = {
  * 100人まで 取得可能
  * 15分につき 300回 実行可能
  */
-const getUsersLookupSingle = async (
+const getUsersLookupSingle = (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
 ): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
-  const response = await client.v2
+  return client.v2
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
     })
+    .then((response) => ({
+      response: response.data.map(
+        (user): TwitterUser => ({
+          id_str: user.id,
+          screen_name: user.username,
+          name: user.name,
+          profile_image_url_https: user.profile_image_url || '',
+          followers_count: user.public_metrics?.followers_count || 0,
+          verified: user.verified || false,
+        })
+      ),
+    }))
     .catch(twitterClientErrorHandler);
-
-  if ('error' in response) {
-    return response;
-  }
-
-  return {
-    response: response.data.map(
-      (user): TwitterUser => ({
-        id_str: user.id,
-        screen_name: user.username,
-        name: user.name,
-        profile_image_url_https: user.profile_image_url || '',
-        followers_count: user.public_metrics?.followers_count || 0,
-        verified: user.verified || false,
-      })
-    ),
-  };
 };
 
 /**
