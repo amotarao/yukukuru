@@ -1,7 +1,7 @@
 import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
 import * as admin from 'firebase-admin';
 import { firestore } from '../../firebase';
-import { TwitterUserObject } from '../../twitter';
+import { TwitterUser } from '../../twitter';
 import { bulkWriterErrorHandler } from '../error';
 
 const collection = firestore.collection('twUsers');
@@ -13,7 +13,7 @@ const collection = firestore.collection('twUsers');
  * @param max 1回で保存する最大ドキュメント数
  * @param count 実行回数
  */
-const setTwUsersParallel = async (users: TwitterUserObject[], max = 100, count = 0): Promise<void> => {
+const setTwUsersParallel = async (users: TwitterUser[], max = 100, count = 0): Promise<void> => {
   const currentUsers = users.slice(0, max);
   console.log(`⏳ Starting set ${currentUsers.length} twUsers documents ${count} times.`);
 
@@ -47,7 +47,7 @@ const setTwUsersParallel = async (users: TwitterUserObject[], max = 100, count =
  *
  * @param users 保存するユーザー情報
  */
-export const setTwUsers = async (users: TwitterUserObject[]): Promise<void> => {
+export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
   await setTwUsersParallel(users, 400);
 };
 
