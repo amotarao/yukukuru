@@ -1,7 +1,17 @@
 import { ApiPartialResponseError, ApiRequestError, ApiResponseError, EApiV1ErrorCode } from 'twitter-api-v2';
 
-const logError = (error: ApiRequestError | ApiPartialResponseError | ApiResponseError): void => {
-  console.error(`❗️[Twitter Error] Failed to run Twitter API: ${error.message}.`);
+const logError = (error: ApiRequestError | ApiPartialResponseError | ApiResponseError | unknown): void => {
+  if (
+    error instanceof ApiRequestError ||
+    error instanceof ApiPartialResponseError ||
+    error instanceof ApiResponseError
+  ) {
+    console.error(`❗️[Twitter Error] Failed to run Twitter API: ${error.message}.`);
+    return;
+  }
+
+  console.error(`❗️[Twitter Error] Failed to run Twitter API: check next line.`);
+  console.error(error);
 };
 
 export const twitterClientErrorHandler = (
