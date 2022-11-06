@@ -38,7 +38,7 @@ export const publish = functions
     const messages: Message[] = snapshot.docs.map((doc) => ({
       uid: doc.id,
       active: doc.get('active') as UserData['active'],
-      deletedAuth: doc.get('deletedAuth') as UserData['deletedAuth'],
+      deletedAuth: (doc.get('deletedAuth') as UserData['deletedAuth']) || false,
       lastUpdated: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
       followersCount: doc.get('twitter.followersCount') as UserData['twitter']['followersCount'],
       publishedAt: now,

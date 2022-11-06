@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
-import * as Twitter from 'twitter';
-import { TwitterUserObject } from '..';
-import { TwitterClientError, twitterClientErrorHandler } from '../error';
+import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
+import { TwitterUser } from '..';
+import { twitterClientErrorHandler } from '../error';
 
 export type TwitterGetUsersLookupParameters = {
   usersId: string[];
@@ -13,16 +13,25 @@ export type TwitterGetUsersLookupParameters = {
  * 15分につき 300回 実行可能
  */
 const getUsersLookupSingle = (
-  client: Twitter,
+  client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: TwitterUserObject[] } | { errors: TwitterClientError[] }> => {
-  return client
-    .get('users/lookup', {
-      user_id: usersId.join(','),
+): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
+  return client.v2
+    .users(usersId, {
+      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
     })
-    .then((response) => {
-      return { response: response as TwitterUserObject[] };
-    })
+    .then((response) => ({
+      response: response.data.map(
+        (user): TwitterUser => ({
+          id_str: user.id,
+          screen_name: user.username,
+          name: user.name,
+          profile_image_url_https: user.profile_image_url || '',
+          followers_count: user.public_metrics?.followers_count || 0,
+          verified: user.verified || false,
+        })
+      ),
+    }))
     .catch(twitterClientErrorHandler);
 };
 
@@ -31,40 +40,47 @@ const getUsersLookupSingle = (
  * 15分につき 30,000人まで 取得可能
  */
 export const getUsersLookup = async (
-  client: Twitter,
+  client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: TwitterUserObject[] } | { errors: TwitterClientError[] }> => {
-  const users: TwitterUserObject[] = [];
-  const errors: TwitterClientError[] = [];
+): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
+  const lookup = _.chunk(_.uniq(usersId), 100).map(
+    async (usersId): Promise<{ users: TwitterUser[]; error: null } | { users: null; error: ApiResponseError }> => {
+      const result = await getUsersLookupSingle(client, { usersId });
 
-  const lookup = _.chunk(_.uniq(usersId), 100).map(async (usersId) => {
-    const result = await getUsersLookupSingle(client, { usersId });
+      if ('error' in result) {
+        return { users: null, error: result.error };
+      }
+      return { users: result.response, error: null };
+    }
+  );
+  const lookuped = await Promise.all(lookup);
 
-    if ('errors' in result) {
-      errors.push(...result.errors);
-      return;
+  const users: TwitterUser[] = [];
+  const errors: ApiResponseError[] = [];
+
+  for (const single of lookuped) {
+    if (single.users) {
+      users.push(...single.users);
+      continue;
     }
 
-    result.response.forEach((res) => {
-      const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
-      const data: TwitterUserObject = {
-        id_str,
-        screen_name,
-        name,
-        profile_image_url_https,
-        followers_count,
-        verified,
-      };
-      users.push(data);
-    });
-    return;
-  });
-
-  await Promise.all(lookup);
-
-  if (users.length || !errors.length) {
-    return { response: users };
+    errors.push(single.error);
+    break;
   }
 
-  return { errors };
+  if (users.length > 0) {
+    return {
+      response: users,
+    };
+  }
+
+  if (errors.length === 0) {
+    return {
+      response: [],
+    };
+  }
+
+  return {
+    error: errors[0],
+  };
 };

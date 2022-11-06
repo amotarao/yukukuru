@@ -1,7 +1,9 @@
-export const bulkWriterErrorHandler = (error: FirebaseFirestore.BulkWriterError): boolean => {
+import { BulkWriterError, GrpcStatus } from '@google-cloud/firestore';
+
+export const bulkWriterErrorHandler = (error: BulkWriterError): boolean => {
   const MAX_RETRY_ATTEMPTS = 5;
 
-  if (error.code === FirebaseFirestore.GrpcStatus.UNAVAILABLE && error.failedAttempts < MAX_RETRY_ATTEMPTS) {
+  if (error.code === GrpcStatus.UNAVAILABLE && error.failedAttempts < MAX_RETRY_ATTEMPTS) {
     console.log(
       `[BulkWriter]: Retrying ${error.operationType} document for [${error.documentRef.path}] ${error.failedAttempts} time.`
     );

@@ -1,71 +1,45 @@
-export type TwitterClientError = {
-  code: number;
-  message: string;
+import { ApiPartialResponseError, ApiRequestError, ApiResponseError, EApiV1ErrorCode } from 'twitter-api-v2';
+
+const logError = (error: ApiRequestError | ApiPartialResponseError | ApiResponseError): void => {
+  console.error(`❗️[Twitter Error] Failed to run Twitter API: ${error.message}.`);
 };
 
-const logError = (error: unknown): void => {
-  try {
-    const detail = JSON.stringify(error);
-    console.error(`❗️[Twitter Error] Failed to run Twitter API: ${detail}`);
-  } catch (e) {
-    console.error(`❗️[Twitter Error] Failed to run Twitter API. (Check next log.)`);
-    console.error(error);
-  }
-};
-
-export const twitterClientErrorHandler = (error: unknown): { errors: TwitterClientError[] } => {
+export const twitterClientErrorHandler = (
+  error: ApiRequestError | ApiPartialResponseError | ApiResponseError
+): { error: ApiResponseError } => {
   logError(error);
 
-  if (Array.isArray(error)) {
-    return { errors: error as TwitterClientError[] };
+  if (error instanceof ApiRequestError || error instanceof ApiPartialResponseError) {
+    throw error;
   }
-  return { errors: [error] as TwitterClientError[] };
+
+  return { error };
 };
 
 /**
  * エラーコードを確認
  *
- * @param errors エラーリスト
+ * @param error エラー
  * @param code エラーコード
  *
  * @see https://developer.twitter.com/ja/docs/basics/response-codes
  */
-const checkError = (errors: TwitterClientError[], code: number) => {
-  return errors.some((error) => error.code === code);
+const checkError = (error: ApiResponseError, code: number): boolean => {
+  return error.hasErrorCode(code);
 };
 
-/**
- * No user matches for specified terms.
- *
- * @param errors エラーリスト
- */
-export const checkNoUserMatches = (errors: TwitterClientError[]): boolean => {
-  return checkError(errors, 17);
+export const checkNoUserMatches = (error: ApiResponseError): boolean => {
+  return checkError(error, EApiV1ErrorCode.NoUserMatch);
 };
 
-/**
- * Rate limit exceeded
- *
- * @param errors エラーリスト
- */
-export const checkRateLimitExceeded = (errors: TwitterClientError[]): boolean => {
-  return checkError(errors, 88);
+export const checkRateLimitExceeded = (error: ApiResponseError): boolean => {
+  return checkError(error, EApiV1ErrorCode.RateLimitExceeded);
 };
 
-/**
- * Invalid or expired token
- *
- * @param errors エラーリスト
- */
-export const checkInvalidOrExpiredToken = (errors: TwitterClientError[]): boolean => {
-  return checkError(errors, 89);
+export const checkInvalidOrExpiredToken = (error: ApiResponseError): boolean => {
+  return checkError(error, EApiV1ErrorCode.InvalidOrExpiredToken);
 };
 
-/**
- * To protect our users from spam and other malicious activity, this account is temporarily locked.
- *
- * @param errors エラーリスト
- */
-export const checkTemporarilyLocked = (errors: TwitterClientError[]): boolean => {
-  return checkError(errors, 326);
+export const checkTemporarilyLocked = (error: ApiResponseError): boolean => {
+  return checkError(error, EApiV1ErrorCode.AccountLocked);
 };

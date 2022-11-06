@@ -24,21 +24,19 @@ export const TopNav: React.FC<TopNavProps> = ({ className }) => {
   return (
     <nav
       className={classNames(
-        'col-span-2 flex items-center justify-between px-8 bg-white border-b border-b-blue-100',
+        'col-span-2 flex items-center justify-between border-b border-b-blue-100 bg-white px-8',
         className
       )}
     >
       <h1 className="text-xl">
-        <Link href="/">
-          <a>Yukukuru Admin</a>
-        </Link>
+        <Link href="/">Yukukuru Admin</Link>
       </h1>
       {loading ? null : user ? (
-        <button className="px-3 py-1 rounded bg-blue-700 text-white text-base" onClick={logout}>
+        <button className="rounded bg-blue-700 px-3 py-1 text-base text-white" onClick={logout}>
           ログアウト
         </button>
       ) : (
-        <button className="px-3 py-1 rounded bg-blue-700 text-white text-base" onClick={login}>
+        <button className="rounded bg-blue-700 px-3 py-1 text-base text-white" onClick={login}>
           ログイン
         </button>
       )}

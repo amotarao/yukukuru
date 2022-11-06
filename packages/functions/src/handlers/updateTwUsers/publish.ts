@@ -1,8 +1,8 @@
+import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
-import { log } from '../../utils/log';
 import { Message, topicName } from './_pubsub';
 
 /** Twitter ユーザー情報更新 定期実行 */
@@ -30,10 +30,10 @@ export const publish = functions
       .limit(5)
       .get();
 
-    const ids: string[] = usersSnap.docs.map((doc) => doc.id);
-    log('updateTwUsers', '', { ids, count: ids.length });
-
-    const items: Message[] = ids.map((id) => ({ uid: id, publishedAt: now }));
+    const items: Message[] = usersSnap.docs
+      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
+      .map((doc) => doc.id)
+      .map((id) => ({ uid: id, publishedAt: now }));
     await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);

@@ -33,10 +33,6 @@ const NoItemView: React.FC = () => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
-      <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
-        現在、フォロワー数1万人以上のアカウントの新規登録を停止しています。(
-        {dayjs('2021-05-08').format('L')})
-      </p>
     </div>
   );
 };

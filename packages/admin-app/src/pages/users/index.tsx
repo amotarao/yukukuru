@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { getFirestore, collection, query, orderBy, limit, OrderByDirection } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -44,7 +43,7 @@ const Page: NextPage = () => {
     <p>読み込み中</p>
   ) : snapshot ? (
     <div>
-      <div className="border rounded pb-6">
+      <div className="rounded border pb-6">
         <table className="table w-full">
           <thead>
             <tr className="border-b">
@@ -110,22 +109,23 @@ const Page: NextPage = () => {
             {snapshot.docs.map((doc) => {
               return (
                 <tr key={doc.id} className="border-b">
-                  <td className="p-2 px-3 text-sm whitespace-nowrap">{doc.get('active') ? 'YES' : 'NO'}</td>
-                  <td className="p-2 px-3 text-sm whitespace-nowrap font-mono">{doc.id}</td>
-                  <td className="p-2 px-3 text-sm whitespace-nowrap font-mono">
+                  <td className="whitespace-nowrap p-2 px-3 text-sm">{doc.get('active') ? 'YES' : 'NO'}</td>
+                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">{doc.id}</td>
+                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">
                     <div className="flex items-center">
-                      <TwitterUserIcon className="w-6 h-6 mr-2" src={doc.get('twitter.photoUrl')} />
+                      <TwitterUserIcon className="mr-2 h-6 w-6" src={doc.get('twitter.photoUrl')} />
                       <p>@{doc.get('twitter.screenName')}</p>
                     </div>
                   </td>
-                  <td className="p-2 px-3 text-sm text-right whitespace-nowrap font-mono">
+                  <td className="whitespace-nowrap p-2 px-3 text-right font-mono text-sm">
                     {(doc.get('twitter.followersCount') as number).toLocaleString()}
                   </td>
                   <td className="px-3">
-                    <Link href={`/users/${doc.id}`}>
-                      <a className={classNames('inline-block text-sm px-3 py-1 rounded bg-slate-700 text-slate-50')}>
-                        More
-                      </a>
+                    <Link
+                      className={'inline-block rounded bg-slate-700 px-3 py-1 text-sm text-slate-50'}
+                      href={`/users/${doc.id}`}
+                    >
+                      More
                     </Link>
                   </td>
                 </tr>
