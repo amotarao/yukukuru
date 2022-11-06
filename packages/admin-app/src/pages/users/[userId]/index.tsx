@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { collection, query, orderBy, limitToLast, Timestamp, CollectionReference } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -31,7 +30,7 @@ const RecordsSection: React.FC<RecordsSectionProps> = ({ className, userId }) =>
   const [snapshot, loading, error] = useCollectionOnce(q);
 
   return (
-    <section className={classNames(className)}>
+    <section className={className}>
       {error ? (
         <pre>{error.message}</pre>
       ) : loading ? (

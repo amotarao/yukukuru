@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { getFirestore, collection, query, orderBy, limit, OrderByDirection } from 'firebase/firestore';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -123,9 +122,7 @@ const Page: NextPage = () => {
                   </td>
                   <td className="px-3">
                     <Link href={`/users/${doc.id}`}>
-                      <a className={classNames('inline-block rounded bg-slate-700 px-3 py-1 text-sm text-slate-50')}>
-                        More
-                      </a>
+                      <a className={'inline-block rounded bg-slate-700 px-3 py-1 text-sm text-slate-50'}>More</a>
                     </Link>
                   </td>
                 </tr>
