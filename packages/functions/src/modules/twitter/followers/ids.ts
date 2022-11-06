@@ -28,16 +28,16 @@ const getFollowersIdsSingle = (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
 ): Promise<{ response: PickedTwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
-  return client
-    .get('followers/ids', {
+  return client.v1
+    .userFollowerIds({
       user_id: userId,
       cursor,
       count,
       stringify_ids: true,
     })
     .then((res) => {
-      const { ids, next_cursor_str } = res;
-      const response: PickedTwitterGetFollowersIdsResponse = { ids, next_cursor_str };
+      const { ids, next_cursor_str } = res.data;
+      const response: PickedTwitterGetFollowersIdsResponse = { ids, next_cursor_str: next_cursor_str || '0' };
       return { response };
     })
     .catch(twitterClientErrorHandler);

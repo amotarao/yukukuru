@@ -8,8 +8,8 @@ import { twitterClientErrorHandler } from '../error';
 export const getAccountVerifyCredentials = (
   client: TwitterApiReadOnly
 ): Promise<{ response: TwitterUser } | { error: ApiResponseError }> => {
-  return client
-    .get('account/verify_credentials', {
+  return client.v1
+    .verifyCredentials({
       include_entities: true,
       skip_status: false,
       include_email: false,
