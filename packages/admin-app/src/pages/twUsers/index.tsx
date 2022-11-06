@@ -43,7 +43,7 @@ const Page: NextPage = () => {
     <p>読み込み中</p>
   ) : snapshot ? (
     <div>
-      <div className="border rounded pb-6">
+      <div className="rounded border pb-6">
         <table className="table w-full">
           <thead>
             <tr className="border-b">
@@ -107,14 +107,14 @@ const Page: NextPage = () => {
             {snapshot.docs.map((doc) => {
               return (
                 <tr key={doc.id} className="border-b">
-                  <td className="p-2 px-3 text-sm whitespace-nowrap font-mono">{doc.id}</td>
-                  <td className="p-2 px-3 text-sm whitespace-nowrap font-mono">
+                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">{doc.id}</td>
+                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">
                     <div className="flex items-center">
-                      <TwitterUserIcon className="w-6 h-6 mr-2" src={doc.get('photoUrl')} />
+                      <TwitterUserIcon className="mr-2 h-6 w-6" src={doc.get('photoUrl')} />
                       <p>@{doc.get('screenName')}</p>
                     </div>
                   </td>
-                  <td className="p-2 px-3 text-sm text-right whitespace-nowrap font-mono">
+                  <td className="whitespace-nowrap p-2 px-3 text-right font-mono text-sm">
                     {(doc.get('lastUpdated') as Timestamp | undefined)?.toDate().toLocaleString('ja-JP', dateOptions) ??
                       ''}
                   </td>

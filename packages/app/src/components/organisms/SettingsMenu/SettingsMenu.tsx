@@ -1,6 +1,6 @@
-import Switch from '@mui/material/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Switch from 'react-switch';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 
@@ -18,47 +18,53 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
       <ul>
         <li className="border-b border-b-back-2">
           <div className="flex items-center">
-            <p className="grow block w-full px-4 py-3 text-left">ダークテーマ</p>
+            <p className="block w-full grow px-4 py-3 text-left">ダークテーマ</p>
             <Switch
               className="mr-4"
               checked={theme === 'dark'}
               onChange={() => {
                 setTheme(theme === 'dark' ? 'default' : 'dark');
               }}
-              color="primary"
-              inputProps={{ 'aria-label': 'ダークテーマにする' }}
+              onColor="#65b2ff"
+              onHandleColor="#2196f3"
+              handleDiameter={24}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={16}
+              width={40}
+              aria-label="ダークテーマにする"
             />
           </div>
         </li>
         <li className="border-b border-b-back-2">
-          <Link href="/">
-            <a
-              className="grow block w-full px-4 py-3 text-left"
-              onClick={async (e) => {
-                e.preventDefault();
-                await signOut();
-                router.push('/');
-              }}
-            >
-              <p>ログアウト</p>
-            </a>
+          <Link
+            className="block w-full grow px-4 py-3 text-left"
+            href="/"
+            onClick={async (e) => {
+              e.preventDefault();
+              await signOut();
+              router.push('/');
+            }}
+          >
+            <p>ログアウト</p>
           </Link>
         </li>
         <li className="border-b border-b-back-2">
-          <Link href="/my">
-            <a
-              className="grow block w-full px-4 py-3 text-left"
-              onClick={async (e) => {
-                e.preventDefault();
-                await signIn();
-                router.push('/my');
-              }}
-            >
-              <p>
-                別のアカウントでログイン
-                <span className="block mt-1 text-xs">Twitterでアカウントを切り替えたあとに実行</span>
-              </p>
-            </a>
+          <Link
+            className="block w-full grow px-4 py-3 text-left"
+            href="/my"
+            onClick={async (e) => {
+              e.preventDefault();
+              await signIn();
+              router.push('/my');
+            }}
+          >
+            <p>
+              別のアカウントでログイン
+              <span className="mt-1 block text-xs">Twitterでアカウントを切り替えたあとに実行</span>
+            </p>
           </Link>
         </li>
       </ul>

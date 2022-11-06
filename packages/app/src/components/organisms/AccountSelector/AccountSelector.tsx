@@ -1,9 +1,8 @@
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
+import { Icon } from '../../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;
@@ -36,25 +35,28 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     <div className={className}>
       <button
         ref={switchRef}
-        className={classNames("flex items-center max-w-36 sm:max-w-48 mx-auto p-1 rounded-full bg-back shadow-sm shadow-shadow", !active && 'cursor-default')}
+        className={classNames(
+          'max-w-36 sm:max-w-48 mx-auto flex items-center rounded-full bg-back p-1 shadow-sm shadow-shadow',
+          !active && 'cursor-default'
+        )}
         onClick={() => {
           active && setShown(!shown);
         }}
       >
         <TwitterUserIcon
-          className="w-6 sm:w-8 h-6 sm:h-8 mr-2 rounded-full"
+          className="mr-2 h-6 w-6 rounded-full sm:h-8 sm:w-8"
           src={currentAccount?.twitter.photoUrl ?? ''}
         />
-        <span className="flex-1 mr-2 text-xs sm:text-sm text-center line-clamp-1">
+        <span className="mr-2 flex-1 text-center text-xs line-clamp-1 sm:text-sm">
           @{currentAccount?.twitter.screenName ?? ''}
         </span>
-        {active && <KeyboardArrowDownIcon className="text-base" />}
+        {active && <Icon className="text-base" type="arrow_down" />}
       </button>
       {shown && (
-        <div className="absolute flex justify-center w-full p-4">
+        <div className="absolute flex w-full justify-center p-4">
           <div
             ref={modalRef}
-            className="w-10/12 sm:w-80 max-h-64 overflow-y-auto rounded-lg bg-back shadow shadow-shadow"
+            className="max-h-64 w-10/12 overflow-y-auto rounded-lg bg-back shadow shadow-shadow sm:w-80"
             tabIndex={0}
             onBlur={(e) => {
               if (e.relatedTarget === switchRef.current) {
@@ -69,27 +71,31 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
               return (
                 <button
                   key={account.id}
-                  className="flex items-center w-full mx-auto p-4 py-2 border-b border-b-shadow last:border-b-0 text-left"
+                  className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-2 text-left last:border-b-0"
                   onClick={() => {
                     onChange(account.id);
                     setShown(false);
                   }}
                 >
-                  <TwitterUserIcon className="w-8 h-8 mr-2 rounded-full" src={account.twitter.photoUrl} />
-                  <span className="flex-1 text-xs sm:text-sm line-clamp-1">@{account.twitter.screenName}</span>
-                  {account.id === currentAccount?.id && <CheckCircleIcon className="ml-2 text-base text-primary" />}
+                  <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
+                  <span className="flex-1 text-xs line-clamp-1 sm:text-sm">@{account.twitter.screenName}</span>
+                  {account.id === currentAccount?.id && (
+                    <Icon className="ml-2 text-base text-primary" type="check_circle" />
+                  )}
                 </button>
               );
             })}
             {/* ToDo: リンク追加 */}
-            {false && <button
-              className="flex items-center w-full mx-auto p-4 py-3 border-b border-b-shadow last:border-b-0 text-left text-sm text-primary"
-              onClick={() => {
-                setShown(false);
-              }}
-            >
-              アカウントを追加
-            </button>}
+            {false && (
+              <button
+                className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
+                onClick={() => {
+                  setShown(false);
+                }}
+              >
+                アカウントを追加
+              </button>
+            )}
           </div>
         </div>
       )}

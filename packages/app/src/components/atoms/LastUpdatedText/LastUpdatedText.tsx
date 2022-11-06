@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { dayjs } from '../../../modules/dayjs';
 
 export type LastUpdatedTextProps = {
   className: string;

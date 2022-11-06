@@ -28,21 +28,13 @@ export const initialize = functions
     const client = getClient();
     const result = await getUsersLookup(client, { usersId: [twitterId] });
 
-    if ('errors' in result || result.response.length !== 1) {
+    if ('error' in result || result.response.length !== 1) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
     }
 
     const twitter = result.response[0];
-    const followersCount = twitter.followers_count;
-
-    // フォロワー 10,000人以上で作成キャンセル (一時的)
-    if (followersCount >= 10000) {
-      await auth.deleteUser(uid);
-      console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Over 10,000 followers.`);
-      return;
-    }
 
     await initializeUser(uid, {
       id: twitter.id_str,

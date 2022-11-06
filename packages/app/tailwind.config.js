@@ -1,6 +1,7 @@
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: ['./src/pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
-  plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     screens: {
       sm: '640px',
@@ -25,4 +26,12 @@ module.exports = {
       },
     },
   },
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    // where:... で :where(...) セレクターを生成するプラグイン
+    // 導入経緯・参考: https://zenn.dev/amon/articles/a2f7b7aeecf82e
+    plugin(({ addVariant }) => {
+      addVariant('where', ':where(&)');
+    }),
+  ],
 };
