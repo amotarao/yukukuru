@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
 import { TwitterUser } from '..';
 import { twitterClientErrorHandler } from '../error';
 
@@ -20,18 +20,30 @@ const getUsersLookupSingle = (
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
     })
-    .then((response) => ({
-      response: response.data.map(
-        (user): TwitterUser => ({
-          id_str: user.id,
-          screen_name: user.username,
-          name: user.name,
-          profile_image_url_https: user.profile_image_url || '',
-          followers_count: user.public_metrics?.followers_count || 0,
-          verified: user.verified || false,
-        })
-      ),
-    }))
+    .then((response) => {
+      // リクエストした全アカウントが存在しない場合、data フィールドが存在しない
+      // パッケージで対応していないので、キャストしている
+      const data = response.data as UserV2[] | undefined;
+
+      if (!data) {
+        return {
+          response: [],
+        };
+      }
+
+      return {
+        response: data.map(
+          (user): TwitterUser => ({
+            id_str: user.id,
+            screen_name: user.username,
+            name: user.name,
+            profile_image_url_https: user.profile_image_url || '',
+            followers_count: user.public_metrics?.followers_count || 0,
+            verified: user.verified || false,
+          })
+        ),
+      };
+    })
     .catch(twitterClientErrorHandler);
 };
 
