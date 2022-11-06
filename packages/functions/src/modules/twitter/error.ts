@@ -25,13 +25,13 @@ export const twitterClientErrorHandler = (
 /**
  * エラーコードを確認
  *
- * @param errors エラーリスト
+ * @param error エラー
  * @param code エラーコード
  *
  * @see https://developer.twitter.com/ja/docs/basics/response-codes
  */
 const checkError = (error: ApiResponseError, code: number): boolean => {
-  return error.data.errors?.some((error) => 'code' in error && error.code === code) ?? false;
+  return error.hasErrorCode(code);
 };
 
 /**
