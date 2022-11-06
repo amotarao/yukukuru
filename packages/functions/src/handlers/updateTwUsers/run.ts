@@ -45,7 +45,7 @@ export const run = functions
     const result = await getUsersLookup(client, { usersId: followers });
 
     if ('error' in result) {
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`, result.error);
+      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got ${result.response.length} users from Twitter.`);
