@@ -1,9 +1,9 @@
+import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
-import { log } from '../../utils/log';
-import { Message } from './_pubsub';
+import { Message, topicName } from './_pubsub';
 
 /**
  * 整合性チェック 定期実行
@@ -35,11 +35,11 @@ export const publish = functions
       .where('group', '==', group)
       .get();
 
-    const ids: string[] = snapshot.docs.map((doc) => doc.id);
-    log('checkIntegrity', '', { ids, count: ids.length });
-
-    const items: Message[] = ids.map((id) => ({ uid: id, publishedAt: now }));
-    await publishMessages('checkIntegrity', items);
+    const items: Message[] = snapshot.docs
+      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
+      .map((doc) => doc.id)
+      .map((id) => ({ uid: id, publishedAt: now }));
+    await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);
   });

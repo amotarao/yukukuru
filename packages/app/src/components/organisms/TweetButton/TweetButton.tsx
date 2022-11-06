@@ -1,5 +1,5 @@
+import classNames from 'classnames';
 import { Share } from 'react-twitter-widgets';
-import * as style from './style';
 
 interface TweetButtonProps {
   className?: string;
@@ -10,7 +10,10 @@ export const TweetButton: React.FC<TweetButtonProps> = ({ className, size = 'nor
   const isNormal = size === 'normal';
 
   return (
-    <div className={className} css={style.wrapper} data-size={isNormal ? undefined : size}>
+    <div
+      className={classNames(className, isNormal ? 'h-[20px]' : 'h-[28px]', '[&_iframe]:block')}
+      data-size={isNormal ? undefined : size}
+    >
       <Share
         url="https://yukukuru.app"
         options={{

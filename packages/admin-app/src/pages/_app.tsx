@@ -12,7 +12,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   const [user, loading, error] = useAuthState(auth);
 
   return (
-    <div className="grid grid-cols-[240px_1fr] grid-rows-[56px_1fr] min-h-screen">
+    <div className="grid min-h-screen grid-cols-[240px_1fr] grid-rows-[56px_1fr]">
       <TopNav className="sticky top-0" />
       <SideNav />
       <div className="px-8 py-10">

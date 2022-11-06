@@ -56,19 +56,12 @@
 
 .recordHead {
   flex: 0 0 100%;
-
-  *:not(nav) + & {
-    margin-top: 40px;
-
-    @media screen and (min-width: 640px) {
-      margin-top: 80px;
-    }
-  }
 }
 
 .userSection {
   flex: 1 0 300px;
   display: flex;
+  flex-direction: column;
   position: relative;
   pointer-events: none;
 
@@ -82,7 +75,6 @@
         transparent 50%
       )
       center center/100% 2px no-repeat;
-    justify-content: flex-start;
 
     &::before {
       background: var(--yuku);
@@ -99,7 +91,6 @@
         transparent 50%
       )
       center center/100% 2px no-repeat;
-    justify-content: flex-end;
 
     &::before {
       background: var(--kuru);
@@ -124,7 +115,7 @@
   &[data-type='yuku'] + &[data-type='kuru'],
   &[data-type='kuru'] + &[data-type='yuku'] {
     @media screen and (min-width: 640px) {
-      margin-top: -64px;
+      margin-top: -44px;
     }
   }
 

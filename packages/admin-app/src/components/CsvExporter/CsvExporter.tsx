@@ -35,13 +35,13 @@ const Exporter: React.FC<ExporterProps> = ({ userId }) => {
   }, [storageRef]);
 
   return error ? (
-    <p className="inline-block px-4 py-1 rounded bg-gray-500 text-white text-sm">{error.message}</p>
+    <p className="inline-block rounded bg-gray-500 px-4 py-1 text-sm text-white">{error.message}</p>
   ) : loading ? (
-    <p className="inline-block px-4 py-1 rounded bg-gray-500 text-white text-sm">読み込み中</p>
+    <p className="inline-block rounded bg-gray-500 px-4 py-1 text-sm text-white">読み込み中</p>
   ) : !snapshot || !downloadUrl ? (
-    <p className="inline-block px-4 py-1 rounded bg-gray-500 text-white text-sm">準備中</p>
+    <p className="inline-block rounded bg-gray-500 px-4 py-1 text-sm text-white">準備中</p>
   ) : (
-    <a className="inline-block px-4 py-1 rounded bg-blue-500 text-white text-sm" href={downloadUrl}>
+    <a className="inline-block rounded bg-blue-500 px-4 py-1 text-sm text-white" href={downloadUrl}>
       CSV ダウンロード
     </a>
   );
@@ -61,7 +61,7 @@ export const CsvExporter: React.FC<CsvExporterProps> = ({ className, userId }) =
         <Exporter userId={userId} />
       ) : (
         <button
-          className="inline-block px-4 py-1 rounded bg-blue-500 text-white text-sm"
+          className="inline-block rounded bg-blue-500 px-4 py-1 text-sm text-white"
           onClick={() => {
             setShownExporter(true);
           }}

@@ -1,6 +1,5 @@
-import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Link from 'next/link';
+import { Icon } from '../../shared/Icon';
 import styles from './styles.module.scss';
 
 export type NavType = 'my' | 'settings';
@@ -25,27 +24,30 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
   };
 
   return (
-    <nav className="fixed left-0 bottom-0 z-20 w-full bg-back border-t border-t-shadow">
-      <ul className="flex justify-center max-w-md sm:max-w-xl mx-auto">
-        <li className="flex-auto w-1/2">
-          <Link href="/my">
-            <a className={styles.button} aria-current={active === 'my' && 'page'} data-type="my" onClick={onClick}>
-              <HomeIcon className="text-2xl" />
-              ホーム
-            </a>
+    <nav className="fixed left-0 bottom-0 z-20 w-full border-t border-t-shadow bg-back">
+      <ul className="mx-auto flex max-w-md justify-center sm:max-w-xl">
+        <li className="w-1/2 flex-auto">
+          <Link
+            className={styles.button}
+            href="/my"
+            aria-current={active === 'my' && 'page'}
+            data-type="my"
+            onClick={onClick}
+          >
+            <Icon className="text-2xl" type="home" />
+            ホーム
           </Link>
         </li>
-        <li className="flex-auto w-1/2">
-          <Link href="/settings">
-            <a
-              className={styles.button}
-              aria-current={active === 'settings' && 'page'}
-              data-type="settings"
-              onClick={onClick}
-            >
-              <SettingsIcon className="text-2xl" />
-              設定
-            </a>
+        <li className="w-1/2 flex-auto">
+          <Link
+            className={styles.button}
+            href="/settings"
+            aria-current={active === 'settings' && 'page'}
+            data-type="settings"
+            onClick={onClick}
+          >
+            <Icon className="text-2xl" type="cog" />
+            設定
           </Link>
         </li>
       </ul>

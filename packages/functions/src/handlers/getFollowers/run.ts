@@ -87,8 +87,8 @@ export const run = functions
 
     // フォロワーIDリストを取得
     const client = getClient({
-      access_token_key: token.twitterAccessToken,
-      access_token_secret: token.twitterAccessTokenSecret,
+      accessToken: token.twitterAccessToken,
+      accessSecret: token.twitterAccessTokenSecret,
     });
     const result = await getFollowersIds(client, {
       userId: twitterId,
@@ -96,8 +96,8 @@ export const run = functions
       count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
-    if ('errors' in result) {
-      if (checkInvalidOrExpiredToken(result.errors)) {
+    if ('error' in result) {
+      if (checkInvalidOrExpiredToken(result.error)) {
         await setTokenInvalid(uid);
       }
 

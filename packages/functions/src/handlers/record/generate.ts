@@ -20,18 +20,18 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   }
 
   const client = getClient({
-    access_token_key: token.twitterAccessToken,
-    access_token_secret: token.twitterAccessTokenSecret,
+    accessToken: token.twitterAccessToken,
+    accessSecret: token.twitterAccessTokenSecret,
   });
   const result = await getUsersLookup(client, { usersId: userIds });
 
-  if ('errors' in result) {
-    if (checkInvalidOrExpiredToken(result.errors)) {
+  if ('error' in result) {
+    if (checkInvalidOrExpiredToken(result.error)) {
       await setTokenInvalid(uid);
     }
   }
 
-  const twUsers = 'errors' in result ? [] : result.response;
+  const twUsers = 'error' in result ? [] : result.response;
   await setTwUsers(twUsers);
 
   const usersFromTw = twUsers.map((user) => {

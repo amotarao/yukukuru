@@ -18,7 +18,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
     <div className={classNames('text-center', styles.wrapper)}>
       <div>
         <button
-          className="inline-block mb-4 px-4 py-1 rounded border border-primary text-primary"
+          className="mb-4 inline-block rounded border border-primary px-4 py-1 text-primary"
           onClick={() => {
             signIn();
           }}
@@ -27,8 +27,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
         </button>
       </div>
       <div>
-        <Link href="/">
-          <a className="inline-block mb-4 px-4 py-1 rounded border border-sub text-sub">トップページ</a>
+        <Link className="mb-4 inline-block rounded border border-sub px-4 py-1 text-sub" href="/">
+          トップページ
         </Link>
       </div>
     </div>

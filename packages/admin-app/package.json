@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/admin-app",
-  "version": "0.120.0",
+  "version": "1.0.0",
   "engines": {
     "node": "16"
   },
@@ -12,28 +12,29 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "chart.js": "^3.7.0",
-    "classnames": "^2.3.1",
-    "firebase": "^9.9.4",
-    "next": "12.2.5",
+    "chart.js": "^3.9.1",
+    "classnames": "^2.3.2",
+    "firebase": "^9.13.0",
+    "next": "13.0.2",
     "react": "18.2.0",
-    "react-chartjs-2": "^4.0.0",
+    "react-chartjs-2": "^4.3.1",
     "react-dom": "18.2.0",
-    "react-firebase-hooks": "^4.0.1",
-    "react-window": "^1.8.6"
+    "react-firebase-hooks": "^5.0.3",
+    "react-window": "^1.8.8"
   },
   "devDependencies": {
     "@types/node": "16",
-    "@types/react": "18.0.18",
+    "@types/react": "18.0.25",
     "@types/react-window": "^1.8.5",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
-    "autoprefixer": "^10.4.8",
-    "eslint": "^8.23.0",
-    "eslint-config-next": "12.2.5",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "autoprefixer": "^10.4.13",
+    "eslint": "^8.26.0",
+    "eslint-config-next": "13.0.2",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1",
-    "tailwindcss": "^3.1.8",
-    "typescript": "4.8.2"
+    "prettier-plugin-tailwindcss": "^0.1.13",
+    "tailwindcss": "^3.2.2",
+    "typescript": "4.8.4"
   }
 }
