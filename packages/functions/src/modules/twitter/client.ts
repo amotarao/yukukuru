@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
-import { TwitterApi, TwitterApiReadOnly, TwitterApiTokens } from 'twitter-api-v2';
+import { TwitterApi, TwitterApiReadOnly } from 'twitter-api-v2';
 
-export const getClient = (options?: Partial<TwitterApiTokens>): TwitterApiReadOnly => {
+export const getClient = (options?: Partial<ConstructorParameters<typeof TwitterApi>>): TwitterApiReadOnly => {
   const client = new TwitterApi({
     appKey: functions.config().twitter.consumer_key as string,
     appSecret: functions.config().twitter.consumer_secret as string,
