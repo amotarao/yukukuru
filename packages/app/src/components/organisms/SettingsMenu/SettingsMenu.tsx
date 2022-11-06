@@ -1,6 +1,6 @@
-import Switch from '@mui/material/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Switch from 'react-switch';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 
@@ -25,8 +25,16 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
               onChange={() => {
                 setTheme(theme === 'dark' ? 'default' : 'dark');
               }}
-              color="primary"
-              inputProps={{ 'aria-label': 'ダークテーマにする' }}
+              onColor="#65b2ff"
+              onHandleColor="#2196f3"
+              handleDiameter={24}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+              height={16}
+              width={40}
+              aria-label="ダークテーマにする"
             />
           </div>
         </li>
