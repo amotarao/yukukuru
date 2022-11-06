@@ -1,18 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getOwnActiveSubscriptions } from '../modules/firestore/stripe';
+import { useAuth } from './auth';
 
 type Subscription = {
   status: string;
   role: string;
 };
 
-export const useSubscription = (uid: string | null) => {
+export const useSubscription = () => {
+  const [{ uid }] = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
   useEffect(() => {
     if (!uid) return;
+    setIsLoading(true);
     getOwnActiveSubscriptions(uid).then((querySnapshot) => {
       setSubscriptions(querySnapshot.docs.map((doc) => doc.data() as Subscription));
+      setIsLoading(false);
     });
   }, [uid]);
 
@@ -22,6 +27,7 @@ export const useSubscription = (uid: string | null) => {
   );
 
   return {
+    isLoading,
     subscriptions,
     isSupporter,
   };

@@ -1,22 +1,15 @@
 import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useAuth } from '../../../hooks/auth';
 import { usePlanPrice } from '../../../hooks/usePlanPrice';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
 
-export type SupporterPageProps = {
-  uid: string | null;
-};
-
-export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
-  const { isSupporter } = useSubscription(uid);
-  const { planPrices, taxRates } = usePlanPrice();
-  const supporterPriceId = useMemo(
-    () => planPrices.find((price) => price.role === 'supporter')?.id ?? null,
-    [planPrices]
-  );
+export const SupporterPage: React.FC = () => {
+  const [{ isLoading: isLoadingAuth, signedIn }] = useAuth();
+  const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
 
   return (
     <main>
@@ -54,11 +47,15 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
         </dl>
       </section>
       <div>
-        {isSupporter ? <p>登録済み</p> : <p>未登録</p>}
-        <CheckoutButton uid={uid} priceId={supporterPriceId} taxRates={taxRates.map(({ id }) => id)}>
-          登録
-        </CheckoutButton>
-        <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+        {isLoadingAuth || isLoadingSubscription ? (
+          <p>読み込み中</p>
+        ) : !signedIn ? (
+          <p>ログイン</p>
+        ) : !isSupporter ? (
+          <CheckoutButton>登録</CheckoutButton>
+        ) : (
+          <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+        )}
       </div>
     </main>
   );
@@ -67,21 +64,41 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ uid }) => {
 const CheckoutButton: React.FC<{
   className?: string;
   children: React.ReactNode;
-  uid: string | null;
-  priceId: string | null;
-  taxRates: string[];
-}> = ({ className, children, uid, priceId, taxRates }) => {
+}> = ({ className, children }) => {
+  const [loading, setLoading] = useState(false);
+
   const stripe = useStripe();
+  const [{ uid }] = useAuth();
+  const { planPrices, taxRates } = usePlanPrice();
+  const supporterPriceId = useMemo(
+    () => planPrices.find((price) => price.role === 'supporter')?.id ?? null,
+    [planPrices]
+  );
 
   const checkoutSupporter = useCallback(async () => {
-    if (!stripe || !uid || !priceId) {
+    if (loading) {
       return;
     }
-    const sessionId = await addCheckoutSession(uid, priceId, taxRates).catch(alert);
-    if (sessionId) {
-      stripe.redirectToCheckout({ sessionId });
+
+    if (!stripe || !uid || !supporterPriceId) {
+      return;
     }
-  }, [stripe, uid, priceId, taxRates]);
+
+    setLoading(true);
+    const sessionId = await addCheckoutSession(
+      uid,
+      supporterPriceId,
+      taxRates.map(({ id }) => id)
+    ).catch(alert);
+    if (sessionId) {
+      stripe.redirectToCheckout({
+        sessionId,
+        successUrl: window.location.href,
+        cancelUrl: window.location.href,
+      });
+    }
+    setLoading(false);
+  }, [loading, stripe, uid, supporterPriceId, taxRates]);
 
   return (
     <button
@@ -99,10 +116,18 @@ const ConfirmButton: React.FC<{
   className?: string;
   children: React.ReactNode;
 }> = ({ className, children }) => {
+  const [loading, setLoading] = useState(false);
+
   const portal = useCallback(async () => {
-    const url = await getPortalLink();
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    const url = await getPortalLink(window.location.href);
     window.location.assign(url);
-  }, []);
+    setLoading(false);
+  }, [loading]);
 
   return (
     <button
@@ -111,7 +136,7 @@ const ConfirmButton: React.FC<{
         portal();
       }}
     >
-      {children}
+      {loading ? '読み込み中' : children}
     </button>
   );
 };
