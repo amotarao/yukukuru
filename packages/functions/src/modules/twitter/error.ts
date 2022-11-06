@@ -1,13 +1,7 @@
 import { ApiPartialResponseError, ApiRequestError, ApiResponseError, EApiV1ErrorCode } from 'twitter-api-v2';
 
-const logError = (error: unknown): void => {
-  try {
-    const detail = JSON.stringify(error);
-    console.error(`❗️[Twitter Error] Failed to run Twitter API: ${detail}`);
-  } catch (e) {
-    console.error(`❗️[Twitter Error] Failed to run Twitter API. (Check next log.)`);
-    console.error(error);
-  }
+const logError = (error: ApiRequestError | ApiPartialResponseError | ApiResponseError): void => {
+  console.error(`❗️[Twitter Error] Failed to run Twitter API: ${error.message}.`);
 };
 
 export const twitterClientErrorHandler = (
