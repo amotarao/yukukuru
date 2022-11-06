@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
 import { TwitterUser } from '..';
 import { twitterClientErrorHandler } from '../error';
 
@@ -15,10 +15,7 @@ export type TwitterGetUsersLookupParameters = {
 const getUsersLookupSingle = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<
-  | { response: Pick<UserV2, 'id' | 'username' | 'name' | 'profile_image_url' | 'public_metrics' | 'verified'>[] }
-  | { error: ApiResponseError }
-> => {
+): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
   const response = await client.v2
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
@@ -30,7 +27,16 @@ const getUsersLookupSingle = async (
   }
 
   return {
-    response: response.data,
+    response: response.data.map(
+      (user): TwitterUser => ({
+        id_str: user.id,
+        screen_name: user.username,
+        name: user.name,
+        profile_image_url_https: user.profile_image_url || '',
+        followers_count: user.public_metrics?.followers_count || 0,
+        verified: user.verified || false,
+      })
+    ),
   };
 };
 
@@ -50,19 +56,7 @@ export const getUsersLookup = async (
         return [null, result.error];
       }
 
-      const users = result.response.map((res) => {
-        const { id, username, name, profile_image_url, public_metrics, verified } = res;
-        const user: TwitterUser = {
-          id_str: id,
-          screen_name: username,
-          name,
-          profile_image_url_https: profile_image_url || '',
-          followers_count: public_metrics?.followers_count || 0,
-          verified: verified || false,
-        };
-        return user;
-      });
-      return [users, null];
+      return [result.response, null];
     }
   );
   const lookuped = await Promise.all(lookup);
