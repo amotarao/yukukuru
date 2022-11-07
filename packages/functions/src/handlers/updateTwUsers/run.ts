@@ -48,9 +48,9 @@ export const run = functions
       console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
-    console.log(`⏳ Got ${result.response.length} users from Twitter.`);
+    console.log(`⏳ Got ${result.response.users.length} users from Twitter.`);
 
-    await setTwUsers(result.response);
+    await setTwUsers(result.response.users);
 
     console.log(`⏳ Updated twUser documents for [${uid}].`);
 
