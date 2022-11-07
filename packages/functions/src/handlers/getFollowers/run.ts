@@ -3,7 +3,6 @@ import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
-import { setTwUsers } from '../../modules/firestore/twUsers';
 import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
@@ -120,7 +119,6 @@ export const run = functions
       console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
     }
     console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
-    const twUsers = 'response' in result2 ? result2.response.users : [];
     const errorIds = 'response' in result2 ? result2.response.errorIds : [];
     const normalIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
     console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
@@ -129,9 +127,6 @@ export const run = functions
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await setWatch(uid, normalIds, now, ended);
     await setUserResult(uid, watchId, ended, newNextCursor, now);
-    console.log(`⏳ Updated state to user document of [${uid}].`);
-
-    await setTwUsers(twUsers);
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
     console.log(`✔️ Completed get followers of [${uid}].`);
