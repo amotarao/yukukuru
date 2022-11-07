@@ -6,6 +6,7 @@ import { usePlanPrice } from '../../../hooks/usePlanPrice';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
+import { Icon } from '../../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn }] = useAuth();
@@ -13,50 +14,95 @@ export const SupporterPage: React.FC = () => {
 
   return (
     <main>
-      <header className="mb-8 bg-top-bg px-4">
-        <div className="mx-auto max-w-xl py-8">
-          <h1 className="mt-4 mb-8 text-4xl tracking-tight">ゆくくるサポーター</h1>
+      <header className="mb-12 bg-top-bg px-8">
+        <div className="mx-auto max-w-xl py-8 text-center">
+          <h1 className="mt-4 mb-8 text-4xl font-bold tracking-tight">ゆくくるサポーター</h1>
           <div className="flex flex-col gap-2">
             <p className="text-sm leading-6">
-              ゆくくるの開発・運営を支援できる「ゆくくるサポーター」制度をご用意しました
+              ゆくくるの開発・運営を支援できる
+              <br className="sm:hidden" />
+              「ゆくくるサポーター」制度をご用意しました
             </p>
-            <p className="text-sm leading-6">月額○円で登録でき、お礼にいくつかの機能をご提供します</p>
+            <p className="text-sm leading-6">
+              月額99円で登録でき、
+              <br className="sm:hidden" />
+              お礼にいくつかの機能をご提供します
+            </p>
           </div>
         </div>
       </header>
-      <section>
-        <dl>
-          <div className="flex">
-            <dt>取得頻度</dt>
-            <dd>15分おき</dd>
+      <section className="mx-auto max-w-[480px] px-8 pb-16 sm:max-w-[800px]">
+        <dl className="grid grid-cols-[1fr] gap-8 sm:grid-cols-[1fr_1fr]">
+          <div className="rounded-lg border-2 border-current px-4 text-primary">
+            <dt className="flex flex-col gap-1 border-b border-current pt-6 pb-4 text-center">
+              <p className="text-2xl font-bold tracking-wide text-main">サポーター</p>
+              <p className="font-bold tracking-wide text-main">月額 99円</p>
+            </dt>
+            <dd className="px-4 pt-8 pb-12">
+              <ul className="flex flex-col gap-4">
+                <li className="">
+                  <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
+                    <span className="text-main">最短15分おき*に更新</span>
+                    <Icon type="check_circle" />
+                  </p>
+                  <p className="pl-6 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
+                </li>
+                <li className="">
+                  <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
+                    <span className="text-main">複数アカウント切り替え</span>
+                    <Icon type="check_circle" aria-label="可能" />
+                  </p>
+                </li>
+              </ul>
+              <div className="mt-8">
+                {isLoadingAuth || isLoadingSubscription ? (
+                  <p>読み込み中</p>
+                ) : !signedIn ? (
+                  <p>ログイン</p>
+                ) : !isSupporter ? (
+                  <CheckoutButton>登録</CheckoutButton>
+                ) : (
+                  <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+                )}
+              </div>
+            </dd>
           </div>
-          <div className="flex">
-            <dt>アカウント切り替え</dt>
-            <dd>可能</dd>
-          </div>
-        </dl>
-        <dl>
-          <div className="flex">
-            <dt>取得頻度</dt>
-            <dd>6時間おき</dd>
-          </div>
-          <div className="flex">
-            <dt>アカウント切り替え</dt>
-            <dd>不可能</dd>
+          <div className="rounded-lg border border-current px-4 text-sub">
+            <dt className="flex flex-col gap-1 border-b border-current pt-6 pb-4 text-center">
+              <p className="text-2xl font-bold tracking-wide text-main">フリー</p>
+              <p className="font-bold tracking-wide text-main">月額 0円</p>
+            </dt>
+            <dd className="px-4 pt-8 pb-12">
+              <ul className="flex flex-col gap-4">
+                <li className="">
+                  <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
+                    <span className="text-main">最短6時間おき*に更新</span>
+                    <Icon type="check_circle" />
+                  </p>
+                  <p className="pl-6 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
+                </li>
+                <li className="">
+                  <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
+                    <span className="text-main">複数アカウント切り替え</span>
+                    <Icon type="cross" aria-label="不可" />
+                  </p>
+                </li>
+              </ul>
+              <div className="mt-8">
+                {isLoadingAuth || isLoadingSubscription ? (
+                  <p>読み込み中</p>
+                ) : !signedIn ? (
+                  <p>ログイン</p>
+                ) : !isSupporter ? (
+                  <CheckoutButton>登録</CheckoutButton>
+                ) : (
+                  <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+                )}
+              </div>
+            </dd>
           </div>
         </dl>
       </section>
-      <div>
-        {isLoadingAuth || isLoadingSubscription ? (
-          <p>読み込み中</p>
-        ) : !signedIn ? (
-          <p>ログイン</p>
-        ) : !isSupporter ? (
-          <CheckoutButton>登録</CheckoutButton>
-        ) : (
-          <ConfirmButton>登録情報確認・解約など</ConfirmButton>
-        )}
-      </div>
     </main>
   );
 };
@@ -102,7 +148,7 @@ const CheckoutButton: React.FC<{
 
   return (
     <button
-      className={classNames('flex rounded border px-4 py-1', className)}
+      className={classNames('block w-full rounded-md border border-current px-4 py-2 text-center text-lg', className)}
       onClick={() => {
         checkoutSupporter();
       }}
@@ -131,7 +177,7 @@ const ConfirmButton: React.FC<{
 
   return (
     <button
-      className={classNames('flex rounded border px-4 py-1', className)}
+      className={classNames('block w-full rounded-md border border-current px-4 py-2 text-center text-lg', className)}
       onClick={() => {
         portal();
       }}

@@ -9,7 +9,7 @@ type Subscription = {
 
 export const useSubscription = () => {
   const [{ uid }] = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
   useEffect(() => {
