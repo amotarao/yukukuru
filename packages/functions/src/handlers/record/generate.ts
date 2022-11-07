@@ -31,7 +31,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
     }
   }
 
-  const twUsers = 'error' in result ? [] : result.response;
+  const twUsers = 'error' in result ? [] : result.response.users;
   await setTwUsers(twUsers);
 
   const usersFromTw = twUsers.map((user) => {

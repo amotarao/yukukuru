@@ -3,11 +3,13 @@ import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
+import { setTwUsers } from '../../modules/firestore/twUsers';
 import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIds } from '../../modules/twitter/followers/ids';
+import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /**
@@ -101,16 +103,35 @@ export const run = functions
         await setTokenInvalid(uid);
       }
 
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+      console.error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
       return;
     }
+    console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
+
+    // 凍結等チェック
+    // 取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
+    const { ids, next_cursor_str: newNextCursor } = result.response;
+    const result2 = await getUsersLookup(client, { usersId: ids });
+
+    if ('error' in result2) {
+      if (checkInvalidOrExpiredToken(result2.error)) {
+        await setTokenInvalid(uid);
+      }
+      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+    }
     console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
+    const twUsers = 'response' in result2 ? result2.response.users : [];
+    const errorIds = 'response' in result2 ? result2.response.errorIds : [];
+    const normalIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
+    console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
 
     // 保存
-    const { ids, next_cursor_str: newNextCursor } = result.response;
     const ended = newNextCursor === '0' || newNextCursor === '-1';
-    const watchId = await setWatch(uid, ids, now, ended);
+    const watchId = await setWatch(uid, normalIds, now, ended);
     await setUserResult(uid, watchId, ended, newNextCursor, now);
+    console.log(`⏳ Updated state to user document of [${uid}].`);
+
+    await setTwUsers(twUsers);
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
     console.log(`✔️ Completed get followers of [${uid}].`);

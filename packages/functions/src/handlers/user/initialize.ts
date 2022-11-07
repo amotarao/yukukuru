@@ -28,13 +28,13 @@ export const initialize = functions
     const client = getClient();
     const result = await getUsersLookup(client, { usersId: [twitterId] });
 
-    if ('error' in result || result.response.length !== 1) {
+    if ('error' in result || result.response.users.length !== 1) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
     }
 
-    const twitter = result.response[0];
+    const twitter = result.response.users[0];
 
     await initializeUser(uid, {
       id: twitter.id_str,

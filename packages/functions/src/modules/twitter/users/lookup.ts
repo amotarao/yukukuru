@@ -10,12 +10,12 @@ export type TwitterGetUsersLookupParameters = {
 /**
  * ユーザー情報を取得
  * 100人まで 取得可能
- * 15分につき 300回 実行可能
+ * 15分につき 900回 実行可能
  */
 const getUsersLookupSingle = (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorIds: string[] } } | { error: ApiResponseError }> => {
   return client.v2
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
@@ -25,23 +25,24 @@ const getUsersLookupSingle = (
       // パッケージで対応していないので、キャストしている
       const data = response.data as UserV2[] | undefined;
 
-      if (!data) {
-        return {
-          response: [],
-        };
-      }
-
       return {
-        response: data.map(
-          (user): TwitterUser => ({
-            id_str: user.id,
-            screen_name: user.username,
-            name: user.name,
-            profile_image_url_https: user.profile_image_url || '',
-            followers_count: user.public_metrics?.followers_count || 0,
-            verified: user.verified || false,
-          })
-        ),
+        response: {
+          users:
+            data?.map(
+              (user): TwitterUser => ({
+                id_str: user.id,
+                screen_name: user.username,
+                name: user.name,
+                profile_image_url_https: user.profile_image_url || '',
+                followers_count: user.public_metrics?.followers_count || 0,
+                verified: user.verified || false,
+              })
+            ) ?? [],
+          errorIds:
+            response.errors
+              ?.map((error) => error.value)
+              .filter((value): value is string => typeof value === 'string') ?? [],
+        },
       };
     })
     .catch(twitterClientErrorHandler);
@@ -49,30 +50,45 @@ const getUsersLookupSingle = (
 
 /**
  * ユーザー情報を取得
- * 15分につき 30,000人まで 取得可能
+ * 15分につき 90,000人まで 取得可能
  */
 export const getUsersLookup = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: TwitterUser[] } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorIds: string[] } } | { error: ApiResponseError }> => {
   const lookup = _.chunk(_.uniq(usersId), 100).map(
-    async (usersId): Promise<{ users: TwitterUser[]; error: null } | { users: null; error: ApiResponseError }> => {
+    async (
+      usersId
+    ): Promise<
+      | {
+          users: TwitterUser[];
+          errorIds: string[];
+          error: null;
+        }
+      | {
+          users: null;
+          errorIds: null;
+          error: ApiResponseError;
+        }
+    > => {
       const result = await getUsersLookupSingle(client, { usersId });
 
       if ('error' in result) {
-        return { users: null, error: result.error };
+        return { users: null, errorIds: null, error: result.error };
       }
-      return { users: result.response, error: null };
+      return { users: result.response.users, errorIds: result.response.errorIds, error: null };
     }
   );
   const lookuped = await Promise.all(lookup);
 
   const users: TwitterUser[] = [];
+  const errorIds: string[] = [];
   const errors: ApiResponseError[] = [];
 
   for (const single of lookuped) {
     if (single.users) {
       users.push(...single.users);
+      errorIds.push(...single.errorIds);
       continue;
     }
 
@@ -80,15 +96,12 @@ export const getUsersLookup = async (
     break;
   }
 
-  if (users.length > 0) {
+  if (users.length > 0 || errorIds.length > 0 || errors.length === 0) {
     return {
-      response: users,
-    };
-  }
-
-  if (errors.length === 0) {
-    return {
-      response: [],
+      response: {
+        users,
+        errorIds,
+      },
     };
   }
 
