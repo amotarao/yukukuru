@@ -29,9 +29,24 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange = () => n
 
   const menuItems = useMemo(
     () => [
-      { type: 'my' as const, href: '/my' },
-      { type: 'supporter' as const, href: '/supporter' },
-      { type: 'settings' as const, href: '/settings' },
+      {
+        type: 'my' as const,
+        href: '/my',
+        title: 'ホーム',
+        icon: 'home' as const,
+      },
+      {
+        type: 'supporter' as const,
+        href: '/supporter',
+        title: 'サポーター',
+        icon: 'membership' as const,
+      },
+      {
+        type: 'settings' as const,
+        href: '/settings',
+        title: '設定',
+        icon: 'cog' as const,
+      },
     ],
     []
   );
@@ -52,8 +67,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange = () => n
               aria-current={active === item.type && 'page'}
               onClick={onClick(item.type)}
             >
-              <Icon className="text-2xl" type="home" />
-              ホーム
+              <Icon className="text-2xl" type={item.icon} />
+              {item.title}
             </Link>
           </li>
         ))}
