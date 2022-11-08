@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --main: #333;
+  --main: #111;
   --sub: #999;
   --back: #fff;
   --back-2: #eee;
@@ -18,7 +18,7 @@
 }
 
 html[data-theme='dark'] {
-  --main: #ccc;
+  --main: #eee;
   --sub: #999;
   --back: #111;
   --back-2: #222;
