@@ -2,19 +2,25 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../../hooks/auth';
+import { useMultiAccounts } from '../../../hooks/multiAccounts';
 import { usePlanPrice } from '../../../hooks/usePlanPrice';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
+import { AccountSelector } from '../../organisms/AccountSelector';
 import { Icon } from '../../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
-  const [{ isLoading: isLoadingAuth, signedIn }] = useAuth();
+  const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
+  const [{ accounts }] = useMultiAccounts(uid);
+  const currentAccount = useMemo(() => {
+    return accounts.find((account) => account.id === uid) || null;
+  }, [uid, accounts]);
 
   return (
     <main>
-      <header className="mb-12 bg-top-bg px-8">
+      <header className="mb-8 bg-top-bg px-8">
         <div className="mx-auto max-w-xl py-8 text-center">
           <h1 className="mt-4 mb-8 text-4xl font-bold tracking-tight">ゆくくるサポーター</h1>
           <div className="flex flex-col gap-2">
@@ -31,8 +37,24 @@ export const SupporterPage: React.FC = () => {
           </div>
         </div>
       </header>
-      <section className="mx-auto max-w-[480px] px-8 pb-16 sm:max-w-[800px]">
-        <dl className="grid grid-cols-[1fr] gap-8 sm:grid-cols-[1fr_1fr]">
+      <section className="mx-auto max-w-[480px] px-8 pb-40 sm:max-w-[800px]">
+        {!currentAccount ? (
+          <div className="h-[32px] sm:h-[40px]"></div>
+        ) : (
+          <AccountSelector active={false} currentAccount={currentAccount} multiAccounts={[]} />
+        )}
+        <div className="mt-2">
+          {isLoadingAuth || isLoadingSubscription ? (
+            <p className="px-4 py-2 text-center text-lg">&nbsp;</p>
+          ) : !signedIn ? (
+            <p className="px-4 py-2 text-center text-lg">&nbsp;</p>
+          ) : !isSupporter ? (
+            <p className="px-4 py-2 text-center text-lg">フリープランを利用中</p>
+          ) : (
+            <p className="px-4 py-2 text-center text-lg">サポータープラン登録済み</p>
+          )}
+        </div>
+        <dl className="mt-4 grid grid-cols-[1fr] gap-8 sm:grid-cols-[1fr_1fr]">
           <div className="rounded-lg border-2 border-current px-4 text-primary">
             <dt className="flex flex-col gap-1 border-b border-current pt-6 pb-4 text-center">
               <p className="text-2xl font-bold tracking-wide text-main">サポーター</p>
