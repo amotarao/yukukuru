@@ -145,13 +145,18 @@ export const SupporterPage: React.FC = () => {
             </div>
           </dl>
         </section>
-        <section className="mt-8 flex flex-col gap-8">
-          <p className="text-center text-sm leading-6">
+        <section className="mt-8 flex flex-col gap-8 text-center text-sm leading-6">
+          <p>
             保守コスト削減とサービス維持のため、
             <br className="sm:hidden" />
             フリー利用での更新頻度を落としました
             <br />
             ご理解のほどよろしくお願いいたします
+          </p>
+          <p>
+            <Link className="underline" href="/sct">
+              特定商取引法に基づく表記
+            </Link>
           </p>
         </section>
       </div>
