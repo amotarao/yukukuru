@@ -24,7 +24,7 @@ export const SupporterPage: React.FC = () => {
     <div>
       <header className="mb-8 bg-top-bg px-4">
         <div className="mx-auto max-w-xl py-8 text-center">
-          <h1 className="mb-4 text-xl font-bold tracking-tight">ゆくくるサポーター</h1>
+          <h1 className="mb-4 text-xl font-bold tracking-tight sm:text-3xl">ゆくくるサポーター</h1>
           <div className="flex flex-col gap-2">
             <p className="text-sm leading-6">
               ゆくくるの開発・運営を支援できる
@@ -40,25 +40,22 @@ export const SupporterPage: React.FC = () => {
         </div>
       </header>
       <div className="mx-auto max-w-[480px] px-8 pb-40 sm:max-w-[800px]">
-        <section>
+        <section className="flex items-center justify-center gap-4">
           {!currentAccount ? (
             <div className="h-[32px] sm:h-[40px]"></div>
           ) : (
             <AccountSelector active={false} currentAccount={currentAccount} multiAccounts={[]} />
           )}
-          <div className="mt-2">
-            {isLoadingAuth || isLoadingSubscription ? (
-              <p className="px-4 py-2 text-center text-lg">&nbsp;</p>
-            ) : !signedIn ? (
-              <p className="px-4 py-2 text-center text-lg">&nbsp;</p>
-            ) : !isSupporter ? (
-              <p className="px-4 py-2 text-center text-lg">フリープランを利用中</p>
-            ) : (
-              <p className="px-4 py-2 text-center text-lg">サポータープラン登録済み</p>
-            )}
-          </div>
+          {isLoadingAuth || isLoadingSubscription ? null : !signedIn ? null : !isSupporter ? (
+            <p>フリー利用</p>
+          ) : (
+            <p className="flex items-center gap-2 text-primary">
+              <Icon type="membership" />
+              サポーター
+            </p>
+          )}
         </section>
-        <section className="mt-4">
+        <section className="mt-8">
           <dl className="grid grid-cols-[1fr] gap-8 sm:grid-cols-[1fr_1fr]">
             <div className="rounded-lg border-2 border-current px-4 text-primary">
               <dt className="flex flex-col gap-1 border-b border-current pt-6 pb-4 text-center">
@@ -84,7 +81,7 @@ export const SupporterPage: React.FC = () => {
                       <a
                         className="underline"
                         href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
-                          '◆ゆくくるサポータープラン 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポータープランへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポータープランを登録したアカウント: \n◇連携したいアカウント(複数可): '
+                          '◆ゆくくるサポーター 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポーターへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポーター登録したアカウント: \n◇連携したいアカウント(複数可): '
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -139,9 +136,9 @@ export const SupporterPage: React.FC = () => {
                       ログイン
                     </Link>
                   ) : !isSupporter ? (
-                    <p className="px-4 py-2 text-center text-lg">フリープランを利用中</p>
+                    <p className="px-4 py-2 text-center text-lg">フリー利用中</p>
                   ) : (
-                    <p className="px-4 py-2 text-center text-lg">サポータープラン登録済み</p>
+                    <p className="px-4 py-2 text-center text-lg">サポーター登録済み</p>
                   )}
                 </div>
               </dd>
@@ -152,7 +149,7 @@ export const SupporterPage: React.FC = () => {
           <p className="text-center text-sm leading-6">
             保守コスト削減とサービス維持のため、
             <br className="sm:hidden" />
-            フリープランでの更新頻度を落としました
+            フリー利用での更新頻度を落としました
             <br />
             ご理解のほどよろしくお願いいたします
           </p>
