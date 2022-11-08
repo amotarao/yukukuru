@@ -19,13 +19,19 @@ export const getOwnActiveSubscriptions = (uid: string): Promise<QuerySnapshot> =
   return getDocs(q);
 };
 
-export const addCheckoutSession = async (uid: string, price: string, taxRates: string[]): Promise<string> => {
+export const addCheckoutSession = async (
+  uid: string,
+  price: string,
+  taxRates: string[],
+  successUrl?: string,
+  cancelUrl?: string
+): Promise<string> => {
   const c = collection(customersCollection, uid, 'checkout_sessions');
   const ref = await addDoc(c, {
     price: price,
     tax_rates: taxRates,
-    success_url: window.location.origin,
-    cancel_url: window.location.origin,
+    success_url: successUrl || window.location.href,
+    cancel_url: cancelUrl || window.location.href,
     billing_address_collection: 'auto',
   });
 

@@ -184,13 +184,13 @@ const CheckoutButton: React.FC<{
     const sessionId = await addCheckoutSession(
       uid,
       supporterPriceId,
-      taxRates.map(({ id }) => id)
+      taxRates.map(({ id }) => id),
+      window.location.href,
+      window.location.href
     ).catch(alert);
     if (sessionId) {
-      stripe.redirectToCheckout({
+      await stripe.redirectToCheckout({
         sessionId,
-        successUrl: window.location.href,
-        cancelUrl: window.location.href,
       });
     }
     setLoading(false);
