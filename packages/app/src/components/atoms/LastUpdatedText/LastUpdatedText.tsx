@@ -35,13 +35,13 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
         <wbr />
         {text}
       </p>
-      <p>
-        {isLoading ? null : !isSupporter ? (
+      {isLoading ? null : !isSupporter ? (
+        <p>
           <Link className="font-bold text-primary underline" href="/supporter">
             ゆくくるサポーターで更新頻度をアップ
           </Link>
-        ) : null}
-      </p>
+        </p>
+      ) : null}
     </div>
   );
 };
