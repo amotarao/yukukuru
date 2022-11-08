@@ -31,7 +31,9 @@ const Page: React.FC = () => {
             <dd>
               <p>ゆくくるサポーターページをご参照ください</p>
               <p>消費税を含めて表示しています</p>
-              <p>クレジットカード (Visa, Mastercard, American Express) をご利用いただけます</p>
+              <p>
+                クレジットカード (Visa, Mastercard, JCB, American Express, Diners Club, Discover) をご利用いただけます
+              </p>
             </dd>
           </div>
           <div>
