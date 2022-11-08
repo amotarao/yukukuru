@@ -22,9 +22,9 @@ export const SupporterPage: React.FC = () => {
 
   return (
     <div>
-      <header className="mb-8 bg-top-bg px-8">
+      <header className="mb-8 bg-top-bg px-4">
         <div className="mx-auto max-w-xl py-8 text-center">
-          <h1 className="mt-4 mb-8 text-4xl font-bold tracking-tight">ゆくくるサポーター</h1>
+          <h1 className="mb-4 text-xl font-bold tracking-tight">ゆくくるサポーター</h1>
           <div className="flex flex-col gap-2">
             <p className="text-sm leading-6">
               ゆくくるの開発・運営を支援できる
