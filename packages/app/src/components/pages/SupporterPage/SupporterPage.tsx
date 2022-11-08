@@ -56,9 +56,9 @@ export const SupporterPage: React.FC = () => {
               </ul>
               <div className="mt-8">
                 {isLoadingAuth || isLoadingSubscription ? (
-                  <p>読み込み中</p>
+                  <p className="px-4 py-2 text-center text-lg">読み込み中</p>
                 ) : !signedIn ? (
-                  <p>ログイン</p>
+                  <p className="px-4 py-2 text-center text-lg">ログイン</p>
                 ) : !isSupporter ? (
                   <CheckoutButton>登録</CheckoutButton>
                 ) : (
@@ -90,13 +90,13 @@ export const SupporterPage: React.FC = () => {
               </ul>
               <div className="mt-8">
                 {isLoadingAuth || isLoadingSubscription ? (
-                  <p>読み込み中</p>
+                  <p className="px-4 py-2 text-center text-lg">読み込み中</p>
                 ) : !signedIn ? (
-                  <p>ログイン</p>
+                  <p className="px-4 py-2 text-center text-lg">ログイン</p>
                 ) : !isSupporter ? (
-                  <CheckoutButton>登録</CheckoutButton>
+                  <p className="px-4 py-2 text-center text-lg">フリープランを利用中</p>
                 ) : (
-                  <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+                  <p className="px-4 py-2 text-center text-lg">サポータープランに登録中</p>
                 )}
               </div>
             </dd>
@@ -153,7 +153,7 @@ const CheckoutButton: React.FC<{
         checkoutSupporter();
       }}
     >
-      {children}
+      {loading ? '読み込み中' : children}
     </button>
   );
 };
