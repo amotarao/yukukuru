@@ -11,7 +11,7 @@ export type AccountSelectorProps = {
   active: boolean;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
-  onChange: (uid: string) => void;
+  onChange?: (uid: string) => void;
 };
 
 export const AccountSelector: React.FC<AccountSelectorProps> = ({
@@ -19,7 +19,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   active,
   currentAccount,
   multiAccounts,
-  onChange,
+  onChange = () => null,
 }) => {
   const [shown, setShown] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
