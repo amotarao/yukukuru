@@ -45,8 +45,8 @@ const checkExecutable = async (params: {
     return true;
   }
 
-  // サポーター以外の場合、前回の実行から60分経過していれば実行
-  if (minutes < 60 - 1) {
+  // サポーター以外の場合、前回の実行から6時間経過していれば実行
+  if (minutes < 60 * 6 - 1) {
     return false;
   }
   return true;
