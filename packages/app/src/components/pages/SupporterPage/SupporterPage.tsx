@@ -1,5 +1,6 @@
 import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../../hooks/auth';
 import { useMultiAccounts } from '../../../hooks/multiAccounts';
@@ -8,6 +9,7 @@ import { useSubscription } from '../../../hooks/useSubscription';
 import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
 import { AccountSelector } from '../../organisms/AccountSelector';
+import { BottomNav } from '../../organisms/BottomNav/BottomNav';
 import { Icon } from '../../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
@@ -19,7 +21,7 @@ export const SupporterPage: React.FC = () => {
   }, [uid, accounts]);
 
   return (
-    <main>
+    <div>
       <header className="mb-8 bg-top-bg px-8">
         <div className="mx-auto max-w-xl py-8 text-center">
           <h1 className="mt-4 mb-8 text-4xl font-bold tracking-tight">ゆくくるサポーター</h1>
@@ -33,6 +35,13 @@ export const SupporterPage: React.FC = () => {
               月額99円で登録でき、
               <br className="sm:hidden" />
               お礼にいくつかの機能をご提供します
+            </p>
+            <p className="mt-4 text-sm leading-6">
+              保守コスト削減とサービス維持のため、
+              <br className="sm:hidden" />
+              フリープランでの更新頻度を落としました
+              <br />
+              ご理解のほどよろしくお願いいたします
             </p>
           </div>
         </div>
@@ -67,12 +76,25 @@ export const SupporterPage: React.FC = () => {
                     <span className="text-main">最短15分おき*に更新</span>
                     <Icon type="check_circle" />
                   </p>
-                  <p className="pl-6 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
+                  <p className="pl-7 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
                 </li>
                 <li className="">
                   <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
                     <span className="text-main">複数アカウント切り替え</span>
                     <Icon type="check_circle" aria-label="可能" />
+                  </p>
+                  <p className="pl-7 text-sm text-sub">
+                    *{' '}
+                    <a
+                      className="underline"
+                      href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
+                        '◆ゆくくるサポータープラン 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポータープランへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポータープランを登録したアカウント: \n◇連携したいアカウント(複数可): '
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      DMでアカウントをお知らせください
+                    </a>
                   </p>
                 </li>
               </ul>
@@ -80,7 +102,9 @@ export const SupporterPage: React.FC = () => {
                 {isLoadingAuth || isLoadingSubscription ? (
                   <p className="px-4 py-2 text-center text-lg">読み込み中</p>
                 ) : !signedIn ? (
-                  <p className="px-4 py-2 text-center text-lg">ログイン</p>
+                  <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
+                    ログイン
+                  </Link>
                 ) : !isSupporter ? (
                   <CheckoutButton>登録</CheckoutButton>
                 ) : (
@@ -101,31 +125,35 @@ export const SupporterPage: React.FC = () => {
                     <span className="text-main">最短6時間おき*に更新</span>
                     <Icon type="check_circle" />
                   </p>
-                  <p className="pl-6 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
+                  <p className="pl-7 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
                 </li>
                 <li className="">
                   <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
                     <span className="text-main">複数アカウント切り替え</span>
                     <Icon type="cross" aria-label="不可" />
                   </p>
+                  <p className="pl-7 text-sm text-sub">&nbsp;</p>
                 </li>
               </ul>
               <div className="mt-8">
                 {isLoadingAuth || isLoadingSubscription ? (
                   <p className="px-4 py-2 text-center text-lg">読み込み中</p>
                 ) : !signedIn ? (
-                  <p className="px-4 py-2 text-center text-lg">ログイン</p>
+                  <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
+                    ログイン
+                  </Link>
                 ) : !isSupporter ? (
                   <p className="px-4 py-2 text-center text-lg">フリープランを利用中</p>
                 ) : (
-                  <p className="px-4 py-2 text-center text-lg">サポータープランに登録中</p>
+                  <p className="px-4 py-2 text-center text-lg">サポータープラン登録済み</p>
                 )}
               </div>
             </dd>
           </div>
         </dl>
       </section>
-    </main>
+      {signedIn && <BottomNav active="supporter" />}
+    </div>
   );
 };
 
@@ -186,15 +214,19 @@ const ConfirmButton: React.FC<{
 }> = ({ className, children }) => {
   const [loading, setLoading] = useState(false);
 
-  const portal = useCallback(async () => {
+  const portal = useCallback(() => {
     if (loading) {
       return;
     }
 
     setLoading(true);
-    const url = await getPortalLink(window.location.href);
-    window.location.assign(url);
-    setLoading(false);
+    getPortalLink(window.location.href)
+      .then((url) => {
+        window.location.assign(url);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, [loading]);
 
   return (

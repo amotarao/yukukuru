@@ -13,7 +13,10 @@ export const useSubscription = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!uid) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     getOwnActiveSubscriptions(uid).then((querySnapshot) => {
       setSubscriptions(querySnapshot.docs.map((doc) => doc.data() as Subscription));
