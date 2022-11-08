@@ -8,7 +8,7 @@ export const TwitterUserIcon: React.FC<TwitterUserIconProps> = (props) => {
   const [src, setSrc] = useState<TwitterUserIconProps['src']>(props.src);
 
   useEffect(() => {
-    setSrc(props.src);
+    setSrc(props.src || fallbackImage);
   }, [props.src]);
 
   const onError = () => {
