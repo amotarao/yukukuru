@@ -1,55 +1,77 @@
+import classNames from 'classnames';
 import Link from 'next/link';
+import { useCallback, useMemo } from 'react';
 import { Icon } from '../../shared/Icon';
 import styles from './styles.module.scss';
 
-export type NavType = 'my' | 'settings';
+export type NavType = 'my' | 'supporter' | 'settings';
 
 export type BottomNavProps = {
   active: NavType;
   onChange?: (nav: NavType) => void;
 };
 
-export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange }) => {
-  const onClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
-    const type = e.currentTarget.getAttribute('data-type') as NavType;
+export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange = () => null }) => {
+  const onClick = useCallback(
+    (type: NavType): React.MouseEventHandler<HTMLAnchorElement> =>
+      (e) => {
+        // 同じページの場合、上部にスクロール
+        if (type === active) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+          return;
+        }
 
-    // 同じページの場合、上部にスクロール
-    if (type === active) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      return;
-    }
+        onChange(type);
+      },
+    [active, onChange]
+  );
 
-    onChange && onChange(type);
-  };
+  const menuItems = useMemo(
+    () => [
+      {
+        type: 'my' as const,
+        href: '/my',
+        title: 'ホーム',
+        icon: 'home' as const,
+      },
+      {
+        type: 'supporter' as const,
+        href: '/supporter',
+        title: 'サポーター',
+        icon: 'membership' as const,
+      },
+      {
+        type: 'settings' as const,
+        href: '/settings',
+        title: '設定',
+        icon: 'cog' as const,
+      },
+    ],
+    []
+  );
 
   return (
     <nav className="fixed left-0 bottom-0 z-20 w-full border-t border-t-shadow bg-back">
-      <ul className="mx-auto flex max-w-md justify-center sm:max-w-xl">
-        <li className="w-1/2 flex-auto">
-          <Link
-            className={styles.button}
-            href="/my"
-            aria-current={active === 'my' && 'page'}
-            data-type="my"
-            onClick={onClick}
-          >
-            <Icon className="text-2xl" type="home" />
-            ホーム
-          </Link>
-        </li>
-        <li className="w-1/2 flex-auto">
-          <Link
-            className={styles.button}
-            href="/settings"
-            aria-current={active === 'settings' && 'page'}
-            data-type="settings"
-            onClick={onClick}
-          >
-            <Icon className="text-2xl" type="cog" />
-            設定
-          </Link>
-        </li>
+      <ul
+        className={classNames(
+          'mx-auto grid max-w-md justify-center sm:max-w-xl',
+          menuItems.length === 3 && 'grid-cols-3'
+        )}
+      >
+        {menuItems.map((item) => (
+          <li key={item.type}>
+            <Link
+              className={styles.button}
+              href={item.href}
+              aria-current={active === item.type && 'page'}
+              onClick={onClick(item.type)}
+            >
+              <Icon className="text-2xl" type={item.icon} />
+              {item.title}
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );

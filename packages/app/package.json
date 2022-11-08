@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/app",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
@@ -14,6 +14,8 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.14.2",
+    "@stripe/stripe-js": "^1.42.1",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.6",
     "firebase": "^9.13.0",
@@ -29,10 +31,10 @@
     "@tailwindcss/line-clamp": "^0.4.2",
     "@types/node": "16",
     "@types/react": "^18.0.25",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.26.0",
+    "eslint": "^8.27.0",
     "eslint-config-next": "13.0.2",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
