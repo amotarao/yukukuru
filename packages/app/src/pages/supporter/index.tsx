@@ -9,7 +9,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>ゆくくるサポーター - ゆくくる alpha</title>
+        <title>ゆくくるサポーター - ゆくくる beta</title>
       </Head>
       <Elements stripe={stripePromise}>
         <SupporterPage />
