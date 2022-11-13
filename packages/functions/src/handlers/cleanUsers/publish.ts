@@ -19,7 +19,7 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('0 0-14 * * *')
+  .pubsub.schedule('5 0-14 * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
