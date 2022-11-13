@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { dayjs } from '../../../modules/dayjs';
 
-const ads = ['月額99円で、更新頻度をアップ', '月額99円で、複数アカウント切り替え'];
+const ads = ['月額99円で、最短15分おきに更新', '月額99円で、複数アカウント切り替え'];
 
 export type LastUpdatedTextProps = {
   className: string;
