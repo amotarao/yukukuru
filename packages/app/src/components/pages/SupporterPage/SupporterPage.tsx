@@ -46,7 +46,7 @@ export const SupporterPage: React.FC = () => {
           ) : (
             <AccountSelector active={false} currentAccount={currentAccount} multiAccounts={[]} />
           )}
-          {isLoadingAuth || isLoadingSubscription ? null : !signedIn ? null : !isSupporter ? (
+          {isLoadingAuth || isLoadingSubscription || isSupporter === null ? null : !signedIn ? null : !isSupporter ? (
             <p>フリー利用</p>
           ) : (
             <p className="flex items-center gap-2 text-primary">
@@ -93,7 +93,7 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
@@ -131,7 +131,7 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
