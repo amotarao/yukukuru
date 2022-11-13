@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { dayjs } from '../../../modules/dayjs';
 
+const ads = ['月額99円で、更新頻度をアップ', '月額99円で、複数アカウント切り替え'];
+
 export type LastUpdatedTextProps = {
   className: string;
   date: Date;
@@ -28,6 +30,11 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
     return `${now.diff(date, 'd')}日前`;
   }, [date]);
 
+  const ad = useMemo(() => {
+    const index = Math.floor(Math.random() * ads.length);
+    return ads[index];
+  }, []);
+
   return (
     <div className={classNames('flex flex-col gap-2', className)}>
       <p>
@@ -38,7 +45,7 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
       {isLoading ? null : !isSupporter ? (
         <p>
           <Link className="font-bold text-primary underline" href="/supporter">
-            ゆくくるサポーターで更新頻度をアップ
+            {ad}
           </Link>
         </p>
       ) : null}
