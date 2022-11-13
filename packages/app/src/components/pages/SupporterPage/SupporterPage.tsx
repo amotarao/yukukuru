@@ -62,7 +62,7 @@ export const SupporterPage: React.FC = () => {
                 <p className="text-2xl font-bold tracking-wide text-main">サポーター</p>
                 <p className="font-bold tracking-wide text-main">月額 99円</p>
               </dt>
-              <dd className="px-4 pt-8 pb-12">
+              <dd className="px-4 py-8">
                 <ul className="flex flex-col gap-4">
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
@@ -70,6 +70,7 @@ export const SupporterPage: React.FC = () => {
                       <Icon type="check_circle" />
                     </p>
                     <p className="pl-7 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
+                    <p className="hidden pl-7 text-sm text-sub sm:block">&nbsp;</p>
                   </li>
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
@@ -93,7 +94,7 @@ export const SupporterPage: React.FC = () => {
                 </ul>
                 <div className="mt-8">
                   {isLoadingAuth || isLoadingSubscription ? (
-                    <p className="px-4 py-2 text-center text-lg">読み込み中</p>
+                    <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
                       ログイン
@@ -111,13 +112,14 @@ export const SupporterPage: React.FC = () => {
                 <p className="text-2xl font-bold tracking-wide text-main">フリー</p>
                 <p className="font-bold tracking-wide text-main">月額 0円</p>
               </dt>
-              <dd className="px-4 pt-8 pb-12">
+              <dd className="px-4 py-8">
                 <ul className="flex flex-col gap-4">
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
-                      <span className="text-main">最短6時間おき*に更新</span>
+                      <span className="text-main">6〜72時間おき*に更新</span>
                       <Icon type="check_circle" />
                     </p>
+                    <p className="pl-7 text-sm text-sub">* ランダムに実行</p>
                     <p className="pl-7 text-sm text-sub">* フォロワー3万人ごとに +15分</p>
                   </li>
                   <li className="">
@@ -125,20 +127,20 @@ export const SupporterPage: React.FC = () => {
                       <span className="text-main">複数アカウント切り替え</span>
                       <Icon type="cross" aria-label="不可" />
                     </p>
-                    <p className="pl-7 text-sm text-sub">&nbsp;</p>
+                    <p className="hidden pl-7 text-sm text-sub sm:block">&nbsp;</p>
                   </li>
                 </ul>
                 <div className="mt-8">
                   {isLoadingAuth || isLoadingSubscription ? (
-                    <p className="px-4 py-2 text-center text-lg">読み込み中</p>
+                    <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
                       ログイン
                     </Link>
                   ) : !isSupporter ? (
-                    <p className="px-4 py-2 text-center text-lg">フリー利用中</p>
+                    <p className="text-center text-lg sm:px-4 sm:py-2">フリー利用中</p>
                   ) : (
-                    <p className="px-4 py-2 text-center text-lg">サポーター登録済み</p>
+                    <p className="text-center text-lg sm:px-4 sm:py-2">サポーター登録済み</p>
                   )}
                 </div>
               </dd>
