@@ -29,7 +29,7 @@ const checkExecutable = async (params: {
 }): Promise<boolean> => {
   const { uid, nextCursor, lastRun, publishedAt } = params;
 
-  // 取得途中のユーザーは許可
+  // 取得途中のユーザーはいつでも許可
   if (nextCursor !== '-1') {
     return true;
   }
@@ -45,11 +45,22 @@ const checkExecutable = async (params: {
     return true;
   }
 
-  // サポーター以外の場合、前回の実行から6時間経過していれば実行
+  // 前回の実行から6時間以上の間隔をあける
   if (minutes < 60 * 6 - 1) {
     return false;
   }
-  return true;
+
+  // 前回の実行から72時間以上経っていたら無条件に実行する
+  if (minutes > 60 * 72 - 1) {
+    return true;
+  }
+
+  // ６~72時間であれば、毎回2%確率で実行
+  if (Math.random() * 100 <= 2) {
+    return true;
+  }
+
+  return false;
 };
 
 /** PubSub: フォロワー取得 個々の実行 */
