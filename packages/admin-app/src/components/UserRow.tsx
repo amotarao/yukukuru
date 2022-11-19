@@ -51,8 +51,8 @@ export const UserRow: React.FC<UserRowProps> = ({ className, doc }) => {
       <td className="whitespace-nowrap p-2 px-3 text-right text-sm">
         {(doc.get('twitter.followersCount') as number).toLocaleString()}
       </td>
-      <td className="px-3 text-right text-sm">{watchesCount}</td>
-      <td className="px-3 text-right text-sm">{recordsCount}</td>
+      <td className="px-3 text-right text-sm">{watchesCount > -1 ? watchesCount : '...'}</td>
+      <td className="px-3 text-right text-sm">{recordsCount > -1 ? recordsCount : '...'}</td>
       <td className="px-3">
         <Link className={'inline-block rounded bg-slate-700 px-3 py-1 text-sm text-slate-50'} href={`/users/${doc.id}`}>
           More
