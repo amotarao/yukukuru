@@ -101,6 +101,8 @@ const Page: NextPage = () => {
                   }}
                 />
               </th>
+              <th className="p-2 px-3 text-right">Watches</th>
+              <th className="p-2 px-3 text-right">Records</th>
               <th className="p-2 px-3 text-left">more</th>
             </tr>
           </thead>
