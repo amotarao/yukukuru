@@ -1,10 +1,9 @@
 import { getFirestore, collection, query, orderBy, limit, OrderByDirection } from 'firebase/firestore';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { SortButton } from '../../components/SortButton';
-import { TwitterUserIcon } from '../../components/TwitterUserIcon';
+import { UserRow } from '../../components/UserRow';
 import { firebaseApp } from '../../modules/firebase';
 
 const firestore = getFirestore(firebaseApp);
@@ -106,31 +105,9 @@ const Page: NextPage = () => {
             </tr>
           </thead>
           <tbody>
-            {snapshot.docs.map((doc) => {
-              return (
-                <tr key={doc.id} className="border-b">
-                  <td className="whitespace-nowrap p-2 px-3 text-sm">{doc.get('active') ? 'YES' : 'NO'}</td>
-                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">{doc.id}</td>
-                  <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">
-                    <div className="flex items-center">
-                      <TwitterUserIcon className="mr-2 h-6 w-6" src={doc.get('twitter.photoUrl')} />
-                      <p>@{doc.get('twitter.screenName')}</p>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap p-2 px-3 text-right font-mono text-sm">
-                    {(doc.get('twitter.followersCount') as number).toLocaleString()}
-                  </td>
-                  <td className="px-3">
-                    <Link
-                      className={'inline-block rounded bg-slate-700 px-3 py-1 text-sm text-slate-50'}
-                      href={`/users/${doc.id}`}
-                    >
-                      More
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
+            {snapshot.docs.map((doc) => (
+              <UserRow key={doc.id} className="border-b" doc={doc} />
+            ))}
           </tbody>
         </table>
       </div>
