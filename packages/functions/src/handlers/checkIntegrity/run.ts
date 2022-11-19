@@ -7,7 +7,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { getWatches } from '../../modules/firestore/watches/getWatches';
+import { getWatches, getWatchesCount } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -29,6 +29,13 @@ export const run = functions
     // 10秒以内の実行に限る
     if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
       console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+      return;
+    }
+
+    // Watches が 1000件以上ある場合はキャンセル
+    const count = await getWatchesCount(uid, 1000);
+    if (count >= 1000) {
+      console.log(`[Info]: Canceled check integrity of [${uid}].`);
       return;
     }
 

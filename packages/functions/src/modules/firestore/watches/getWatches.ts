@@ -72,3 +72,11 @@ export const getLatestWatches = async ({ uid, count }: Props): Promise<Response>
 
   return docs;
 };
+
+/**
+ * Watches の件数を取得
+ */
+export const getWatchesCount = async (uid: string, limit = Infinity): Promise<number> => {
+  const querySnapshot = await usersCollection.doc(uid).collection('watches').select('ended').limit(limit).get();
+  return querySnapshot.size;
+};
