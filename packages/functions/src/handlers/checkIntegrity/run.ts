@@ -7,7 +7,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { getWatches } from '../../modules/firestore/watches/getWatches';
+import { getWatches, getWatchesCount } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -18,8 +18,8 @@ import { topicName, Message } from './_pubsub';
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
-    memory: '1GB',
+    timeoutSeconds: 20,
+    memory: '512MB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
@@ -32,12 +32,19 @@ export const run = functions
       return;
     }
 
+    // Watches が 3000件以上ある場合はキャンセル
+    const count = await getWatchesCount(uid, 3000);
+    if (count >= 3000) {
+      console.log(`[Info]: Canceled check integrity of [${uid}].`);
+      return;
+    }
+
     console.log(`⚙️ Starting check integrity for [${uid}].`);
 
     // watches を 最古のものから 80件取得
-    const rawWatches = await getWatches({ uid, count: 80 });
+    const rawWatches = await getWatches({ uid, count: 200 });
     // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
-    const watches = mergeWatches(rawWatches, true, 20);
+    const watches = mergeWatches(rawWatches, true, 50);
     // 最後の 3件は今回比較しないので取り除く
     watches.splice(watches.length - 3, watches.length);
 

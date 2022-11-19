@@ -1,4 +1,5 @@
 import { UserData } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -11,7 +12,7 @@ import { Message, topicName } from './_pubsub';
  *
  * 12分ごとに 1グループずつ実行
  * 1日に 120回実行
- * ユーザーごとに 3時間に1回 整合性チェック
+ * ユーザーごとに 3時間ごとに実行
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -26,7 +27,7 @@ export const publish = functions
     const group = getGroupFromTime(12, now);
 
     // 3時間前
-    const prevDate = new Date(now.getTime() - (3 * 60 * 60 * 1000 - 60 * 1000));
+    const prevDate = dayjs(now).subtract(3, 'hours').subtract(1, 'minutes').toDate();
 
     const snapshot = await firestore
       .collection('users')
