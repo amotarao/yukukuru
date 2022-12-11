@@ -1,5 +1,6 @@
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
+import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';
@@ -83,17 +84,15 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 </button>
               );
             })}
-            {/* ToDo: リンク追加 */}
-            {false && (
-              <button
-                className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
-                onClick={() => {
-                  setShown(false);
-                }}
-              >
-                アカウントを追加
-              </button>
-            )}
+            <Link
+              className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
+              href="/supporter"
+              onClick={() => {
+                setShown(false);
+              }}
+            >
+              アカウントを追加
+            </Link>
           </div>
         </div>
       )}
