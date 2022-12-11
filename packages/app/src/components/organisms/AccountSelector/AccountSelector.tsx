@@ -2,6 +2,7 @@ import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
+import { useSubscription } from '../../../hooks/useSubscription';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';
 
@@ -20,15 +21,16 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   multiAccounts,
   onChange = () => null,
 }) => {
-  const [shown, setShown] = useState(false);
+  const { isSupporter } = useSubscription();
+  const [isShownModal, setIsShownModal] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (shown) {
+    if (isShownModal) {
       modalRef.current?.focus();
     }
-  }, [shown]);
+  }, [isShownModal]);
 
   return (
     <div className={className}>
@@ -39,7 +41,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
           inactive && 'cursor-default'
         )}
         onClick={() => {
-          !inactive && setShown(!shown);
+          !inactive && setIsShownModal(!isShownModal);
         }}
       >
         <TwitterUserIcon
@@ -51,7 +53,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         </span>
         {!inactive && <Icon className="text-base" type="arrow_down" />}
       </button>
-      {shown && (
+      {isShownModal && (
         <div className="absolute flex w-full justify-center p-4">
           <div
             ref={modalRef}
@@ -62,7 +64,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 return;
               }
               if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-                setShown(false);
+                setIsShownModal(false);
               }
             }}
           >
@@ -73,7 +75,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                   className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-2 text-left last:border-b-0"
                   onClick={() => {
                     onChange(account.id);
-                    setShown(false);
+                    setIsShownModal(false);
                   }}
                 >
                   <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
@@ -88,10 +90,10 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
               className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
               href="/supporter"
               onClick={() => {
-                setShown(false);
+                setIsShownModal(false);
               }}
             >
-              アカウントを追加
+              {isSupporter ? 'アカウントを追加' : '月額99円で複数アカウント切り替え'}
             </Link>
           </div>
         </div>
