@@ -6,9 +6,7 @@ import { Icon } from '../../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;
-
-  /** AccountSelector が有効かどうか */
-  active: boolean;
+  inactive?: boolean;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   onChange?: (uid: string) => void;
@@ -16,7 +14,7 @@ export type AccountSelectorProps = {
 
 export const AccountSelector: React.FC<AccountSelectorProps> = ({
   className,
-  active,
+  inactive = false,
   currentAccount,
   multiAccounts,
   onChange = () => null,
@@ -37,10 +35,10 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         ref={switchRef}
         className={classNames(
           'max-w-36 sm:max-w-48 mx-auto flex items-center rounded-full bg-back p-1 shadow-sm shadow-shadow',
-          !active && 'cursor-default'
+          inactive && 'cursor-default'
         )}
         onClick={() => {
-          active && setShown(!shown);
+          !inactive && setShown(!shown);
         }}
       >
         <TwitterUserIcon
@@ -50,7 +48,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         <span className="mr-2 flex-1 text-center text-xs line-clamp-1 sm:text-sm">
           @{currentAccount?.twitter.screenName ?? ''}
         </span>
-        {active && <Icon className="text-base" type="arrow_down" />}
+        {!inactive && <Icon className="text-base" type="arrow_down" />}
       </button>
       {shown && (
         <div className="absolute flex w-full justify-center p-4">
