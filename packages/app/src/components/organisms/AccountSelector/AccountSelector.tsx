@@ -1,6 +1,6 @@
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';
 
