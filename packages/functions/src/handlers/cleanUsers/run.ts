@@ -1,5 +1,6 @@
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
+import { getStripeRole } from '../../modules/auth/claim';
 import { deleteAuth } from '../../modules/auth/delete';
 import { getUserLastViewing } from '../../modules/firestore/userStatuses/lastViewing';
 import { getWatchesIds } from '../../modules/firestore/watches/getWatches';
@@ -26,6 +27,12 @@ const checkExecutable = async (params: {
   now: Date;
 }): Promise<boolean> => {
   const { uid, active, deletedAuth, lastUpdated, followersCount, now } = params;
+
+  // サポーターの場合は実行しない
+  const role = await getStripeRole(uid);
+  if (role === 'supporter') {
+    return false;
+  }
 
   // 既に削除されている場合は実行しない
   if (deletedAuth) {
