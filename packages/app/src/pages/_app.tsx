@@ -1,7 +1,7 @@
 import { logEvent } from 'firebase/analytics';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAnalytics } from '../modules/analytics';
 import { ThemeContainer } from '../store/theme';
 import '../styles/globals.css';

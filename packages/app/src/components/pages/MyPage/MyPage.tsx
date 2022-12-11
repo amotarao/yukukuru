@@ -1,7 +1,7 @@
 import { FirestoreIdData, UserData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
 import { dayjs } from '../../../modules/dayjs';

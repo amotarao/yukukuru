@@ -1,7 +1,7 @@
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';

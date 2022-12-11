@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
