@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
