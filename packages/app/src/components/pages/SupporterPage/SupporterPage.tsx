@@ -44,7 +44,7 @@ export const SupporterPage: React.FC = () => {
           {!currentAccount ? (
             <div className="h-[32px] sm:h-[40px]"></div>
           ) : (
-            <AccountSelector active={false} currentAccount={currentAccount} multiAccounts={[]} />
+            <AccountSelector inactive currentAccount={currentAccount} multiAccounts={[]} />
           )}
           {isLoadingAuth || isLoadingSubscription || isSupporter === null ? null : !signedIn ? null : !isSupporter ? (
             <p>フリー利用</p>

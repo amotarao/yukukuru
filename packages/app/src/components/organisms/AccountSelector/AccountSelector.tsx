@@ -1,14 +1,14 @@
 import { UserData } from '@yukukuru/types';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
+import { useSubscription } from '../../../hooks/useSubscription';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;
-
-  /** AccountSelector が有効かどうか */
-  active: boolean;
+  inactive?: boolean;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   onChange?: (uid: string) => void;
@@ -16,20 +16,21 @@ export type AccountSelectorProps = {
 
 export const AccountSelector: React.FC<AccountSelectorProps> = ({
   className,
-  active,
+  inactive = false,
   currentAccount,
   multiAccounts,
   onChange = () => null,
 }) => {
-  const [shown, setShown] = useState(false);
+  const { isSupporter } = useSubscription();
+  const [isShownModal, setIsShownModal] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (shown) {
+    if (isShownModal) {
       modalRef.current?.focus();
     }
-  }, [shown]);
+  }, [isShownModal]);
 
   return (
     <div className={className}>
@@ -37,10 +38,10 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         ref={switchRef}
         className={classNames(
           'max-w-36 sm:max-w-48 mx-auto flex items-center rounded-full bg-back p-1 shadow-sm shadow-shadow',
-          !active && 'cursor-default'
+          inactive && 'cursor-default'
         )}
         onClick={() => {
-          active && setShown(!shown);
+          !inactive && setIsShownModal(!isShownModal);
         }}
       >
         <TwitterUserIcon
@@ -50,9 +51,9 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         <span className="mr-2 flex-1 text-center text-xs line-clamp-1 sm:text-sm">
           @{currentAccount?.twitter.screenName ?? ''}
         </span>
-        {active && <Icon className="text-base" type="arrow_down" />}
+        {!inactive && <Icon className="text-base" type="arrow_down" />}
       </button>
-      {shown && (
+      {isShownModal && (
         <div className="absolute flex w-full justify-center p-4">
           <div
             ref={modalRef}
@@ -63,7 +64,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 return;
               }
               if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-                setShown(false);
+                setIsShownModal(false);
               }
             }}
           >
@@ -74,7 +75,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                   className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-2 text-left last:border-b-0"
                   onClick={() => {
                     onChange(account.id);
-                    setShown(false);
+                    setIsShownModal(false);
                   }}
                 >
                   <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
@@ -85,17 +86,15 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                 </button>
               );
             })}
-            {/* ToDo: リンク追加 */}
-            {false && (
-              <button
-                className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
-                onClick={() => {
-                  setShown(false);
-                }}
-              >
-                アカウントを追加
-              </button>
-            )}
+            <Link
+              className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
+              href="/supporter"
+              onClick={() => {
+                setIsShownModal(false);
+              }}
+            >
+              {isSupporter ? 'アカウントを追加' : '月額99円で複数アカウント切り替え'}
+            </Link>
           </div>
         </div>
       )}
