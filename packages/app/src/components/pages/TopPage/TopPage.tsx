@@ -22,18 +22,28 @@ export const TopPage: React.FC = () => {
     >
       <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
         <h1 className="text-3xl">ゆくくる beta</h1>
-        <p className="text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
+        <p className="whitespace-nowrap text-sm">
+          フォロワーがいつきたか・
+          <wbr />
+          いなくなったかを記録します
+        </p>
         <Link className="rounded border border-primary px-4 py-1 text-primary" href="/my">
           マイページ・ログイン
         </Link>
         <div className="flex flex-col gap-2">
+          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs font-bold text-sub">
+            [2022.12] iOSのTwitterアプリ内ブラウザで
+            <wbr />
+            ログインできない場合、
+            <wbr />
+            Safari、Chrome等の
+            <wbr />
+            ブラウザをご利用ください
+          </p>
           <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ツイートする権限はありませんので
             <wbr />
             安心してご利用ください
-          </p>
-          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
-            ※ 不具合が発生する場合があります
           </p>
         </div>
       </section>
