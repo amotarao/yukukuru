@@ -36,7 +36,7 @@ export const TopPage: React.FC = () => {
             <wbr />
             Chromeかパソコン等をご利用ください。
             <br />
-            Twitterの仕様変更による不具合です。
+            Twitter側の不具合と思われます。
           </p>
           <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ツイートする権限はありませんので

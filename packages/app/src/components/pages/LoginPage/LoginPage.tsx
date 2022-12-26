@@ -26,7 +26,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
           <wbr />
           Chromeかパソコン等をご利用ください。
           <br />
-          Twitterの仕様変更による不具合です。
+          Twitter側の不具合と思われます。
         </p>
         <button
           className="inline-block rounded border border-primary px-4 py-1 text-primary"
