@@ -22,13 +22,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
       </h1>
       <div className="mb-4">
         <p className="mb-4 flex flex-wrap justify-center whitespace-nowrap text-xs font-bold text-sub">
-          [2022.12] iOSのTwitterアプリ内ブラウザで
+          [2022.12] iOSでログインできない場合、
           <wbr />
-          ログインできない場合、
-          <wbr />
-          Safari、Chrome等の
-          <wbr />
-          ブラウザをご利用ください
+          Chromeかパソコン等をご利用ください。
+          <br />
+          Twitterの仕様変更による不具合です。
         </p>
         <button
           className="inline-block rounded border border-primary px-4 py-1 text-primary"
