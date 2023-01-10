@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/functions",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "scripts": {
@@ -19,16 +19,16 @@
   "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/pubsub": "^3.2.1",
-    "dayjs": "^1.11.6",
-    "firebase-admin": "^11.2.1",
-    "firebase-functions": "^4.0.2",
+    "dayjs": "^1.11.7",
+    "firebase-admin": "^11.4.1",
+    "firebase-functions": "^4.1.1",
     "lodash": "^4.17.21",
-    "twitter-api-v2": "^1.12.9"
+    "twitter-api-v2": "^1.13.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.188",
-    "eslint": "^8.27.0",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.4"
+    "@types/lodash": "^4.14.191",
+    "eslint": "^8.31.0",
+    "prettier": "^2.8.2",
+    "typescript": "^4.9.4"
   }
 }
