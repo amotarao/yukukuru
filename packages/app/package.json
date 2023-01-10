@@ -30,7 +30,7 @@
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
     "@types/node": "16",
-    "@types/react": "^18.0.25",
+    "@types/react": "^18.0.26",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "autoprefixer": "^10.4.13",
