@@ -27,12 +27,12 @@ export const publish = functions
     const group = getGroupFromTime(12, now);
 
     // 3時間前
-    const prevDate = dayjs(now).subtract(3, 'hours').subtract(1, 'minutes').toDate();
+    const previous = dayjs(now).subtract(3, 'hours').subtract(1, 'minutes').toDate();
 
     const snapshot = await firestore
       .collection('users')
       .where('active', '==', true)
-      .where('lastUpdatedCheckIntegrity', '<', prevDate)
+      .where('lastUpdatedCheckIntegrity', '<', previous)
       .where('group', '==', group)
       .get();
 

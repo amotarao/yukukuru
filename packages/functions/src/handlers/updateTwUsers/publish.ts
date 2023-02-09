@@ -1,4 +1,5 @@
 import { UserData } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -18,8 +19,8 @@ export const publish = functions
     const now = new Date(context.timestamp);
     const group = getGroupFromTime(1, now);
 
-    // 7日前 (-1m)
-    const previous = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000 + 60 * 1000);
+    // 7日前
+    const previous = dayjs(now).subtract(7, 'days').subtract(1, 'minutes').toDate();
 
     const usersSnap = await firestore
       .collection('users')
@@ -27,13 +28,13 @@ export const publish = functions
       .where('lastUpdatedTwUsers', '<', previous)
       .where('group', '==', group)
       .orderBy('lastUpdatedTwUsers', 'asc')
-      .limit(5)
       .get();
 
     const items: Message[] = usersSnap.docs
       .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
       .map((doc) => doc.id)
-      .map((id) => ({ uid: id, publishedAt: now }));
+      .map((id) => ({ uid: id, publishedAt: now }))
+      .slice(0, 5);
     await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);
