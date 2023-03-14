@@ -120,7 +120,7 @@ export const SupporterPage: React.FC = () => {
                       <Icon type="check_circle" />
                     </p>
                     <p className="pl-7 text-sm text-sub">* ランダムに実行</p>
-                    <p className="pl-7 text-sm text-sub">* フォロワー1万人超ごとに +5分</p>
+                    <p className="pl-7 text-sm text-sub">* フォロワー1.5万人超ごとに +5分</p>
                   </li>
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
