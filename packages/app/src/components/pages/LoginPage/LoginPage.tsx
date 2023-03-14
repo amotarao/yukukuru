@@ -21,13 +21,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
         <span className="block">マイページログイン</span>
       </h1>
       <div className="mb-4">
-        <p className="mb-4 flex flex-wrap justify-center whitespace-nowrap text-xs font-bold text-sub">
-          [2022.12] iOSでログインできない場合、
-          <wbr />
-          Chromeかパソコン等をご利用ください。
-          <br />
-          Twitter側の不具合と思われます。
-        </p>
         <button
           className="inline-block rounded border border-primary px-4 py-1 text-primary"
           onClick={() => {

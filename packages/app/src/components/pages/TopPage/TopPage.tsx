@@ -31,13 +31,6 @@ export const TopPage: React.FC = () => {
           マイページ・ログイン
         </Link>
         <div className="flex flex-col gap-2">
-          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs font-bold text-sub">
-            [2022.12] iOSでログインできない場合、
-            <wbr />
-            Chromeかパソコン等をご利用ください。
-            <br />
-            Twitter側の不具合と思われます。
-          </p>
           <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
             ツイートする権限はありませんので
             <wbr />
