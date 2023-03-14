@@ -66,10 +66,10 @@ export const SupporterPage: React.FC = () => {
                 <ul className="flex flex-col gap-4">
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
-                      <span className="text-main">最短15分おき*に更新</span>
+                      <span className="text-main">最短5分おき*に更新</span>
                       <Icon type="check_circle" />
                     </p>
-                    <p className="pl-7 text-sm text-sub">* フォロワー3万人超ごとに +15分</p>
+                    <p className="pl-7 text-sm text-sub">* フォロワー1.5万人超ごとに +5分</p>
                     <p className="hidden pl-7 text-sm text-sub sm:block">&nbsp;</p>
                   </li>
                   <li className="">
@@ -120,7 +120,7 @@ export const SupporterPage: React.FC = () => {
                       <Icon type="check_circle" />
                     </p>
                     <p className="pl-7 text-sm text-sub">* ランダムに実行</p>
-                    <p className="pl-7 text-sm text-sub">* フォロワー3万人超ごとに +15分</p>
+                    <p className="pl-7 text-sm text-sub">* フォロワー1万人超ごとに +5分</p>
                   </li>
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">

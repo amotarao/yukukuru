@@ -37,9 +37,9 @@ const checkExecutable = async (params: {
   const role = await getStripeRole(uid);
   const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
 
-  // サポーターの場合、前回の実行から15分経過していれば実行
+  // サポーターの場合、前回の実行から 5分経過していれば実行
   if (role === 'supporter') {
-    if (minutes < 15 - 1) {
+    if (minutes < 5 - 1) {
       return false;
     }
     return true;
@@ -105,7 +105,7 @@ export const run = functions
     const result = await getFollowersIds(client, {
       userId: twitterId,
       cursor: nextCursor,
-      count: 30000, // Firestore ドキュメント データサイズ制限を考慮した数値
+      count: 15000, // Firestore ドキュメント データサイズ制限を考慮した数値
     });
 
     if ('error' in result) {
