@@ -2,8 +2,8 @@ import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
-import { getAccountVerifyCredentialsLegacy } from '../../modules/twitter/account/verifyCredentials';
 import { getClient } from '../../modules/twitter/client';
+import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter 情報更新 個々の実行 */
@@ -15,7 +15,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, publishedAt } = message.json as Message;
+    const { uid, twitterId, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -38,21 +38,21 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getAccountVerifyCredentialsLegacy(client);
+    const result = await getUsersLookup(client, { usersId: [twitterId] });
 
-    if ('error' in result) {
-      console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`, result.error);
+    if ('error' in result || !result.response.users[0]) {
+      console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got user info from Twitter.`);
 
     const twitter: UserData['twitter'] = {
-      id: result.response.id_str,
-      screenName: result.response.screen_name,
-      name: result.response.name,
-      photoUrl: result.response.profile_image_url_https,
-      followersCount: result.response.followers_count,
-      verified: result.response.verified,
+      id: result.response.users[0].id_str,
+      screenName: result.response.users[0].screen_name,
+      name: result.response.users[0].name,
+      photoUrl: result.response.users[0].profile_image_url_https,
+      followersCount: result.response.users[0].followers_count,
+      verified: result.response.users[0].verified,
     };
 
     await updateUserTwitterInfo(uid, twitter, now);

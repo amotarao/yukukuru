@@ -32,8 +32,13 @@ export const publish = functions
 
     const items: Message[] = usersSnap.docs
       .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
-      .map((doc) => doc.id)
-      .map((id) => ({ uid: id, publishedAt: now }))
+      .map(
+        (doc): Message => ({
+          uid: doc.id,
+          twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
+          publishedAt: now,
+        })
+      )
       .slice(0, 10);
     await publishMessages(topicName, items);
 
