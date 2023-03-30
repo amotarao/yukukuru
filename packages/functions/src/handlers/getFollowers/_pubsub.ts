@@ -12,7 +12,10 @@ export type Message = {
    *
    * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
    */
-  nextCursor: string;
+  nextCursor: string | null;
+
+  /** カーソル */
+  getFollowersNextToken: string | null;
 
   /** 最終実行日時 */
   lastRun: Date | string;

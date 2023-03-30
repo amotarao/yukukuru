@@ -45,7 +45,8 @@ export const publish = functions
       .map((doc) => ({
         uid: doc.id,
         twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
-        nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+        nextCursor: (doc.get('nextCursor') as UserData['nextCursor']) || null,
+        getFollowersNextToken: (doc.get('getFollowersNextToken') as UserData['getFollowersNextToken']) || null,
         lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
         publishedAt: now.toDate(),
       }));
