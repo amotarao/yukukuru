@@ -73,29 +73,33 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
-    const now = new Date(context.timestamp);
+    try {
+      const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
+      const now = new Date(context.timestamp);
 
-    // 10秒以内の実行に限る
-    if (checkJustPublished(now, publishedAt)) {
-      console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
-      return;
+      // 10秒以内の実行に限る
+      if (checkJustPublished(now, publishedAt)) {
+        console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+        return;
+      }
+
+      // 実行可能かを確認
+      const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
+      if (!executable) {
+        console.log(`[Info]: Canceled get followers of [${uid}].`);
+        return;
+      }
+      console.log(`⚙️ Starting get followers of [${uid}].`);
+
+      const client = await getTwitterClientStep(uid);
+      const { ids, next_cursor_str: newNextCursor } = await getFollowersIdsStep(client, uid, twitterId, nextCursor);
+      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
+      await saveDocsStep(now, uid, savingIds, newNextCursor);
+
+      console.log(`✔️ Completed get followers of [${uid}].`);
+    } catch (e) {
+      console.error(e);
     }
-
-    // 実行可能かを確認
-    const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
-    if (!executable) {
-      console.log(`[Info]: Canceled get followers of [${uid}].`);
-      return;
-    }
-    console.log(`⚙️ Starting get followers of [${uid}].`);
-
-    const client = await getTwitterClientStep(uid);
-    const { ids, next_cursor_str: newNextCursor } = await getFollowersIdsStep(client, uid, twitterId, nextCursor);
-    const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
-    await saveDocsStep(now, uid, savingIds, newNextCursor);
-
-    console.log(`✔️ Completed get followers of [${uid}].`);
   });
 
 /**
