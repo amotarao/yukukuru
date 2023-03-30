@@ -1,13 +1,15 @@
 import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
-import { TwitterUser } from '..';
+import { TwitterUserLegacy } from '..';
 import { twitterClientErrorHandler } from '../error';
 
 /**
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
+ *
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
-export const getAccountVerifyCredentials = (
+export const getAccountVerifyCredentialsLegacy = (
   client: TwitterApiReadOnly
-): Promise<{ response: TwitterUser } | { error: ApiResponseError }> => {
+): Promise<{ response: TwitterUserLegacy } | { error: ApiResponseError }> => {
   return client.v1
     .verifyCredentials({
       include_entities: true,
@@ -16,7 +18,7 @@ export const getAccountVerifyCredentials = (
     })
     .then((res) => {
       const { id_str, screen_name, name, profile_image_url_https, followers_count, verified } = res;
-      const response: TwitterUser = {
+      const response: TwitterUserLegacy = {
         id_str,
         screen_name,
         name,

@@ -7,7 +7,7 @@ import { setUserResult } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
-import { getFollowersIds } from '../../modules/twitter/followers/ids';
+import { getFollowersIdsLegacy } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
@@ -102,7 +102,7 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getFollowersIds(client, {
+    const result = await getFollowersIdsLegacy(client, {
       userId: twitterId,
       cursor: nextCursor,
       count: 15000, // Firestore ドキュメント データサイズ制限を考慮した数値

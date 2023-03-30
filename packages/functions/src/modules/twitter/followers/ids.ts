@@ -1,13 +1,13 @@
 import { ApiResponseError, TwitterApiReadOnly, UserFollowerIdsV1Paginator } from 'twitter-api-v2';
 import { twitterClientErrorHandler } from '../error';
 
-export type TwitterGetFollowersIdsParameters = {
+export type TwitterGetFollowersIdsLegacyParameters = {
   userId: string;
   cursor?: string;
   count?: number;
 };
 
-export type TwitterGetFollowersIdsResponse = Required<
+export type TwitterGetFollowersIdsLegacyResponse = Required<
   Pick<UserFollowerIdsV1Paginator['data'], 'ids' | 'next_cursor_str'>
 >;
 
@@ -17,11 +17,13 @@ export type TwitterGetFollowersIdsResponse = Required<
  * 15分につき 15回実行可能
  *
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
+ *
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
-export const getFollowersIdsSingle = async (
+export const getFollowersIdsSingleLegacy = async (
   client: TwitterApiReadOnly,
-  { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: TwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+  { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsLegacyParameters
+): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
   return client.v1
     .userFollowerIds({
       user_id: userId,
@@ -31,7 +33,7 @@ export const getFollowersIdsSingle = async (
     })
     .then((res) => {
       const { ids, next_cursor_str } = res.data;
-      const response: TwitterGetFollowersIdsResponse = { ids, next_cursor_str: next_cursor_str || '0' };
+      const response: TwitterGetFollowersIdsLegacyResponse = { ids, next_cursor_str: next_cursor_str || '0' };
       return { response };
     })
     .catch(twitterClientErrorHandler);
@@ -45,11 +47,13 @@ export const getFollowersIdsSingle = async (
  *
  * @param client Twitter Client
  * @param param パラメータ
+ *
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
-export const getFollowersIds = async (
+export const getFollowersIdsLegacy = async (
   client: TwitterApiReadOnly,
-  { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsParameters
-): Promise<{ response: TwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
+  { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsLegacyParameters
+): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -57,11 +61,11 @@ export const getFollowersIds = async (
   const maxGetCount = Math.min(Math.floor(count / 5000), 15);
 
   while (getCount < maxGetCount) {
-    const obj: TwitterGetFollowersIdsParameters = {
+    const obj: TwitterGetFollowersIdsLegacyParameters = {
       userId,
       cursor: nextCursor,
     };
-    const result = await getFollowersIdsSingle(client, obj);
+    const result = await getFollowersIdsSingleLegacy(client, obj);
 
     // エラーが発生した場合
     if ('error' in result) {
@@ -85,7 +89,7 @@ export const getFollowersIds = async (
     getCount++;
   }
 
-  const response: TwitterGetFollowersIdsResponse = {
+  const response: TwitterGetFollowersIdsLegacyResponse = {
     ids,
     next_cursor_str: nextCursor,
   };

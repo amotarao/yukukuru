@@ -1,7 +1,7 @@
 import { getClient } from './../client';
-import { getFollowersIdsSingle } from './ids';
+import { getFollowersIdsSingleLegacy } from './ids';
 
-describe('twitterFollowersIds', () => {
+describe('getFollowersIdsSingleLegacy', () => {
   const client = getClient({
     appKey: process.env.TWITTER_CONSUMER_KEY,
     appSecret: process.env.TWITTER_CONSUMER_SECRET,
@@ -10,7 +10,7 @@ describe('twitterFollowersIds', () => {
   });
 
   test('should return an array of user ids', async () => {
-    const response = await getFollowersIdsSingle(client, { userId: '1136398555' });
+    const response = await getFollowersIdsSingleLegacy(client, { userId: '99008565' });
     if ('error' in response) {
       console.error(response.error);
       return;
