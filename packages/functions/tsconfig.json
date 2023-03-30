@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "typeRoots": ["./node_modules/@types"],
-    "sourceMap": false,
+    "target": "es2017",
     "strict": true,
-    "target": "es2017"
+    "sourceMap": false,
+    "outDir": "lib",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true
   },
   "compileOnSave": true,
   "include": ["src/**/*.ts"]
