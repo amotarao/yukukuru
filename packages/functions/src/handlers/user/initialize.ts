@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
+import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
-import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const initialize = functions
