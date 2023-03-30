@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
-import { TwitterUserLegacy } from '..';
+import { TwitterUser } from '..';
+import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
 export type TwitterGetUsersLookupParameters = {
@@ -12,10 +13,10 @@ export type TwitterGetUsersLookupParameters = {
  * 100人まで 取得可能
  * 15分につき 900回 実行可能
  */
-const getUsersLookupSingle = (
+const getUsersLookupSingle = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: { users: TwitterUserLegacy[]; errorIds: string[] } } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorIds: string[] } } | { error: ApiResponseError }> => {
   return client.v2
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
@@ -27,17 +28,7 @@ const getUsersLookupSingle = (
 
       return {
         response: {
-          users:
-            data?.map(
-              (user): TwitterUserLegacy => ({
-                id_str: user.id,
-                screen_name: user.username,
-                name: user.name,
-                profile_image_url_https: user.profile_image_url || '',
-                followers_count: user.public_metrics?.followers_count || 0,
-                verified: user.verified || false,
-              })
-            ) ?? [],
+          users: data?.map(toRequiredTwitterUser) ?? [],
           errorIds:
             response.errors
               ?.map((error) => error.value)
@@ -55,13 +46,13 @@ const getUsersLookupSingle = (
 export const getUsersLookup = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: { users: TwitterUserLegacy[]; errorIds: string[] } } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorIds: string[] } } | { error: ApiResponseError }> => {
   const lookup = _.chunk(_.uniq(usersId), 100).map(
     async (
       usersId
     ): Promise<
       | {
-          users: TwitterUserLegacy[];
+          users: TwitterUser[];
           errorIds: string[];
           error: null;
         }
@@ -81,7 +72,7 @@ export const getUsersLookup = async (
   );
   const lookuped = await Promise.all(lookup);
 
-  const users: TwitterUserLegacy[] = [];
+  const users: TwitterUser[] = [];
   const errorIds: string[] = [];
   const errors: ApiResponseError[] = [];
 
