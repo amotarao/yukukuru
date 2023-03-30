@@ -36,10 +36,10 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
 
   const usersFromTw = twUsers.map((user) => {
     const convertedUser: RecordUserData = {
-      id: user.id_str,
-      screenName: user.screen_name,
+      id: user.id,
+      screenName: user.username,
       displayName: user.name,
-      photoUrl: user.profile_image_url_https,
+      photoUrl: user.profile_image_url,
       maybeDeletedOrSuspended: false,
     };
     return convertedUser;

@@ -46,13 +46,14 @@ export const run = functions
     }
     console.log(`⏳ Got user info from Twitter.`);
 
+    const user = result.response.users[0];
     const twitter: UserData['twitter'] = {
-      id: result.response.users[0].id_str,
-      screenName: result.response.users[0].screen_name,
-      name: result.response.users[0].name,
-      photoUrl: result.response.users[0].profile_image_url_https,
-      followersCount: result.response.users[0].followers_count,
-      verified: result.response.users[0].verified,
+      id: user.id,
+      screenName: user.username,
+      name: user.name,
+      photoUrl: user.profile_image_url,
+      followersCount: user.public_metrics.followers_count || 0,
+      verified: user.verified,
     };
 
     await updateUserTwitterInfo(uid, twitter, now);
