@@ -11,6 +11,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "format": "prettier --write .",
+    "test": "jest",
     "lint": "eslint . --ext .ts,.js --ignore-path .gitignore"
   },
   "engines": {
