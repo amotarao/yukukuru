@@ -18,7 +18,7 @@ export type TwitterGetFollowersIdsResponse = Required<
  *
  * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
  */
-const getFollowersIdsSingle = (
+export const getFollowersIdsSingle = async (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsParameters
 ): Promise<{ response: TwitterGetFollowersIdsResponse } | { error: ApiResponseError }> => {
