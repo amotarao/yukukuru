@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
-import { setUserResult } from '../../modules/firestore/users/state';
+import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
@@ -137,7 +137,7 @@ export const run = functions
     // 保存
     const ended = newNextCursor === '0' || newNextCursor === '-1';
     const watchId = await setWatch(uid, normalIds, now, ended);
-    await setUserResult(uid, watchId, ended, newNextCursor, now);
+    await setUserResultLegacy(uid, watchId, ended, newNextCursor, now);
     console.log(`⏳ Updated state to user document of [${uid}].`);
 
     console.log(`✔️ Completed get followers of [${uid}].`);
