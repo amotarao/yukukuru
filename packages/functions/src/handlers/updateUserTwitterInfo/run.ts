@@ -2,7 +2,7 @@ import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
-import { getAccountVerifyCredentials } from '../../modules/twitter/account/verifyCredentials';
+import { getAccountVerifyCredentialsLegacy } from '../../modules/twitter/account/verifyCredentials';
 import { getClient } from '../../modules/twitter/client';
 import { topicName, Message } from './_pubsub';
 
@@ -38,7 +38,7 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getAccountVerifyCredentials(client);
+    const result = await getAccountVerifyCredentialsLegacy(client);
 
     if ('error' in result) {
       console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`, result.error);
