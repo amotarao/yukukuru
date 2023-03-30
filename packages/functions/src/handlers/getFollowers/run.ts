@@ -4,12 +4,13 @@ import { TwitterApiReadOnly } from 'twitter-api-v2';
 import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
-import { setUserResultLegacy } from '../../modules/firestore/users/state';
+import { setUserResult, setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getFollowers, getFollowersMaxResultsMax } from './../../modules/twitter/followers/followers';
 import { topicName, Message } from './_pubsub';
 
 /**
@@ -24,7 +25,8 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
  */
 const checkExecutable = async (params: {
   uid: string;
-  nextCursor: string;
+  nextCursor: Message['nextCursor'];
+  getFollowersNextToken: Message['getFollowersNextToken'];
   lastRun: string | Date;
   publishedAt: string | Date;
 }): Promise<boolean> => {
@@ -74,7 +76,14 @@ export const run = functions
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
     try {
-      const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
+      const {
+        uid,
+        twitterId,
+        nextCursor: getFollowersNextCursor,
+        getFollowersNextToken,
+        lastRun,
+        publishedAt,
+      } = message.json as Message;
       const now = new Date(context.timestamp);
 
       // 10秒以内の実行に限る
@@ -84,7 +93,13 @@ export const run = functions
       }
 
       // 実行可能かを確認
-      const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
+      const executable = await checkExecutable({
+        uid,
+        nextCursor: getFollowersNextCursor,
+        getFollowersNextToken,
+        lastRun,
+        publishedAt,
+      });
       if (!executable) {
         console.log(`[Info]: Canceled get followers of [${uid}].`);
         return;
@@ -92,10 +107,26 @@ export const run = functions
       console.log(`⚙️ Starting get followers of [${uid}].`);
 
       const client = await getTwitterClientStep(uid);
-      const { ids, next_cursor_str: newNextCursor } = await getFollowersIdsStep(client, uid, twitterId, nextCursor);
-      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
-      await saveDocsStep(now, uid, savingIds, newNextCursor);
+      const isLegacy = getFollowersNextCursor !== '-1' && getFollowersNextCursor !== null;
 
+      if (isLegacy) {
+        const { ids, next_cursor_str: nextCursor } = await getFollowersIdsStepLegacy(
+          client,
+          uid,
+          twitterId,
+          getFollowersNextCursor
+        );
+        const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
+        await saveDocsStepLegacy(now, uid, savingIds, nextCursor);
+      } else {
+        const { users, nextToken } = await getFollowersIdsStep(client, uid, twitterId, getFollowersNextToken);
+        const savingIds = await ignoreMaybeDeletedOrSuspendedStep(
+          client,
+          uid,
+          users.map((user) => user.id)
+        );
+        await saveDocsStep(now, uid, savingIds, nextToken);
+      }
       console.log(`✔️ Completed get followers of [${uid}].`);
     } catch (e) {
       console.error(e);
@@ -122,7 +153,12 @@ const getTwitterClientStep = async (uid: string) => {
 /**
  * フォロワーIDリストの取得
  */
-const getFollowersIdsStep = async (client: TwitterApiReadOnly, uid: string, twitterId: string, nextCursor: string) => {
+const getFollowersIdsStepLegacy = async (
+  client: TwitterApiReadOnly,
+  uid: string,
+  twitterId: string,
+  nextCursor: string
+) => {
   const result = await getFollowersIdsLegacy(client, {
     userId: twitterId,
     cursor: nextCursor,
@@ -138,6 +174,33 @@ const getFollowersIdsStep = async (client: TwitterApiReadOnly, uid: string, twit
   }
 
   console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
+  return result.response;
+};
+
+/**
+ * フォロワーIDリストの取得
+ */
+const getFollowersIdsStep = async (
+  client: TwitterApiReadOnly,
+  uid: string,
+  twitterId: string,
+  nextToken: string | null
+) => {
+  const result = await getFollowers(client, {
+    userId: twitterId,
+    maxResults: getFollowersMaxResultsMax * 10,
+    paginationToken: nextToken,
+  });
+
+  if ('error' in result) {
+    if (checkInvalidOrExpiredToken(result.error)) {
+      await setTokenInvalid(uid);
+    }
+
+    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+  }
+
+  console.log(`⏳ Got ${result.response.users.length} followers from Twitter.`);
   return result.response;
 };
 
@@ -169,9 +232,19 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
 /**
  * 結果をドキュメント保存
  */
-const saveDocsStep = async (now: Date, uid: string, ids: string[], nextCursor: string): Promise<void> => {
+const saveDocsStepLegacy = async (now: Date, uid: string, ids: string[], nextCursor: string): Promise<void> => {
   const ended = nextCursor === '0' || nextCursor === '-1';
   const watchId = await setWatch(uid, ids, now, ended);
   await setUserResultLegacy(uid, watchId, ended, nextCursor, now);
+  console.log(`⏳ Updated state to user document of [${uid}].`);
+};
+
+/**
+ * 結果をドキュメント保存
+ */
+const saveDocsStep = async (now: Date, uid: string, ids: string[], nextToken: string | null): Promise<void> => {
+  const ended = nextToken === null;
+  const watchId = await setWatch(uid, ids, now, ended);
+  await setUserResult(uid, watchId, ended, nextToken, now);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };
