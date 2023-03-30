@@ -1,5 +1,6 @@
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
+import { TwitterApiReadOnly } from 'twitter-api-v2';
 import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
@@ -72,73 +73,105 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
-    const now = new Date(context.timestamp);
+    try {
+      const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
+      const now = new Date(context.timestamp);
 
-    // 10秒以内の実行に限る
-    if (checkJustPublished(now, publishedAt)) {
-      console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
-      return;
-    }
-
-    // 実行可能かを確認
-    const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
-    if (!executable) {
-      console.log(`[Info]: Canceled get followers of [${uid}].`);
-      return;
-    }
-    console.log(`⚙️ Starting get followers of [${uid}].`);
-
-    // Twitter Token を取得
-    const token = await getToken(uid);
-    if (token === null) {
-      console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
-      return;
-    }
-    console.log(`⏳ Got token from Firestore.`);
-
-    // フォロワーIDリストを取得
-    const client = getClient({
-      accessToken: token.twitterAccessToken,
-      accessSecret: token.twitterAccessTokenSecret,
-    });
-    const result = await getFollowersIdsLegacy(client, {
-      userId: twitterId,
-      cursor: nextCursor,
-      count: 15000, // Firestore ドキュメント データサイズ制限を考慮した数値
-    });
-
-    if ('error' in result) {
-      if (checkInvalidOrExpiredToken(result.error)) {
-        await setTokenInvalid(uid);
+      // 10秒以内の実行に限る
+      if (checkJustPublished(now, publishedAt)) {
+        console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+        return;
       }
 
-      console.error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
-      return;
-    }
-    console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
-
-    // 凍結等チェック
-    // 取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
-    const { ids, next_cursor_str: newNextCursor } = result.response;
-    const result2 = await getUsersLookup(client, { usersId: ids });
-
-    if ('error' in result2) {
-      if (checkInvalidOrExpiredToken(result2.error)) {
-        await setTokenInvalid(uid);
+      // 実行可能かを確認
+      const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
+      if (!executable) {
+        console.log(`[Info]: Canceled get followers of [${uid}].`);
+        return;
       }
-      console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+      console.log(`⚙️ Starting get followers of [${uid}].`);
+
+      const client = await getTwitterClientStep(uid);
+      const { ids, next_cursor_str: newNextCursor } = await getFollowersIdsStep(client, uid, twitterId, nextCursor);
+      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
+      await saveDocsStep(now, uid, savingIds, newNextCursor);
+
+      console.log(`✔️ Completed get followers of [${uid}].`);
+    } catch (e) {
+      console.error(e);
     }
-    console.log(`⏳ Got ${result.response.ids.length} users from Twitter.`);
-    const errorIds = 'response' in result2 ? result2.response.errorIds : [];
-    const normalIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
-    console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
-
-    // 保存
-    const ended = newNextCursor === '0' || newNextCursor === '-1';
-    const watchId = await setWatch(uid, normalIds, now, ended);
-    await setUserResultLegacy(uid, watchId, ended, newNextCursor, now);
-    console.log(`⏳ Updated state to user document of [${uid}].`);
-
-    console.log(`✔️ Completed get followers of [${uid}].`);
   });
+
+/**
+ * Firestore からユーザーの token を取得し、Twitter Client を生成
+ */
+const getTwitterClientStep = async (uid: string) => {
+  const token = await getToken(uid);
+  if (token === null) {
+    throw new Error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
+  }
+  console.log(`⏳ Got token from Firestore.`);
+
+  const client = getClient({
+    accessToken: token.twitterAccessToken,
+    accessSecret: token.twitterAccessTokenSecret,
+  });
+  return client;
+};
+
+/**
+ * フォロワーIDリストの取得
+ */
+const getFollowersIdsStep = async (client: TwitterApiReadOnly, uid: string, twitterId: string, nextCursor: string) => {
+  const result = await getFollowersIdsLegacy(client, {
+    userId: twitterId,
+    cursor: nextCursor,
+    count: 15000, // Firestore ドキュメント データサイズ制限を考慮した数値
+  });
+
+  if ('error' in result) {
+    if (checkInvalidOrExpiredToken(result.error)) {
+      await setTokenInvalid(uid);
+    }
+
+    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+  }
+
+  console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
+  return result.response;
+};
+
+/**
+ * 凍結ユーザーの除外
+ * レスポンスに入るが、実際には凍結されているユーザーがいるため、その対応
+ * ただし、取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
+ */
+const ignoreMaybeDeletedOrSuspendedStep = async (
+  client: TwitterApiReadOnly,
+  uid: string,
+  ids: string[]
+): Promise<string[]> => {
+  const result2 = await getUsersLookup(client, { usersId: ids });
+
+  if ('error' in result2) {
+    if (checkInvalidOrExpiredToken(result2.error)) {
+      await setTokenInvalid(uid);
+    }
+    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+    return ids;
+  }
+  const errorIds = result2.response.errorIds;
+  const ignoredIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
+  console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
+  return ignoredIds;
+};
+
+/**
+ * 結果をドキュメント保存
+ */
+const saveDocsStep = async (now: Date, uid: string, ids: string[], nextCursor: string): Promise<void> => {
+  const ended = nextCursor === '0' || nextCursor === '-1';
+  const watchId = await setWatch(uid, ids, now, ended);
+  await setUserResultLegacy(uid, watchId, ended, nextCursor, now);
+  console.log(`⏳ Updated state to user document of [${uid}].`);
+};
