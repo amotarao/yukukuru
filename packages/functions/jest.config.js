@@ -1,8 +1,13 @@
 module.exports = {
   roots: ['<rootDir>/src'],
-  testMatch: ['**/?(*.)+(spec|test).+(ts|tsx|js)'],
+  testMatch: ['**/?(*.)+(spec).+(ts|js)'],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+      },
+    ],
   },
   setupFiles: ['<rootDir>/dotenv-config.js'],
 };

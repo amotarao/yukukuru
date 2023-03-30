@@ -1,4 +1,3 @@
-import { describe, expect, test } from '@jest/globals';
 import { getClient } from './../client';
 import { getFollowersIdsSingle } from './ids';
 

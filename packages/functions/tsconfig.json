@@ -8,6 +8,6 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true
   },
-  "compileOnSave": true,
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/**/*.spec.ts"]
 }
