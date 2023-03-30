@@ -6,6 +6,7 @@ import { addRecords } from '../../modules/firestore/records/add';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
+import { convertTwitterUserToRecordUserData } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
@@ -34,17 +35,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   const twUsers = 'error' in result ? [] : result.response.users;
   await setTwUsers(twUsers);
 
-  const usersFromTw = twUsers.map((user) => {
-    const convertedUser: RecordUserData = {
-      id: user.id,
-      screenName: user.username,
-      displayName: user.name,
-      photoUrl: user.profile_image_url,
-      maybeDeletedOrSuspended: false,
-    };
-    return convertedUser;
-  });
-
+  const usersFromTw = twUsers.map(convertTwitterUserToRecordUserData(false));
   return usersFromTw;
 };
 
@@ -68,10 +59,7 @@ const generateRecord =
       }
 
       const item: RecordUserData = {
-        id: user.id,
-        screenName: user.screenName,
-        displayName: user.name,
-        photoUrl: user.photoUrl,
+        ...user,
         maybeDeletedOrSuspended: true,
       };
       return item;

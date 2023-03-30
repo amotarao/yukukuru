@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
 import { TwitterUser } from '..';
+import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
 export type TwitterGetUsersLookupParameters = {
@@ -27,22 +28,7 @@ const getUsersLookupSingle = async (
 
       return {
         response: {
-          users:
-            data?.map(
-              ({ id, username, name, profile_image_url, public_metrics, verified }): TwitterUser => ({
-                id,
-                username,
-                name,
-                profile_image_url: profile_image_url || '',
-                public_metrics: public_metrics || {
-                  followers_count: 0,
-                  following_count: 0,
-                  tweet_count: 0,
-                  listed_count: 0,
-                },
-                verified: verified || false,
-              })
-            ) ?? [],
+          users: data?.map(toRequiredTwitterUser) ?? [],
           errorIds:
             response.errors
               ?.map((error) => error.value)

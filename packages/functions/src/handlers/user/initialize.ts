@@ -3,6 +3,7 @@ import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const initialize = functions
@@ -34,16 +35,7 @@ export const initialize = functions
       return;
     }
 
-    const twitter = result.response.users[0];
-
-    await initializeUser(uid, {
-      id: twitter.id,
-      screenName: twitter.username,
-      name: twitter.name,
-      photoUrl: twitter.profile_image_url,
-      followersCount: twitter.public_metrics.followers_count || 0,
-      verified: twitter.verified,
-    });
+    await initializeUser(uid, convertTwitterUserToUserDataTwitter(result.response.users[0]));
 
     console.log(`✔️ Completed initialize user document for [${uid}].`);
   });

@@ -2,6 +2,7 @@ import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
+import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
@@ -46,16 +47,7 @@ export const run = functions
     }
     console.log(`⏳ Got user info from Twitter.`);
 
-    const user = result.response.users[0];
-    const twitter: UserData['twitter'] = {
-      id: user.id,
-      screenName: user.username,
-      name: user.name,
-      photoUrl: user.profile_image_url,
-      followersCount: user.public_metrics.followers_count || 0,
-      verified: user.verified,
-    };
-
+    const twitter: UserData['twitter'] = convertTwitterUserToUserDataTwitter(result.response.users[0]);
     await updateUserTwitterInfo(uid, twitter, now);
 
     console.log(`⏳ Updated user document twitter info of [${uid}].`);
