@@ -34,7 +34,7 @@ export const setUserResultLegacy = async (
     await ref.update(data);
   } else {
     const data: Pick<UserData<FirestoreDateLike>, 'nextCursor' | 'currentWatchesId' | 'pausedGetFollower'> = {
-      nextCursor: nextCursor,
+      nextCursor,
       currentWatchesId: watchId,
       pausedGetFollower: true,
     };
