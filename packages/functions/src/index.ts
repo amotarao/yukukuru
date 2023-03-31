@@ -7,3 +7,4 @@ export * as user from './handlers/user';
 export * as record from './handlers/record';
 export * as csvExporter from './handlers/csvExporter';
 export * as cleanUsers from './handlers/cleanUsers';
+export * as sharedToken from './handlers/sharedToken';
