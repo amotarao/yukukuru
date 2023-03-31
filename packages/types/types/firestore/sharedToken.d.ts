@@ -14,6 +14,9 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
   /** 最終更新日時 */
   _lastUpdated: T;
 
+  /** 最終確認日時 */
+  _lastChecked: T;
+
   /** 最終利用日時 */
   _lastUsed: {
     /**
