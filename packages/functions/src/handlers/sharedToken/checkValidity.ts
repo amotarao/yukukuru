@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
@@ -63,12 +64,14 @@ export const run = functions
 
     const me = await getMe(client);
     if ('error' in me) {
-      /**
-       * 認証エラー
-       *
-       * @see https://developer.twitter.com/en/support/twitter-api/error-troubleshooting#resource-unauthorized
-       */
+      // 認証エラー
       if (me.error.isAuthError) {
+        await deleteSharedToken(id);
+        return;
+      }
+      // サポート外のトークン
+      // トークンが空欄の際に発生する
+      if (me.error.data.type === EApiV2ErrorCode.UnsupportedAuthentication) {
         await deleteSharedToken(id);
         return;
       }
