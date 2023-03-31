@@ -9,7 +9,7 @@ export const deleteTwitterIdFieldFromToken = functions
     timeoutSeconds: 30,
     memory: '256MB',
   })
-  .pubsub.schedule('*/3 * * * *')
+  .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const collection = firestore.collection('tokens');
