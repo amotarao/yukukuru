@@ -15,6 +15,34 @@
       ]
     },
     {
+      "collectionGroup": "sharedTokens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_invalid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_lastUsed.v2_getUserFollowers",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "sharedTokens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_invalid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_lastUsed.v2_getUsers",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
