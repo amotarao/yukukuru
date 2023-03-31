@@ -14,6 +14,7 @@ export const initializeSharedToken = async (
 ): Promise<void> => {
   const data: SharedToken<Date> = {
     ...inputData,
+    _lastChecked: inputData._lastUpdated,
     _lastUsed: {
       v1_getFollowersIds: new Date(2000, 0, 1),
       v2_getUserFollowers: new Date(2000, 0, 1),
@@ -27,5 +28,12 @@ export const updateSharedToken = async (
   id: string,
   inputData: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_invalid' | '_lastUpdated'>
 ): Promise<void> => {
-  firestore.collection(collectionId).doc(id).update(inputData);
+  const data: Pick<
+    SharedToken<Date>,
+    'accessToken' | 'accessTokenSecret' | '_invalid' | '_lastUpdated' | '_lastChecked'
+  > = {
+    ...inputData,
+    _lastChecked: inputData._lastUpdated,
+  };
+  firestore.collection(collectionId).doc(id).update(data);
 };
