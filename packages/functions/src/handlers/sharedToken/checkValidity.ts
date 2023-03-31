@@ -1,8 +1,11 @@
 import * as functions from 'firebase-functions';
+import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
-  getSharedTokenDocsOrderByLastChecked,
+  deleteSharedToken,
+  getInvalidSharedTokenDocsOrderByLastChecked,
+  getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
-  setLastCheckedSharedToken,
+  setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
@@ -31,8 +34,10 @@ export const publish = functions
   .pubsub.schedule('*/10 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
-    const docs = await getSharedTokenDocsOrderByLastChecked();
-    const items: Message[] = docs.map((doc) => ({
+    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(100);
+    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(10);
+
+    const items: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
       id: doc.id,
       accessToken: doc.data.accessToken,
       accessTokenSecret: doc.data.accessTokenSecret,
@@ -59,13 +64,26 @@ export const run = functions
 
     const me = await getMe(client);
     if ('error' in me) {
-      console.log(me.error);
-      if (checkInvalidOrExpiredToken(me.error)) {
-        await setInvalidSharedToken(id);
+      // 認証エラー
+      if (me.error.isAuthError) {
+        await deleteSharedToken(id);
         return;
       }
+      // サポート外のトークン
+      // トークンが空欄の際に発生する
+      if (me.error.data.type === EApiV2ErrorCode.UnsupportedAuthentication) {
+        await deleteSharedToken(id);
+        return;
+      }
+
+      console.log(me.error);
+      if (checkInvalidOrExpiredToken(me.error)) {
+        await setInvalidSharedToken(id, now);
+        return;
+      }
+
       throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
     }
 
-    await setLastCheckedSharedToken(id, now);
+    await setValidSharedToken(id, now);
   });
