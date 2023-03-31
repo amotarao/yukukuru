@@ -55,3 +55,7 @@ export const setInvalidSharedToken = async (id: string): Promise<void> => {
 export const setLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
   await firestore.collection(collectionId).doc(id).update({ _lastChecked: lastChecked });
 };
+
+export const deleteSharedToken = async (id: string): Promise<void> => {
+  await firestore.collection(collectionId).doc(id).delete();
+};

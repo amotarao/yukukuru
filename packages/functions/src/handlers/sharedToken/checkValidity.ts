@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import {
+  deleteSharedToken,
   getSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
   setLastCheckedSharedToken,
@@ -65,7 +66,7 @@ export const run = functions
        * @see https://developer.twitter.com/en/support/twitter-api/error-troubleshooting#resource-unauthorized
        */
       if (me.error.isAuthError) {
-        await setInvalidSharedToken(id);
+        await deleteSharedToken(id);
         return;
       }
 
