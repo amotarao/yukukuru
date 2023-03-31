@@ -13,7 +13,7 @@ export const deleteTwitterIdFieldFromToken = functions
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const collection = firestore.collection('tokens');
-    const snapshot = await collection.orderBy('twitterId').limit(10).get();
+    const snapshot = await collection.orderBy('twitterId').limit(100).get();
     await Promise.all(
       snapshot.docs.map(async (doc) => {
         await doc.ref.update({
