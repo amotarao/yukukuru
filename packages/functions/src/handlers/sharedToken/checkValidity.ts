@@ -74,6 +74,7 @@ export const run = functions
         await setInvalidSharedToken(id);
         return;
       }
+
       throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
     }
 
