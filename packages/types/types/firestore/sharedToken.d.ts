@@ -20,14 +20,6 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
   /** 最終利用日時 */
   _lastUsed: {
     /**
-     * v1.1 GET /followers/ids
-     *
-     * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
-     * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-     */
-    v1_getFollowersIds: T;
-
-    /**
      * v2 GET /2/users/:id/followers
      *
      * @see https://developer.twitter.com/en/docs/twitter-api/users/follows/api-reference/get-users-id-followers
