@@ -26,6 +26,29 @@ export const deleteTwitterIdFieldFromToken = functions
     console.log(`✔️ Completed ${snapshot.size} document(s).`);
   });
 
+export const deleteLastUsedFieldFromToken = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(async () => {
+    const collection = firestore.collection('tokens');
+    const snapshot = await collection.orderBy('_lastUsed').limit(100).get();
+
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.map((doc) => {
+      bulkWriter.update(doc.ref, {
+        _lastUsed: FieldValue.delete(),
+      });
+    });
+    await bulkWriter.close();
+
+    console.log(`✔️ Completed ${snapshot.size} document(s).`);
+  });
+
 export const addGetFollowersIdsField = functions
   .region('asia-northeast1')
   .runWith({
@@ -44,7 +67,7 @@ export const addGetFollowersIdsField = functions
     const bulkWriter = firestore.bulkWriter();
     snapshot.docs.map((user) => {
       bulkWriter.set(
-        firestore.collection('tokens').doc(user.id),
+        firestore.collection('sharedTokens').doc(user.id),
         {
           _lastUsed: {
             v1_getFollowersIds: new Date(2000, 0, 1),
