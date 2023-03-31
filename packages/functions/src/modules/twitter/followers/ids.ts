@@ -1,6 +1,8 @@
 import { ApiResponseError, TwitterApiReadOnly, UserFollowerIdsV1Paginator } from 'twitter-api-v2';
 import { twitterClientErrorHandler } from '../error';
 
+export const getFollowersIdsLegacyMaxResultsMax = 5000;
+
 export type TwitterGetFollowersIdsLegacyParameters = {
   userId: string;
   cursor?: string;
@@ -22,7 +24,7 @@ export type TwitterGetFollowersIdsLegacyResponse = Required<
  */
 export const getFollowersIdsSingleLegacy = async (
   client: TwitterApiReadOnly,
-  { userId, cursor = '-1', count = 5000 }: TwitterGetFollowersIdsLegacyParameters
+  { userId, cursor = '-1', count = getFollowersIdsLegacyMaxResultsMax }: TwitterGetFollowersIdsLegacyParameters
 ): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
   return client.v1
     .userFollowerIds({
@@ -52,13 +54,13 @@ export const getFollowersIdsSingleLegacy = async (
  */
 export const getFollowersIdsLegacy = async (
   client: TwitterApiReadOnly,
-  { userId, cursor = '-1', count = 75000 }: TwitterGetFollowersIdsLegacyParameters
+  { userId, cursor = '-1', count = getFollowersIdsLegacyMaxResultsMax * 15 }: TwitterGetFollowersIdsLegacyParameters
 ): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
   let getCount = 0;
-  const maxGetCount = Math.min(Math.floor(count / 5000), 15);
+  const maxGetCount = Math.min(Math.floor(count / getFollowersIdsLegacyMaxResultsMax), 15);
 
   while (getCount < maxGetCount) {
     const obj: TwitterGetFollowersIdsLegacyParameters = {

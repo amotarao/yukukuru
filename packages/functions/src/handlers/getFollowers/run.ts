@@ -126,7 +126,7 @@ const getFollowersIdsStep = async (client: TwitterApiReadOnly, uid: string, twit
   const result = await getFollowersIdsLegacy(client, {
     userId: twitterId,
     cursor: nextCursor,
-    count: 15000, // Firestore ドキュメント データサイズ制限を考慮した数値
+    count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
   if ('error' in result) {
