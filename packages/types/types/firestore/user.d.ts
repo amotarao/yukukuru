@@ -20,7 +20,11 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
 
-  /** フォロワー一覧取得 state cursor */
+  /**
+   * フォロワー一覧取得 state cursor
+   *
+   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
+   */
   nextCursor: string;
 
   /** フォロワー一覧取得 state doc-id */

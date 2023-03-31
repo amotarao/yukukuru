@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
 import { TwitterUser } from '..';
+import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
 export type TwitterGetUsersLookupParameters = {
@@ -12,7 +13,7 @@ export type TwitterGetUsersLookupParameters = {
  * 100人まで 取得可能
  * 15分につき 900回 実行可能
  */
-const getUsersLookupSingle = (
+const getUsersLookupSingle = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
 ): Promise<{ response: { users: TwitterUser[]; errorIds: string[] } } | { error: ApiResponseError }> => {
@@ -27,17 +28,7 @@ const getUsersLookupSingle = (
 
       return {
         response: {
-          users:
-            data?.map(
-              (user): TwitterUser => ({
-                id_str: user.id,
-                screen_name: user.username,
-                name: user.name,
-                profile_image_url_https: user.profile_image_url || '',
-                followers_count: user.public_metrics?.followers_count || 0,
-                verified: user.verified || false,
-              })
-            ) ?? [],
+          users: data?.map(toRequiredTwitterUser) ?? [],
           errorIds:
             response.errors
               ?.map((error) => error.value)

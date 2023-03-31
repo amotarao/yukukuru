@@ -8,6 +8,12 @@ on:
       - firebase.json
       - packages/functions/**
       - '!packages/functions/package.json'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: false
+        default: 'develop'
 
 jobs:
   build-deploy:
@@ -17,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v2

@@ -1,4 +1,5 @@
 import { FieldValue, Timestamp } from '@firebase/firestore-types';
+export * from './firestore/sharedToken';
 export * from './firestore/token';
 export * from './firestore/twUser';
 export * from './firestore/user';
