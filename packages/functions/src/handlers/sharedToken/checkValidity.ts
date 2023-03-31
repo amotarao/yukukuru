@@ -9,7 +9,7 @@ import {
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
+import { checkInvalidOrExpiredToken, checkTemporarilyLocked } from '../../modules/twitter/error';
 import { getMe } from '../../modules/twitter/users/me';
 
 const topicName = 'checkValiditySharedToken';
@@ -86,6 +86,11 @@ export const run = functions
       // 403
       // アカウントが削除済みの場合に発生する
       if (me.error.code === 403) {
+        await setInvalidSharedToken(id, now);
+        return;
+      }
+      // アカウントの一時的なロック
+      if (checkTemporarilyLocked(me.error)) {
         await setInvalidSharedToken(id, now);
         return;
       }
