@@ -50,12 +50,32 @@ export const getValidSharedTokenDocsOrderByLastChecked = async (
   return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
 };
 
-export const setInvalidSharedToken = async (id: string): Promise<void> => {
-  await firestore.collection(collectionId).doc(id).update({ _invalid: true });
+export const getInvalidSharedTokenDocsOrderByLastChecked = async (
+  limit: number
+): Promise<{ id: string; data: SharedToken }[]> => {
+  const snapshot = await firestore
+    .collection(collectionId)
+    .where('_invalid', '==', true)
+    .orderBy('_lastChecked', 'asc')
+    .limit(limit)
+    .get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
 };
 
-export const setLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
-  await firestore.collection(collectionId).doc(id).update({ _lastChecked: lastChecked });
+export const setValidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+  const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
+    _invalid: false,
+    _lastChecked: lastChecked,
+  };
+  await firestore.collection(collectionId).doc(id).update(data);
+};
+
+export const setInvalidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+  const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
+    _invalid: true,
+    _lastChecked: lastChecked,
+  };
+  await firestore.collection(collectionId).doc(id).update(data);
 };
 
 export const deleteSharedToken = async (id: string): Promise<void> => {
