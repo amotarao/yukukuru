@@ -59,6 +59,16 @@ export const run = functions
 
     const me = await getMe(client);
     if ('error' in me) {
+      /**
+       * 認証エラー
+       *
+       * @see https://developer.twitter.com/en/support/twitter-api/error-troubleshooting#resource-unauthorized
+       */
+      if (me.error.isAuthError) {
+        await setInvalidSharedToken(id);
+        return;
+      }
+
       console.log(me.error);
       if (checkInvalidOrExpiredToken(me.error)) {
         await setInvalidSharedToken(id);
