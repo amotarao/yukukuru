@@ -188,7 +188,7 @@ const getFollowersIdsStep = async (
 ) => {
   const result = await getFollowers(client, {
     userId: twitterId,
-    maxResults: getFollowersMaxResultsMax * 10,
+    maxResults: getFollowersMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
     paginationToken: nextToken,
   });
 
