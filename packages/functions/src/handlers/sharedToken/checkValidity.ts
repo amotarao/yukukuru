@@ -57,6 +57,8 @@ export const run = functions
     const { id, accessToken, accessTokenSecret } = message.json as Message;
     const now = new Date(context.timestamp);
 
+    console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
+
     const client = getClient({
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
@@ -75,13 +77,20 @@ export const run = functions
         await deleteSharedToken(id);
         return;
       }
-
-      console.log(me.error);
+      // 無効、期限切れのトークン
       if (checkInvalidOrExpiredToken(me.error)) {
+        await deleteSharedToken(id);
+        return;
+      }
+
+      // 403
+      // アカウントが削除済みの場合に発生する
+      if (me.error.code === 403) {
         await setInvalidSharedToken(id, now);
         return;
       }
 
+      console.log(me.error);
       throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
     }
 
