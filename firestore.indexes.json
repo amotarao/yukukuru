@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "sharedTokens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_invalid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_lastChecked",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
