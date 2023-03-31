@@ -59,6 +59,7 @@ export const run = functions
 
     const me = await getMe(client);
     if ('error' in me) {
+      console.log(me.error);
       if (checkInvalidOrExpiredToken(me.error)) {
         await setInvalidSharedToken(id);
         return;
