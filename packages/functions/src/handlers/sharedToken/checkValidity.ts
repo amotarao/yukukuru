@@ -57,6 +57,8 @@ export const run = functions
     const { id, accessToken, accessTokenSecret } = message.json as Message;
     const now = new Date(context.timestamp);
 
+    console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
+
     const client = getClient({
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
