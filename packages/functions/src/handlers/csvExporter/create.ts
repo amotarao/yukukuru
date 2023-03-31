@@ -14,7 +14,7 @@ export const create = functions
     memory: '2GB',
   })
   .firestore.document('csvExportRequests/{id}')
-  .onCreate(async (snapshot, context) => {
+  .onCreate(async (snapshot) => {
     const type = snapshot.get('type') as 'records';
     const userId = snapshot.get('userId') as string;
 
