@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import {
   deleteSharedToken,
-  getSharedTokenDocsOrderByLastChecked,
+  getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
   setLastCheckedSharedToken,
 } from '../../modules/firestore/sharedToken';
@@ -32,7 +32,7 @@ export const publish = functions
   .pubsub.schedule('*/10 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
-    const docs = await getSharedTokenDocsOrderByLastChecked();
+    const docs = await getValidSharedTokenDocsOrderByLastChecked(100);
     const items: Message[] = docs.map((doc) => ({
       id: doc.id,
       accessToken: doc.data.accessToken,
