@@ -16,7 +16,6 @@ export const initializeSharedToken = async (
     ...inputData,
     _lastChecked: inputData._lastUpdated,
     _lastUsed: {
-      v1_getFollowersIds: new Date(2000, 0, 1),
       v2_getUserFollowers: new Date(2000, 0, 1),
       v2_getUsers: new Date(2000, 0, 1),
     },
