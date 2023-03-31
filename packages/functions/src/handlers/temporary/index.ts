@@ -14,13 +14,15 @@ export const deleteTwitterIdFieldFromToken = functions
   .onRun(async () => {
     const collection = firestore.collection('tokens');
     const snapshot = await collection.orderBy('twitterId').limit(100).get();
-    await Promise.all(
-      snapshot.docs.map(async (doc) => {
-        await doc.ref.update({
-          twitterId: FieldValue.delete(),
-        });
-      })
-    );
+
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.map((doc) => {
+      bulkWriter.update(doc.ref, {
+        twitterId: FieldValue.delete(),
+      });
+    });
+    await bulkWriter.close();
+
     console.log(`✔️ Completed ${snapshot.size} document(s).`);
   });
 
@@ -40,21 +42,20 @@ export const addGetFollowersIdsField = functions
     const snapshot = await usersCollection.where('group', '==', group).get();
 
     const bulkWriter = firestore.bulkWriter();
-    await Promise.all(
-      snapshot.docs.map(async (user) => {
-        bulkWriter.set(
-          firestore.collection('tokens').doc(user.id),
-          {
-            _lastUsed: {
-              v1_getFollowersIds: new Date(2000, 0, 1),
-              v2_getUserFollowers: new Date(2000, 0, 1),
-              v2_getUsers: new Date(2000, 0, 1),
-            },
+    snapshot.docs.map((user) => {
+      bulkWriter.set(
+        firestore.collection('tokens').doc(user.id),
+        {
+          _lastUsed: {
+            v1_getFollowersIds: new Date(2000, 0, 1),
+            v2_getUserFollowers: new Date(2000, 0, 1),
+            v2_getUsers: new Date(2000, 0, 1),
           },
-          { merge: true }
-        );
-      })
-    );
+        },
+        { merge: true }
+      );
+    });
     await bulkWriter.close();
+
     console.log(`✔️ Completed ${snapshot.size} document(s).`);
   });
