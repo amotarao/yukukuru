@@ -97,16 +97,16 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
   uid: string,
   ids: string[]
 ): Promise<string[]> => {
-  const result2 = await getUsersLookup(client, { usersId: ids });
+  const result = await getUsersLookup(client, { usersId: ids });
 
-  if ('error' in result2) {
-    if (checkInvalidOrExpiredToken(result2.error)) {
+  if ('error' in result) {
+    if (checkInvalidOrExpiredToken(result.error)) {
       await setTokenInvalid(uid);
     }
     console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
     return ids;
   }
-  const errorIds = result2.response.errorIds;
+  const errorIds = result.response.errorIds;
   const ignoredIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
   console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
   return ignoredIds;
