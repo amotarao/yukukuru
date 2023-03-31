@@ -37,3 +37,21 @@ export const updateSharedToken = async (
   };
   firestore.collection(collectionId).doc(id).update(data);
 };
+
+export const getSharedTokenDocsOrderByLastChecked = async (): Promise<{ id: string; data: SharedToken }[]> => {
+  const snapshot = await firestore
+    .collection(collectionId)
+    .where('_invalid', '==', false)
+    .orderBy('_lastChecked', 'asc')
+    .limit(100)
+    .get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
+};
+
+export const setInvalidSharedToken = async (id: string): Promise<void> => {
+  await firestore.collection(collectionId).doc(id).update({ _invalid: true });
+};
+
+export const setLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+  await firestore.collection(collectionId).doc(id).update({ _lastChecked: lastChecked });
+};
