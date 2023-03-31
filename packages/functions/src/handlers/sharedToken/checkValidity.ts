@@ -28,7 +28,7 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('0 * * * *')
+  .pubsub.schedule('*/10 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const docs = await getSharedTokenDocsOrderByLastChecked();
