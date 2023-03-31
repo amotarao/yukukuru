@@ -8,7 +8,7 @@ import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
 import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
-import { getFollowersIdsLegacy } from '../../modules/twitter/followers/ids';
+import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
