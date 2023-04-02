@@ -3,6 +3,7 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
+import { getSharedTokensForGetFollowersIds } from '../../modules/firestore/sharedToken';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { Message, topicName } from './_pubsub';
@@ -38,14 +39,30 @@ export const publish = functions
       .select('deletedAuth', 'twitter.id', 'nextCursor', 'lastUpdated')
       .get();
     const targetDocs = (snapshot.docs as QueryDocumentSnapshot<UserData>[]).filter(filterExecutable(now.toDate()));
+    const sharedTokens = await getSharedTokensForGetFollowersIds(now.toDate(), targetDocs.length);
 
     // publish データ作成・送信
-    const messages: Message[] = targetDocs.map((doc) => ({
-      uid: doc.id,
-      twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
-      nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
-      publishedAt: now.toDate(),
-    }));
+    const messages: Message[] = targetDocs
+      .map((doc, i) => {
+        const sharedToken = sharedTokens.at(i);
+        if (!sharedToken) {
+          console.log(`❗️ No shared token available for [${doc.id}]`);
+          return null;
+        }
+        const message: Message = {
+          uid: doc.id,
+          twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
+          nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+          sharedToken: {
+            id: sharedToken.id,
+            accessToken: sharedToken.data.accessToken,
+            accessTokenSecret: sharedToken.data.accessTokenSecret,
+          },
+          publishedAt: now.toDate(),
+        };
+        return message;
+      })
+      .filter((message): message is Message => message !== null);
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);

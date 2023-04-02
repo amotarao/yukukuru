@@ -1,4 +1,5 @@
 import { SharedToken } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
 import { firestore } from '../../firebase';
 
 const collectionId = 'sharedTokens';
@@ -80,4 +81,31 @@ export const setInvalidSharedToken = async (id: string, lastChecked: Date): Prom
 
 export const deleteSharedToken = async (id: string): Promise<void> => {
   await firestore.collection(collectionId).doc(id).delete();
+};
+
+export const getSharedTokensForGetFollowersIds = async (
+  now: Date,
+  limit: number
+): Promise<{ id: string; data: SharedToken }[]> => {
+  const beforeDate = dayjs(now).subtract(15, 'minutes').toDate();
+  const snapshot = await firestore
+    .collection(collectionId)
+    .where('_invalid', '==', false)
+    .where('_lastUsed.v1_getFollowersIds', '<', beforeDate)
+    .orderBy('_lastUsed.v1_getFollowersIds')
+    .limit(limit)
+    .get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
+};
+
+export const setLastUsedSharedToken = async (
+  id: string,
+  targetApis: (keyof SharedToken['_lastUsed'])[],
+  now: Date
+): Promise<void> => {
+  const data: Partial<{ [key in `_lastUsed.${keyof SharedToken['_lastUsed']}`]: Date }> = {};
+  targetApis.forEach((api) => {
+    data[`_lastUsed.${api}`] = now;
+  });
+  await firestore.collection(collectionId).doc(id).update(data);
 };
