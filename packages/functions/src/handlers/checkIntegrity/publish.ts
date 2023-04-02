@@ -1,8 +1,8 @@
 import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
-import { QuerySnapshot } from 'firebase-admin/firestore';
+import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { firestore } from '../../modules/firebase';
+import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { Message, topicName } from './_pubsub';
@@ -10,10 +10,6 @@ import { Message, topicName } from './_pubsub';
 /**
  * 整合性チェック 定期実行
  * 整合性チェックのキューを作成
- *
- * 12分ごとに 1グループずつ実行
- * 1日に 120回実行
- * ユーザーごとに 3時間ごとに実行
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -21,27 +17,49 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
-    const now = new Date(context.timestamp);
-    const group = getGroupFromTime(12, now);
+    const now = dayjs(context.timestamp);
 
-    // 3時間前
-    const previous = dayjs(now).subtract(3, 'hours').subtract(1, 'minutes').toDate();
+    const groups = [
+      getGroupFromTime(1, now.toDate()),
+      getGroupFromTime(1, now.add(5, 'minutes').toDate()),
+      getGroupFromTime(1, now.add(10, 'minutes').toDate()),
+    ];
+    const docs = await getUserDocsByGroups(groups);
+    const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
-    const snapshot = (await firestore
-      .collection('users')
-      .where('active', '==', true)
-      .where('lastUpdatedCheckIntegrity', '<', previous)
-      .where('group', '==', group)
-      .get()) as QuerySnapshot<UserData>;
+    const messages: Message[] = targetDocs.map((doc) => ({ uid: doc.id, publishedAt: now.toDate() }));
+    await publishMessages(topicName, messages);
 
-    const items: Message[] = snapshot.docs
-      .filter((doc) => !doc.data().deletedAuth)
-      .map((doc) => doc.id)
-      .map((id) => ({ uid: id, publishedAt: now }));
-    await publishMessages(topicName, items);
-
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });
+
+/** 実行可能かどうかを確認 */
+const filterExecutable =
+  (now: Date) =>
+  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+    const { role, active, deletedAuth, lastUpdatedCheckIntegrity } = snapshot.data();
+
+    // 無効または削除済みユーザーの場合は実行しない
+    if (!active || deletedAuth) {
+      return false;
+    }
+
+    const minutes = dayjs(now).diff(dayjs(lastUpdatedCheckIntegrity.toDate()), 'minutes');
+
+    // サポーターの場合、前回の実行から 20分経過していれば実行
+    if (role === 'supporter') {
+      if (minutes < 20 - 1) {
+        return false;
+      }
+      return true;
+    }
+
+    // それ以外の場合、前回の実行から 3時間経過していれば実行
+    if (minutes < 180 - 1) {
+      return false;
+    }
+    return true;
+  };
