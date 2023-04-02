@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { EApiV2ErrorCode } from 'twitter-api-v2';
+import { EApiV1ErrorCode, EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
@@ -10,7 +10,6 @@ import {
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken, checkTemporarilyLocked } from '../../modules/twitter/error';
 import { getMe } from '../../modules/twitter/users/me';
 
 const topicName = 'checkValiditySharedToken';
@@ -79,7 +78,7 @@ export const run = functions
         return;
       }
       // 無効、期限切れのトークン
-      if (checkInvalidOrExpiredToken(me.error)) {
+      if (me.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
         await deleteSharedToken(id);
         return;
       }
@@ -91,7 +90,7 @@ export const run = functions
         return;
       }
       // アカウントの一時的なロック
-      if (checkTemporarilyLocked(me.error)) {
+      if (me.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
         await setInvalidSharedToken(id, now);
         return;
       }
