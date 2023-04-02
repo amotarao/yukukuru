@@ -7,7 +7,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { getWatches, getWatchesCount } from '../../modules/firestore/watches/getWatches';
+import { getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -18,8 +18,8 @@ import { topicName, Message } from './_pubsub';
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '512MB',
+    timeoutSeconds: 120,
+    memory: '4GB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
@@ -29,13 +29,6 @@ export const run = functions
     // 10秒以内の実行に限る
     if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
       console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
-      return;
-    }
-
-    // Watches が 3000件以上ある場合はキャンセル
-    const count = await getWatchesCount(uid, 3000);
-    if (count >= 3000) {
-      console.log(`[Info]: Canceled check integrity of [${uid}].`);
       return;
     }
 
