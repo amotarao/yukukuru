@@ -46,6 +46,7 @@ export const publish = functions
       .map((doc, i) => {
         const sharedToken = sharedTokens.at(i);
         if (!sharedToken) {
+          console.log(`❗️ No shared token available for [${doc.id}]`);
           return null;
         }
         const message: Message = {
