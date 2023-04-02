@@ -19,7 +19,7 @@ import { topicName, Message } from './_pubsub';
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 120,
+    timeoutSeconds: 60,
     memory: '4GB',
   })
   .pubsub.topic(topicName)
@@ -84,8 +84,8 @@ export const run = functions
     console.log(
       JSON.stringify({
         uid,
-        notExistsDiffs: notExistsDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`),
-        unknownDiffs: unknownDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`),
+        notExistsDiffs: notExistsDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`).slice(0, 20),
+        unknownDiffs: unknownDiffs.map((diff) => `${diff.diff.type}: ${diff.diff.twitterId}`).slice(0, 20),
       })
     );
 
