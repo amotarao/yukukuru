@@ -2,8 +2,10 @@ import dayjs = require('dayjs');
 import * as functions from 'firebase-functions';
 import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
+import { getToken } from '../../modules/firestore/tokens/get';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
+import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
@@ -31,7 +33,7 @@ export const run = functions
 
       // 10秒以内の実行に限る
       if (checkJustPublished(now, publishedAt)) {
-        console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
+        console.error(`❗️Failed to run functions: published more than 10 seconds ago.`);
         return;
       }
       console.log(`⚙️ Starting get followers of [${uid}].`);
@@ -41,7 +43,8 @@ export const run = functions
         uid,
         twitterId,
         nextCursor,
-        sharedToken
+        sharedToken,
+        message.json as Message
       );
       const savingIds = await ignoreMaybeDeletedOrSuspendedStep(uid, ids, sharedToken);
       await saveDocsStep(now, uid, savingIds, newNextCursor, sharedToken);
@@ -60,7 +63,8 @@ const getFollowersIdsStep = async (
   uid: string,
   twitterId: string,
   nextCursor: string,
-  sharedToken: Message['sharedToken']
+  sharedToken: Message['sharedToken'],
+  message: Message
 ) => {
   const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
@@ -73,16 +77,28 @@ const getFollowersIdsStep = async (
     count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
-  if ('error' in result) {
-    // v1.1 API は原因不明の InternalError が発生することがあるため、最終使用日時を1日後に更新して、処理を中断する
-    if (result.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
-      await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds'], dayjs(now).add(1, 'd').toDate());
+  if ('error' in result && result.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
+    const token = await getToken(uid);
+    if (token) {
+      const newMessage: Message = {
+        ...message,
+        sharedToken: {
+          id: uid,
+          accessToken: token.twitterAccessToken,
+          accessTokenSecret: token.twitterAccessTokenSecret,
+        },
+      };
+      await publishMessages(topicName, [newMessage]);
+      throw new Error(`🔄 Retry get followers ids of [${uid}].`);
     }
+  }
+
+  if ('error' in result) {
     // v1.1 API は v2 と違い、アカウントロックのエラーが発生することがあるため、最終使用日時を1週間後に更新して、処理を中断する
     if (result.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
       await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds'], dayjs(now).add(1, 'w').toDate());
     }
-    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     throw new Error(message);
   }
 
@@ -108,7 +124,7 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
   const result = await getUsersLookup(sharedClient, { usersId: ids });
 
   if ('error' in result) {
-    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     console.error(message);
     return ids;
   }
