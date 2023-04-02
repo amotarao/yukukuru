@@ -76,7 +76,7 @@ const filterExecutable =
     }
 
     // 取得途中のユーザーはいつでも許可
-    if (nextCursor !== '-1') {
+    if (nextCursor !== '-1' || getFollowersNextToken !== null) {
       return true;
     }
 
