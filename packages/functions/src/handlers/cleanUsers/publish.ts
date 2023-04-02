@@ -1,7 +1,5 @@
-import { UserData } from '@yukukuru/types';
-import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { firestore } from '../../modules/firebase';
+import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { Message, topicName } from './_pubsub';
@@ -29,14 +27,10 @@ export const publish = functions
     // 実行するかどうかは run で確認
     const group = getGroupFromTime(60, now);
 
-    const snapshot = (await firestore
-      .collection('users')
-      .where('group', '==', group)
-      .select('active', 'deletedAuth', 'lastUpdated', 'twitter')
-      .get()) as QuerySnapshot<Pick<UserData, 'active' | 'deletedAuth' | 'lastUpdated' | 'twitter'>>;
+    const docs = await getUserDocsByGroups([group]);
 
     // publish データ作成・送信
-    const messages: Message[] = snapshot.docs.map((doc) => {
+    const messages: Message[] = docs.map((doc) => {
       const { active, deletedAuth, lastUpdated, twitter } = doc.data();
       return {
         uid: doc.id,

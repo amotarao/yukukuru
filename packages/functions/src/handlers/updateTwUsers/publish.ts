@@ -31,12 +31,12 @@ export const publish = functions
       .orderBy('lastUpdatedTwUsers', 'asc')
       .get()) as QuerySnapshot<UserData>;
 
-    const items: Message[] = snapshot.docs
+    const messages: Message[] = snapshot.docs
       .filter((doc) => !doc.data().deletedAuth)
       .map((doc) => doc.id)
       .map((id) => ({ uid: id, publishedAt: now }))
       .slice(0, 5);
-    await publishMessages(topicName, items);
+    await publishMessages(topicName, messages);
 
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });

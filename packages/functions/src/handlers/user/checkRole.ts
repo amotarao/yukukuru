@@ -29,7 +29,7 @@ export const publish = functions
     const groups = [getGroupFromTime(60, now)];
 
     const docs = await getUserDocsByGroups(groups);
-    const messages = docs.map((doc) => ({ uid: doc.id }));
+    const messages: Message[] = docs.map((doc) => ({ userId: doc.id }));
 
     await publishMessages(topicName, messages);
     console.log(`✔️ Completed publish ${messages.length} message.`);
