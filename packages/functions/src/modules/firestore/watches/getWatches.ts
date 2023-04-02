@@ -1,4 +1,5 @@
 import { FirestoreIdData, WatchData } from '@yukukuru/types';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
@@ -41,7 +42,7 @@ export const getWatchesIds = async ({ uid, count }: Props): Promise<string[]> =>
     .orderBy('getStartDate')
     .select('ended')
     .limit(count)
-    .get();
+    .get() as Promise<QuerySnapshot<Pick<WatchData, 'ended'>>>;
 
   const qs = await request.catch((): false => false);
   if (!qs) {
@@ -56,7 +57,12 @@ export const getWatchesIds = async ({ uid, count }: Props): Promise<string[]> =>
  * Watches を新しい順に順に取得する
  */
 export const getLatestWatches = async ({ uid, count }: Props): Promise<Response> => {
-  const request = usersCollection.doc(uid).collection('watches').orderBy('getEndDate', 'desc').limit(count).get();
+  const request = usersCollection
+    .doc(uid)
+    .collection('watches')
+    .orderBy('getEndDate', 'desc')
+    .limit(count)
+    .get() as Promise<QuerySnapshot<WatchData>>;
 
   const qs = await request.catch((): false => false);
   if (!qs) {
@@ -66,7 +72,7 @@ export const getLatestWatches = async ({ uid, count }: Props): Promise<Response>
   const docs = qs.docs.map((doc) => {
     return {
       id: doc.id,
-      data: doc.data() as WatchData,
+      data: doc.data(),
     };
   });
 
@@ -77,6 +83,11 @@ export const getLatestWatches = async ({ uid, count }: Props): Promise<Response>
  * Watches の件数を取得
  */
 export const getWatchesCount = async (uid: string, limit = Infinity): Promise<number> => {
-  const querySnapshot = await usersCollection.doc(uid).collection('watches').select('ended').limit(limit).get();
+  const querySnapshot = (await usersCollection
+    .doc(uid)
+    .collection('watches')
+    .select('ended')
+    .limit(limit)
+    .get()) as QuerySnapshot<Pick<WatchData, 'ended'>>;
   return querySnapshot.size;
 };

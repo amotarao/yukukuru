@@ -1,5 +1,6 @@
 import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -22,20 +23,20 @@ export const publish = functions
     // 3日前
     const previous = dayjs(now).subtract(3, 'days').subtract(1, 'minutes').toDate();
 
-    const usersSnap = await firestore
+    const usersSnap = (await firestore
       .collection('users')
       .where('active', '==', true)
       .where('lastUpdatedUserTwitterInfo', '<', previous)
       .where('group', '==', group)
       .orderBy('lastUpdatedUserTwitterInfo', 'asc')
-      .get();
+      .get()) as QuerySnapshot<UserData>;
 
     const items: Message[] = usersSnap.docs
-      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
+      .filter((doc) => !doc.data().deletedAuth)
       .map(
         (doc): Message => ({
           uid: doc.id,
-          twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
+          twitterId: doc.data().twitter.id,
           publishedAt: now,
         })
       )
