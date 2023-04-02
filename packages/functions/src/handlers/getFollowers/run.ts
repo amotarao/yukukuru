@@ -1,10 +1,8 @@
 import * as functions from 'firebase-functions';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
-import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
@@ -60,19 +58,20 @@ const getFollowersIdsStep = async (
   nextCursor: string,
   sharedToken: Message['sharedToken']
 ) => {
-  const client = getClient({
+  const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getFollowersIdsLegacy(client, {
+  const result = await getFollowersIdsLegacy(sharedClient, {
     userId: twitterId,
     cursor: nextCursor,
     count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
   if ('error' in result) {
-    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    throw new Error(message);
   }
 
   console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
@@ -89,18 +88,16 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
   ids: string[],
   sharedToken: Message['sharedToken']
 ): Promise<string[]> => {
-  const client = getClient({
+  const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getUsersLookup(client, { usersId: ids });
+  const result = await getUsersLookup(sharedClient, { usersId: ids });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
-      await setTokenInvalid(uid);
-    }
-    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    console.error(message);
     return ids;
   }
   const errorIds = result.response.errorIds;
