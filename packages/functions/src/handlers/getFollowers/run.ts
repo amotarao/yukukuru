@@ -1,3 +1,4 @@
+import dayjs = require('dayjs');
 import * as functions from 'firebase-functions';
 import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
@@ -73,9 +74,13 @@ const getFollowersIdsStep = async (
   });
 
   if ('error' in result) {
-    // v1.1 API は原因不明の InternalError が発生することがあるため、最終使用日時を更新して、処理を中断する
+    // v1.1 API は原因不明の InternalError が発生することがあるため、最終使用日時を1日後に更新して、処理を中断する
     if (result.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
-      await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds', 'v2_getUsers'], now);
+      await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds'], dayjs(now).add(1, 'd').toDate());
+    }
+    // v1.1 API は v2 と違い、アカウントロックのエラーが発生することがあるため、最終使用日時を1週間後に更新して、処理を中断する
+    if (result.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
+      await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds'], dayjs(now).add(1, 'w').toDate());
     }
     const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     throw new Error(message);

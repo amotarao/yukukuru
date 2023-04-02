@@ -66,6 +66,8 @@ export const run = functions
 
     const me = await getMe(client);
     if ('error' in me) {
+      console.log(me.error);
+
       // 認証エラー
       if (me.error.isAuthError) {
         await deleteSharedToken(id);
@@ -95,7 +97,6 @@ export const run = functions
         return;
       }
 
-      console.log(me.error);
       throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
     }
 
