@@ -12,6 +12,7 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
   const now = admin.firestore.FieldValue.serverTimestamp();
 
   const data: UserData<FirestoreDateLike> = {
+    role: null,
     active: true,
     deletedAuth: false,
     lastUpdated: new Date(0),

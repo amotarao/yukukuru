@@ -2,11 +2,13 @@ import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
 export type UserData<T extends FirestoreDateLike = Timestamp> = {
+  role: 'supporter' | null;
+
   /** 有効かどうか */
   active: boolean;
 
   /** auth が削除されているかどうか */
-  deletedAuth?: boolean;
+  deletedAuth: boolean;
 
   /** フォロワー一覧取得 最終実行日時 */
   lastUpdated: T;

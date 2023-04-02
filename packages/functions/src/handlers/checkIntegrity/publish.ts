@@ -1,5 +1,6 @@
 import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -29,15 +30,15 @@ export const publish = functions
     // 3時間前
     const previous = dayjs(now).subtract(3, 'hours').subtract(1, 'minutes').toDate();
 
-    const snapshot = await firestore
+    const snapshot = (await firestore
       .collection('users')
       .where('active', '==', true)
       .where('lastUpdatedCheckIntegrity', '<', previous)
       .where('group', '==', group)
-      .get();
+      .get()) as QuerySnapshot<UserData>;
 
     const items: Message[] = snapshot.docs
-      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
+      .filter((doc) => !doc.data().deletedAuth)
       .map((doc) => doc.id)
       .map((id) => ({ uid: id, publishedAt: now }));
     await publishMessages(topicName, items);

@@ -1,8 +1,5 @@
-import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { getStripeRole } from '../../modules/auth/claim';
-import { getToken } from '../../modules/firestore/tokens/get';
+import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResult, setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
@@ -20,52 +17,6 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
   return new Date(now).getTime() - new Date(published).getTime() > diffMs;
 };
 
-/**
- * 実行可能かどうかを確認
- */
-const checkExecutable = async (params: {
-  uid: string;
-  nextCursor: Message['nextCursor'];
-  getFollowersNextToken: Message['getFollowersNextToken'];
-  lastRun: string | Date;
-  publishedAt: string | Date;
-}): Promise<boolean> => {
-  const { uid, nextCursor, lastRun, publishedAt } = params;
-
-  // 取得途中のユーザーはいつでも許可
-  if (nextCursor !== '-1') {
-    return true;
-  }
-
-  const role = await getStripeRole(uid);
-  const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
-
-  // サポーターの場合、前回の実行から 5分経過していれば実行
-  if (role === 'supporter') {
-    if (minutes < 5 - 1) {
-      return false;
-    }
-    return true;
-  }
-
-  // 前回の実行から6時間以上の間隔をあける
-  if (minutes < 60 * 6 - 1) {
-    return false;
-  }
-
-  // 前回の実行から72時間以上経っていたら無条件に実行する
-  if (minutes > 60 * 72 - 1) {
-    return true;
-  }
-
-  // ６~72時間であれば、毎回2%確率で実行
-  if (Math.random() * 100 <= 2) {
-    return true;
-  }
-
-  return false;
-};
-
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions
   .region('asia-northeast1')
@@ -81,7 +32,7 @@ export const run = functions
         twitterId,
         nextCursor: getFollowersNextCursor,
         getFollowersNextToken,
-        lastRun,
+        sharedToken,
         publishedAt,
       } = message.json as Message;
       const now = new Date(context.timestamp);
@@ -91,41 +42,27 @@ export const run = functions
         console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
         return;
       }
-
-      // 実行可能かを確認
-      const executable = await checkExecutable({
-        uid,
-        nextCursor: getFollowersNextCursor,
-        getFollowersNextToken,
-        lastRun,
-        publishedAt,
-      });
-      if (!executable) {
-        console.log(`[Info]: Canceled get followers of [${uid}].`);
-        return;
-      }
       console.log(`⚙️ Starting get followers of [${uid}].`);
 
-      const client = await getTwitterClientStep(uid);
       const isLegacy = getFollowersNextCursor !== '-1' && getFollowersNextCursor !== null;
 
       if (isLegacy) {
         const { ids, next_cursor_str: nextCursor } = await getFollowersIdsStepLegacy(
-          client,
           uid,
           twitterId,
-          getFollowersNextCursor
+          getFollowersNextCursor,
+          sharedToken
         );
-        const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, ids);
-        await saveDocsStepLegacy(now, uid, savingIds, nextCursor);
+        const savingIds = await ignoreMaybeDeletedOrSuspendedStep(uid, ids, sharedToken);
+        await saveDocsStepLegacy(now, uid, savingIds, nextCursor, sharedToken);
       } else {
-        const { users, nextToken } = await getFollowersIdsStep(client, uid, twitterId, getFollowersNextToken);
+        const { users, nextToken } = await getFollowersIdsStep(uid, twitterId, getFollowersNextToken, sharedToken);
         const savingIds = await ignoreMaybeDeletedOrSuspendedStep(
-          client,
           uid,
-          users.map((user) => user.id)
+          users.map((user) => user.id),
+          sharedToken
         );
-        await saveDocsStep(now, uid, savingIds, nextToken);
+        await saveDocsStep(now, uid, savingIds, nextToken, sharedToken);
       }
       console.log(`✔️ Completed get followers of [${uid}].`);
     } catch (e) {
@@ -134,43 +71,28 @@ export const run = functions
   });
 
 /**
- * Firestore からユーザーの token を取得し、Twitter Client を生成
- */
-const getTwitterClientStep = async (uid: string) => {
-  const token = await getToken(uid);
-  if (token === null) {
-    throw new Error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
-  }
-  console.log(`⏳ Got token from Firestore.`);
-
-  const client = getClient({
-    accessToken: token.twitterAccessToken,
-    accessSecret: token.twitterAccessTokenSecret,
-  });
-  return client;
-};
-
-/**
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStepLegacy = async (
-  client: TwitterApiReadOnly,
   uid: string,
   twitterId: string,
-  nextCursor: string
+  nextCursor: string,
+  sharedToken: Message['sharedToken']
 ) => {
-  const result = await getFollowersIdsLegacy(client, {
+  const sharedClient = getClient({
+    accessToken: sharedToken.accessToken,
+    accessSecret: sharedToken.accessTokenSecret,
+  });
+
+  const result = await getFollowersIdsLegacy(sharedClient, {
     userId: twitterId,
     cursor: nextCursor,
     count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
-      await setTokenInvalid(uid);
-    }
-
-    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    throw new Error(message);
   }
 
   console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
@@ -181,12 +103,17 @@ const getFollowersIdsStepLegacy = async (
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStep = async (
-  client: TwitterApiReadOnly,
   uid: string,
   twitterId: string,
-  nextToken: string | null
+  nextToken: string | null,
+  sharedToken: Message['sharedToken']
 ) => {
-  const result = await getFollowers(client, {
+  const sharedClient = getClient({
+    accessToken: sharedToken.accessToken,
+    accessSecret: sharedToken.accessTokenSecret,
+  });
+
+  const result = await getFollowers(sharedClient, {
     userId: twitterId,
     maxResults: getFollowersMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
     paginationToken: nextToken,
@@ -210,20 +137,23 @@ const getFollowersIdsStep = async (
  * ただし、取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
  */
 const ignoreMaybeDeletedOrSuspendedStep = async (
-  client: TwitterApiReadOnly,
   uid: string,
-  ids: string[]
+  ids: string[],
+  sharedToken: Message['sharedToken']
 ): Promise<string[]> => {
-  const result2 = await getUsersLookup(client, { usersId: ids });
+  const sharedClient = getClient({
+    accessToken: sharedToken.accessToken,
+    accessSecret: sharedToken.accessTokenSecret,
+  });
 
-  if ('error' in result2) {
-    if (checkInvalidOrExpiredToken(result2.error)) {
-      await setTokenInvalid(uid);
-    }
-    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+  const result = await getUsersLookup(sharedClient, { usersId: ids });
+
+  if ('error' in result) {
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    console.error(message);
     return ids;
   }
-  const errorIds = result2.response.errorIds;
+  const errorIds = result.response.errorIds;
   const ignoredIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
   console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
   return ignoredIds;
@@ -232,19 +162,33 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
 /**
  * 結果をドキュメント保存
  */
-const saveDocsStepLegacy = async (now: Date, uid: string, ids: string[], nextCursor: string): Promise<void> => {
+const saveDocsStepLegacy = async (
+  now: Date,
+  uid: string,
+  ids: string[],
+  nextCursor: string,
+  sharedToken: Message['sharedToken']
+): Promise<void> => {
   const ended = nextCursor === '0' || nextCursor === '-1';
   const watchId = await setWatch(uid, ids, now, ended);
   await setUserResultLegacy(uid, watchId, ended, nextCursor, now);
+  await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds', 'v2_getUsers'], now);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };
 
 /**
  * 結果をドキュメント保存
  */
-const saveDocsStep = async (now: Date, uid: string, ids: string[], nextToken: string | null): Promise<void> => {
+const saveDocsStep = async (
+  now: Date,
+  uid: string,
+  ids: string[],
+  nextToken: string | null,
+  sharedToken: Message['sharedToken']
+): Promise<void> => {
   const ended = nextToken === null;
   const watchId = await setWatch(uid, ids, now, ended);
   await setUserResult(uid, watchId, ended, nextToken, now);
+  await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };

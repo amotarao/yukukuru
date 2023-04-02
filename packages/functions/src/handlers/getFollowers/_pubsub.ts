@@ -17,8 +17,12 @@ export type Message = {
   /** カーソル */
   getFollowersNextToken: string | null;
 
-  /** 最終実行日時 */
-  lastRun: Date | string;
+  /** 共有トークン */
+  sharedToken: {
+    id: string;
+    accessToken: string;
+    accessTokenSecret: string;
+  };
 
   /** 送信日時 */
   publishedAt: Date | string;
