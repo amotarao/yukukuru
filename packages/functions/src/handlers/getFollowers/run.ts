@@ -1,10 +1,8 @@
 import * as functions from 'firebase-functions';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
-import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
