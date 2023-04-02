@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
 import {
-  getUsersByGroup,
+  getUserDocsByGroups,
   getUsersInAllowedAccessUsers,
   removeIdFromAllowedAccessUsers,
   setRoleToUser,
@@ -26,9 +26,9 @@ export const publish = functions
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
-    const group = getGroupFromTime(60, now);
+    const groups = [getGroupFromTime(60, now)];
 
-    const docs = await getUsersByGroup(group);
+    const docs = await getUserDocsByGroups(groups);
     const messages = docs.map((doc) => ({ uid: doc.id }));
 
     await publishMessages(topicName, messages);
