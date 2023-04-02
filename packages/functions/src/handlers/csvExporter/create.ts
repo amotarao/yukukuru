@@ -1,5 +1,6 @@
 import { Timestamp } from '@firebase/firestore-types';
 import { RecordData } from '@yukukuru/types';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore, bucket } from '../../modules/firebase';
 
@@ -20,23 +21,23 @@ export const create = functions
 
     switch (type) {
       case 'records': {
-        const recordsSnapshot = await firestore
+        const recordsSnapshot = (await firestore
           .collection('users')
           .doc(userId)
           .collection('records')
           .orderBy('durationEnd')
-          .get();
+          .get()) as QuerySnapshot<RecordData>;
 
         const head = ['id', 'type', 'durationStart', 'durationEnd', 'twitterId', 'maybeDeletedOrSuspended'].join(',');
         const rows = recordsSnapshot.docs.map((doc) => {
           const id = doc.id;
-          const type = doc.get('type') as RecordData['type'];
-          const durationStart = toDateText(doc.get('durationStart') as RecordData['durationStart']);
-          const durationEnd = toDateText(doc.get('durationEnd') as RecordData['durationEnd']);
-          const twitterId = doc.get('user.id') as RecordData['user']['id'];
-          const maybeDeletedOrSuspended = doc.get(
-            'user.maybeDeletedOrSuspended'
-          ) as RecordData['user']['maybeDeletedOrSuspended'];
+          const data = doc.data();
+
+          const type = data['type'];
+          const durationStart = toDateText(data.durationStart);
+          const durationEnd = toDateText(data.durationEnd);
+          const twitterId = data.user.id;
+          const maybeDeletedOrSuspended = data.user.maybeDeletedOrSuspended;
 
           const row = [id, type, durationStart, durationEnd, twitterId, maybeDeletedOrSuspended].join(',');
           return row;
