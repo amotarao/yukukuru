@@ -2,6 +2,7 @@ import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } f
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
+import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { firestore } from '../../modules/firebase';
 import { addRecords } from '../../modules/firestore/records/add';
 import { getToken } from '../../modules/firestore/tokens/get';
@@ -9,7 +10,6 @@ import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { convertTwitterUserToRecordUserData } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
@@ -28,7 +28,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   const result = await getUsersLookup(client, { usersId: userIds });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
+    if (result.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
       await setTokenInvalid(uid);
     }
   }

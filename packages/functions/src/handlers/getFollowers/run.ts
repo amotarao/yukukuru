@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { setUserResult, setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
@@ -46,6 +47,7 @@ export const run = functions
 
       if (isLegacy) {
         const { ids, next_cursor_str: nextCursor } = await getFollowersIdsStepLegacy(
+          now,
           uid,
           twitterId,
           getFollowersNextCursor,
@@ -72,6 +74,7 @@ export const run = functions
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStepLegacy = async (
+  now: Date,
   uid: string,
   twitterId: string,
   nextCursor: string,
@@ -89,6 +92,10 @@ const getFollowersIdsStepLegacy = async (
   });
 
   if ('error' in result) {
+    // v1.1 API は原因不明の InternalError が発生することがあるため、最終使用日時を更新して、処理を中断する
+    if (result.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
+      await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds', 'v2_getUsers'], now);
+    }
     const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     throw new Error(message);
   }
