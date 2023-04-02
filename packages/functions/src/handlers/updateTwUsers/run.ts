@@ -29,7 +29,7 @@ export const run = functions
     console.log(`⚙️ Starting update twUser documents for [${uid}].`);
 
     const [watches, token] = await Promise.all([getLatestWatches(uid, 5), getToken(uid)]);
-    const followers = _.uniq(_.flatten((watches || []).map((doc) => doc.data.followers))).slice(0, 10000); // 10000人まで
+    const followers = _.uniq(_.flatten((watches || []).map((doc) => doc.data().followers))).slice(0, 10000); // 10000人まで
 
     if (token === null) {
       console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
