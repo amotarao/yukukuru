@@ -14,9 +14,6 @@ export type Message = {
    */
   nextCursor: string;
 
-  /** 最終実行日時 */
-  lastRun: Date | string;
-
   /** 送信日時 */
   publishedAt: Date | string;
 };
