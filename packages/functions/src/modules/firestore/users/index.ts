@@ -1,13 +1,13 @@
 import { UserData } from '@yukukuru/types';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
 const collection = firestore.collection('users');
 
 /** グループを指定してユーザーリストを取得 */
-export const getUsersByGroups = async (groups: number[]): Promise<{ id: string; data: UserData }[]> => {
+export const getUserDocsByGroups = async (groups: number[]): Promise<QueryDocumentSnapshot<UserData>[]> => {
   const snapshot = await collection.where('group', 'in', groups).get();
-  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as UserData }));
+  return snapshot.docs as QueryDocumentSnapshot<UserData>[];
 };
 
 /** role を更新 */
