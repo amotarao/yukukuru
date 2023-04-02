@@ -72,7 +72,8 @@ const getFollowersIdsStep = async (
   });
 
   if ('error' in result) {
-    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    throw new Error(message);
   }
 
   console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
@@ -97,7 +98,8 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
   const result = await getUsersLookup(sharedClient, { usersId: ids });
 
   if ('error' in result) {
-    console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    console.error(message);
     return ids;
   }
   const errorIds = result.response.errorIds;
