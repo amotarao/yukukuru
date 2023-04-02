@@ -1,4 +1,5 @@
 import { UserData } from '@yukukuru/types';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -28,21 +29,24 @@ export const publish = functions
     // 実行するかどうかは run で確認
     const group = getGroupFromTime(60, now);
 
-    const snapshot = await firestore
+    const snapshot = (await firestore
       .collection('users')
       .where('group', '==', group)
-      .select('active', 'deletedAuth', 'lastUpdated', 'twitter.followersCount')
-      .get();
+      .select('active', 'deletedAuth', 'lastUpdated', 'twitter')
+      .get()) as QuerySnapshot<Pick<UserData, 'active' | 'deletedAuth' | 'lastUpdated' | 'twitter'>>;
 
     // publish データ作成・送信
-    const messages: Message[] = snapshot.docs.map((doc) => ({
-      uid: doc.id,
-      active: doc.get('active') as UserData['active'],
-      deletedAuth: (doc.get('deletedAuth') as UserData['deletedAuth']) || false,
-      lastUpdated: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
-      followersCount: doc.get('twitter.followersCount') as UserData['twitter']['followersCount'],
-      publishedAt: now,
-    }));
+    const messages: Message[] = snapshot.docs.map((doc) => {
+      const { active, deletedAuth, lastUpdated, twitter } = doc.data();
+      return {
+        uid: doc.id,
+        active: active,
+        deletedAuth: deletedAuth || false,
+        lastUpdated: lastUpdated.toDate(),
+        followersCount: twitter.followersCount,
+        publishedAt: now,
+      };
+    });
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);

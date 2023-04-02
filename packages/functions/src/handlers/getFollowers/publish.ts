@@ -51,8 +51,8 @@ export const publish = functions
         }
         const message: Message = {
           uid: doc.id,
-          twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
-          nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+          twitterId: doc.data().twitter.id,
+          nextCursor: doc.data().nextCursor,
           sharedToken: {
             id: sharedToken.id,
             accessToken: sharedToken.data.accessToken,

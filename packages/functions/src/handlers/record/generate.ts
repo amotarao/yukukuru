@@ -1,4 +1,5 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { firestore } from '../../modules/firebase';
@@ -94,7 +95,7 @@ export const generate = functions
       return;
     }
 
-    const endedQuerySnapshot = await firestore
+    const endedQuerySnapshot = (await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
@@ -103,8 +104,7 @@ export const generate = functions
       .startAfter(data.getEndDate)
       .select('getEndDate')
       .limit(2)
-      .get();
-
+      .get()) as QuerySnapshot<Pick<WatchData, 'getEndDate'>>;
     // 比較できるデータがない場合、終了する
     if (endedQuerySnapshot.empty || endedQuerySnapshot.size < 2) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
@@ -113,22 +113,20 @@ export const generate = functions
 
     // 降順なので [1] の getEndDate を取得する
     const startAfter: FirestoreDateLike =
-      endedQuerySnapshot.size === 2
-        ? (endedQuerySnapshot.docs[1].data() as Pick<WatchData, 'getEndDate'>).getEndDate
-        : new Date(2000, 0);
+      endedQuerySnapshot.size === 2 ? endedQuerySnapshot.docs[1].data().getEndDate : new Date(2000, 0);
 
-    const targetQuerySnapshot = await firestore
+    const targetQuerySnapshot = (await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
       .orderBy('getEndDate') // 昇順であることに注意する
       .startAfter(startAfter)
-      .get();
+      .get()) as QuerySnapshot<WatchData>;
 
     const watches = targetQuerySnapshot.docs.map((doc) => {
       return {
         id: doc.id,
-        data: doc.data() as WatchData,
+        data: doc.data(),
       };
     });
     const [oldWatch, newWatch] = mergeWatches(watches, true);
