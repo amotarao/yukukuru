@@ -2,6 +2,8 @@ import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
 export type UserData<T extends FirestoreDateLike = Timestamp> = {
+  role: 'supporter' | null;
+
   /** 有効かどうか */
   active: boolean;
 
