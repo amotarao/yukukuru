@@ -19,7 +19,7 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 40,
     memory: '256MB',
   })
   .pubsub.topic(topicName)
@@ -113,7 +113,7 @@ const getFollowersIdsStep = async (
 
   const result = await getFollowers(sharedClient, {
     userId: twitterId,
-    maxResults: getFollowersMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
+    maxResults: getFollowersMaxResultsMax * 10, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
     paginationToken: nextToken,
   });
 
