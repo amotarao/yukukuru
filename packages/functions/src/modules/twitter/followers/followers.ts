@@ -1,4 +1,6 @@
-import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
+import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
+import { TwitterUser } from '..';
+import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
 export const getFollowersMaxResultsMax = 1000;
@@ -10,7 +12,7 @@ export type TwitterGetFollowersParameters = {
 };
 
 export type TwitterGetFollowersResponse = {
-  users: Required<Pick<UserV2, 'id' | 'name' | 'username' | 'profile_image_url'>>[];
+  users: TwitterUser[];
   nextToken: string | null;
 };
 
@@ -23,18 +25,13 @@ export const getFollowersSingle = async (
 ): Promise<{ response: TwitterGetFollowersResponse } | { error: ApiResponseError }> => {
   return client.v2
     .followers(userId, {
-      'user.fields': ['id', 'name', 'username', 'profile_image_url'],
+      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
       max_results: maxResults,
       pagination_token: paginationToken || undefined,
     })
     .then((res) => {
       const response: TwitterGetFollowersResponse = {
-        users: res.data.map(({ id, name, username, profile_image_url }) => ({
-          id,
-          name,
-          username,
-          profile_image_url: profile_image_url || '',
-        })),
+        users: res.data.map(toRequiredTwitterUser),
         nextToken: res.meta.next_token || null,
       };
       return { response };
