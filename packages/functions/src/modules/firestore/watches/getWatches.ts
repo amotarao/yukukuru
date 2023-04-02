@@ -1,93 +1,51 @@
-import { FirestoreIdData, WatchData } from '@yukukuru/types';
-import { QuerySnapshot } from 'firebase-admin/firestore';
+import { FirestoreDateLike, WatchData } from '@yukukuru/types';
+import { CollectionReference, QueryDocumentSnapshot, QuerySnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
 
-type Props = {
-  uid: string;
-  count: number;
+const getWatchesCollection = (uid: string) => {
+  return usersCollection.doc(uid).collection('watches') as CollectionReference<WatchData<FirestoreDateLike>>;
 };
-
-type Response = FirestoreIdData<WatchData>[];
 
 /**
  * Watches を古い順に取得する
  */
-export const getWatches = async ({ uid, count }: Props): Promise<Response> => {
-  const request = usersCollection.doc(uid).collection('watches').orderBy('getStartDate').limit(count).get();
-
-  const qs = await request.catch((): false => false);
-  if (!qs) {
-    return [];
-  }
-
-  const docs = qs.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data() as WatchData,
-    };
-  });
-
-  return docs;
+export const getWatches = async (uid: string, limit: number): Promise<QueryDocumentSnapshot<WatchData>[]> => {
+  const snapshot = await getWatchesCollection(uid).orderBy('getStartDate').limit(limit).get();
+  return snapshot.docs as QueryDocumentSnapshot<WatchData>[];
 };
 
 /**
  * Watches の ID のみを古い順に取得する
  */
-export const getWatchesIds = async ({ uid, count }: Props): Promise<string[]> => {
-  const request = usersCollection
-    .doc(uid)
-    .collection('watches')
-    .orderBy('getStartDate')
-    .select('ended')
-    .limit(count)
-    .get() as Promise<QuerySnapshot<Pick<WatchData, 'ended'>>>;
-
-  const qs = await request.catch((): false => false);
-  if (!qs) {
-    return [];
-  }
-
-  const ids = qs.docs.map((doc) => doc.id);
-  return ids;
+export const getWatchesIds = async (uid: string, limit: number): Promise<string[]> => {
+  const docs = await getWatches(uid, limit);
+  return docs.map((doc) => doc.id);
 };
 
 /**
  * Watches を新しい順に順に取得する
  */
-export const getLatestWatches = async ({ uid, count }: Props): Promise<Response> => {
-  const request = usersCollection
-    .doc(uid)
-    .collection('watches')
-    .orderBy('getEndDate', 'desc')
-    .limit(count)
-    .get() as Promise<QuerySnapshot<WatchData>>;
-
-  const qs = await request.catch((): false => false);
-  if (!qs) {
-    return [];
-  }
-
-  const docs = qs.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data(),
-    };
-  });
-
-  return docs;
+export const getLatestWatches = async (uid: string, limit: number): Promise<QueryDocumentSnapshot<WatchData>[]> => {
+  const snapshot = await getWatchesCollection(uid).orderBy('getEndDate', 'desc').limit(limit).get();
+  return snapshot.docs as QueryDocumentSnapshot<WatchData>[];
 };
 
 /**
  * Watches の件数を取得
  */
 export const getWatchesCount = async (uid: string, limit = Infinity): Promise<number> => {
-  const querySnapshot = (await usersCollection
-    .doc(uid)
-    .collection('watches')
-    .select('ended')
-    .limit(limit)
-    .get()) as QuerySnapshot<Pick<WatchData, 'ended'>>;
+  const querySnapshot = (await getWatchesCollection(uid).select('ended').limit(limit).get()) as QuerySnapshot<
+    Pick<WatchData, 'ended'>
+  >;
   return querySnapshot.size;
+};
+
+export const deleteWatches = async (uid: string, deleteIds: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  deleteIds.forEach((deleteId) => {
+    bulkWriter.delete(getWatchesCollection(uid).doc(deleteId));
+  });
+  await bulkWriter.close();
 };

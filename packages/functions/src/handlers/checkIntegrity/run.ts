@@ -1,4 +1,5 @@
-import { RecordUserData, RecordData, FirestoreDateLike } from '@yukukuru/types';
+import { RecordUserData, RecordData, FirestoreDateLike, WatchData } from '@yukukuru/types';
+import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { addRecords } from '../../modules/firestore/records/add';
@@ -7,7 +8,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { getWatches } from '../../modules/firestore/watches/getWatches';
+import { deleteWatches, getWatches } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -34,8 +35,15 @@ export const run = functions
 
     console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-    // watches を 最古のものから 200件取得
-    const rawWatches = await getWatches({ uid, count: 200 });
+    // watches を 最古のものから 100件取得
+    const rawWatches = await getWatches(uid, 100);
+
+    const checked = await delete2021(uid, rawWatches);
+    if (checked) {
+      console.log(`✔️ Completed to delete watches of [${uid}].`);
+      return;
+    }
+
     // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
     const watches = mergeWatches(rawWatches, true, 50);
     // 最後の 3件は今回比較しないので取り除く
@@ -164,3 +172,28 @@ export const run = functions
 
     console.log(`✔️ Completed check integrity for [${uid}].`);
   });
+
+// 2021年より前のデータはすべて削除してしまう
+// キャンセルする際は false
+const delete2021 = async (uid: string, docs: QueryDocumentSnapshot<WatchData>[]): Promise<boolean> => {
+  const lastWatch = docs.at(-1);
+
+  if (!lastWatch) {
+    return false;
+  }
+  if (lastWatch.data().getEndDate.toDate() >= new Date(2021, 0)) {
+    return false;
+  }
+
+  const index = docs
+    .slice()
+    .reverse()
+    .findIndex((doc) => doc.data().ended);
+  if (index < 0) {
+    return false;
+  }
+
+  const deleteIds = docs.slice(0, -index).map((doc) => doc.id);
+  await deleteWatches(uid, deleteIds);
+  return true;
+};

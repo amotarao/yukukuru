@@ -123,12 +123,7 @@ export const generate = functions
       .startAfter(startAfter)
       .get()) as QuerySnapshot<WatchData>;
 
-    const watches = targetQuerySnapshot.docs.map((doc) => {
-      return {
-        id: doc.id,
-        data: doc.data(),
-      };
-    });
+    const watches = targetQuerySnapshot.docs;
     const [oldWatch, newWatch] = mergeWatches(watches, true);
 
     const oldFollowers = oldWatch.watch.followers;
@@ -149,7 +144,7 @@ export const generate = functions
       return;
     }
 
-    const durationStart = watches[0].data.getStartDate;
+    const durationStart = watches[0].data().getStartDate;
     const durationEnd = data.getEndDate;
 
     const yukuRecordsPromise = yuku.map(generateRecord('yuku', durationStart, durationEnd, usersFromTwitter));
