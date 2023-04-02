@@ -31,7 +31,7 @@ export const publish = functions
       .orderBy('lastUpdatedUserTwitterInfo', 'asc')
       .get()) as QuerySnapshot<UserData>;
 
-    const items: Message[] = usersSnap.docs
+    const messages: Message[] = usersSnap.docs
       .filter((doc) => !doc.data().deletedAuth)
       .map(
         (doc): Message => ({
@@ -41,7 +41,7 @@ export const publish = functions
         })
       )
       .slice(0, 10);
-    await publishMessages(topicName, items);
+    await publishMessages(topicName, messages);
 
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });
