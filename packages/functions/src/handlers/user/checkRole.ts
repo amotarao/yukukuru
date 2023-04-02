@@ -48,10 +48,12 @@ export const run = functions
     const role = await getStripeRole(userId);
     await setRoleToUser(userId, role);
 
-    const users = await getUsersInAllowedAccessUsers(userId);
-    await Promise.all(
-      users.map(async (user) => {
-        await removeIdFromAllowedAccessUsers(user.id, userId);
-      })
-    );
+    if (role !== 'supporter') {
+      const users = await getUsersInAllowedAccessUsers(userId);
+      await Promise.all(
+        users.map(async (user) => {
+          await removeIdFromAllowedAccessUsers(user.id, userId);
+        })
+      );
+    }
   });
