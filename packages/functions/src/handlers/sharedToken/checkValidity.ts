@@ -78,7 +78,7 @@ export const run = functions
       }
       // サポート外のトークン
       // トークンが空欄の際に発生する
-      if (resV2.error.data.type === EApiV2ErrorCode.UnsupportedAuthentication) {
+      if (resV2.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
         await deleteSharedToken(id);
         return;
       }
