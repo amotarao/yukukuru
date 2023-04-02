@@ -5,8 +5,8 @@ import { firestore } from '../../firebase';
 const collection = firestore.collection('users');
 
 /** グループを指定してユーザーリストを取得 */
-export const getUsersByGroup = async (group: number): Promise<{ id: string; data: UserData }[]> => {
-  const snapshot = await collection.where('group', '==', group).get();
+export const getUsersByGroups = async (groups: number[]): Promise<{ id: string; data: UserData }[]> => {
+  const snapshot = await collection.where('group', 'in', groups).get();
   return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as UserData }));
 };
 
