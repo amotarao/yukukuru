@@ -1,10 +1,8 @@
 import * as functions from 'firebase-functions';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
-import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResult, setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { getFollowers, getFollowersMaxResultsMax } from './../../modules/twitter/followers/followers';
@@ -120,11 +118,8 @@ const getFollowersIdsStep = async (
   });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
-      await setTokenInvalid(uid);
-    }
-
-    throw new Error(`❗️[Error]: Failed to get followers from Twitter of [${uid}].`);
+    const message = `❗️[Error]: Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    throw new Error(message);
   }
 
   console.log(`⏳ Got ${result.response.users.length} followers from Twitter.`);
