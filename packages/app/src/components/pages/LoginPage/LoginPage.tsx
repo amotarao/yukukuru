@@ -16,9 +16,13 @@ export type LoginPageProps = {
 export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
   return (
     <div className={classNames('text-center', styles.wrapper)}>
-      <div>
+      <h1 className="mb-4">
+        <span className="mb-2 block text-3xl">ゆくくる beta</span>
+        <span className="block">マイページログイン</span>
+      </h1>
+      <div className="mb-4">
         <button
-          className="mb-4 inline-block rounded border border-primary px-4 py-1 text-primary"
+          className="inline-block rounded border border-primary px-4 py-1 text-primary"
           onClick={() => {
             signIn();
           }}
@@ -26,8 +30,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
           {isTouchDevice() && <span>タップして</span>}ログイン
         </button>
       </div>
-      <div>
-        <Link className="mb-4 inline-block rounded border border-sub px-4 py-1 text-sub" href="/">
+      <div className="mb-4">
+        <Link className="inline-block rounded border border-sub px-4 py-1 text-sub" href="/">
           トップページ
         </Link>
       </div>

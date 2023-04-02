@@ -1,13 +1,15 @@
 import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
+import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { firestore } from '../../modules/firebase';
 import { addRecords } from '../../modules/firestore/records/add';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
+import { convertTwitterUserToRecordUserData } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { checkInvalidOrExpiredToken } from '../../modules/twitter/error';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
@@ -26,7 +28,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   const result = await getUsersLookup(client, { usersId: userIds });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
+    if (result.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
       await setTokenInvalid(uid);
     }
   }
@@ -34,17 +36,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   const twUsers = 'error' in result ? [] : result.response.users;
   await setTwUsers(twUsers);
 
-  const usersFromTw = twUsers.map((user) => {
-    const convertedUser: RecordUserData = {
-      id: user.id_str,
-      screenName: user.screen_name,
-      displayName: user.name,
-      photoUrl: user.profile_image_url_https,
-      maybeDeletedOrSuspended: false,
-    };
-    return convertedUser;
-  });
-
+  const usersFromTw = twUsers.map(convertTwitterUserToRecordUserData(false));
   return usersFromTw;
 };
 
@@ -68,10 +60,7 @@ const generateRecord =
       }
 
       const item: RecordUserData = {
-        id: user.id,
-        screenName: user.screenName,
-        displayName: user.name,
-        photoUrl: user.photoUrl,
+        ...user,
         maybeDeletedOrSuspended: true,
       };
       return item;
@@ -106,7 +95,7 @@ export const generate = functions
       return;
     }
 
-    const endedQuerySnapshot = await firestore
+    const endedQuerySnapshot = (await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
@@ -115,8 +104,7 @@ export const generate = functions
       .startAfter(data.getEndDate)
       .select('getEndDate')
       .limit(2)
-      .get();
-
+      .get()) as QuerySnapshot<Pick<WatchData, 'getEndDate'>>;
     // 比較できるデータがない場合、終了する
     if (endedQuerySnapshot.empty || endedQuerySnapshot.size < 2) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
@@ -125,22 +113,20 @@ export const generate = functions
 
     // 降順なので [1] の getEndDate を取得する
     const startAfter: FirestoreDateLike =
-      endedQuerySnapshot.size === 2
-        ? (endedQuerySnapshot.docs[1].data() as Pick<WatchData, 'getEndDate'>).getEndDate
-        : new Date(2000, 0);
+      endedQuerySnapshot.size === 2 ? endedQuerySnapshot.docs[1].data().getEndDate : new Date(2000, 0);
 
-    const targetQuerySnapshot = await firestore
+    const targetQuerySnapshot = (await firestore
       .collection('users')
       .doc(uid)
       .collection('watches')
       .orderBy('getEndDate') // 昇順であることに注意する
       .startAfter(startAfter)
-      .get();
+      .get()) as QuerySnapshot<WatchData>;
 
     const watches = targetQuerySnapshot.docs.map((doc) => {
       return {
         id: doc.id,
-        data: doc.data() as WatchData,
+        data: doc.data(),
       };
     });
     const [oldWatch, newWatch] = mergeWatches(watches, true);

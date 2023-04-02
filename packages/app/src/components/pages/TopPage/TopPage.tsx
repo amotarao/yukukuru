@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
@@ -22,7 +22,11 @@ export const TopPage: React.FC = () => {
     >
       <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
         <h1 className="text-3xl">ゆくくる beta</h1>
-        <p className="text-sm">フォロワーがいつきたか・いなくなったかを記録します</p>
+        <p className="whitespace-nowrap text-sm">
+          フォロワーがいつきたか・
+          <wbr />
+          いなくなったかを記録します
+        </p>
         <Link className="rounded border border-primary px-4 py-1 text-primary" href="/my">
           マイページ・ログイン
         </Link>
@@ -31,9 +35,6 @@ export const TopPage: React.FC = () => {
             ツイートする権限はありませんので
             <wbr />
             安心してご利用ください
-          </p>
-          <p className="flex flex-wrap justify-center whitespace-nowrap text-xs text-sub">
-            ※ 不具合が発生する場合があります
           </p>
         </div>
       </section>

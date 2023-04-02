@@ -1,4 +1,6 @@
 import { UserData } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -18,22 +20,27 @@ export const publish = functions
     const now = new Date(context.timestamp);
     const group = getGroupFromTime(1, now);
 
-    // 1日前 (-1m)
-    const previous = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 60 * 1000);
+    // 3日前
+    const previous = dayjs(now).subtract(3, 'days').subtract(1, 'minutes').toDate();
 
-    const usersSnap = await firestore
+    const usersSnap = (await firestore
       .collection('users')
       .where('active', '==', true)
       .where('lastUpdatedUserTwitterInfo', '<', previous)
       .where('group', '==', group)
       .orderBy('lastUpdatedUserTwitterInfo', 'asc')
-      .limit(10)
-      .get();
+      .get()) as QuerySnapshot<UserData>;
 
     const items: Message[] = usersSnap.docs
-      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
-      .map((doc) => doc.id)
-      .map((id) => ({ uid: id, publishedAt: now }));
+      .filter((doc) => !doc.data().deletedAuth)
+      .map(
+        (doc): Message => ({
+          uid: doc.id,
+          twitterId: doc.data().twitter.id,
+          publishedAt: now,
+        })
+      )
+      .slice(0, 10);
     await publishMessages(topicName, items);
 
     console.log(`✔️ Completed publish ${items.length} message.`);

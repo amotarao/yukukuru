@@ -12,7 +12,7 @@ const collection = firestore.collection('users');
  * @param nextCursor 次のカーソル
  * @param date 現在の日時
  */
-export const setUserResult = async (
+export const setUserResultLegacy = async (
   userId: string,
   watchId: string,
   ended: boolean,

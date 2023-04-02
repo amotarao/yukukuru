@@ -1,7 +1,7 @@
 import { FirestoreIdData, UserData, RecordData } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
 import { dayjs } from '../../../modules/dayjs';
@@ -198,7 +198,6 @@ export const MyPage: React.FC<MyPageProps> = ({
       {currentAccount && (
         <AccountSelector
           className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
-          active={multiAccounts.length > 1}
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
           onChange={onChangeCurrentUid}

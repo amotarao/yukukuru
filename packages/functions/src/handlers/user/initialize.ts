@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
+import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 
@@ -28,22 +29,13 @@ export const initialize = functions
     const client = getClient();
     const result = await getUsersLookup(client, { usersId: [twitterId] });
 
-    if ('error' in result || result.response.users.length !== 1) {
+    if ('error' in result || !result.response.users[0]) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
     }
 
-    const twitter = result.response.users[0];
-
-    await initializeUser(uid, {
-      id: twitter.id_str,
-      screenName: twitter.screen_name,
-      name: twitter.name,
-      photoUrl: twitter.profile_image_url_https,
-      followersCount: twitter.followers_count,
-      verified: twitter.verified,
-    });
+    await initializeUser(uid, convertTwitterUserToUserDataTwitter(result.response.users[0]));
 
     console.log(`✔️ Completed initialize user document for [${uid}].`);
   });
