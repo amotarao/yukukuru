@@ -23,6 +23,20 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "_lastUsed.v1_getFollowersIds",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "sharedTokens",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_invalid",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "_lastUsed.v2_getUserFollowers",
           "order": "ASCENDING"
         }
@@ -215,6 +229,7 @@
     {
       "collectionGroup": "watches",
       "fieldPath": "followers",
+      "ttl": false,
       "indexes": []
     }
   ]
