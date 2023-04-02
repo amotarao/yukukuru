@@ -88,14 +88,14 @@ export const run = functions
 
     console.log(`⚙️ Starting clean user of [${uid}].`);
 
-    const watchIds = await getWatchesIds({ uid, count: 300 });
+    const watchIds = await getWatchesIds(uid, 300);
     await removeWatches({ uid, removeIds: watchIds });
 
     if (watchIds.length > 0) {
       console.log(`✔️ Completed remove ${watchIds.length} watches of [${uid}].`);
     }
 
-    const afterWatches = await getWatchesIds({ uid, count: 1 });
+    const afterWatches = await getWatchesIds(uid, 1);
 
     if (afterWatches.length > 0) {
       console.log(`✔️ Completed (paused) clean user of [${uid}].`);
