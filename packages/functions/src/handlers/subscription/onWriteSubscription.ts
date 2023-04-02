@@ -14,10 +14,9 @@ export const onWriteSubscription = functions
     memory: '256MB',
   })
   .firestore.document('stripeCustomers/{stripeCustomerId}/subscriptions/{subscriptionId}')
-  .onWrite(async (change) => {
+  .onWrite(async (change, context) => {
     const writeType = getWriteType(change);
-
-    const userId = change.after.ref.parent.id;
+    const userId = context.params.stripeCustomerId;
 
     if (writeType === 'unknown') {
       throw new Error('Unknown write type');
