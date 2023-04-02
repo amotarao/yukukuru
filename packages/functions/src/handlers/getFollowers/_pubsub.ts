@@ -14,6 +14,13 @@ export type Message = {
    */
   nextCursor: string;
 
+  /** 共有トークン */
+  sharedToken: {
+    id: string;
+    accessToken: string;
+    accessTokenSecret: string;
+  };
+
   /** 送信日時 */
   publishedAt: Date | string;
 };
