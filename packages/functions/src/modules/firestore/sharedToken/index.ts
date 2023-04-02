@@ -109,3 +109,10 @@ export const setLastUsedSharedToken = async (
   });
   await firestore.collection(collectionId).doc(id).update(data);
 };
+
+export const getSharedTokensByAccessToken = async (
+  accessToken: string
+): Promise<{ id: string; data: SharedToken }[]> => {
+  const snapshot = await firestore.collection(collectionId).where('accessToken', '==', accessToken).get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
+};
