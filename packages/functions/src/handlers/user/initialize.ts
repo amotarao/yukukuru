@@ -26,8 +26,8 @@ export const initialize = functions
       return;
     }
 
-    const client = getClient();
-    const result = await getUsersLookup(client, { usersId: [twitterId] });
+    const appClient = getClient();
+    const result = await getUsersLookup(appClient, { usersId: [twitterId] });
 
     if ('error' in result || !result.response.users[0]) {
       await auth.deleteUser(uid);

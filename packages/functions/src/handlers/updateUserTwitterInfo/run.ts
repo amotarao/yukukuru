@@ -35,11 +35,11 @@ export const run = functions
     }
     console.log(`⏳ Got watches and token from Firestore.`);
 
-    const client = getClient({
+    const ownClient = getClient({
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsersLookup(client, { usersId: [twitterId] });
+    const result = await getUsersLookup(ownClient, { usersId: [twitterId] });
 
     if ('error' in result || !result.response.users[0]) {
       console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`);
