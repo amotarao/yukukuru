@@ -93,6 +93,12 @@ export const run = functions
       throw new Error(`❗️[Error]: Failed to access Twitter API v2: ${resV2.error.message}`);
     }
 
+    // 同じアクセストークンを持つドキュメントを削除
+    const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
+    await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
+
+    await setValidSharedToken(id, now);
+
     const resV1 = await getFollowersIdsLegacy(client, { userId: '783214', count: 1 });
     if ('error' in resV1) {
       console.log(resV1.error);
@@ -100,22 +106,21 @@ export const run = functions
       // 認証エラー
       if (resV1.error.isAuthError) {
         await setInvalidV1SharedToken(id, now);
+        return;
       }
       // 無効、期限切れのトークン
       if (resV1.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
         await setInvalidV1SharedToken(id, now);
+        return;
       }
       // アカウントの一時的なロック
       if (resV1.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
         await setInvalidV1SharedToken(id, now);
+        return;
       }
-    } else {
-      await setValidV1SharedToken(id, now);
+
+      throw new Error(`❗️[Error]: Failed to access Twitter API v1.1: ${resV1.error.message}`);
     }
 
-    // 同じアクセストークンを持つドキュメントを削除
-    const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
-    await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
-
-    await setValidSharedToken(id, now);
+    await setValidV1SharedToken(id, now);
   });
