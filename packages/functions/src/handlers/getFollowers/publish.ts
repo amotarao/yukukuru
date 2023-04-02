@@ -1,5 +1,6 @@
 import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
+import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getGroupFromTime } from '../../modules/group';
@@ -8,8 +9,6 @@ import { Message, topicName } from './_pubsub';
 
 /**
  * フォロワー取得 定期実行
- *
- * 処理を実行するかどうかは run でチェック
  *
  * 毎分実行
  * グループ毎に 5分おきに実行
@@ -38,18 +37,60 @@ export const publish = functions
       .where('group', 'in', groups)
       .select('deletedAuth', 'twitter.id', 'nextCursor', 'lastUpdated')
       .get();
+    const targetDocs = (snapshot.docs as QueryDocumentSnapshot<UserData>[]).filter(filterExecutable(now.toDate()));
 
     // publish データ作成・送信
-    const messages: Message[] = snapshot.docs
-      .filter((doc) => !(doc.get('deletedAuth') as UserData['deletedAuth']))
-      .map((doc) => ({
-        uid: doc.id,
-        twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
-        nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
-        lastRun: (doc.get('lastUpdated') as UserData['lastUpdated']).toDate(),
-        publishedAt: now.toDate(),
-      }));
+    const messages: Message[] = targetDocs.map((doc) => ({
+      uid: doc.id,
+      twitterId: doc.get('twitter.id') as UserData['twitter']['id'],
+      nextCursor: doc.get('nextCursor') as UserData['nextCursor'],
+      publishedAt: now.toDate(),
+    }));
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);
   });
+
+/** 実行可能かどうかを確認 */
+const filterExecutable =
+  (now: Date) =>
+  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+    const { role, deletedAuth, nextCursor, lastUpdated } = snapshot.data();
+
+    // 削除済みユーザーの場合は実行しない
+    if (deletedAuth) {
+      return false;
+    }
+
+    // 取得途中のユーザーはいつでも許可
+    if (nextCursor !== '-1') {
+      return true;
+    }
+
+    const minutes = dayjs(now).diff(dayjs(lastUpdated.toDate()), 'minutes');
+
+    // サポーターの場合、前回の実行から 5分経過していれば実行
+    if (role === 'supporter') {
+      if (minutes < 5 - 1) {
+        return false;
+      }
+      return true;
+    }
+
+    // 前回の実行から6時間以上の間隔をあける
+    if (minutes < 60 * 6 - 1) {
+      return false;
+    }
+
+    // 前回の実行から72時間以上経っていたら無条件に実行する
+    if (minutes > 60 * 72 - 1) {
+      return true;
+    }
+
+    // ６~72時間であれば、毎回2%確率で実行
+    if (Math.random() * 100 <= 2) {
+      return true;
+    }
+
+    return false;
+  };

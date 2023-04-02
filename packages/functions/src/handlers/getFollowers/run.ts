@@ -1,7 +1,5 @@
-import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { getStripeRole } from '../../modules/auth/claim';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
@@ -19,51 +17,6 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
   return new Date(now).getTime() - new Date(published).getTime() > diffMs;
 };
 
-/**
- * 実行可能かどうかを確認
- */
-const checkExecutable = async (params: {
-  uid: string;
-  nextCursor: string;
-  lastRun: string | Date;
-  publishedAt: string | Date;
-}): Promise<boolean> => {
-  const { uid, nextCursor, lastRun, publishedAt } = params;
-
-  // 取得途中のユーザーはいつでも許可
-  if (nextCursor !== '-1') {
-    return true;
-  }
-
-  const role = await getStripeRole(uid);
-  const minutes = dayjs(publishedAt).diff(dayjs(lastRun), 'minutes');
-
-  // サポーターの場合、前回の実行から 5分経過していれば実行
-  if (role === 'supporter') {
-    if (minutes < 5 - 1) {
-      return false;
-    }
-    return true;
-  }
-
-  // 前回の実行から6時間以上の間隔をあける
-  if (minutes < 60 * 6 - 1) {
-    return false;
-  }
-
-  // 前回の実行から72時間以上経っていたら無条件に実行する
-  if (minutes > 60 * 72 - 1) {
-    return true;
-  }
-
-  // ６~72時間であれば、毎回2%確率で実行
-  if (Math.random() * 100 <= 2) {
-    return true;
-  }
-
-  return false;
-};
-
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions
   .region('asia-northeast1')
@@ -74,19 +27,12 @@ export const run = functions
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
     try {
-      const { uid, twitterId, nextCursor, lastRun, publishedAt } = message.json as Message;
+      const { uid, twitterId, nextCursor, publishedAt } = message.json as Message;
       const now = new Date(context.timestamp);
 
       // 10秒以内の実行に限る
       if (checkJustPublished(now, publishedAt)) {
         console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
-        return;
-      }
-
-      // 実行可能かを確認
-      const executable = await checkExecutable({ uid, nextCursor, lastRun, publishedAt });
-      if (!executable) {
-        console.log(`[Info]: Canceled get followers of [${uid}].`);
         return;
       }
       console.log(`⚙️ Starting get followers of [${uid}].`);
