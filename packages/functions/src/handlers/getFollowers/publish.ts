@@ -2,8 +2,8 @@ import { UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { firestore } from '../../modules/firebase';
 import { getSharedTokensForGetFollowersIds } from '../../modules/firestore/sharedToken';
+import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { Message, topicName } from './_pubsub';
@@ -32,13 +32,8 @@ export const publish = functions
       getGroupFromTime(1, now.add(5, 'minutes').toDate()),
       getGroupFromTime(1, now.add(10, 'minutes').toDate()),
     ];
-    const snapshot = await firestore
-      .collection('users')
-      .where('active', '==', true)
-      .where('group', 'in', groups)
-      .select('deletedAuth', 'twitter.id', 'nextCursor', 'lastUpdated')
-      .get();
-    const targetDocs = (snapshot.docs as QueryDocumentSnapshot<UserData>[]).filter(filterExecutable(now.toDate()));
+    const docs = await getUserDocsByGroups(groups);
+    const targetDocs = docs.filter(filterExecutable(now.toDate()));
     const sharedTokens = await getSharedTokensForGetFollowersIds(now.toDate(), targetDocs.length);
 
     // publish データ作成・送信
@@ -72,10 +67,10 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
-    const { role, deletedAuth, nextCursor, lastUpdated } = snapshot.data();
+    const { role, active, deletedAuth, nextCursor, lastUpdated } = snapshot.data();
 
-    // 削除済みユーザーの場合は実行しない
-    if (deletedAuth) {
+    // 無効または削除済みユーザーの場合は実行しない
+    if (!active || deletedAuth) {
       return false;
     }
 
