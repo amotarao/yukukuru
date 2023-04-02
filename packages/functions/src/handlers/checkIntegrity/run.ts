@@ -32,13 +32,6 @@ export const run = functions
       return;
     }
 
-    // Watches が 3000件以上ある場合はキャンセル
-    const count = await getWatchesCount(uid, 3000);
-    if (count >= 3000) {
-      console.log(`[Info]: Canceled check integrity of [${uid}].`);
-      return;
-    }
-
     console.log(`⚙️ Starting check integrity for [${uid}].`);
 
     // watches を 最古のものから 200件取得
