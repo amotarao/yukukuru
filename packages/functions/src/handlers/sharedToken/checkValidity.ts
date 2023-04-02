@@ -6,11 +6,14 @@ import {
   getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
+  setInvalidV1SharedToken,
   setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
 import { getMe } from '../../modules/twitter/users/me';
+import { setValidV1SharedToken } from './../../modules/firestore/sharedToken/index';
+import { getFollowersIdsLegacy } from './../../modules/twitter/followers/ids';
 
 const topicName = 'checkValiditySharedToken';
 
@@ -64,40 +67,50 @@ export const run = functions
       accessSecret: accessTokenSecret,
     });
 
-    const me = await getMe(client);
-    if ('error' in me) {
-      console.log(me.error);
+    const resV2 = await getMe(client);
+    if ('error' in resV2) {
+      console.log(resV2.error);
 
       // 認証エラー
-      if (me.error.isAuthError) {
+      if (resV2.error.isAuthError) {
         await deleteSharedToken(id);
         return;
       }
       // サポート外のトークン
       // トークンが空欄の際に発生する
-      if (me.error.data.type === EApiV2ErrorCode.UnsupportedAuthentication) {
-        await deleteSharedToken(id);
-        return;
-      }
-      // 無効、期限切れのトークン
-      if (me.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
+      if (resV2.error.data.type === EApiV2ErrorCode.UnsupportedAuthentication) {
         await deleteSharedToken(id);
         return;
       }
 
       // 403
       // アカウントが削除済みの場合に発生する
-      if (me.error.code === 403) {
-        await setInvalidSharedToken(id, now);
-        return;
-      }
-      // アカウントの一時的なロック
-      if (me.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
+      if (resV2.error.code === 403) {
         await setInvalidSharedToken(id, now);
         return;
       }
 
-      throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
+      throw new Error(`❗️[Error]: Failed to access Twitter API v2: ${resV2.error.message}`);
+    }
+
+    const resV1 = await getFollowersIdsLegacy(client, { userId: '783214', count: 1 });
+    if ('error' in resV1) {
+      console.log(resV1.error);
+
+      // 認証エラー
+      if (resV1.error.isAuthError) {
+        await setInvalidV1SharedToken(id, now);
+      }
+      // 無効、期限切れのトークン
+      if (resV1.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
+        await setInvalidV1SharedToken(id, now);
+      }
+      // アカウントの一時的なロック
+      if (resV1.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
+        await setInvalidV1SharedToken(id, now);
+      }
+    } else {
+      await setValidV1SharedToken(id, now);
     }
 
     // 同じアクセストークンを持つドキュメントを削除
