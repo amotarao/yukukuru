@@ -60,12 +60,12 @@ const getFollowersIdsStep = async (
   nextCursor: string,
   sharedToken: Message['sharedToken']
 ) => {
-  const client = getClient({
+  const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getFollowersIdsLegacy(client, {
+  const result = await getFollowersIdsLegacy(sharedClient, {
     userId: twitterId,
     cursor: nextCursor,
     count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
@@ -89,17 +89,14 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
   ids: string[],
   sharedToken: Message['sharedToken']
 ): Promise<string[]> => {
-  const client = getClient({
+  const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getUsersLookup(client, { usersId: ids });
+  const result = await getUsersLookup(sharedClient, { usersId: ids });
 
   if ('error' in result) {
-    if (checkInvalidOrExpiredToken(result.error)) {
-      await setTokenInvalid(uid);
-    }
     console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
     return ids;
   }
