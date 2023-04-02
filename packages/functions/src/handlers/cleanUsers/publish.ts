@@ -41,7 +41,7 @@ export const publish = functions
       return {
         uid: doc.id,
         active: active,
-        deletedAuth: deletedAuth || false,
+        deletedAuth: deletedAuth,
         lastUpdated: lastUpdated.toDate(),
         followersCount: twitter.followersCount,
         publishedAt: now,
