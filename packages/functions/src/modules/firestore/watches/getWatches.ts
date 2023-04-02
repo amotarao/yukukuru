@@ -41,3 +41,11 @@ export const getWatchesCount = async (uid: string, limit = Infinity): Promise<nu
   >;
   return querySnapshot.size;
 };
+
+export const deleteWatches = async (uid: string, deleteIds: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  deleteIds.forEach((deleteId) => {
+    bulkWriter.delete(getWatchesCollection(uid).doc(deleteId));
+  });
+  await bulkWriter.close();
+};
