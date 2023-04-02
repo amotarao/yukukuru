@@ -40,13 +40,13 @@ export const publish = functions
     const validDocs = await getValidSharedTokenDocsOrderByLastChecked(100);
     const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(10);
 
-    const items: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
+    const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
       id: doc.id,
       accessToken: doc.data.accessToken,
       accessTokenSecret: doc.data.accessTokenSecret,
     }));
-    await publishMessages(topicName, items);
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    await publishMessages(topicName, messages);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });
 
 export const run = functions

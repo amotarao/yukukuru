@@ -37,11 +37,11 @@ export const publish = functions
       .where('group', '==', group)
       .get()) as QuerySnapshot<UserData>;
 
-    const items: Message[] = snapshot.docs
+    const messages: Message[] = snapshot.docs
       .filter((doc) => !doc.data().deletedAuth)
       .map((doc) => doc.id)
       .map((id) => ({ uid: id, publishedAt: now }));
-    await publishMessages(topicName, items);
+    await publishMessages(topicName, messages);
 
-    console.log(`✔️ Completed publish ${items.length} message.`);
+    console.log(`✔️ Completed publish ${messages.length} message.`);
   });
