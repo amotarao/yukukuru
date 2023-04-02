@@ -3,6 +3,7 @@ import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
+  getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
   setValidSharedToken,
@@ -98,6 +99,10 @@ export const run = functions
       console.log(me.error);
       throw new Error(`❗️[Error]: Failed to get user info: ${me.error.message}`);
     }
+
+    // 同じアクセストークンを持つドキュメントを削除
+    const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
+    await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
     await setValidSharedToken(id, now);
   });
