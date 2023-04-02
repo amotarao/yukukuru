@@ -40,5 +40,12 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
      * @see https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users
      */
     v2_getUsers: T;
+
+    /**
+     * v2 GET /2/users/me
+     *
+     * @see https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-me
+     */
+    v2_getUserMe: T;
   };
 };

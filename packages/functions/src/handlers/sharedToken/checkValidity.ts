@@ -5,6 +5,7 @@ import {
   getInvalidSharedTokenDocsOrderByLastChecked,
   getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
+  setLastUsedSharedToken,
   setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub/publish';
@@ -100,4 +101,5 @@ export const run = functions
     }
 
     await setValidSharedToken(id, now);
+    await setLastUsedSharedToken(id, ['v2_getUserMe'], now);
   });

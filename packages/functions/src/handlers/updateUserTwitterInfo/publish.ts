@@ -36,7 +36,6 @@ export const publish = functions
       .map(
         (doc): Message => ({
           uid: doc.id,
-          twitterId: doc.data().twitter.id,
           publishedAt: now,
         })
       )

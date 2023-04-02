@@ -1,10 +1,11 @@
 import { UserData } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
+import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getMe } from '../../modules/twitter/users/me';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter 情報更新 個々の実行 */
@@ -16,7 +17,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, twitterId, publishedAt } = message.json as Message;
+    const { uid, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -39,16 +40,17 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsersLookup(ownClient, { usersId: [twitterId] });
+    const me = await getMe(ownClient);
 
-    if ('error' in result || !result.response.users[0]) {
+    if ('error' in me) {
       console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got user info from Twitter.`);
 
-    const twitter: UserData['twitter'] = convertTwitterUserToUserDataTwitter(result.response.users[0]);
+    const twitter: UserData['twitter'] = convertTwitterUserToUserDataTwitter(me);
     await updateUserTwitterInfo(uid, twitter, now);
+    await setLastUsedSharedToken(uid, ['v2_getUserMe'], now);
 
     console.log(`⏳ Updated user document twitter info of [${uid}].`);
 
