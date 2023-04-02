@@ -41,7 +41,7 @@ export const run = functions
 
     console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-    // watches を 最古のものから 80件取得
+    // watches を 最古のものから 200件取得
     const rawWatches = await getWatches({ uid, count: 200 });
     // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
     const watches = mergeWatches(rawWatches, true, 50);
