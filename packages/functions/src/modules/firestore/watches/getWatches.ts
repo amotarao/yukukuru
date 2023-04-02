@@ -4,17 +4,13 @@ import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
 
-type Props = {
-  uid: string;
-  count: number;
-};
 
 type Response = FirestoreIdData<WatchData>[];
 
 /**
  * Watches を古い順に取得する
  */
-export const getWatches = async ({ uid, count }: Props): Promise<Response> => {
+export const getWatches = async (uid: string, limit: number): Promise<Response> => {
   const request = usersCollection.doc(uid).collection('watches').orderBy('getStartDate').limit(count).get();
 
   const qs = await request.catch((): false => false);
@@ -35,7 +31,7 @@ export const getWatches = async ({ uid, count }: Props): Promise<Response> => {
 /**
  * Watches の ID のみを古い順に取得する
  */
-export const getWatchesIds = async ({ uid, count }: Props): Promise<string[]> => {
+export const getWatchesIds = async (uid: string, limit: number): Promise<string[]> => {
   const request = usersCollection
     .doc(uid)
     .collection('watches')
@@ -56,7 +52,7 @@ export const getWatchesIds = async ({ uid, count }: Props): Promise<string[]> =>
 /**
  * Watches を新しい順に順に取得する
  */
-export const getLatestWatches = async ({ uid, count }: Props): Promise<Response> => {
+export const getLatestWatches = async (uid: string, limit: number): Promise<Response> => {
   const request = usersCollection
     .doc(uid)
     .collection('watches')

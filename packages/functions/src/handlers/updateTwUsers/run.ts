@@ -28,7 +28,7 @@ export const run = functions
 
     console.log(`⚙️ Starting update twUser documents for [${uid}].`);
 
-    const [watches, token] = await Promise.all([getLatestWatches({ uid, count: 5 }), getToken(uid)]);
+    const [watches, token] = await Promise.all([getLatestWatches(uid, 5), getToken(uid)]);
     const followers = _.uniq(_.flatten((watches || []).map((doc) => doc.data.followers))).slice(0, 10000); // 10000人まで
 
     if (token === null) {
