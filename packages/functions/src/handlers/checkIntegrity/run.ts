@@ -18,8 +18,8 @@ import { topicName, Message } from './_pubsub';
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '512MB',
+    timeoutSeconds: 120,
+    memory: '4GB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
