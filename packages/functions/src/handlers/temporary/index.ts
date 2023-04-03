@@ -4,6 +4,7 @@ import { CollectionReference, FieldValue } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
+
 export const fixRecord = functions
   .region('asia-northeast1')
   .runWith({
