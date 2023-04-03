@@ -69,38 +69,52 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
         </li>
       </ul>
       <section className="mt-4 p-4">
-        <p className="mb-4">
-          <a
-            className="text-primary no-underline"
-            href="https://twitter.com/intent/follow?screen_name=yukukuruapp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            公式Twitterをフォローする @yukukuruapp
-          </a>
-        </p>
-        <p className="mb-4">
-          <a
-            className="text-primary no-underline"
-            href="https://twitter.com/yukukuruapp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            不具合はリプライかDMでお問い合わせください
-          </a>
-        </p>
-        <p className="mb-4">
-          <a
-            className="text-primary no-underline"
-            href="https://odaibako.net/u/yukukuruapp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            お題箱でもご意見受付中！
-          </a>
-          (お題箱への書き込みは公開されます)
-        </p>
-        <TweetButton size="large" />
+        <ul className="grid gap-4">
+          <li>
+            <p className="mb-1 text-xs font-bold">運営からのお知らせ</p>
+            <p>
+              <a
+                className="text-primary no-underline"
+                href="https://twitter.com/yukukuruapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                公式Twitter @yukukuruapp
+              </a>
+            </p>
+          </li>
+          <li>
+            <p className="mb-1 text-xs font-bold">不具合報告・お問い合わせ</p>
+            <p>
+              <a
+                className="text-primary no-underline"
+                href="https://twitter.com/yukukuruapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                公式Twitter にリプライまたはDM
+              </a>
+            </p>
+          </li>
+          <li>
+            <p className="mb-1 text-xs font-bold">ご意見</p>
+            <p>
+              <a
+                className="text-primary no-underline"
+                href="https://odaibako.net/u/yukukuruapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                お題箱
+              </a>
+            </p>
+            <ul className="mt-1 grid gap-1 text-xs">
+              <p>※お題箱への書き込みは公開されます</p>
+              <p>※投稿者が分からないため、不具合の調査はできません</p>
+            </ul>
+          </li>
+        </ul>
+        <TweetButton className="mt-4" size="large" />
       </section>
     </>
   );
