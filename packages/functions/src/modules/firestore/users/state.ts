@@ -47,14 +47,13 @@ export const setUserResultLegacy = async (
 export const setUserGetFollowersV2Status = async (
   userId: string,
   nextToken: string | null,
-  now: Date
+  ended: boolean,
+  date: Date
 ): Promise<void> => {
-  const ended = nextToken === null;
-
   await usersCollection.doc(userId).update(
     ended
       ? {
-          '_getFollowersV2Status.lastRun': now,
+          '_getFollowersV2Status.lastRun': date,
           '_getFollowersV2Status.nextToken': nextToken,
         }
       : {
