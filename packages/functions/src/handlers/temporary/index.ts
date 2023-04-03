@@ -22,7 +22,7 @@ export const fixRecord = functions
     await Promise.all(
       docs.map(async (doc) => {
         const recordsCollection = doc.ref.collection('records') as CollectionReference<Record>;
-        const snapshot = await recordsCollection.orderBy('user.id').get();
+        const snapshot = await recordsCollection.orderBy('user.name').get();
         console.log(doc.id, snapshot.size);
         await Promise.all(
           snapshot.docs.map(async (doc) => {
