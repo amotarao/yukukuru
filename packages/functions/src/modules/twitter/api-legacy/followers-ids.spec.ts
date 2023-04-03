@@ -1,12 +1,12 @@
-import { getClient } from '../client';
+import { getManualClient } from '../client';
 import { getFollowersIdsSingleLegacy } from './followers-ids';
 
 describe('getFollowersIdsSingleLegacy', () => {
-  const client = getClient({
-    appKey: process.env.TWITTER_CONSUMER_KEY,
-    appSecret: process.env.TWITTER_CONSUMER_SECRET,
-    accessToken: process.env.TWITTER_ACCESS_TOKEN_KEY,
-    accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  const client = getManualClient({
+    appKey: process.env.TWITTER_CONSUMER_KEY ?? '',
+    appSecret: process.env.TWITTER_CONSUMER_SECRET ?? '',
+    accessToken: process.env.TWITTER_ACCESS_TOKEN_KEY ?? '',
+    accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET ?? '',
   });
 
   test('should return an array of user ids', async () => {
