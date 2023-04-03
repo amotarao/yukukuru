@@ -1,5 +1,6 @@
 export * as checkIntegrity from './handlers/checkIntegrity';
 export * as getFollowers from './handlers/getFollowers';
+export * as getFollowersV2 from './handlers/getFollowersV2';
 export * as token from './handlers/token';
 export * as updateTwUsers from './handlers/updateTwUsers';
 export * as updateUserTwitterInfo from './handlers/updateUserTwitterInfo';

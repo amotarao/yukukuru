@@ -1,7 +1,8 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
+import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
-const collection = firestore.collection('users');
+const collection = firestore.collection('users') as CollectionReference<UserData>;
 
 /**
  * フォロワー取得処理の状態を保存
@@ -40,6 +41,21 @@ export const setUserResultLegacy = async (
     };
     await ref.update(data);
   }
+};
+
+/**
+ * フォロワー取得処理の状態を保存
+ */
+export const setUserGetFollowersV2Status = async (
+  userId: string,
+  nextToken: string | null,
+  now: Date
+): Promise<void> => {
+  const ref = collection.doc(userId);
+  await ref.update({
+    '_getFollowersV2Status.lastRun': now,
+    '_getFollowersV2Status.nextToken': nextToken,
+  });
 };
 
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {

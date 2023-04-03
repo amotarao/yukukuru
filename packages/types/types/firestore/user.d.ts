@@ -26,6 +26,12 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
 
+  /** getFollowersV2 の状態保存 */
+  _getFollowersV2Status: {
+    lastRun: T;
+    nextToken: string | null;
+  };
+
   /** Twitter情報 */
   twitter: {
     /** Twitter UID (ユニークな数字のID) */
