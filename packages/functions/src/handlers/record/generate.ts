@@ -13,7 +13,7 @@ import {
   convertTwitterUserToRecordUserData,
 } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getUsers } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
 /** Twitter から ユーザー情報リストを取得する */
@@ -28,7 +28,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
     accessToken: token.twitterAccessToken,
     accessSecret: token.twitterAccessTokenSecret,
   });
-  const result = await getUsersLookup(client, { usersId: userIds });
+  const result = await getUsers(client, userIds);
 
   if ('error' in result) {
     if (result.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {

@@ -8,7 +8,7 @@ import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getClient } from '../../modules/twitter/client';
 import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getUsers } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /**
@@ -66,7 +66,7 @@ const checkOwnUserStatus = async (twitterId: string, sharedToken: Message['share
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const response = await getUsersLookup(sharedClient, { usersId: [twitterId] });
+  const response = await getUsers(sharedClient, [twitterId]);
   if ('error' in response) {
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
@@ -141,7 +141,7 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getUsersLookup(sharedClient, { usersId: ids });
+  const result = await getUsers(sharedClient, ids);
 
   if ('error' in result) {
     const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;

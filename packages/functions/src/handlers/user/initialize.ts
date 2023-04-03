@@ -3,7 +3,7 @@ import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getUsers } from '../../modules/twitter/users/lookup';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const initialize = functions
@@ -27,7 +27,7 @@ export const initialize = functions
     }
 
     const client = getClient();
-    const result = await getUsersLookup(client, { usersId: [twitterId] });
+    const result = await getUsers(client, [twitterId]);
 
     if ('error' in result || !result.response.users[0]) {
       await auth.deleteUser(uid);

@@ -4,7 +4,7 @@ import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
+import { getUsers } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter 情報更新 個々の実行 */
@@ -39,7 +39,7 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsersLookup(client, { usersId: [twitterId] });
+    const result = await getUsers(client, [twitterId]);
 
     if ('error' in result || !result.response.users[0]) {
       console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`);

@@ -4,21 +4,19 @@ import { TwitterErrorUser, TwitterUser } from '..';
 import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
-export type TwitterGetUsersLookupParameters = {
-  usersId: string[];
-};
-
 /**
  * ユーザー情報を取得
- * 100人まで 取得可能
+ * 1回 100人まで 取得可能
  * 15分につき 900回 実行可能
+ *
+ * @see https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users
  */
-const getUsersLookupSingle = async (
+const getUsersSingle = async (
   client: TwitterApiReadOnly,
-  { usersId }: TwitterGetUsersLookupParameters
+  ids: string[]
 ): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
   return client.v2
-    .users(usersId, {
+    .users(ids, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
     })
     .then((response) => {
@@ -58,11 +56,11 @@ const getUsersLookupSingle = async (
  * ユーザー情報を取得
  * 15分につき 90,000人まで 取得可能
  */
-export const getUsersLookup = async (
+export const getUsers = async (
   client: TwitterApiReadOnly,
-  { usersId }: TwitterGetUsersLookupParameters
+  ids: string[]
 ): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
-  const lookup = _.chunk(_.uniq(usersId), 100).map(
+  const lookup = _.chunk(_.uniq(ids), 100).map(
     async (
       usersId
     ): Promise<
@@ -77,7 +75,7 @@ export const getUsersLookup = async (
           error: ApiResponseError;
         }
     > => {
-      const result = await getUsersLookupSingle(client, { usersId });
+      const result = await getUsersSingle(client, usersId);
 
       if ('error' in result) {
         return { users: null, errorUsers: null, error: result.error };
