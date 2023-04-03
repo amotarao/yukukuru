@@ -46,11 +46,8 @@ export const generateRecords = functions
       return;
     }
 
-    const oldFollowers = oldWatch.followers;
-    const newFollowers = newWatch.followers;
-
-    const yuku = difference(oldFollowers, newFollowers);
-    const kuru = difference(newFollowers, oldFollowers);
+    const yuku = difference(oldWatch.followers, newWatch.followers);
+    const kuru = difference(newWatch.followers, oldWatch.followers);
 
     // フォロワーの差分がない場合、終了する
     if (kuru.length === 0 && yuku.length === 0) {
@@ -63,14 +60,7 @@ export const generateRecords = functions
       console.error(e);
       return [];
     });
-    const errorTwitterUsers = await getToken(uid)
-      .then((token) => {
-        if (!token) throw new Error();
-        return getClient({
-          accessToken: token.twitterAccessToken,
-          accessSecret: token.twitterAccessTokenSecret,
-        });
-      })
+    const errorTwitterUsers = await getOwnClient(uid)
       .then((client) => getUsers(client, twitterIds))
       .then((response) => {
         if ('error' in response) throw new Error();
@@ -81,10 +71,9 @@ export const generateRecords = functions
         return [];
       });
 
-    const date = newWatch.date;
     const records = [
-      ...yuku.map(generateRecord('yuku', date, twUsers, errorTwitterUsers)),
-      ...kuru.map(generateRecord('kuru', date, twUsers, errorTwitterUsers)),
+      ...yuku.map(generateRecord('yuku', newWatch.date, twUsers, errorTwitterUsers)),
+      ...kuru.map(generateRecord('kuru', newWatch.date, twUsers, errorTwitterUsers)),
     ];
     await addRecordsV2(uid, records);
 
@@ -111,3 +100,14 @@ const generateRecord =
 
     return record;
   };
+
+const getOwnClient = async (uid: string) => {
+  const token = await getToken(uid).then((token) => {
+    if (!token) throw new Error();
+    return getClient({
+      accessToken: token.twitterAccessToken,
+      accessSecret: token.twitterAccessTokenSecret,
+    });
+  });
+  return token;
+};
