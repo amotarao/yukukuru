@@ -162,7 +162,7 @@ export const run = functions
     }
 
     // watch 削除
-    const deleteWatchesIds = currentDiffs.map((diff) => diff.watchesIds).flat();
+    const deleteWatchesIds = targetMergedWatches.map((watch) => watch.ids).flat();
     await deleteWatchesV2(uid, deleteWatchesIds);
 
     await setCheckIntegrityV2Status(uid, now);
