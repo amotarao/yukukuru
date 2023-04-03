@@ -1,4 +1,4 @@
-import { RecordData, WatchData, RecordUserDataWithProfile, RecordUserDataWithoutProfile } from '@yukukuru/types';
+import { Record, WatchData, RecordUserWithProfile, RecordUserWithoutProfile } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -100,11 +100,11 @@ export const run = functions
     // 存在しないドキュメントは追加する
     if (notExistsDiffs.length !== 0) {
       const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
-      const items = notExistsDiffs.map(({ diff }): RecordData<Date> => {
+      const items = notExistsDiffs.map(({ diff }): Record<Date> => {
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
 
         if (!twUser) {
-          const user: RecordUserDataWithoutProfile = {
+          const user: RecordUserWithoutProfile = {
             id: diff.twitterId,
             maybeDeletedOrSuspended: true,
           };
@@ -116,7 +116,7 @@ export const run = functions
           };
         }
 
-        const user: RecordUserDataWithProfile = {
+        const user: RecordUserWithProfile = {
           id: diff.twitterId,
           screenName: twUser.screenName,
           displayName: twUser.name,

@@ -1,4 +1,4 @@
-import { RecordUserDataWithProfile, TwUserData, UserData } from '@yukukuru/types';
+import { RecordUserWithProfile, TwUserData, UserData } from '@yukukuru/types';
 import { PickedTwitterUser, TwitterUser } from '../twitter';
 
 export const toRequiredTwitterUser = (user: PickedTwitterUser): TwitterUser => {
@@ -28,7 +28,7 @@ export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData
 
 export const convertTwitterUserToRecordUserData =
   (maybeDeletedOrSuspended = false) =>
-  (user: TwitterUser): RecordUserDataWithProfile => {
+  (user: TwitterUser): RecordUserWithProfile => {
     return {
       id: user.id,
       screenName: user.username,
@@ -49,7 +49,7 @@ export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 
 
 export const convertTwUserDataToRecordUserData =
   (maybeDeletedOrSuspended = false) =>
-  (twUser: TwUserData): RecordUserDataWithProfile => {
+  (twUser: TwUserData): RecordUserWithProfile => {
     return {
       id: twUser.id,
       screenName: twUser.screenName,

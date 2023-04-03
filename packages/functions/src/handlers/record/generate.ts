@@ -1,11 +1,4 @@
-import {
-  FirestoreDateLike,
-  WatchData,
-  RecordData,
-  RecordUserData,
-  Timestamp,
-  RecordUserDataWithoutProfile,
-} from '@yukukuru/types';
+import { FirestoreDateLike, WatchData, Record, RecordUser, Timestamp, RecordUserWithoutProfile } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -24,7 +17,7 @@ import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
 /** Twitter から ユーザー情報リストを取得する */
-const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUserData[] | null> => {
+const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUser[] | null> => {
   const token = await getToken(uid);
   if (token === null) {
     console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
@@ -52,9 +45,9 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
 
 /** Record データの生成 */
 const generateRecord =
-  (type: RecordData['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUserData[]) =>
-  async (id: string): Promise<RecordData> => {
-    const findUser = async (userId: string): Promise<RecordUserData> => {
+  (type: Record['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUser[]) =>
+  async (id: string): Promise<Record> => {
+    const findUser = async (userId: string): Promise<RecordUser> => {
       const userFromTw = usersFromTwitter.find((e) => e.id === userId);
       if (userFromTw) {
         return userFromTw;
@@ -62,7 +55,7 @@ const generateRecord =
 
       const twUser = await getTwUser(userId);
       if (twUser === null) {
-        const item: RecordUserDataWithoutProfile = {
+        const item: RecordUserWithoutProfile = {
           id: userId,
           maybeDeletedOrSuspended: true,
         };

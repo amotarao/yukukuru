@@ -1,4 +1,4 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, Record } from '@yukukuru/types';
 import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
@@ -6,7 +6,7 @@ const usersCollection = firestore.collection('users');
 /**
  * Records を古い順に取得する
  */
-export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<FirestoreIdData<RecordData>[]> => {
+export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<FirestoreIdData<Record>[]> => {
   const collection = usersCollection.doc(uid).collection('records');
   const request = max
     ? collection.orderBy('durationEnd').startAfter(cursor).endAt(max).get()
@@ -20,7 +20,7 @@ export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise
   const docs = qs.docs.map((doc) => {
     return {
       id: doc.id,
-      data: doc.data() as RecordData,
+      data: doc.data() as Record,
     };
   });
 
