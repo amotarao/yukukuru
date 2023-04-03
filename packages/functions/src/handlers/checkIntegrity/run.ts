@@ -37,14 +37,16 @@ export const run = functions
 
     // 件数が少ない場合はキャンセル
     const currentCount = await getWatchesCount(uid);
-    if (currentCount < 10 * Math.ceil(followersCount / 10000)) {
+    const basisCount = Math.ceil(followersCount / 30000) * 10;
+    if (currentCount < basisCount) {
       console.log(`❗️ Canceled check integrity due to many watches.`);
       return;
     }
 
-    // watches を 最古のものから 100件取得
-    const rawWatches = await getWatches(uid, 100);
+    // watches を 最古のものから取得
+    const rawWatches = await getWatches(uid, Math.min(basisCount, 100));
 
+    // 2021年より前チェック
     const checked = await deleteBefore2021(uid, rawWatches);
     if (checked) {
       console.log(`✔️ Completed to delete watches of [${uid}].`);
@@ -58,7 +60,6 @@ export const run = functions
 
     // watches が 2件未満の場合は終了
     if (watches.length < 2) {
-      await updateUserCheckIntegrity(uid, now);
       return;
     }
 
