@@ -97,13 +97,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'AddItems': {
       const docs = action.payload.docs;
       const count = docs.length;
-      const items = docs.map(convertRecordItems).filter(({ data: { user } }) => {
-        // 情報取得できない かつ 削除or凍結 のユーザーを除外
-        // 本来はデータベースからも削除したいため、仮対応
-        const hasDetail = 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
-        const maybeDeletedOrSuspended = user.maybeDeletedOrSuspended;
-        return hasDetail || !maybeDeletedOrSuspended;
-      });
+      const items = docs.map(convertRecordItems);
       const cursor = count > 0 ? docs[count - 1] : null;
 
       return {
