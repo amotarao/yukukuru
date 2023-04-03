@@ -38,6 +38,7 @@ export const run = functions
       }
       console.log(`⚙️ Starting get followers of [${uid}].`);
 
+      await checkOwnUserStatus(twitterId, sharedToken);
       const { ids, next_cursor_str: newNextCursor } = await getFollowersIdsStep(
         now,
         uid,
@@ -54,6 +55,25 @@ export const run = functions
       console.error(e);
     }
   });
+
+/**
+ * 自身のアカウント状態を確認
+ * 削除または凍結されている場合は、処理を中断する
+ */
+const checkOwnUserStatus = async (twitterId: string, sharedToken: Message['sharedToken']): Promise<void> => {
+  const sharedClient = getClient({
+    accessToken: sharedToken.accessToken,
+    accessSecret: sharedToken.accessTokenSecret,
+  });
+
+  const response = await getUsersLookup(sharedClient, { usersId: [twitterId] });
+  if ('error' in response) {
+    throw new Error(`❗️An error occurred while retrieving own status.`);
+  }
+  if (response.response.errorUsers.length > 0) {
+    throw new Error(`❗️Own is deleted or suspended.`);
+  }
+};
 
 /**
  * フォロワーIDリストの取得
