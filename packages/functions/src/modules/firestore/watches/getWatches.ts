@@ -1,5 +1,5 @@
 import { FirestoreDateLike, WatchData } from '@yukukuru/types';
-import { CollectionReference, QueryDocumentSnapshot, QuerySnapshot } from 'firebase-admin/firestore';
+import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
 const usersCollection = firestore.collection('users');
@@ -32,14 +32,9 @@ export const getLatestWatches = async (uid: string, limit: number): Promise<Quer
   return snapshot.docs as QueryDocumentSnapshot<WatchData>[];
 };
 
-/**
- * Watches の件数を取得
- */
 export const getWatchesCount = async (uid: string): Promise<number> => {
-  const querySnapshot = (await getWatchesCollection(uid).select('ended').get()) as QuerySnapshot<
-    Pick<WatchData, 'ended'>
-  >;
-  return querySnapshot.size;
+  const snapshot = await getWatchesCollection(uid).count().get();
+  return snapshot.data().count;
 };
 
 export const deleteWatches = async (uid: string, deleteIds: string[]): Promise<void> => {
