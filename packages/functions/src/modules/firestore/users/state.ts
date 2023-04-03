@@ -49,11 +49,18 @@ export const setUserGetFollowersV2Status = async (
   nextToken: string | null,
   now: Date
 ): Promise<void> => {
-  const ref = usersCollection.doc(userId);
-  await ref.update({
-    '_getFollowersV2Status.lastRun': now,
-    '_getFollowersV2Status.nextToken': nextToken,
-  });
+  const ended = nextToken === null;
+
+  await usersCollection.doc(userId).update(
+    ended
+      ? {
+          '_getFollowersV2Status.lastRun': now,
+          '_getFollowersV2Status.nextToken': nextToken,
+        }
+      : {
+          '_getFollowersV2Status.nextToken': nextToken,
+        }
+  );
 };
 
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
