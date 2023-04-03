@@ -29,6 +29,7 @@ export const fixRecord = functions
             const displayName = doc.get('user.name');
             const updatingData = {
               'user.displayName': displayName,
+              'user.name': FieldValue.delete(),
               'user.lastUpdated': FieldValue.delete(),
             } as any;
             await doc.ref.update(updatingData);
