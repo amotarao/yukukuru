@@ -1,4 +1,5 @@
 import { ApiResponseError, TwitterApiReadOnly } from 'twitter-api-v2';
+import { userFields } from '../constants';
 import { toRequiredTwitterUser } from '../converter';
 import { twitterClientErrorHandler } from '../error';
 import { TwitterUser } from '../types';
@@ -24,11 +25,7 @@ export const getFollowersSingle = async (
   { userId, maxResults = getFollowersMaxResultsMax, paginationToken = null }: TwitterGetFollowersParameters
 ): Promise<TwitterGetFollowersResponse | { error: ApiResponseError }> => {
   return client.v2
-    .followers(userId, {
-      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
-      max_results: maxResults,
-      pagination_token: paginationToken || undefined,
-    })
+    .followers(userId, { ...userFields, max_results: maxResults, pagination_token: paginationToken || undefined })
     .then((res) => {
       const response: TwitterGetFollowersResponse = {
         users: res.data.map(toRequiredTwitterUser),
