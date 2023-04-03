@@ -4,7 +4,7 @@ import { firestore } from '../../firebase';
 import { bulkWriterErrorHandler } from '../error';
 
 const getRecordsV2Collection = (docId: string) =>
-  firestore.collection('users').doc(docId).collection('watchesV2') as CollectionReference<RecordV2<FirestoreDateLike>>;
+  firestore.collection('users').doc(docId).collection('recordsV2') as CollectionReference<RecordV2<FirestoreDateLike>>;
 
 export const addRecordsV2 = async (uid: string, items: RecordV2<FirestoreDateLike>[]): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
