@@ -1,4 +1,4 @@
-import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
+import { FirestoreDateLike, WatchData, Record, RecordUser, Timestamp, RecordUserWithoutProfile } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -8,13 +8,16 @@ import { addRecords } from '../../modules/firestore/records/add';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
-import { convertTwitterUserToRecordUserData } from '../../modules/twitter-user-converter';
+import {
+  convertTwUserDataToRecordUserData,
+  convertTwitterUserToRecordUserData,
+} from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
 /** Twitter から ユーザー情報リストを取得する */
-const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUserData[] | null> => {
+const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<RecordUser[] | null> => {
   const token = await getToken(uid);
   if (token === null) {
     console.error(`❗️[Error]: Failed to get token of [${uid}]: Token is not exists.`);
@@ -42,28 +45,23 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
 
 /** Record データの生成 */
 const generateRecord =
-  (type: RecordData['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUserData[]) =>
-  async (id: string): Promise<RecordData> => {
-    const findUser = async (userId: string): Promise<RecordUserData> => {
+  (type: Record['type'], durationStart: Timestamp, durationEnd: Timestamp, usersFromTwitter: RecordUser[]) =>
+  async (id: string): Promise<Record> => {
+    const findUser = async (userId: string): Promise<RecordUser> => {
       const userFromTw = usersFromTwitter.find((e) => e.id === userId);
       if (userFromTw) {
         return userFromTw;
       }
 
-      const user = await getTwUser(userId);
-      if (user === null) {
-        const item: RecordUserData = {
+      const twUser = await getTwUser(userId);
+      if (twUser === null) {
+        const item: RecordUserWithoutProfile = {
           id: userId,
           maybeDeletedOrSuspended: true,
         };
         return item;
       }
-
-      const item: RecordUserData = {
-        ...user,
-        maybeDeletedOrSuspended: true,
-      };
-      return item;
+      return convertTwUserDataToRecordUserData(true)(twUser);
     };
 
     const user = await findUser(id);

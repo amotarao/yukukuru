@@ -1,4 +1,4 @@
-import { RecordUserData, RecordData, FirestoreDateLike, WatchData } from '@yukukuru/types';
+import { Record, WatchData, RecordUserWithProfile, RecordUserWithoutProfile } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -100,24 +100,32 @@ export const run = functions
     // 存在しないドキュメントは追加する
     if (notExistsDiffs.length !== 0) {
       const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
-      const items = notExistsDiffs.map(({ diff }): RecordData<FirestoreDateLike> => {
+      const items = notExistsDiffs.map(({ diff }): Record<Date> => {
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
-        const userData: RecordUserData =
-          twUser === null
-            ? {
-                id: diff.twitterId,
-                maybeDeletedOrSuspended: true,
-              }
-            : {
-                id: diff.twitterId,
-                screenName: twUser.screenName,
-                displayName: twUser.name,
-                photoUrl: twUser.photoUrl,
-                maybeDeletedOrSuspended: false,
-              };
+
+        if (!twUser) {
+          const user: RecordUserWithoutProfile = {
+            id: diff.twitterId,
+            maybeDeletedOrSuspended: true,
+          };
+          return {
+            type: diff.type,
+            user,
+            durationStart: diff.durationStart,
+            durationEnd: diff.durationEnd,
+          };
+        }
+
+        const user: RecordUserWithProfile = {
+          id: diff.twitterId,
+          screenName: twUser.screenName,
+          displayName: twUser.name,
+          photoUrl: twUser.photoUrl,
+          maybeDeletedOrSuspended: false,
+        };
         return {
           type: diff.type,
-          user: userData,
+          user,
           durationStart: diff.durationStart,
           durationEnd: diff.durationEnd,
         };

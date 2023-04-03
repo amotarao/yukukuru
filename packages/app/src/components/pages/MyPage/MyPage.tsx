@@ -1,4 +1,4 @@
-import { FirestoreIdData, UserData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, UserData, Record } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,7 @@ import styles from './styles.module.scss';
 export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: FirestoreIdData<RecordData>[];
+  items: FirestoreIdData<Record>[];
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;

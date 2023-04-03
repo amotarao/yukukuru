@@ -1,12 +1,12 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, Record } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
 
-const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
-  const item: FirestoreIdData<RecordData> = {
+const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<Record> => {
+  const item: FirestoreIdData<Record> = {
     id: snapshot.id,
-    data: snapshot.data() as RecordData,
+    data: snapshot.data() as Record,
   };
   return item;
 };
@@ -25,7 +25,7 @@ type State = {
   isFirstLoaded: boolean;
 
   /** 記録リスト */
-  items: FirestoreIdData<RecordData>[];
+  items: FirestoreIdData<Record>[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;
@@ -97,13 +97,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'AddItems': {
       const docs = action.payload.docs;
       const count = docs.length;
-      const items = docs.map(convertRecordItems).filter(({ data: { user } }) => {
-        // 情報取得できない かつ 削除or凍結 のユーザーを除外
-        // 本来はデータベースからも削除したいため、仮対応
-        const hasDetail = 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
-        const maybeDeletedOrSuspended = user.maybeDeletedOrSuspended;
-        return hasDetail || !maybeDeletedOrSuspended;
-      });
+      const items = docs.map(convertRecordItems);
       const cursor = count > 0 ? docs[count - 1] : null;
 
       return {
