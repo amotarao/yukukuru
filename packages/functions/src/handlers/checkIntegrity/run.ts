@@ -8,7 +8,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { deleteWatches, getWatches } from '../../modules/firestore/watches/getWatches';
+import { deleteWatches, getWatches, getWatchesCount } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -34,6 +34,13 @@ export const run = functions
     }
 
     console.log(`⚙️ Starting check integrity for [${uid}].`);
+
+    // 件数が少ない場合はキャンセル
+    const currentCount = await getWatchesCount(uid);
+    if (currentCount < 10 * Math.ceil(followersCount / 10000)) {
+      console.log(`❗️ Canceled check integrity due to many watches.`);
+      return;
+    }
 
     // watches を 最古のものから 100件取得
     const rawWatches = await getWatches(uid, 100);
