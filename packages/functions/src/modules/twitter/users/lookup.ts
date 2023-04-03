@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { ApiResponseError, InlineErrorV2, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
-import { TwitterUser } from '..';
+import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
+import { TwitterErrorUser, TwitterUser } from '..';
 import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
 
@@ -16,7 +16,7 @@ export type TwitterGetUsersLookupParameters = {
 const getUsersLookupSingle = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: { users: TwitterUser[]; errorUsers: InlineErrorV2[] } } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
   return client.v2
     .users(usersId, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
@@ -29,7 +29,25 @@ const getUsersLookupSingle = async (
       return {
         response: {
           users: data?.map(toRequiredTwitterUser) ?? [],
-          errorUsers: response.errors ?? [],
+          errorUsers:
+            response.errors
+              ?.map((errorUser): TwitterErrorUser | null => {
+                const id = errorUser.resource_id;
+                const type = errorUser.detail.startsWith('Could not find user with ids:')
+                  ? 'deleted'
+                  : errorUser.detail.startsWith('User has been suspended:')
+                  ? 'suspended'
+                  : 'unknown';
+
+                if (!id || type === 'unknown') {
+                  console.log('Unknown error user', JSON.stringify(errorUser));
+                }
+                if (!id) {
+                  return null;
+                }
+                return { id, type };
+              })
+              .filter((errorUser): errorUser is TwitterErrorUser => errorUser !== null) ?? [],
         },
       };
     })
@@ -43,14 +61,14 @@ const getUsersLookupSingle = async (
 export const getUsersLookup = async (
   client: TwitterApiReadOnly,
   { usersId }: TwitterGetUsersLookupParameters
-): Promise<{ response: { users: TwitterUser[]; errorUsers: InlineErrorV2[] } } | { error: ApiResponseError }> => {
+): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
   const lookup = _.chunk(_.uniq(usersId), 100).map(
     async (
       usersId
     ): Promise<
       | {
           users: TwitterUser[];
-          errorUsers: InlineErrorV2[];
+          errorUsers: TwitterErrorUser[];
           error: null;
         }
       | {
@@ -70,7 +88,7 @@ export const getUsersLookup = async (
   const lookuped = await Promise.all(lookup);
 
   const users: TwitterUser[] = [];
-  const errorUsers: InlineErrorV2[] = [];
+  const errorUsers: TwitterErrorUser[] = [];
   const errors: ApiResponseError[] = [];
 
   for (const single of lookuped) {
