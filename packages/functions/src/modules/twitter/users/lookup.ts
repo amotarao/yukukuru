@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
-import { TwitterErrorUser, TwitterUser } from '..';
 import { toRequiredTwitterUser } from '../../twitter-user-converter';
 import { twitterClientErrorHandler } from '../error';
+import { TwitterErrorUser, TwitterUser } from '../types';
 
 /**
  * ユーザー情報を取得

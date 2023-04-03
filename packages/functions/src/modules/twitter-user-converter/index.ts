@@ -1,5 +1,5 @@
 import { RecordUserWithProfile, TwUserData, UserData } from '@yukukuru/types';
-import { PickedTwitterUser, TwitterUser } from '../twitter';
+import { PickedTwitterUser, TwitterUser } from '../twitter/types';
 
 export const toRequiredTwitterUser = (user: PickedTwitterUser): TwitterUser => {
   return {
