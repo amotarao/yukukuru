@@ -1,12 +1,12 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
+import { FirestoreIdData, Record } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
 
-const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<RecordData> => {
-  const item: FirestoreIdData<RecordData> = {
+const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<Record> => {
+  const item: FirestoreIdData<Record> = {
     id: snapshot.id,
-    data: snapshot.data() as RecordData,
+    data: snapshot.data() as Record,
   };
   return item;
 };
@@ -25,7 +25,7 @@ type State = {
   isFirstLoaded: boolean;
 
   /** 記録リスト */
-  items: FirestoreIdData<RecordData>[];
+  items: FirestoreIdData<Record>[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;

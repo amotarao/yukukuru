@@ -1,4 +1,4 @@
-import { RecordData, RecordUserData } from '@yukukuru/types';
+import { Record, RecordType, RecordUser, RecordUserWithProfile } from '@yukukuru/types';
 import classNames from 'classnames';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 
@@ -53,16 +53,18 @@ const Card: React.FC<CardProps> = ({
   );
 };
 
+const checkWithProfile = (user: RecordUser): user is RecordUserWithProfile => {
+  return 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
+};
+
 export type UserCardProps = {
   className?: string;
-  user: RecordUserData;
-  type: RecordData['type'];
+  user: RecordUser;
+  type: RecordType;
 };
 
 export const UserCard: React.FC<UserCardProps> = ({ className, user, type }) => {
-  const hasDetail = 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
-
-  return hasDetail ? (
+  return checkWithProfile(user) ? (
     <Card
       className={className}
       displayName={user.displayName}
@@ -84,7 +86,7 @@ export type DummyUserCardProps = {
     displayName: string;
     photoUrl: string;
   };
-  type: RecordData['type'];
+  type: Record['type'];
 };
 
 export const DummyUserCard: React.FC<DummyUserCardProps> = ({ className, user, type }) => {
