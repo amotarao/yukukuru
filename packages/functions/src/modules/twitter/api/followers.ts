@@ -23,12 +23,18 @@ export type TwitterGetFollowersResponse = {
 export const getFollowersSingle = async (
   client: TwitterApiReadOnly,
   { userId, maxResults = getFollowersMaxResultsMax, paginationToken = null }: TwitterGetFollowersParameters
-): Promise<TwitterGetFollowersResponse | { error: ApiResponseError }> => {
+): Promise<TwitterGetFollowersResponse | { error: ApiResponseError } | { authorizationError: boolean }> => {
   return client.v2
     .followers(userId, { ...userFields, max_results: maxResults, pagination_token: paginationToken || undefined })
     .then((res) => {
+      if (
+        res.errors?.find((error) => error.type === 'https://api.twitter.com/2/problems/not-authorized-for-resource')
+      ) {
+        return { authorizationError: true };
+      }
+
       const response: TwitterGetFollowersResponse = {
-        users: res.data.map(toRequiredTwitterUser),
+        users: res.data?.map(toRequiredTwitterUser) ?? [],
         nextToken: res.meta.next_token || null,
       };
       return response;
@@ -39,7 +45,7 @@ export const getFollowersSingle = async (
 export const getFollowers = async (
   client: TwitterApiReadOnly,
   { userId, maxResults = getFollowersMaxResultsMax * 15, paginationToken = null }: TwitterGetFollowersParameters
-): Promise<TwitterGetFollowersResponse | { error: ApiResponseError }> => {
+): Promise<TwitterGetFollowersResponse | { error: ApiResponseError } | { authorizationError: boolean }> => {
   const users: TwitterGetFollowersResponse['users'] = [];
   let nextToken = paginationToken;
 
@@ -61,6 +67,11 @@ export const getFollowers = async (
       }
 
       // 1回目でのエラーの場合は、エラーのみを返す
+      return response;
+    }
+
+    // 認証エラーが発生した場合
+    if ('authorizationError' in response) {
       return response;
     }
 

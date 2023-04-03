@@ -116,6 +116,20 @@ export const getSharedTokensForGetFollowersIds = async (
   return convertToIdData(snapshot);
 };
 
+export const getSharedTokensForGetFollowersV2 = async (
+  now: Date,
+  limit: number
+): Promise<FirestoreIdData<SharedToken>[]> => {
+  const beforeDate = dayjs(now).subtract(15, 'minutes').toDate();
+  const snapshot = await collectionRef
+    .where('_invalid', '==', false)
+    .where('_lastUsed.v2_getUserFollowers', '<', beforeDate)
+    .orderBy('_lastUsed.v2_getUserFollowers')
+    .limit(limit)
+    .get();
+  return convertToIdData(snapshot);
+};
+
 export const setLastUsedSharedToken = async (
   id: string,
   targetApis: (keyof SharedToken['_lastUsed'])[],

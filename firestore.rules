@@ -38,6 +38,11 @@ service cloud.firestore {
         allow write: if false;
         allow read: if isAdmin();
       }
+
+      match /watchesV2/{watchID} {
+        allow write: if false;
+        allow read: if isAdmin();
+      }
     }
 
     match /userRoles/{userID} {

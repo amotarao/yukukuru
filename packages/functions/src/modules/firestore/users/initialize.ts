@@ -1,9 +1,7 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
 import * as admin from 'firebase-admin';
-import { firestore } from '../../firebase';
 import { getGroupIndex } from '../../group';
-
-const collection = firestore.collection('users');
+import { usersCollection } from '.';
 
 /**
  * ユーザーを初期化
@@ -25,6 +23,10 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     group: getGroupIndex(id),
     allowedAccessUsers: [],
     twitter,
+    _getFollowersV2Status: {
+      lastRun: new Date(0),
+      nextToken: null,
+    },
   };
-  await collection.doc(id).set(data, { merge: true });
+  await usersCollection.doc(id).set(data, { merge: true });
 };

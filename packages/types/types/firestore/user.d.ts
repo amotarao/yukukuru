@@ -2,6 +2,7 @@ import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
 export type UserData<T extends FirestoreDateLike = Timestamp> = {
+  /** ロール */
   role: 'supporter' | null;
 
   /** 有効かどうか */
@@ -10,8 +11,11 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** auth が削除されているかどうか */
   deletedAuth: boolean;
 
-  /** フォロワー一覧取得 最終実行日時 */
-  lastUpdated: T;
+  /** グループ番号 0-14 のいずれか */
+  group: number;
+
+  /** アクセス許可されたユーザーリスト */
+  allowedAccessUsers?: string[];
 
   /** フォロワー情報取得 最終実行日時 */
   lastUpdatedTwUsers: T;
@@ -22,24 +26,11 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
 
-  /**
-   * フォロワー一覧取得 state cursor
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  nextCursor: string;
-
-  /** フォロワー一覧取得 state doc-id */
-  currentWatchesId: string;
-
-  /** フォロワー一覧取得 state 途中かどうか */
-  pausedGetFollower: boolean;
-
-  /** グループ番号 0-14 のいずれか */
-  group: number;
-
-  /** アクセス許可されたユーザーリスト */
-  allowedAccessUsers?: string[];
+  /** getFollowersV2 の状態保存 */
+  _getFollowersV2Status: {
+    lastRun: T;
+    nextToken: string | null;
+  };
 
   /** Twitter情報 */
   twitter: {
@@ -61,4 +52,32 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
     /** 認証済みユーザーかどうか */
     verified: boolean;
   };
+
+  /**
+   * フォロワー一覧取得 最終実行日時
+   *
+   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
+   */
+  lastUpdated: T;
+
+  /**
+   * フォロワー一覧取得 state cursor
+   *
+   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
+   */
+  nextCursor: string;
+
+  /**
+   * フォロワー一覧取得 state doc-id
+   *
+   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
+   */
+  currentWatchesId: string;
+
+  /**
+   * フォロワー一覧取得 state 途中かどうか
+   *
+   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
+   */
+  pausedGetFollower: boolean;
 };

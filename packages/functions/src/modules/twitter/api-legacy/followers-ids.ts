@@ -3,12 +3,18 @@ import { twitterClientErrorHandler } from '../error';
 
 export const getFollowersIdsLegacyMaxResultsMax = 5000;
 
+/**
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの型
+ */
 export type TwitterGetFollowersIdsLegacyParameters = {
   userId: string;
   cursor?: string;
   count?: number;
 };
 
+/**
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの型
+ */
 export type TwitterGetFollowersIdsLegacyResponse = Required<
   Pick<UserFollowerIdsV1Paginator['data'], 'ids' | 'next_cursor_str'>
 >;

@@ -1,6 +1,4 @@
-import { firestore } from '../../firebase';
-
-const collection = firestore.collection('users');
+import { usersCollection } from '.';
 
 /**
  * ユーザードキュメントが存在するかどうかを確認
@@ -9,6 +7,6 @@ const collection = firestore.collection('users');
  * @returns 存在するかどうか
  */
 export const existsUserDocument = async (id: string): Promise<boolean> => {
-  const snapshot = await collection.doc(id).get();
+  const snapshot = await usersCollection.doc(id).get();
   return snapshot.exists;
 };

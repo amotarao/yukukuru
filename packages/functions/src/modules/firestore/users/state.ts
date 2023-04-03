@@ -1,7 +1,5 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
-import { firestore } from '../../firebase';
-
-const collection = firestore.collection('users');
+import { usersCollection } from '.';
 
 /**
  * フォロワー取得処理の状態を保存
@@ -11,6 +9,7 @@ const collection = firestore.collection('users');
  * @param ended 取得が終了している (カーソルが 0 か -1) かどうか
  * @param nextCursor 次のカーソル
  * @param date 現在の日時
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
 export const setUserResultLegacy = async (
   userId: string,
@@ -19,7 +18,7 @@ export const setUserResultLegacy = async (
   nextCursor: string,
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
 
   if (ended) {
     const data: Pick<
@@ -42,8 +41,23 @@ export const setUserResultLegacy = async (
   }
 };
 
+/**
+ * フォロワー取得処理の状態を保存
+ */
+export const setUserGetFollowersV2Status = async (
+  userId: string,
+  nextToken: string | null,
+  now: Date
+): Promise<void> => {
+  const ref = usersCollection.doc(userId);
+  await ref.update({
+    '_getFollowersV2Status.lastRun': now,
+    '_getFollowersV2Status.nextToken': nextToken,
+  });
+};
+
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {
     lastUpdatedTwUsers: date,
   };
@@ -55,7 +69,7 @@ export const updateUserTwitterInfo = async (
   twitter: UserData['twitter'],
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedUserTwitterInfo' | 'twitter'> = {
     lastUpdatedUserTwitterInfo: date,
     twitter,
@@ -64,7 +78,7 @@ export const updateUserTwitterInfo = async (
 };
 
 export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
-  const ref = collection.doc(uid);
+  const ref = usersCollection.doc(uid);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {
     lastUpdatedCheckIntegrity: date,
   };
