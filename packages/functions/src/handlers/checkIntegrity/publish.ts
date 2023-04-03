@@ -30,7 +30,11 @@ export const publish = functions
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
-    const messages: Message[] = targetDocs.map((doc) => ({ uid: doc.id, publishedAt: now.toDate() }));
+    const messages: Message[] = targetDocs.map((doc) => ({
+      uid: doc.id,
+      followersCount: doc.data().twitter.followersCount,
+      publishedAt: now.toDate(),
+    }));
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);
@@ -40,7 +44,7 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
-    const { role, active, deletedAuth, lastUpdatedCheckIntegrity } = snapshot.data();
+    const { active, deletedAuth, lastUpdatedCheckIntegrity } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない
     if (!active || deletedAuth) {
@@ -49,16 +53,8 @@ const filterExecutable =
 
     const minutes = dayjs(now).diff(dayjs(lastUpdatedCheckIntegrity.toDate()), 'minutes');
 
-    // サポーターの場合、前回の実行から 20分経過していれば実行
-    if (role === 'supporter') {
-      if (minutes < 20 - 1) {
-        return false;
-      }
-      return true;
-    }
-
-    // それ以外の場合、前回の実行から 3時間経過していれば実行
-    if (minutes < 180 - 1) {
+    // 10分経過していれば実行
+    if (minutes < 10 - 1) {
       return false;
     }
     return true;
