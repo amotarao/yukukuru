@@ -1,4 +1,4 @@
-import { RecordUserWithProfile, TwUserData, UserData } from '@yukukuru/types';
+import { RecordUserWithProfile, RecordV2User, TwUserData, UserData } from '@yukukuru/types';
 import { TwitterUser } from '../twitter/types';
 
 export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData['twitter'] => {
@@ -44,3 +44,11 @@ export const convertTwUserDataToRecordUserData =
       maybeDeletedOrSuspended,
     };
   };
+
+export const convertTwUserDataToRecordV2User = (twUser: TwUserData): RecordV2User => {
+  return {
+    screenName: twUser.screenName,
+    displayName: twUser.name,
+    photoUrl: twUser.photoUrl,
+  };
+};
