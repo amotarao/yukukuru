@@ -237,11 +237,31 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "watchesV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ended",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
     {
       "collectionGroup": "watches",
+      "fieldPath": "followers",
+      "ttl": false,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "watchesV2",
       "fieldPath": "followers",
       "ttl": false,
       "indexes": []
