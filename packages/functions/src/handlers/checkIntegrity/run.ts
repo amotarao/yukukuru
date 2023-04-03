@@ -1,4 +1,4 @@
-import { RecordUserData, RecordData, FirestoreDateLike, WatchData } from '@yukukuru/types';
+import { RecordData, WatchData, RecordUserDataWithProfile, RecordUserDataWithoutProfile } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -100,24 +100,32 @@ export const run = functions
     // 存在しないドキュメントは追加する
     if (notExistsDiffs.length !== 0) {
       const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.diff.twitterId));
-      const items = notExistsDiffs.map(({ diff }): RecordData<FirestoreDateLike> => {
+      const items = notExistsDiffs.map(({ diff }): RecordData<Date> => {
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId) || null;
-        const userData: RecordUserData =
-          twUser === null
-            ? {
-                id: diff.twitterId,
-                maybeDeletedOrSuspended: true,
-              }
-            : {
-                id: diff.twitterId,
-                screenName: twUser.screenName,
-                displayName: twUser.name,
-                photoUrl: twUser.photoUrl,
-                maybeDeletedOrSuspended: false,
-              };
+
+        if (!twUser) {
+          const user: RecordUserDataWithoutProfile = {
+            id: diff.twitterId,
+            maybeDeletedOrSuspended: true,
+          };
+          return {
+            type: diff.type,
+            user,
+            durationStart: diff.durationStart,
+            durationEnd: diff.durationEnd,
+          };
+        }
+
+        const user: RecordUserDataWithProfile = {
+          id: diff.twitterId,
+          screenName: twUser.screenName,
+          displayName: twUser.name,
+          photoUrl: twUser.photoUrl,
+          maybeDeletedOrSuspended: false,
+        };
         return {
           type: diff.type,
-          user: userData,
+          user,
           durationStart: diff.durationStart,
           durationEnd: diff.durationEnd,
         };

@@ -1,4 +1,11 @@
-import { FirestoreDateLike, WatchData, RecordData, RecordUserData, Timestamp } from '@yukukuru/types';
+import {
+  FirestoreDateLike,
+  WatchData,
+  RecordData,
+  RecordUserData,
+  Timestamp,
+  RecordUserDataWithoutProfile,
+} from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -8,7 +15,10 @@ import { addRecords } from '../../modules/firestore/records/add';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTokenInvalid } from '../../modules/firestore/tokens/set';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
-import { convertTwitterUserToRecordUserData } from '../../modules/twitter-user-converter';
+import {
+  convertTwUserDataToRecordUserData,
+  convertTwitterUserToRecordUserData,
+} from '../../modules/twitter-user-converter';
 import { getClient } from '../../modules/twitter/client';
 import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -50,20 +60,15 @@ const generateRecord =
         return userFromTw;
       }
 
-      const user = await getTwUser(userId);
-      if (user === null) {
-        const item: RecordUserData = {
+      const twUser = await getTwUser(userId);
+      if (twUser === null) {
+        const item: RecordUserDataWithoutProfile = {
           id: userId,
           maybeDeletedOrSuspended: true,
         };
         return item;
       }
-
-      const item: RecordUserData = {
-        ...user,
-        maybeDeletedOrSuspended: true,
-      };
-      return item;
+      return convertTwUserDataToRecordUserData(true)(twUser);
     };
 
     const user = await findUser(id);

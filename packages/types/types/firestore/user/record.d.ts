@@ -17,18 +17,28 @@ export type RecordData<T extends FirestoreDateLike = Timestamp> = {
   durationEnd: T;
 };
 
-export type RecordUserData = {
+export type RecordUserData = RecordUserDataWithProfile | RecordUserDataWithoutProfile;
+
+export type RecordUserDataWithProfile = {
   /** Twitter UID (ユニークな数字のID) */
   id: string;
 
   /** Twitter ID (@から始まるID) */
-  screenName?: string;
+  screenName: string;
 
   /** 名前 (プロフィールの名前) */
-  displayName?: string;
+  displayName: string;
 
   /** プロフィール画像の URL */
-  photoUrl?: string;
+  photoUrl: string;
+
+  /** 削除または凍結された可能性があるかどうか */
+  maybeDeletedOrSuspended: boolean;
+};
+
+export type RecordUserDataWithoutProfile = {
+  /** Twitter UID (ユニークな数字のID) */
+  id: string;
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: boolean;
