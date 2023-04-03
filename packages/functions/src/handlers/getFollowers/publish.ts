@@ -26,7 +26,6 @@ export const publish = functions
     const now = dayjs(context.timestamp);
 
     // 対象ユーザーの取得
-    // 実行するかどうかは run で確認
     const groups = [
       getGroupFromTime(1, now.toDate()),
       getGroupFromTime(1, now.add(5, 'minutes').toDate()),
