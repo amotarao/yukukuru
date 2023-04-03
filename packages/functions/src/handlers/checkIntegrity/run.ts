@@ -38,7 +38,7 @@ export const run = functions
     // watches を 最古のものから 100件取得
     const rawWatches = await getWatches(uid, 100);
 
-    const checked = await delete2021(uid, rawWatches);
+    const checked = await deleteBefore2021(uid, rawWatches);
     if (checked) {
       console.log(`✔️ Completed to delete watches of [${uid}].`);
       return;
@@ -192,15 +192,18 @@ export const run = functions
     console.log(`✔️ Completed check integrity for [${uid}].`);
   });
 
-// 2021年より前のデータはすべて削除してしまう
-// キャンセルする際は false
-const delete2021 = async (uid: string, docs: QueryDocumentSnapshot<WatchData>[]): Promise<boolean> => {
-  const lastWatch = docs.at(-1);
-
-  if (!lastWatch) {
+const checkIsBefore2021 = (docs: QueryDocumentSnapshot<WatchData>[]): boolean => {
+  const lastDoc = docs.at(-1);
+  if (!lastDoc) {
     return false;
   }
-  if (lastWatch.data().getEndDate.toDate() >= new Date(2021, 0)) {
+  return lastDoc.data().getEndDate.toDate() < new Date(2021, 0);
+};
+
+// 2021年より前のデータはすべて削除してしまう
+// キャンセルする際は false
+const deleteBefore2021 = async (uid: string, docs: QueryDocumentSnapshot<WatchData>[]): Promise<boolean> => {
+  if (!checkIsBefore2021(docs)) {
     return false;
   }
 
