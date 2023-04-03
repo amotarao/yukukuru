@@ -11,9 +11,9 @@ import {
 } from '../../modules/firestore/sharedToken';
 import { setValidV1SharedToken } from '../../modules/firestore/sharedToken/index';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { getFollowersIdsLegacy } from '../../modules/twitter/api-legacy/followers-ids';
+import { getMe } from '../../modules/twitter/api/me';
 import { getClient } from '../../modules/twitter/client';
-import { getFollowersIdsLegacy } from '../../modules/twitter/followers/ids';
-import { getMe } from '../../modules/twitter/users/me';
 
 const topicName = 'checkValiditySharedToken';
 

@@ -6,9 +6,12 @@ import { getToken } from '../../modules/firestore/tokens/get';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
 import { publishMessages } from '../../modules/pubsub/publish';
+import {
+  getFollowersIdsLegacy,
+  getFollowersIdsLegacyMaxResultsMax,
+} from '../../modules/twitter/api-legacy/followers-ids';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { getFollowersIdsLegacy, getFollowersIdsLegacyMaxResultsMax } from '../../modules/twitter/followers/ids';
-import { getUsers } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /**

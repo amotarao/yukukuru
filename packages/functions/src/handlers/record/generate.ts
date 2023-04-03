@@ -12,8 +12,8 @@ import {
   convertTwUserDataToRecordUserData,
   convertTwitterUserToRecordUserData,
 } from '../../modules/twitter-user-converter';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { getUsers } from '../../modules/twitter/users/lookup';
 import { mergeWatches } from '../../utils/followers/watches';
 
 /** Twitter から ユーザー情報リストを取得する */

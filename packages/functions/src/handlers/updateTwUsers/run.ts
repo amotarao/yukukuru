@@ -4,8 +4,8 @@ import { getToken } from '../../modules/firestore/tokens/get';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { getUsers } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */

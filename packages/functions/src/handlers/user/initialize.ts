@@ -3,7 +3,7 @@ import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getAppClient } from '../../modules/twitter/client';
-import { getUsers } from '../../modules/twitter/users/lookup';
+import { getUsers } from '../../modules/twitter/api/users';
 
 /** Auth: ユーザーが作成されたときの処理 */
 export const initialize = functions

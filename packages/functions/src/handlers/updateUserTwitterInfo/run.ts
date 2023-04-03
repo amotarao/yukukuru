@@ -3,8 +3,8 @@ import * as functions from 'firebase-functions';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { updateUserTwitterInfo } from '../../modules/firestore/users/state';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { getUsers } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter 情報更新 個々の実行 */

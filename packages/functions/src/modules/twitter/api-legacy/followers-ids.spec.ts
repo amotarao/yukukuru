@@ -1,5 +1,5 @@
 import { getClient } from '../client';
-import { getFollowersIdsSingleLegacy } from './ids';
+import { getFollowersIdsSingleLegacy } from './followers-ids';
 
 describe('getFollowersIdsSingleLegacy', () => {
   const client = getClient({
@@ -15,7 +15,7 @@ describe('getFollowersIdsSingleLegacy', () => {
       console.error(response.error);
       return;
     }
-    console.log(response.response);
-    expect(Array.isArray(response.response.ids)).toBe(true);
+    console.log(response);
+    expect(Array.isArray(response.ids)).toBe(true);
   });
 });
