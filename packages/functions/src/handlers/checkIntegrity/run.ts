@@ -37,13 +37,13 @@ export const run = functions
 
     // 件数が少ない場合はキャンセル
     const currentCount = await getWatchesCount(uid);
-    const basisCount = Math.ceil(followersCount / 30000) * 10;
+    const basisCount = Math.ceil(followersCount / 15000) * 10;
     if (currentCount < basisCount) {
       console.log(`❗️ Canceled check integrity due to many watches.`);
       return;
     }
 
-    // watches を 最古のものから取得
+    // watches を 最古のものから最大100件取得
     const rawWatches = await getWatches(uid, Math.min(basisCount, 100));
 
     // 2021年より前チェック
