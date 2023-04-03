@@ -1,11 +1,12 @@
 import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
 import * as admin from 'firebase-admin';
+import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 import { TwitterUser } from '../../twitter';
 import { convertTwitterUserToTwUser } from '../../twitter-user-converter';
 import { bulkWriterErrorHandler } from '../error';
 
-const collection = firestore.collection('twUsers');
+const collection = firestore.collection('twUsers') as CollectionReference<TwUserData<FirestoreDateLike>>;
 
 /**
  * twUser ドキュメントを並列で保存

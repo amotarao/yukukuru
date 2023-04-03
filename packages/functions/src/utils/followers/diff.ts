@@ -1,8 +1,8 @@
-import { RecordData, WatchData } from '@yukukuru/types';
+import { RecordType, WatchData } from '@yukukuru/types';
 import * as _ from 'lodash';
 
 export type Diff = {
-  type: RecordData['type'];
+  type: RecordType;
   twitterId: string;
   durationStart: Date;
   durationEnd: Date;

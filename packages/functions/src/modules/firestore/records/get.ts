@@ -1,13 +1,11 @@
-import { FirestoreIdData, RecordData } from '@yukukuru/types';
-import { firestore } from '../../firebase';
-
-const usersCollection = firestore.collection('users');
+import { FirestoreIdData, Record } from '@yukukuru/types';
+import { getRecordsCollection } from '.';
 
 /**
  * Records を古い順に取得する
  */
-export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<FirestoreIdData<RecordData>[]> => {
-  const collection = usersCollection.doc(uid).collection('records');
+export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<FirestoreIdData<Record>[]> => {
+  const collection = getRecordsCollection(uid);
   const request = max
     ? collection.orderBy('durationEnd').startAfter(cursor).endAt(max).get()
     : collection.orderBy('durationEnd').startAfter(cursor).get();
@@ -20,7 +18,7 @@ export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise
   const docs = qs.docs.map((doc) => {
     return {
       id: doc.id,
-      data: doc.data() as RecordData,
+      data: doc.data() as Record,
     };
   });
 
@@ -30,9 +28,9 @@ export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise
 /**
  * 指定したユーザーの records の存在を確認
  *
- * @param userId 指定するユーザー
+ * @param uid 指定するユーザー
  */
-export const existsRecords = async (userId: string): Promise<boolean> => {
-  const snapshot = await usersCollection.doc(userId).collection('records').limit(1).get();
+export const existsRecords = async (uid: string): Promise<boolean> => {
+  const snapshot = await getRecordsCollection(uid).limit(1).get();
   return !snapshot.empty;
 };

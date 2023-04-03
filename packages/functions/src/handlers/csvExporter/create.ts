@@ -1,5 +1,5 @@
 import { Timestamp } from '@firebase/firestore-types';
-import { RecordData } from '@yukukuru/types';
+import { Record } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore, bucket } from '../../modules/firebase';
@@ -26,7 +26,7 @@ export const create = functions
           .doc(userId)
           .collection('records')
           .orderBy('durationEnd')
-          .get()) as QuerySnapshot<RecordData>;
+          .get()) as QuerySnapshot<Record>;
 
         const head = ['id', 'type', 'durationStart', 'durationEnd', 'twitterId', 'maybeDeletedOrSuspended'].join(',');
         const rows = recordsSnapshot.docs.map((doc) => {

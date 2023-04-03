@@ -3,12 +3,12 @@ import { FirestoreDateLike } from '../../firestore';
 
 export type RecordType = 'yuku' | 'kuru';
 
-export type RecordData<T extends FirestoreDateLike = Timestamp> = {
+export type Record<T extends FirestoreDateLike = Timestamp> = {
   /** record のタイプ */
   type: RecordType;
 
   /** ユーザー情報 */
-  user: RecordUserData;
+  user: RecordUser;
 
   /** record が更新された可能性のある期間の開始日時 */
   durationStart: T;
@@ -17,18 +17,28 @@ export type RecordData<T extends FirestoreDateLike = Timestamp> = {
   durationEnd: T;
 };
 
-export type RecordUserData = {
+export type RecordUser = RecordUserWithProfile | RecordUserWithoutProfile;
+
+export type RecordUserWithProfile = {
   /** Twitter UID (ユニークな数字のID) */
   id: string;
 
   /** Twitter ID (@から始まるID) */
-  screenName?: string;
+  screenName: string;
 
   /** 名前 (プロフィールの名前) */
-  displayName?: string;
+  displayName: string;
 
   /** プロフィール画像の URL */
-  photoUrl?: string;
+  photoUrl: string;
+
+  /** 削除または凍結された可能性があるかどうか */
+  maybeDeletedOrSuspended: boolean;
+};
+
+export type RecordUserWithoutProfile = {
+  /** Twitter UID (ユニークな数字のID) */
+  id: string;
 
   /** 削除または凍結された可能性があるかどうか */
   maybeDeletedOrSuspended: boolean;
