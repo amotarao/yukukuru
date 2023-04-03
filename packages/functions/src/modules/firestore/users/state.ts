@@ -9,6 +9,7 @@ import { usersCollection } from '.';
  * @param ended 取得が終了している (カーソルが 0 か -1) かどうか
  * @param nextCursor 次のカーソル
  * @param date 現在の日時
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
 export const setUserResultLegacy = async (
   userId: string,
