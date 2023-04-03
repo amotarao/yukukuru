@@ -4,8 +4,8 @@ import { getToken } from '../../modules/firestore/tokens/get';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserLastUpdatedTwUsers } from '../../modules/firestore/users/state';
 import { getLatestWatches } from '../../modules/firestore/watches/getWatches';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { getUsersLookup } from '../../modules/twitter/users/lookup';
 import { topicName, Message } from './_pubsub';
 
 /** PubSub: Twitter ユーザー情報更新 個々の実行 */
@@ -42,15 +42,15 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsersLookup(client, { usersId: followers });
+    const response = await getUsers(client, followers);
 
-    if ('error' in result) {
+    if ('error' in response) {
       console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
-    console.log(`⏳ Got ${result.response.users.length} users from Twitter.`);
+    console.log(`⏳ Got ${response.users.length} users from Twitter.`);
 
-    await setTwUsers(result.response.users);
+    await setTwUsers(response.users);
 
     console.log(`⏳ Updated twUser documents for [${uid}].`);
 
