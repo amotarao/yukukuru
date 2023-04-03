@@ -30,7 +30,11 @@ export const publish = functions
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
-    const messages: Message[] = targetDocs.map((doc) => ({ uid: doc.id, publishedAt: now.toDate() }));
+    const messages: Message[] = targetDocs.map((doc) => ({
+      uid: doc.id,
+      followersCount: doc.data().twitter.followersCount,
+      publishedAt: now.toDate(),
+    }));
     await publishMessages(topicName, messages);
 
     console.log(`✔️ Completed publish ${messages.length} message.`);
