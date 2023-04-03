@@ -4,6 +4,7 @@ import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { addRecordsV2, deleteRecordsV2, getRecordsV2ByDuration } from '../../modules/firestore/recordsV2';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
+import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
@@ -164,5 +165,6 @@ export const run = functions
     const deleteWatchesIds = currentDiffs.map((diff) => diff.watchesIds).flat();
     await deleteWatchesV2(uid, deleteWatchesIds);
 
+    await setCheckIntegrityV2Status(uid, now);
     console.log(`✔️ Completed check integrity for [${uid}] and deleted ${deleteWatchesIds.length} docs.`);
   });
