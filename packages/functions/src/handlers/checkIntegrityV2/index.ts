@@ -164,5 +164,5 @@ export const run = functions
     const deleteWatchesIds = currentDiffs.map((diff) => diff.watchesIds).flat();
     await deleteWatchesV2(uid, deleteWatchesIds);
 
-    console.log(`✔️ Completed check integrity for [${uid}].`);
+    console.log(`✔️ Completed check integrity for [${uid}] and deleted ${deleteWatchesIds.length} docs.`);
   });
