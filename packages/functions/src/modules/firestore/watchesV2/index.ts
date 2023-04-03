@@ -15,10 +15,11 @@ export const setWatchV2 = async (userId: string, followers: string[], date: Date
 };
 
 export const getLatestEndedWatchesV2Ids = async (userId: string, startAtId: string): Promise<string[]> => {
+  const basis = await getWatchesV2Collection(userId).doc(startAtId).get();
   const snapshot = await getWatchesV2Collection(userId)
     .where('ended', '==', true)
     .orderBy('date', 'desc') // 降順であることに注意する
-    .startAt(getWatchesV2Collection(userId).doc(startAtId))
+    .startAt(basis)
     .select('date')
     .limit(3)
     .get();
@@ -27,11 +28,11 @@ export const getLatestEndedWatchesV2Ids = async (userId: string, startAtId: stri
 
 export const getLatestWatchesV2FromId = async (
   userId: string,
-  startAfterId: string
+  startAfterId?: string
 ): Promise<QueryDocumentSnapshot<WatchV2>[]> => {
-  const snapshot = await getWatchesV2Collection(userId)
-    .orderBy('date')
-    .startAfter(getWatchesV2Collection(userId).doc(startAfterId))
-    .get();
+  const basis = startAfterId && (await getWatchesV2Collection(userId).doc(startAfterId).get());
+  const snapshot = startAfterId
+    ? await getWatchesV2Collection(userId).orderBy('date', 'asc').startAfter(basis).get()
+    : await getWatchesV2Collection(userId).orderBy('date', 'asc').get();
   return snapshot.docs as QueryDocumentSnapshot<WatchV2>[];
 };

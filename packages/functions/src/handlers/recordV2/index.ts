@@ -21,9 +21,9 @@ export const generateRecords = functions
   .firestore.document('users/{userId}/watchesV2/{watchId}')
   .onCreate(async (snapshot, context) => {
     const data = snapshot.data() as WatchV2;
-    const uid = context.params.userId;
+    const userId = context.params.userId;
 
-    console.log(`⚙️ Starting generate records for [${uid}].`);
+    console.log(`⚙️ Starting generate records for [${userId}].`);
 
     // ended が false の場合、終了している watch でないので終了
     if (data.ended === false) {
@@ -31,13 +31,9 @@ export const generateRecords = functions
       return;
     }
 
-    const [, , basisDocId] = await getLatestEndedWatchesV2Ids(uid, snapshot.id);
-    if (!basisDocId) {
-      console.log(`ℹ️ Not ended query.`);
-      return;
-    }
+    const [, , basisDocId] = await getLatestEndedWatchesV2Ids(userId, snapshot.id);
 
-    const watches = await getLatestWatchesV2FromId(uid, basisDocId);
+    const watches = await getLatestWatchesV2FromId(userId, basisDocId);
     const [oldWatch, newWatch] = mergeWatchesV2(watches, {
       includeFirst: true,
     });
@@ -60,7 +56,7 @@ export const generateRecords = functions
       console.error(e);
       return [];
     });
-    const errorTwitterUsers = await getOwnClient(uid)
+    const errorTwitterUsers = await getOwnClient(userId)
       .then((client) => getUsers(client, twitterIds))
       .then((response) => {
         if ('error' in response) throw new Error();
@@ -75,9 +71,9 @@ export const generateRecords = functions
       ...yuku.map(generateRecord('yuku', newWatch.date, twUsers, errorTwitterUsers)),
       ...kuru.map(generateRecord('kuru', newWatch.date, twUsers, errorTwitterUsers)),
     ];
-    await addRecordsV2(uid, records);
+    await addRecordsV2(userId, records);
 
-    console.log(`✔️ Completed generate records for [${uid}].`);
+    console.log(`✔️ Completed generate records for [${userId}].`);
   });
 
 /** Record データの生成 */
