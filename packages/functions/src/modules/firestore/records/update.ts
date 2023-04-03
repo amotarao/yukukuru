@@ -1,8 +1,7 @@
 import { FirestoreDateLike, Record } from '@yukukuru/types';
 import { firestore } from '../../firebase';
 import { bulkWriterErrorHandler } from '../error';
-
-const usersCollection = firestore.collection('users');
+import { getRecordsCollection } from '.';
 
 /**
  * Records の durationStart をアップデート
@@ -14,7 +13,7 @@ export const updateRecordsStart = async (
     start: Record<FirestoreDateLike>['durationStart'];
   }[]
 ): Promise<void> => {
-  const collection = usersCollection.doc(uid).collection('records');
+  const collection = getRecordsCollection(uid);
 
   const bulkWriter = firestore.bulkWriter();
   bulkWriter.onWriteError(bulkWriterErrorHandler);
