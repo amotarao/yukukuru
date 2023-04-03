@@ -15,6 +15,7 @@ export const useSubscription = () => {
   useEffect(() => {
     if (!uid) {
       setIsLoading(false);
+      setIsSupporter(false);
       return;
     }
     setIsLoading(true);
