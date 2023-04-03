@@ -148,8 +148,8 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '256MB',
+    timeoutSeconds: 45,
+    memory: '512MB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
@@ -290,10 +290,13 @@ const saveDocsStep = async (
   nextToken: string | null,
   sharedToken: Message['sharedToken']
 ): Promise<void> => {
+  const ended = nextToken === null;
   const followersIds = followers.map((follower) => follower.id);
-  await setWatchV2(uid, followersIds, now, nextToken === null);
-  await setUserGetFollowersV2Status(uid, nextToken, now);
-  await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now);
-  await setTwUsers(followers);
+  await Promise.all([
+    setWatchV2(uid, followersIds, now, ended),
+    setUserGetFollowersV2Status(uid, nextToken, ended, now),
+    setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now),
+  ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
+  await setTwUsers(followers);
 };
