@@ -6,3 +6,8 @@ export type PickedTwitterUser = Pick<
 >;
 
 export type TwitterUser = Required<PickedTwitterUser>;
+
+export type TwitterErrorUser = {
+  id: string;
+  type: 'deleted' | 'suspended' | 'unknown';
+};

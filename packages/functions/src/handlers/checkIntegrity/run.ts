@@ -8,7 +8,7 @@ import { removeRecords } from '../../modules/firestore/records/remove';
 import { updateRecordsStart } from '../../modules/firestore/records/update';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { updateUserCheckIntegrity } from '../../modules/firestore/users/state';
-import { deleteWatches, getWatches } from '../../modules/firestore/watches/getWatches';
+import { deleteWatches, getWatches, getWatchesCount } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
 import { getDiffFollowers, DiffWithId, getDiffWithIdRecords, checkSameEndDiff } from '../../utils/followers/diff';
 import { mergeWatches } from '../../utils/followers/watches';
@@ -24,7 +24,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, publishedAt } = message.json as Message;
+    const { uid, followersCount, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -35,23 +35,31 @@ export const run = functions
 
     console.log(`⚙️ Starting check integrity for [${uid}].`);
 
-    // watches を 最古のものから 100件取得
-    const rawWatches = await getWatches(uid, 100);
+    // 件数が少ない場合はキャンセル
+    const currentCount = await getWatchesCount(uid);
+    const basisCount = Math.ceil(followersCount / 15000) * 10;
+    if (currentCount < basisCount) {
+      console.log(`❗️ Canceled check integrity due to many watches.`);
+      return;
+    }
 
-    const checked = await delete2021(uid, rawWatches);
-    if (checked) {
+    // watches を 最古のものから最大100件取得
+    const rawWatches = await getWatches(uid, Math.min(basisCount, 100));
+
+    // 2021年より前チェック
+    const deletedBefore2021 = await deleteBefore2021(uid, rawWatches);
+    if (deletedBefore2021) {
       console.log(`✔️ Completed to delete watches of [${uid}].`);
       return;
     }
 
     // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
-    const watches = mergeWatches(rawWatches, true, 50);
+    const watches = mergeWatches(rawWatches, true);
     // 最後の 3件は今回比較しないので取り除く
     watches.splice(watches.length - 3, watches.length);
 
     // watches が 2件未満の場合は終了
     if (watches.length < 2) {
-      await updateUserCheckIntegrity(uid, now);
       return;
     }
 
@@ -192,15 +200,18 @@ export const run = functions
     console.log(`✔️ Completed check integrity for [${uid}].`);
   });
 
-// 2021年より前のデータはすべて削除してしまう
-// キャンセルする際は false
-const delete2021 = async (uid: string, docs: QueryDocumentSnapshot<WatchData>[]): Promise<boolean> => {
-  const lastWatch = docs.at(-1);
-
-  if (!lastWatch) {
+const checkIsBefore2021 = (docs: QueryDocumentSnapshot<WatchData>[]): boolean => {
+  const lastDoc = docs.at(-1);
+  if (!lastDoc) {
     return false;
   }
-  if (lastWatch.data().getEndDate.toDate() >= new Date(2021, 0)) {
+  return lastDoc.data().getEndDate.toDate() < new Date(2021, 0);
+};
+
+// 2021年より前のデータはすべて削除してしまう
+// キャンセルする際は false
+const deleteBefore2021 = async (uid: string, docs: QueryDocumentSnapshot<WatchData>[]): Promise<boolean> => {
+  if (!checkIsBefore2021(docs)) {
     return false;
   }
 
