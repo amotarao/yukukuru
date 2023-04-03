@@ -14,7 +14,7 @@ import { twitterClientErrorHandler } from '../error';
 const getUsersSingle = async (
   client: TwitterApiReadOnly,
   ids: string[]
-): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
+): Promise<{ users: TwitterUser[]; errorUsers: TwitterErrorUser[] } | { error: ApiResponseError }> => {
   return client.v2
     .users(ids, {
       'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
@@ -25,28 +25,26 @@ const getUsersSingle = async (
       const data = response.data as UserV2[] | undefined;
 
       return {
-        response: {
-          users: data?.map(toRequiredTwitterUser) ?? [],
-          errorUsers:
-            response.errors
-              ?.map((errorUser): TwitterErrorUser | null => {
-                const id = errorUser.resource_id;
-                const type = errorUser.detail.startsWith('Could not find user with ids:')
-                  ? 'deleted'
-                  : errorUser.detail.startsWith('User has been suspended:')
-                  ? 'suspended'
-                  : 'unknown';
+        users: data?.map(toRequiredTwitterUser) ?? [],
+        errorUsers:
+          response.errors
+            ?.map((errorUser): TwitterErrorUser | null => {
+              const id = errorUser.resource_id;
+              const type = errorUser.detail.startsWith('Could not find user with ids:')
+                ? 'deleted'
+                : errorUser.detail.startsWith('User has been suspended:')
+                ? 'suspended'
+                : 'unknown';
 
-                if (!id || type === 'unknown') {
-                  console.log('Unknown error user', JSON.stringify(errorUser));
-                }
-                if (!id) {
-                  return null;
-                }
-                return { id, type };
-              })
-              .filter((errorUser): errorUser is TwitterErrorUser => errorUser !== null) ?? [],
-        },
+              if (!id || type === 'unknown') {
+                console.log('Unknown error user', JSON.stringify(errorUser));
+              }
+              if (!id) {
+                return null;
+              }
+              return { id, type };
+            })
+            .filter((errorUser): errorUser is TwitterErrorUser => errorUser !== null) ?? [],
       };
     })
     .catch(twitterClientErrorHandler);
@@ -59,7 +57,7 @@ const getUsersSingle = async (
 export const getUsers = async (
   client: TwitterApiReadOnly,
   ids: string[]
-): Promise<{ response: { users: TwitterUser[]; errorUsers: TwitterErrorUser[] } } | { error: ApiResponseError }> => {
+): Promise<{ users: TwitterUser[]; errorUsers: TwitterErrorUser[] } | { error: ApiResponseError }> => {
   const lookup = _.chunk(_.uniq(ids), 100).map(
     async (
       usersId
@@ -80,7 +78,7 @@ export const getUsers = async (
       if ('error' in result) {
         return { users: null, errorUsers: null, error: result.error };
       }
-      return { users: result.response.users, errorUsers: result.response.errorUsers, error: null };
+      return { users: result.users, errorUsers: result.errorUsers, error: null };
     }
   );
   const lookuped = await Promise.all(lookup);
@@ -102,10 +100,8 @@ export const getUsers = async (
 
   if (users.length > 0 || errorUsers.length > 0 || errors.length === 0) {
     return {
-      response: {
-        users,
-        errorUsers,
-      },
+      users,
+      errorUsers,
     };
   }
 

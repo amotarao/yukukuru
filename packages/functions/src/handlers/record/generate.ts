@@ -28,15 +28,15 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
     accessToken: token.twitterAccessToken,
     accessSecret: token.twitterAccessTokenSecret,
   });
-  const result = await getUsers(client, userIds);
+  const response = await getUsers(client, userIds);
 
-  if ('error' in result) {
-    if (result.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
+  if ('error' in response) {
+    if (response.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
       await setTokenInvalid(uid);
     }
   }
 
-  const twUsers = 'error' in result ? [] : result.response.users;
+  const twUsers = 'error' in response ? [] : response.users;
   await setTwUsers(twUsers);
 
   const usersFromTw = twUsers.map(convertTwitterUserToRecordUserData(false));

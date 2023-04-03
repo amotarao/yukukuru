@@ -39,15 +39,15 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsers(client, [twitterId]);
+    const response = await getUsers(client, [twitterId]);
 
-    if ('error' in result || !result.response.users[0]) {
+    if ('error' in response || !response.users[0]) {
       console.error(`❗️[Error]: Failed to get user from Twitter of [${uid}].`);
       return;
     }
     console.log(`⏳ Got user info from Twitter.`);
 
-    const twitter: UserData['twitter'] = convertTwitterUserToUserDataTwitter(result.response.users[0]);
+    const twitter: UserData['twitter'] = convertTwitterUserToUserDataTwitter(response.users[0]);
     await updateUserTwitterInfo(uid, twitter, now);
 
     console.log(`⏳ Updated user document twitter info of [${uid}].`);

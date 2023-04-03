@@ -42,15 +42,15 @@ export const run = functions
       accessToken: token.twitterAccessToken,
       accessSecret: token.twitterAccessTokenSecret,
     });
-    const result = await getUsers(client, followers);
+    const response = await getUsers(client, followers);
 
-    if ('error' in result) {
+    if ('error' in response) {
       console.error(`❗️[Error]: Failed to get users from Twitter of [${uid}].`);
       return;
     }
-    console.log(`⏳ Got ${result.response.users.length} users from Twitter.`);
+    console.log(`⏳ Got ${response.users.length} users from Twitter.`);
 
-    await setTwUsers(result.response.users);
+    await setTwUsers(response.users);
 
     console.log(`⏳ Updated twUser documents for [${uid}].`);
 

@@ -27,15 +27,15 @@ export const initialize = functions
     }
 
     const client = getClient();
-    const result = await getUsers(client, [twitterId]);
+    const response = await getUsers(client, [twitterId]);
 
-    if ('error' in result || !result.response.users[0]) {
+    if ('error' in response || !response.users[0]) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
     }
 
-    await initializeUser(uid, convertTwitterUserToUserDataTwitter(result.response.users[0]));
+    await initializeUser(uid, convertTwitterUserToUserDataTwitter(response.users[0]));
 
     console.log(`✔️ Completed initialize user document for [${uid}].`);
   });

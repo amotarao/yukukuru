@@ -70,7 +70,7 @@ const checkOwnUserStatus = async (twitterId: string, sharedToken: Message['share
   if ('error' in response) {
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
-  if (response.response.errorUsers.length > 0) {
+  if (response.errorUsers.length > 0) {
     throw new Error(`❗️Own is deleted or suspended.`);
   }
 };
@@ -141,14 +141,14 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getUsers(sharedClient, ids);
+  const response = await getUsers(sharedClient, ids);
 
-  if ('error' in result) {
+  if ('error' in response) {
     const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     console.error(message);
     return ids;
   }
-  const errorIds = result.response.errorUsers.map((errorUser) => errorUser.id);
+  const errorIds = response.errorUsers.map((errorUser) => errorUser.id);
   const ignoredIds = ids.filter((id) => !errorIds.includes(id));
   console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
   return ignoredIds;
