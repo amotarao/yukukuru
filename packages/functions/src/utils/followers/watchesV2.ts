@@ -2,7 +2,7 @@ import { WatchV2 } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { flatten, uniq } from 'lodash';
 
-type MergedWatchV2 = {
+export type MergedWatchV2 = {
   ids: string[];
   followers: string[];
   date: Date;

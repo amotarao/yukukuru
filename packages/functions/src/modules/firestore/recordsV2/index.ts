@@ -1,5 +1,5 @@
 import { FirestoreDateLike, RecordV2 } from '@yukukuru/types';
-import { CollectionReference } from 'firebase-admin/firestore';
+import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 import { bulkWriterErrorHandler } from '../error';
 
@@ -12,6 +12,29 @@ export const addRecordsV2 = async (uid: string, items: RecordV2<FirestoreDateLik
 
   items.forEach((item) => {
     bulkWriter.set(getRecordsV2Collection(uid).doc(), item);
+  });
+
+  await bulkWriter.close();
+};
+
+export const getRecordsV2ByDuration = async (
+  uid: string,
+  startAfter: Date,
+  endAt?: Date
+): Promise<QueryDocumentSnapshot<RecordV2>[]> => {
+  const collection = getRecordsV2Collection(uid);
+  const snapshot = endAt
+    ? await collection.orderBy('date').startAfter(startAfter).endAt(endAt).get()
+    : await collection.orderBy('date').startAfter(startAfter).get();
+  return snapshot.docs as QueryDocumentSnapshot<RecordV2>[];
+};
+
+export const deleteRecordsV2 = async (uid: string, ids: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+
+  ids.forEach((id) => {
+    bulkWriter.delete(getRecordsV2Collection(uid).doc(id));
   });
 
   await bulkWriter.close();
