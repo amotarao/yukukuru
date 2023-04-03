@@ -53,7 +53,7 @@ const filterExecutable =
 
     const minutes = dayjs(now).diff(dayjs(lastUpdatedCheckIntegrity.toDate()), 'minutes');
 
-    // 20分経過していれば実行
+    // 10分経過していれば実行
     if (minutes < 10 - 1) {
       return false;
     }
