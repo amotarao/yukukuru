@@ -91,13 +91,15 @@ const getFollowersIdsStep = async (
     accessSecret: sharedToken.accessTokenSecret,
   });
 
-  const result = await getFollowersIdsLegacy(sharedClient, {
+  const response = await getFollowersIdsLegacy(sharedClient, {
     userId: twitterId,
     cursor: nextCursor,
     count: getFollowersIdsLegacyMaxResultsMax * 3, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
-  if ('error' in result && result.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
+  // 非公開ユーザーの場合、Internal Error となる
+  // 自身のトークンを使用して再度実行する
+  if ('error' in response && response.error.hasErrorCode(EApiV1ErrorCode.InternalError)) {
     const token = await getToken(uid);
     if (token) {
       const newMessage: Message = {
@@ -113,17 +115,17 @@ const getFollowersIdsStep = async (
     }
   }
 
-  if ('error' in result) {
+  if ('error' in response) {
     // v1.1 API は v2 と違い、アカウントロックのエラーが発生することがあるため、最終使用日時を1週間後に更新して、処理を中断する
-    if (result.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
+    if (response.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
       await setLastUsedSharedToken(sharedToken.id, ['v1_getFollowersIds'], dayjs(now).add(1, 'w').toDate());
     }
     const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     throw new Error(message);
   }
 
-  console.log(`⏳ Got ${result.response.ids.length} followers from Twitter.`);
-  return result.response;
+  console.log(`⏳ Got ${response.ids.length} followers from Twitter.`);
+  return response;
 };
 
 /**
