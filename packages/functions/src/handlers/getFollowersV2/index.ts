@@ -148,8 +148,8 @@ const checkJustPublished = (now: string | Date, published: string | Date, diffMs
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '256MB',
+    timeoutSeconds: 45,
+    memory: '512MB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
