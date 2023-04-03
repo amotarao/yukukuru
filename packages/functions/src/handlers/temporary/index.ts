@@ -15,12 +15,18 @@ export const initializeGetFollowersV2Status = functions
     const now = dayjs(context.timestamp);
     const groups = [getGroupFromTime(1, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
-    await Promise.all(
+    const result = await Promise.all(
       docs.map(async (doc) => {
+        const exists = '_getFollowersV2Status' in doc.data();
+        if (exists) {
+          return false;
+        }
         await doc.ref.update({
           '_getFollowersV2Status.lastRun': new Date(0),
           '_getFollowersV2Status.nextToken': null,
         });
+        return true;
       })
     );
+    console.log(`updated ${result.filter((s) => s).length} items.`);
   });
