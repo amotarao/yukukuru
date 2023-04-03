@@ -131,6 +131,8 @@ export const run = functions
       watchesIds: [],
     }));
 
+    console.log({ currentDiffs, firestoreDiffs });
+
     // 存在すべきなのに存在しない差分
     const notExistsDiffs = checkDiffV2(currentDiffs, firestoreDiffs);
     if (notExistsDiffs.length) {
