@@ -25,7 +25,7 @@ export const mergeWatchesV2 = (
     }
 
     currentWatches.push(watch);
-    if (!('ended' in watch.data()) || watch.data().ended) {
+    if (watch.data().ended) {
       watchesGroups.push([...currentWatches]);
       currentWatches.splice(0, currentWatches.length);
     }
