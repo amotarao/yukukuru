@@ -128,7 +128,7 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
     console.error(message);
     return ids;
   }
-  const errorIds = result.response.errorIds;
+  const errorIds = result.response.errorUsers.map((errorUser) => errorUser.value).filter((id): id is string => !!id);
   const ignoredIds = ids.filter((id) => !errorIds.includes(id)); // 凍結等ユーザーを除外
   console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
   return ignoredIds;
