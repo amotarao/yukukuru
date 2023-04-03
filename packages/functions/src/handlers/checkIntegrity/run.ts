@@ -47,14 +47,14 @@ export const run = functions
     const rawWatches = await getWatches(uid, Math.min(basisCount, 100));
 
     // 2021年より前チェック
-    const checked = await deleteBefore2021(uid, rawWatches);
-    if (checked) {
+    const deletedBefore2021 = await deleteBefore2021(uid, rawWatches);
+    if (deletedBefore2021) {
       console.log(`✔️ Completed to delete watches of [${uid}].`);
       return;
     }
 
     // 複数に分かれている watches を合算 (主にフォロワーデータが3万以上ある場合に発生)
-    const watches = mergeWatches(rawWatches, true, 50);
+    const watches = mergeWatches(rawWatches, true);
     // 最後の 3件は今回比較しないので取り除く
     watches.splice(watches.length - 3, watches.length);
 
