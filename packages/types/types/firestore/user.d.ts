@@ -2,6 +2,7 @@ import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
 export type UserData<T extends FirestoreDateLike = Timestamp> = {
+  /** ロール */
   role: 'supporter' | null;
 
   /** 有効かどうか */
@@ -9,6 +10,12 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
 
   /** auth が削除されているかどうか */
   deletedAuth: boolean;
+
+  /** グループ番号 0-14 のいずれか */
+  group: number;
+
+  /** アクセス許可されたユーザーリスト */
+  allowedAccessUsers?: string[];
 
   /** フォロワー情報取得 最終実行日時 */
   lastUpdatedTwUsers: T;
@@ -18,12 +25,6 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
 
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
-
-  /** グループ番号 0-14 のいずれか */
-  group: number;
-
-  /** アクセス許可されたユーザーリスト */
-  allowedAccessUsers?: string[];
 
   /** Twitter情報 */
   twitter: {
