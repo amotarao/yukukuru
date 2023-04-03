@@ -1,7 +1,5 @@
 import { UserData } from '@yukukuru/types';
-import { firestore } from '../../firebase';
-
-const collection = firestore.collection('users');
+import { usersCollection } from '.';
 
 /**
  * ユーザーの deletedAuth を true にする
@@ -9,5 +7,5 @@ const collection = firestore.collection('users');
  */
 export async function setUserDeletedAuth(id: string): Promise<void> {
   const data: Pick<UserData, 'deletedAuth'> = { deletedAuth: true };
-  await collection.doc(id).update(data);
+  await usersCollection.doc(id).update(data);
 }

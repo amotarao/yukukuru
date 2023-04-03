@@ -1,8 +1,5 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
-import { CollectionReference } from 'firebase-admin/firestore';
-import { firestore } from '../../firebase';
-
-const collection = firestore.collection('users') as CollectionReference<UserData>;
+import { usersCollection } from '.';
 
 /**
  * フォロワー取得処理の状態を保存
@@ -20,7 +17,7 @@ export const setUserResultLegacy = async (
   nextCursor: string,
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
 
   if (ended) {
     const data: Pick<
@@ -51,7 +48,7 @@ export const setUserGetFollowersV2Status = async (
   nextToken: string | null,
   now: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
   await ref.update({
     '_getFollowersV2Status.lastRun': now,
     '_getFollowersV2Status.nextToken': nextToken,
@@ -59,7 +56,7 @@ export const setUserGetFollowersV2Status = async (
 };
 
 export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {
     lastUpdatedTwUsers: date,
   };
@@ -71,7 +68,7 @@ export const updateUserTwitterInfo = async (
   twitter: UserData['twitter'],
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedUserTwitterInfo' | 'twitter'> = {
     lastUpdatedUserTwitterInfo: date,
     twitter,
@@ -80,7 +77,7 @@ export const updateUserTwitterInfo = async (
 };
 
 export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
-  const ref = collection.doc(uid);
+  const ref = usersCollection.doc(uid);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {
     lastUpdatedCheckIntegrity: date,
   };
