@@ -6,6 +6,7 @@ export * as updateTwUsers from './handlers/updateTwUsers';
 export * as updateUserTwitterInfo from './handlers/updateUserTwitterInfo';
 export * as user from './handlers/user';
 export * as record from './handlers/record';
+export * as recordV2 from './handlers/recordV2';
 export * as csvExporter from './handlers/csvExporter';
 export * as cleanUsers from './handlers/cleanUsers';
 export * as sharedToken from './handlers/sharedToken';
