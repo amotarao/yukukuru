@@ -35,8 +35,8 @@ export const getLatestWatches = async (uid: string, limit: number): Promise<Quer
 /**
  * Watches の件数を取得
  */
-export const getWatchesCount = async (uid: string, limit = Infinity): Promise<number> => {
-  const querySnapshot = (await getWatchesCollection(uid).select('ended').limit(limit).get()) as QuerySnapshot<
+export const getWatchesCount = async (uid: string): Promise<number> => {
+  const querySnapshot = (await getWatchesCollection(uid).select('ended').get()) as QuerySnapshot<
     Pick<WatchData, 'ended'>
   >;
   return querySnapshot.size;
