@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { chunk, uniq } from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
 import { userFields } from '../constants';
 import { convertErrorUsers, toRequiredTwitterUser } from '../converter';
@@ -37,54 +37,30 @@ export const getUsers = async (
   client: TwitterApiReadOnly,
   ids: string[]
 ): Promise<{ users: TwitterUser[]; errorUsers: TwitterErrorUser[] } | { error: ApiResponseError }> => {
-  const lookup = _.chunk(_.uniq(ids), 100).map(
-    async (
-      usersId
-    ): Promise<
-      | {
-          users: TwitterUser[];
-          errorUsers: TwitterErrorUser[];
-          error: null;
-        }
-      | {
-          users: null;
-          errorUsers: null;
-          error: ApiResponseError;
-        }
-    > => {
-      const result = await getUsersSingle(client, usersId);
-
-      if ('error' in result) {
-        return { users: null, errorUsers: null, error: result.error };
-      }
-      return { users: result.users, errorUsers: result.errorUsers, error: null };
-    }
-  );
-  const lookuped = await Promise.all(lookup);
+  const chunkedIdsList = chunk(uniq(ids), 100);
+  const responseList = await Promise.all(chunkedIdsList.map((chunkedIds) => getUsersSingle(client, chunkedIds)));
 
   const users: TwitterUser[] = [];
   const errorUsers: TwitterErrorUser[] = [];
   const errors: ApiResponseError[] = [];
 
-  for (const single of lookuped) {
-    if (single.users) {
-      users.push(...single.users);
-      errorUsers.push(...single.errorUsers);
-      continue;
+  responseList.forEach((response) => {
+    if ('error' in response) {
+      errors.push(response.error);
+      return;
     }
+    users.push(...response.users);
+    errorUsers.push(...response.errorUsers);
+  });
 
-    errors.push(single.error);
-    break;
+  // データがあればそのまま返す
+  if (users.length > 0 || errorUsers.length > 0) {
+    return { users, errorUsers };
   }
-
-  if (users.length > 0 || errorUsers.length > 0 || errors.length === 0) {
-    return {
-      users,
-      errorUsers,
-    };
+  // データが0件でもエラーがなければ空配列を返す
+  if (!errors[0]) {
+    return { users, errorUsers };
   }
-
-  return {
-    error: errors[0],
-  };
+  // データが0件かつエラーがあるので、最初のエラーを返す
+  return { error: errors[0] };
 };
