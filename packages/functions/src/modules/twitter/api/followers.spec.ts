@@ -15,6 +15,10 @@ describe('getFollowers', () => {
       console.error(response.error);
       return;
     }
+    if ('authorizationError' in response) {
+      console.error(response.authorizationError);
+      return;
+    }
     console.log(response);
     expect(Array.isArray(response.users)).toBe(true);
   });
@@ -23,6 +27,10 @@ describe('getFollowers', () => {
     const response = await getFollowers(client, { userId: '99008565', maxResults: 2000 });
     if ('error' in response) {
       console.error(response.error);
+      return;
+    }
+    if ('authorizationError' in response) {
+      console.error(response.authorizationError);
       return;
     }
     console.log(response);
