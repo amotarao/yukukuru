@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
-import { toRequiredTwitterUser } from '../../twitter-user-converter';
+import { userFields } from '../constants';
+import { convertErrorUsers, toRequiredTwitterUser } from '../converter';
 import { twitterClientErrorHandler } from '../error';
 import { TwitterErrorUser, TwitterUser } from '../types';
 
@@ -16,35 +17,14 @@ const getUsersSingle = async (
   ids: string[]
 ): Promise<{ users: TwitterUser[]; errorUsers: TwitterErrorUser[] } | { error: ApiResponseError }> => {
   return client.v2
-    .users(ids, {
-      'user.fields': ['id', 'username', 'name', 'profile_image_url', 'public_metrics', 'verified'],
-    })
+    .users(ids, { ...userFields })
     .then((response) => {
       // リクエストした全アカウントが存在しない場合、data フィールドが存在しない
       // パッケージで対応していないので、キャストしている
       const data = response.data as UserV2[] | undefined;
-
       return {
         users: data?.map(toRequiredTwitterUser) ?? [],
-        errorUsers:
-          response.errors
-            ?.map((errorUser): TwitterErrorUser | null => {
-              const id = errorUser.resource_id;
-              const type = errorUser.detail.startsWith('Could not find user with ids:')
-                ? 'deleted'
-                : errorUser.detail.startsWith('User has been suspended:')
-                ? 'suspended'
-                : 'unknown';
-
-              if (!id || type === 'unknown') {
-                console.log('Unknown error user', JSON.stringify(errorUser));
-              }
-              if (!id) {
-                return null;
-              }
-              return { id, type };
-            })
-            .filter((errorUser): errorUser is TwitterErrorUser => errorUser !== null) ?? [],
+        errorUsers: convertErrorUsers(response.errors),
       };
     })
     .catch(twitterClientErrorHandler);
@@ -52,7 +32,6 @@ const getUsersSingle = async (
 
 /**
  * ユーザー情報を取得
- * 15分につき 90,000人まで 取得可能
  */
 export const getUsers = async (
   client: TwitterApiReadOnly,
