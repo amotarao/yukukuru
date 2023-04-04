@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "recordsV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_deleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "sharedTokens",
       "queryScope": "COLLECTION",
       "fields": [
@@ -116,6 +130,42 @@
         },
         {
           "fieldPath": "lastUpdatedCheckIntegrity",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "group",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdatedTwUsers",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "group",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastUpdatedUserTwitterInfo",
           "order": "ASCENDING"
         }
       ]

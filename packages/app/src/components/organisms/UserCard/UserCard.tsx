@@ -1,4 +1,4 @@
-import { Record, RecordType, RecordUser, RecordUserWithProfile } from '@yukukuru/types';
+import { Record, RecordUser, RecordUserWithProfile, RecordV2, RecordV2User } from '@yukukuru/types';
 import classNames from 'classnames';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 
@@ -9,18 +9,10 @@ export type CardProps = {
   iconSrc?: string;
   href?: string;
   type: 'yuku' | 'kuru';
-  maybeDeletedOrSuspended?: boolean;
+  status?: 'active' | 'deleted' | 'suspended' | 'deletedOrSuspended' | 'unknown';
 };
 
-const Card: React.FC<CardProps> = ({
-  className,
-  displayName,
-  screenName,
-  iconSrc,
-  href,
-  type,
-  maybeDeletedOrSuspended = false,
-}) => {
+const Card: React.FC<CardProps> = ({ className, displayName, screenName, iconSrc, href, type, status = 'active' }) => {
   const Tag: keyof HTMLElementTagNameMap = href ? 'a' : 'div';
 
   return (
@@ -46,7 +38,15 @@ const Card: React.FC<CardProps> = ({
         )}
         <div className="flex gap-2">
           {screenName && <p className="col-start-2 text-xs font-bold leading-tight">{screenName}</p>}
-          {maybeDeletedOrSuspended && <p className="col-start-2 text-xs">⚠️削除/凍結</p>}
+          {status === 'active' ? null : status === 'deleted' ? (
+            <p className="col-start-2 text-xs">⚠️削除</p>
+          ) : status === 'suspended' ? (
+            <p className="col-start-2 text-xs">⚠️凍結</p>
+          ) : status === 'deletedOrSuspended' ? (
+            <p className="col-start-2 text-xs">⚠️削除/凍結</p>
+          ) : (
+            <p className="col-start-2 text-xs">⚠️詳細不明</p>
+          )}
         </div>
       </div>
     </Tag>
@@ -57,25 +57,40 @@ const checkWithProfile = (user: RecordUser): user is RecordUserWithProfile => {
   return 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
 };
 
+const checkWithProfileV2 = (user?: RecordV2User): user is RecordV2User => !!user;
+
 export type UserCardProps = {
   className?: string;
-  user: RecordUser;
-  type: RecordType;
+  record: Record | RecordV2;
 };
 
-export const UserCard: React.FC<UserCardProps> = ({ className, user, type }) => {
-  return checkWithProfile(user) ? (
+export const UserCard: React.FC<UserCardProps> = ({ className, record }) => {
+  return 'date' in record ? (
+    checkWithProfileV2(record.user) ? (
+      <Card
+        className={className}
+        displayName={record.user.displayName}
+        screenName={`@${record.user.screenName}`}
+        iconSrc={record.user.photoUrl}
+        href={`https://twitter.com/${record.user.screenName}`}
+        type={record.type}
+        status={record.status}
+      />
+    ) : (
+      <Card className={className} displayName="情報の取得ができないユーザー" type={record.type} status="unknown" />
+    )
+  ) : checkWithProfile(record.user) ? (
     <Card
       className={className}
-      displayName={user.displayName}
-      screenName={`@${user.screenName}`}
-      iconSrc={user.photoUrl}
-      href={`https://twitter.com/${user.screenName}`}
-      type={type}
-      maybeDeletedOrSuspended={user.maybeDeletedOrSuspended}
+      displayName={record.user.displayName}
+      screenName={`@${record.user.screenName}`}
+      iconSrc={record.user.photoUrl}
+      href={`https://twitter.com/${record.user.screenName}`}
+      type={record.type}
+      status={record.user.maybeDeletedOrSuspended ? 'deletedOrSuspended' : 'active'}
     />
   ) : (
-    <Card className={className} displayName={'情報の取得ができないユーザー'} type={type} maybeDeletedOrSuspended />
+    <Card className={className} displayName="情報の取得ができないユーザー" type={record.type} status="unknown" />
   );
 };
 
