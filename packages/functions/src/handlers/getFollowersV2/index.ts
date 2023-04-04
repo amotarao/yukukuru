@@ -17,6 +17,7 @@ import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/a
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
+import { getDiffMinutes } from '../../utils/time';
 
 const topicName = 'getFollowersV2';
 
@@ -108,9 +109,10 @@ const filterExecutable =
       return false;
     }
 
+    const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
+
     // 3分の間隔を開ける
-    const minutes = dayjs(now).diff(dayjs(_getFollowersV2Status.lastRun.toDate()), 'minutes');
-    if (minutes < 3 - 1) {
+    if (minutes < 3) {
       return false;
     }
 
@@ -125,12 +127,12 @@ const filterExecutable =
     }
 
     // 前回の実行から6時間以上の間隔をあける
-    if (minutes < 60 * 6 - 1) {
+    if (minutes < 60 * 6) {
       return false;
     }
 
     // 前回の実行から72時間以上経っていたら無条件に実行する
-    if (minutes > 60 * 72 - 1) {
+    if (minutes >= 60 * 72) {
       return true;
     }
 

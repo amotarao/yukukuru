@@ -6,6 +6,7 @@ import { getSharedTokensForGetFollowersIds } from '../../modules/firestore/share
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { getDiffMinutes } from '../../utils/time';
 import { Message, topicName } from './_pubsub';
 
 /**
@@ -78,23 +79,23 @@ const filterExecutable =
       return true;
     }
 
-    const minutes = dayjs(now).diff(dayjs(lastUpdated.toDate()), 'minutes');
+    const minutes = getDiffMinutes(now, lastUpdated.toDate());
 
     // サポーターの場合、前回の実行から 5分経過していれば実行
     if (role === 'supporter') {
-      if (minutes < 5 - 1) {
+      if (minutes < 5) {
         return false;
       }
       return true;
     }
 
     // 前回の実行から6時間以上の間隔をあける
-    if (minutes < 60 * 6 - 1) {
+    if (minutes < 60 * 6) {
       return false;
     }
 
     // 前回の実行から72時間以上経っていたら無条件に実行する
-    if (minutes > 60 * 72 - 1) {
+    if (minutes >= 60 * 72) {
       return true;
     }
 

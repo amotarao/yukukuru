@@ -16,6 +16,7 @@ import { publishMessages } from '../../modules/pubsub/publish';
 import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../utils/followers/diffV2';
 import { mergeWatchesV2 } from '../../utils/followers/watchesV2';
+import { getDiffMinutes } from '../../utils/time';
 
 const topicName = 'checkIntegrityV2';
 
@@ -66,10 +67,10 @@ const filterExecutable =
       return false;
     }
 
-    const minutes = dayjs(now).diff(dayjs(_checkIntegrityV2Status.lastRun.toDate()), 'minutes');
+    const minutes = getDiffMinutes(now, _checkIntegrityV2Status.lastRun.toDate());
 
     // 10分経過していれば実行
-    if (minutes < 10 - 1) {
+    if (minutes < 10) {
       return false;
     }
     return true;
