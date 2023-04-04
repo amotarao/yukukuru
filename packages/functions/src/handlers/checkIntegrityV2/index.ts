@@ -143,7 +143,7 @@ export const run = functions
     if (notExistsDiffs.length) {
       const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.twitterId));
       console.log('ℹ️ notExistsDiffs');
-      notExistsDiffs.forEach((diff) => console.log(diff));
+      notExistsDiffs.forEach((diff) => console.log(JSON.stringify(diff)));
       const records = notExistsDiffs.map((diff) => {
         const record: RecordV2<Date> = {
           type: diff.type,
@@ -167,7 +167,7 @@ export const run = functions
     const unknownDiffs = checkDiffV2(firestoreDiffs, currentDiffs);
     if (unknownDiffs.length) {
       console.log('ℹ️ unknownDiffs');
-      unknownDiffs.forEach((diff) => console.log(diff));
+      unknownDiffs.forEach((diff) => console.log(JSON.stringify(diff)));
       await setRecordsV2DeletedByCheckIntegrity(
         uid,
         unknownDiffs.map((diff) => diff.recordId)
