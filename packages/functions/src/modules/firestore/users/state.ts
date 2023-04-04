@@ -1,45 +1,5 @@
-import { FirestoreDateLike, UserData } from '@yukukuru/types';
+import { UserData } from '@yukukuru/types';
 import { usersCollection } from '.';
-
-/**
- * フォロワー取得処理の状態を保存
- *
- * @param userId ユーザーID
- * @param watchId 保存した watch ID
- * @param ended 取得が終了している (カーソルが 0 か -1) かどうか
- * @param nextCursor 次のカーソル
- * @param date 現在の日時
- * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
- */
-export const setUserResultLegacy = async (
-  userId: string,
-  watchId: string,
-  ended: boolean,
-  nextCursor: string,
-  date: Date
-): Promise<void> => {
-  const ref = usersCollection.doc(userId);
-
-  if (ended) {
-    const data: Pick<
-      UserData<FirestoreDateLike>,
-      'nextCursor' | 'currentWatchesId' | 'pausedGetFollower' | 'lastUpdated'
-    > = {
-      nextCursor: '-1',
-      currentWatchesId: '',
-      pausedGetFollower: false,
-      lastUpdated: date,
-    };
-    await ref.update(data);
-  } else {
-    const data: Pick<UserData<FirestoreDateLike>, 'nextCursor' | 'currentWatchesId' | 'pausedGetFollower'> = {
-      nextCursor: nextCursor,
-      currentWatchesId: watchId,
-      pausedGetFollower: true,
-    };
-    await ref.update(data);
-  }
-};
 
 /**
  * フォロワー取得処理の状態を保存

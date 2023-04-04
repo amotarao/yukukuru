@@ -1,17 +1,14 @@
 import * as functions from 'firebase-functions';
-import { EApiV1ErrorCode, EApiV2ErrorCode } from 'twitter-api-v2';
+import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
   setInvalidSharedToken,
-  setInvalidV1SharedToken,
   setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
-import { setValidV1SharedToken } from '../../modules/firestore/sharedToken/index';
-import { publishMessages } from '../../modules/pubsub/publish';
-import { getFollowersIdsLegacy } from '../../modules/twitter/api-legacy/followers-ids';
+import { publishMessages } from '../../modules/pubsub';
 import { getMe } from '../../modules/twitter/api/me';
 import { getClient } from '../../modules/twitter/client';
 
@@ -67,30 +64,30 @@ export const run = functions
       accessSecret: accessTokenSecret,
     });
 
-    const resV2 = await getMe(client);
-    if ('error' in resV2) {
-      console.log(resV2.error);
+    const response = await getMe(client);
+    if ('error' in response) {
+      console.log(response.error);
 
       // 認証エラー
-      if (resV2.error.isAuthError) {
+      if (response.error.isAuthError) {
         await deleteSharedToken(id);
         return;
       }
       // サポート外のトークン
       // トークンが空欄の際に発生する
-      if (resV2.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
+      if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
         await deleteSharedToken(id);
         return;
       }
 
       // 403
       // アカウントが削除済みの場合に発生する
-      if (resV2.error.code === 403) {
+      if (response.error.code === 403) {
         await setInvalidSharedToken(id, now);
         return;
       }
 
-      throw new Error(`❗️[Error]: Failed to access Twitter API v2: ${resV2.error.message}`);
+      throw new Error(`❗️[Error]: Failed to access Twitter API v2: ${response.error.message}`);
     }
 
     // 同じアクセストークンを持つドキュメントを削除
@@ -98,29 +95,4 @@ export const run = functions
     await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
     await setValidSharedToken(id, now);
-
-    const resV1 = await getFollowersIdsLegacy(client, { userId: '783214', count: 1 });
-    if ('error' in resV1) {
-      console.log(resV1.error);
-
-      // 認証エラー
-      if (resV1.error.isAuthError) {
-        await setInvalidV1SharedToken(id, now);
-        return;
-      }
-      // 無効、期限切れのトークン
-      if (resV1.error.hasErrorCode(EApiV1ErrorCode.InvalidOrExpiredToken)) {
-        await setInvalidV1SharedToken(id, now);
-        return;
-      }
-      // アカウントの一時的なロック
-      if (resV1.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
-        await setInvalidV1SharedToken(id, now);
-        return;
-      }
-
-      throw new Error(`❗️[Error]: Failed to access Twitter API v1.1: ${resV1.error.message}`);
-    }
-
-    await setValidV1SharedToken(id, now);
   });
