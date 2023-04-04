@@ -39,3 +39,16 @@ export const deleteRecordsV2 = async (uid: string, ids: string[]): Promise<void>
 
   await bulkWriter.close();
 };
+
+export const setRecordsV2DeletedByCheckIntegrity = async (uid: string, ids: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+
+  ids.forEach((id) => {
+    bulkWriter.update(getRecordsV2Collection(uid).doc(id), {
+      _deletedByCheckIntegrity: true,
+    });
+  });
+
+  await bulkWriter.close();
+};

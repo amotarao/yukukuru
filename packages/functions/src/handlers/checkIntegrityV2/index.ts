@@ -1,13 +1,19 @@
-import { UserData } from '@yukukuru/types';
+import { RecordV2, UserData } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { addRecordsV2, deleteRecordsV2, getRecordsV2ByDuration } from '../../modules/firestore/recordsV2';
+import {
+  addRecordsV2,
+  getRecordsV2ByDuration,
+  setRecordsV2DeletedByCheckIntegrity,
+} from '../../modules/firestore/recordsV2';
+import { getTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../utils/followers/diffV2';
 import { mergeWatchesV2 } from '../../utils/followers/watchesV2';
 
@@ -134,18 +140,26 @@ export const run = functions
 
     // 存在すべきなのに存在しない差分
     const notExistsDiffs = checkDiffV2(currentDiffs, firestoreDiffs);
+    const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.twitterId));
     if (notExistsDiffs.length) {
       console.log('ℹ️ notExistsDiffs');
       notExistsDiffs.forEach((diff) => console.log(diff));
-      await addRecordsV2(
-        uid,
-        notExistsDiffs.map((diff) => ({
+      const records = notExistsDiffs.map((diff) => {
+        const record: RecordV2<Date> = {
           type: diff.type,
           date: diff.date,
           twitterId: diff.twitterId,
           status: 'unknown',
-        }))
-      );
+          _addedByCheckIntegrity: true,
+          _deletedByCheckIntegrity: false,
+        };
+        const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
+        if (twUser) {
+          record.user = convertTwUserDataToRecordV2User(twUser);
+        }
+        return record;
+      });
+      await addRecordsV2(uid, records);
     }
 
     // 存在すべきではないが何故か存在する差分
@@ -153,7 +167,7 @@ export const run = functions
     if (unknownDiffs.length) {
       console.log('ℹ️ unknownDiffs');
       unknownDiffs.forEach((diff) => console.log(diff));
-      await deleteRecordsV2(
+      await setRecordsV2DeletedByCheckIntegrity(
         uid,
         unknownDiffs.map((diff) => diff.recordId)
       );
