@@ -81,7 +81,7 @@ export const run = functions
       }
 
       // 403
-      // アカウントが削除済みの場合に発生する
+      // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
         await setInvalidSharedToken(id, now);
         return;
