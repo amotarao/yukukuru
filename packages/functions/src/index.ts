@@ -2,7 +2,6 @@ export * as checkIntegrityV2 from './handlers/checkIntegrityV2';
 export * as getFollowersV2 from './handlers/getFollowersV2';
 export * as token from './handlers/token';
 export * as user from './handlers/user';
-export * as record from './handlers/record';
 export * as recordV2 from './handlers/recordV2';
 export * as csvExporter from './handlers/csvExporter';
 export * as cleanUsers from './handlers/cleanUsers';
