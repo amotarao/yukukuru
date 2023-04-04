@@ -140,8 +140,8 @@ export const run = functions
 
     // 存在すべきなのに存在しない差分
     const notExistsDiffs = checkDiffV2(currentDiffs, firestoreDiffs);
-    const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.twitterId));
     if (notExistsDiffs.length) {
+      const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.twitterId));
       console.log('ℹ️ notExistsDiffs');
       notExistsDiffs.forEach((diff) => console.log(diff));
       const records = notExistsDiffs.map((diff) => {
