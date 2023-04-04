@@ -133,24 +133,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdatedTwUsers",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "group",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "lastUpdatedUserTwitterInfo",
           "order": "ASCENDING"
         }

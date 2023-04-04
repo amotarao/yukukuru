@@ -62,14 +62,6 @@ export const setUserGetFollowersV2Status = async (
   );
 };
 
-export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
-  const ref = usersCollection.doc(userId);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {
-    lastUpdatedTwUsers: date,
-  };
-  await ref.update(data);
-};
-
 export const updateUserTwitterInfo = async (
   userId: string,
   twitter: UserData['twitter'],
