@@ -62,7 +62,10 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
         return;
       }
 
-      const lastRunnedGetFollowers = (doc.get('lastUpdated') as Timestamp).toDate();
+      const lastRunnedGetFollowersV1 = (doc.get('lastUpdated') as Timestamp).toDate();
+      const lastRunnedGetFollowersV2 = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
+      const lastRunnedGetFollowers =
+        lastRunnedGetFollowersV2 > new Date(0) ? lastRunnedGetFollowersV2 : lastRunnedGetFollowersV1;
       dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
       unsubscribe();
     });
