@@ -5,7 +5,7 @@ import { firestore } from '../../modules/firebase';
 import { getUserDocsByGroups, usersCollection } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 
-export const initializeGetFollowersV2Status = functions
+export const initializeStatus = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -74,6 +74,24 @@ export const deleteLastUpdatedUserTwitterInfo = functions
     const bulkWriter = firestore.bulkWriter();
     snapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, { lastUpdatedUserTwitterInfo: FieldValue.delete() } as any);
+    });
+    await bulkWriter.close();
+    console.log(`deleted ${snapshot.docs.length} items.`);
+  });
+
+export const deleteLastUpdatedCheckIntegrity = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(async () => {
+    const snapshot = await usersCollection.orderBy('lastUpdatedCheckIntegrity').limit(100).get();
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.forEach((doc) => {
+      bulkWriter.update(doc.ref, { lastUpdatedCheckIntegrity: FieldValue.delete() } as any);
     });
     await bulkWriter.close();
     console.log(`deleted ${snapshot.docs.length} items.`);

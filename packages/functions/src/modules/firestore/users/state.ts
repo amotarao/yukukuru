@@ -62,14 +62,6 @@ export const setUserGetFollowersV2Status = async (
   );
 };
 
-export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
-  const ref = usersCollection.doc(uid);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {
-    lastUpdatedCheckIntegrity: date,
-  };
-  await ref.update(data);
-};
-
 export const setCheckIntegrityV2Status = async (userId: string, date: Date): Promise<void> => {
   await usersCollection.doc(userId).update({
     '_checkIntegrityV2Status.lastRun': date,
