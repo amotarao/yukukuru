@@ -28,9 +28,9 @@ export type MyPageProps = {
 };
 
 /**
- * アイテムがないことを表示するコンポーネント
+ * 登録したてでデータ取得が1回も行われていないことを表示するコンポーネント
  */
-const NoItemView: React.FC = () => {
+const JustRegisteredView: React.FC = () => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
@@ -39,9 +39,9 @@ const NoItemView: React.FC = () => {
 };
 
 /**
- * 表示するデータがないことを表示するコンポーネント
+ * 取得はできているが、表示するデータがないことを表示するコンポーネント
  */
-const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoListView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
@@ -149,10 +149,10 @@ const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = 
 
   // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
   if (lastRunnedGetFollowers.getTime() === 0) {
-    return <NoItemView />;
+    return <JustRegisteredView />;
   }
 
-  return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  return <NoListView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
 };
 
 /**
