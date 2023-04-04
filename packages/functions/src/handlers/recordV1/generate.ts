@@ -1,4 +1,4 @@
-import { FirestoreDateLike, WatchData, Record, RecordUser, Timestamp, RecordUserWithoutProfile } from '@yukukuru/types';
+import { FirestoreDateLike, Watch, Record, RecordUser, Timestamp, RecordUserWithoutProfile } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
@@ -9,10 +9,7 @@ import { getToken } from '../../modules/firestore/tokens';
 import { setTokenInvalid } from '../../modules/firestore/tokens';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { mergeWatches } from '../../modules/merge-watches';
-import {
-  convertTwUserToRecordUserData,
-  convertTwitterUserToRecordUserData,
-} from '../../modules/twitter-user-converter';
+import { convertTwUserToRecordUser, convertTwitterUserToRecordUser } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 
@@ -39,7 +36,7 @@ const fetchUsersFromTwitter = async (uid: string, userIds: string[]): Promise<Re
   const twUsers = 'error' in response ? [] : response.users;
   await setTwUsers(twUsers);
 
-  const usersFromTw = twUsers.map(convertTwitterUserToRecordUserData(false));
+  const usersFromTw = twUsers.map(convertTwitterUserToRecordUser(false));
   return usersFromTw;
 };
 
@@ -61,7 +58,7 @@ const generateRecord =
         };
         return item;
       }
-      return convertTwUserToRecordUserData(true)(twUser);
+      return convertTwUserToRecordUser(true)(twUser);
     };
 
     const user = await findUser(id);
@@ -82,7 +79,7 @@ export const generate = functions
   })
   .firestore.document('users/{userId}/watches/{watchId}')
   .onCreate(async (snapshot, context) => {
-    const data = snapshot.data() as WatchData;
+    const data = snapshot.data() as Watch;
     const uid = context.params.userId as string;
 
     console.log(`⚙️ Starting generate records for [${uid}].`);
@@ -102,7 +99,7 @@ export const generate = functions
       .startAfter(data.getEndDate)
       .select('getEndDate')
       .limit(2)
-      .get()) as QuerySnapshot<Pick<WatchData, 'getEndDate'>>;
+      .get()) as QuerySnapshot<Pick<Watch, 'getEndDate'>>;
     // 比較できるデータがない場合、終了する
     if (endedQuerySnapshot.empty || endedQuerySnapshot.size < 2) {
       console.log(`[Info]: Stopped generate records for [${uid}]: Not ended query.`);
@@ -119,7 +116,7 @@ export const generate = functions
       .collection('watches')
       .orderBy('getEndDate') // 昇順であることに注意する
       .startAfter(startAfter)
-      .get()) as QuerySnapshot<WatchData>;
+      .get()) as QuerySnapshot<Watch>;
 
     const watches = targetQuerySnapshot.docs;
     const [oldWatch, newWatch] = mergeWatches(watches, true);

@@ -1,4 +1,4 @@
-import { UserData, Record, RecordV2 } from '@yukukuru/types';
+import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
@@ -21,8 +21,8 @@ export type MyPageProps = {
   hasNext: boolean;
   hasToken: boolean;
   lastRun: Date | null;
-  currentAccount: { id: string; twitter: UserData['twitter'] } | null;
-  multiAccounts: { id: string; twitter: UserData['twitter'] }[];
+  currentAccount: { id: string; twitter: UserTwitter } | null;
+  multiAccounts: { id: string; twitter: UserTwitter }[];
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
   onChangeCurrentUid: (uid: string) => void;
 };

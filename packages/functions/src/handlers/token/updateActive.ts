@@ -1,4 +1,4 @@
-import { TokenData } from '@yukukuru/types';
+import { Token } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { setUserToActive, setUserToNotActive } from '../../modules/firestore/users/active';
 
@@ -11,7 +11,7 @@ export const updateActive = functions
   })
   .firestore.document('tokens/{userId}')
   .onUpdate(async ({ after }) => {
-    const { twitterAccessToken = null, twitterAccessTokenSecret = null } = after.data() as TokenData;
+    const { twitterAccessToken = null, twitterAccessTokenSecret = null } = after.data() as Token;
     const invalid = !twitterAccessToken || !twitterAccessTokenSecret;
     if (invalid) {
       await setUserToNotActive(after.id);

@@ -1,12 +1,12 @@
-import { FirestoreDateLike, UserData } from '@yukukuru/types';
+import { FirestoreDateLike, User, UserTwitter } from '@yukukuru/types';
 import { getGroupIndex } from '../../group';
 import { usersCollection } from '.';
 
 /**
  * ユーザーを初期化
  */
-export const initializeUser = async (id: string, twitter: UserData['twitter']): Promise<void> => {
-  const data: UserData<FirestoreDateLike> = {
+export const initializeUser = async (id: string, twitter: UserTwitter): Promise<void> => {
+  const data: User<FirestoreDateLike> = {
     role: null,
     active: true,
     deletedAuth: false,

@@ -1,4 +1,4 @@
-import { TokenData } from '@yukukuru/types';
+import { Token } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { initializeSharedToken, updateSharedToken } from '../../modules/firestore/sharedToken';
 import { existsSharedToken } from '../../modules/firestore/sharedToken/index';
@@ -24,7 +24,7 @@ export const onWriteToken = functions
     const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } =
       writeType === 'delete'
         ? { twitterAccessToken: '', twitterAccessTokenSecret: '' }
-        : (change.after.data() as TokenData);
+        : (change.after.data() as Token);
     const _invalid = !accessToken || !accessTokenSecret;
 
     const exists = await existsSharedToken(docId);

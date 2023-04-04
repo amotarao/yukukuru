@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
@@ -9,8 +9,8 @@ import { Icon } from '../../shared/Icon';
 export type AccountSelectorProps = {
   className?: string;
   inactive?: boolean;
-  currentAccount: { id: string; twitter: UserData['twitter'] } | null;
-  multiAccounts: { id: string; twitter: UserData['twitter'] }[];
+  currentAccount: { id: string; twitter: UserTwitter } | null;
+  multiAccounts: { id: string; twitter: UserTwitter }[];
   onChange?: (uid: string) => void;
 };
 

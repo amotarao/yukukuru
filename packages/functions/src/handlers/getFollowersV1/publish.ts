@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -63,7 +63,7 @@ export const publish = functions
   });
 
 /** 実行可能かどうかを確認 */
-const filterExecutable = (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+const filterExecutable = (snapshot: QueryDocumentSnapshot<User>): boolean => {
   const { _getFollowersV1Status } = snapshot.data();
 
   // 1回きりの実行
