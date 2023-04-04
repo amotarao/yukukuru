@@ -39,6 +39,9 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
     /** 名前 (プロフィールの名前) */
     name: string;
 
+    /** 非公開ユーザーかどうか */
+    protected: boolean;
+
     /** プロフィール画像の URL */
     photoUrl: string;
 
