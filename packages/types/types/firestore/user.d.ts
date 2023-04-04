@@ -17,9 +17,6 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** アクセス許可されたユーザーリスト */
   allowedAccessUsers?: string[];
 
-  /** 整合性チェック 最終実行日時 */
-  lastUpdatedCheckIntegrity: T;
-
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
 
@@ -27,6 +24,11 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   _getFollowersV2Status: {
     lastRun: T;
     nextToken: string | null;
+  };
+
+  /** _checkIntegrityV2 の状態保存 */
+  _checkIntegrityV2Status: {
+    lastRun: T;
   };
 
   /** Twitter情報 */
@@ -77,4 +79,11 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
    * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
    */
   pausedGetFollower: boolean;
+
+  /**
+   * 整合性チェック 最終実行日時
+   *
+   * @deprecated 廃止予定
+   */
+  lastUpdatedCheckIntegrity: T;
 };

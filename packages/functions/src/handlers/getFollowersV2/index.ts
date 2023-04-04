@@ -9,6 +9,7 @@ import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
+import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
@@ -43,7 +44,7 @@ type Message = {
  * フォロワー取得 定期実行
  *
  * 毎分実行
- * グループ毎に 5分おきに実行
+ * グループ毎に 3分おきに実行
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -59,8 +60,10 @@ export const publish = functions
     // 対象ユーザーの取得
     const groups = [
       getGroupFromTime(1, now.toDate()),
-      getGroupFromTime(1, now.add(5, 'minutes').toDate()),
-      getGroupFromTime(1, now.add(10, 'minutes').toDate()),
+      getGroupFromTime(1, now.add(3, 'minutes').toDate()),
+      getGroupFromTime(1, now.add(6, 'minutes').toDate()),
+      getGroupFromTime(1, now.add(9, 'minutes').toDate()),
+      getGroupFromTime(1, now.add(12, 'minutes').toDate()),
     ];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
@@ -104,18 +107,19 @@ const filterExecutable =
       return false;
     }
 
+    // 3分の間隔を開ける
+    const minutes = dayjs(now).diff(dayjs(_getFollowersV2Status.lastRun.toDate()), 'minutes');
+    if (minutes < 3 - 1) {
+      return false;
+    }
+
     // 取得途中のユーザーはいつでも許可
     if (_getFollowersV2Status.nextToken !== null) {
       return true;
     }
 
-    const minutes = dayjs(now).diff(dayjs(_getFollowersV2Status.lastRun.toDate()), 'minutes');
-
-    // サポーターの場合、前回の実行から 5分経過していれば実行
+    // サポーターの場合はいつでも許可
     if (role === 'supporter') {
-      if (minutes < 5 - 1) {
-        return false;
-      }
       return true;
     }
 
@@ -136,13 +140,6 @@ const filterExecutable =
 
     return false;
   };
-
-/**
- * 直前に publish されたかどうかを確認
- */
-const checkJustPublished = (now: string | Date, published: string | Date, diffMs: number = 1000 * 10): boolean => {
-  return new Date(now).getTime() - new Date(published).getTime() > diffMs;
-};
 
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions

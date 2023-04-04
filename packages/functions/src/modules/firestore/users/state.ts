@@ -82,3 +82,9 @@ export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise
   };
   await ref.update(data);
 };
+
+export const setCheckIntegrityV2Status = async (userId: string, date: Date): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    '_checkIntegrityV2Status.lastRun': date,
+  });
+};
