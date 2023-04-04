@@ -21,10 +21,8 @@ export const initializeSharedToken = async (
 ): Promise<void> => {
   const data: SharedToken<Date> = {
     ...inputData,
-    _invalidV1: inputData._invalid,
     _lastChecked: inputData._lastUpdated,
     _lastUsed: {
-      v1_getFollowersIds: new Date(2000, 0, 1),
       v2_getUserFollowers: new Date(2000, 0, 1),
       v2_getUsers: new Date(2000, 0, 1),
     },
@@ -68,17 +66,6 @@ export const setValidSharedToken = async (id: string, lastChecked: Date): Promis
   await collectionRef.doc(id).update(data);
 };
 
-/**
- * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
- */
-export const setValidV1SharedToken = async (id: string, lastChecked: Date): Promise<void> => {
-  const data: Pick<SharedToken<Date>, '_invalidV1' | '_lastChecked'> = {
-    _invalidV1: false,
-    _lastChecked: lastChecked,
-  };
-  await collectionRef.doc(id).update(data);
-};
-
 export const setInvalidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
   const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
     _invalid: true,
@@ -87,33 +74,8 @@ export const setInvalidSharedToken = async (id: string, lastChecked: Date): Prom
   await collectionRef.doc(id).update(data);
 };
 
-/**
- * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
- */
-export const setInvalidV1SharedToken = async (id: string, lastChecked: Date): Promise<void> => {
-  const data: Pick<SharedToken<Date>, '_invalidV1' | '_lastChecked'> = {
-    _invalidV1: true,
-    _lastChecked: lastChecked,
-  };
-  await collectionRef.doc(id).update(data);
-};
-
 export const deleteSharedToken = async (id: string): Promise<void> => {
   await collectionRef.doc(id).delete();
-};
-
-export const getSharedTokensForGetFollowersIds = async (
-  now: Date,
-  limit: number
-): Promise<FirestoreIdData<SharedToken>[]> => {
-  const beforeDate = dayjs(now).subtract(15, 'minutes').toDate();
-  const snapshot = await collectionRef
-    .where('_invalidV1', '==', false)
-    .where('_lastUsed.v1_getFollowersIds', '<', beforeDate)
-    .orderBy('_lastUsed.v1_getFollowersIds')
-    .limit(limit)
-    .get();
-  return convertToIdData(snapshot);
 };
 
 export const getSharedTokensForGetFollowersV2 = async (
