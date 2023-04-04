@@ -1,4 +1,4 @@
-import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
+import { FirestoreDateLike, TwUser } from '@yukukuru/types';
 import * as admin from 'firebase-admin';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
@@ -6,7 +6,7 @@ import { convertTwitterUserToTwUser } from '../../twitter-user-converter';
 import { TwitterUser } from '../../twitter/types';
 import { bulkWriterErrorHandler } from '../error';
 
-const collection = firestore.collection('twUsers') as CollectionReference<TwUserData<FirestoreDateLike>>;
+const collection = firestore.collection('twUsers') as CollectionReference<TwUser<FirestoreDateLike>>;
 
 /**
  * twUser ドキュメントを並列で保存
@@ -24,7 +24,7 @@ const setTwUsersParallel = async (users: TwitterUser[], max = 100, count = 0): P
 
   currentUsers.forEach((user) => {
     const ref = collection.doc(user.id);
-    const data: TwUserData<FirestoreDateLike> = {
+    const data: TwUser<FirestoreDateLike> = {
       ...convertTwitterUserToTwUser(user),
       lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
     };
@@ -55,10 +55,10 @@ export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
  *
  * @param ids 取得するユーザーIDリスト
  */
-export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
+export const getTwUsers = async (ids: string[]): Promise<TwUser[]> => {
   if (ids.length === 0) return [];
   const snapshots = await firestore.getAll(...ids.map((id) => collection.doc(id)));
-  return snapshots.filter((snapshot) => snapshot.exists).map((result) => result.data() as TwUserData);
+  return snapshots.filter((snapshot) => snapshot.exists).map((result) => result.data() as TwUser);
 };
 
 /**
@@ -66,12 +66,12 @@ export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
  *
  * @param id 取得するユーザーID
  */
-export const getTwUser = async (id: string): Promise<TwUserData | null> => {
+export const getTwUser = async (id: string): Promise<TwUser | null> => {
   const snapshot = await collection.doc(id).get();
 
   if (!snapshot.exists) {
     return null;
   }
 
-  return snapshot.data() as TwUserData;
+  return snapshot.data() as TwUser;
 };

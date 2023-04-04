@@ -9,14 +9,6 @@ export * from './firestore/user/watch';
 export * from './firestore/user/watchV2';
 export * from './firestore/userStatus';
 
-export type FirestoreIdData<T> = {
-  /** Firestore ドキュメント ID */
-  id: string;
-
-  /** データ */
-  data: T;
-};
-
 export type FirestoreDateLike = Date | Timestamp | FieldValue;
 
 export { Timestamp };

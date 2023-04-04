@@ -1,4 +1,4 @@
-import { TokenData } from '@yukukuru/types';
+import { Token } from '@yukukuru/types';
 import { TwitterAuthProvider } from 'firebase/auth';
 import { UserCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -16,7 +16,7 @@ export const setToken = async (userCredential?: UserCredential): Promise<void> =
     return;
   }
 
-  const token: TokenData = {
+  const token: Token = {
     twitterAccessToken: credential.accessToken || '',
     twitterAccessTokenSecret: credential.secret || '',
   };

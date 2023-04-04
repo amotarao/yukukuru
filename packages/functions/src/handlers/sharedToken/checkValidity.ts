@@ -39,8 +39,8 @@ export const publish = functions
 
     const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
       id: doc.id,
-      accessToken: doc.data.accessToken,
-      accessTokenSecret: doc.data.accessTokenSecret,
+      accessToken: doc.data().accessToken,
+      accessTokenSecret: doc.data().accessTokenSecret,
     }));
     await publishMessages(topicName, messages);
     console.log(`✔️ Completed publish ${messages.length} message.`);

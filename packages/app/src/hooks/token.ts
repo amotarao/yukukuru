@@ -1,4 +1,4 @@
-import { TokenData } from '@yukukuru/types';
+import { Token } from '@yukukuru/types';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
@@ -57,7 +57,7 @@ export const useToken = (uid: string | null): [Readonly<State>] => {
         return;
       }
 
-      const { twitterAccessToken, twitterAccessTokenSecret } = doc.data() as TokenData;
+      const { twitterAccessToken, twitterAccessTokenSecret } = doc.data() as Token;
       if (!twitterAccessToken || !twitterAccessTokenSecret) {
         dispatch({ type: 'ClearHasToken' });
         return;

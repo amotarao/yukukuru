@@ -1,4 +1,4 @@
-import { RecordV2, UserData } from '@yukukuru/types';
+import { RecordV2, User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -16,7 +16,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { getDiffMinutes } from '../../modules/time';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
-import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
+import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
 
 const topicName = 'checkIntegrityV2';
 
@@ -59,7 +59,7 @@ export const publish = functions
 /** 実行可能かどうかを確認 */
 const filterExecutable =
   (now: Date) =>
-  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+  (snapshot: QueryDocumentSnapshot<User>): boolean => {
     const { active, deletedAuth, _checkIntegrityV2Status } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない
@@ -157,7 +157,7 @@ export const run = functions
         };
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
         if (twUser) {
-          record.user = convertTwUserDataToRecordV2User(twUser);
+          record.user = convertTwUserToRecordV2User(twUser);
         }
         return record;
       });

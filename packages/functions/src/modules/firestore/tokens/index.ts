@@ -1,11 +1,11 @@
-import { TokenData } from '@yukukuru/types';
+import { Token } from '@yukukuru/types';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 import { setUserToNotActive } from '../users/active';
 
-const collection = firestore.collection('tokens') as CollectionReference<TokenData>;
+const collection = firestore.collection('tokens') as CollectionReference<Token>;
 
-export const getToken = async (userId: string): Promise<TokenData | null> => {
+export const getToken = async (userId: string): Promise<Token | null> => {
   const snapshot = await collection.doc(userId).get();
   const data = snapshot.data();
   if (!data) {
@@ -22,7 +22,7 @@ export const getToken = async (userId: string): Promise<TokenData | null> => {
 export const setTokenInvalid = async (userId: string): Promise<void> => {
   const user = setUserToNotActive(userId);
 
-  const data: Pick<TokenData, 'twitterAccessToken' | 'twitterAccessTokenSecret'> = {
+  const data: Pick<Token, 'twitterAccessToken' | 'twitterAccessTokenSecret'> = {
     twitterAccessToken: '',
     twitterAccessTokenSecret: '',
   };

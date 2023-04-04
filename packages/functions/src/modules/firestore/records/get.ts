@@ -1,10 +1,11 @@
-import { FirestoreIdData, Record } from '@yukukuru/types';
+import { Record } from '@yukukuru/types';
+import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { getRecordsCollection } from '.';
 
 /**
  * Records を古い順に取得する
  */
-export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<FirestoreIdData<Record>[]> => {
+export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise<QueryDocumentSnapshot<Record>[]> => {
   const collection = getRecordsCollection(uid);
   const request = max
     ? collection.orderBy('durationEnd').startAfter(cursor).endAt(max).get()
@@ -15,14 +16,7 @@ export const getRecords = async (uid: string, cursor: Date, max?: Date): Promise
     return [];
   }
 
-  const docs = qs.docs.map((doc) => {
-    return {
-      id: doc.id,
-      data: doc.data() as Record,
-    };
-  });
-
-  return docs;
+  return qs.docs as QueryDocumentSnapshot<Record>[];
 };
 
 /**

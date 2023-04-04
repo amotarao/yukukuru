@@ -1,14 +1,10 @@
-import { FirestoreDateLike, FirestoreIdData, SharedToken } from '@yukukuru/types';
+import { FirestoreDateLike, SharedToken } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
-import { CollectionReference, QuerySnapshot } from 'firebase-admin/firestore';
+import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
 const collectionId = 'sharedTokens';
 const collectionRef = firestore.collection(collectionId) as CollectionReference<SharedToken<FirestoreDateLike>>;
-
-const convertToIdData = (snapshot: QuerySnapshot<SharedToken<FirestoreDateLike>>): FirestoreIdData<SharedToken>[] => {
-  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as SharedToken }));
-};
 
 export const existsSharedToken = async (id: string): Promise<boolean> => {
   const doc = await collectionRef.doc(id).get();
@@ -46,16 +42,16 @@ export const updateSharedToken = async (
 
 export const getValidSharedTokenDocsOrderByLastChecked = async (
   limit: number
-): Promise<FirestoreIdData<SharedToken>[]> => {
+): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef.where('_invalid', '==', false).orderBy('_lastChecked', 'asc').limit(limit).get();
-  return convertToIdData(snapshot);
+  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
 export const getInvalidSharedTokenDocsOrderByLastChecked = async (
   limit: number
-): Promise<FirestoreIdData<SharedToken>[]> => {
+): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef.where('_invalid', '==', true).orderBy('_lastChecked', 'asc').limit(limit).get();
-  return convertToIdData(snapshot);
+  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
 export const setValidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
@@ -81,7 +77,7 @@ export const deleteSharedToken = async (id: string): Promise<void> => {
 export const getSharedTokensForGetFollowersV2 = async (
   now: Date,
   limit: number
-): Promise<FirestoreIdData<SharedToken>[]> => {
+): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const beforeDate = dayjs(now).subtract(15, 'minutes').toDate();
   const snapshot = await collectionRef
     .where('_invalid', '==', false)
@@ -89,7 +85,7 @@ export const getSharedTokensForGetFollowersV2 = async (
     .orderBy('_lastUsed.v2_getUserFollowers')
     .limit(limit)
     .get();
-  return convertToIdData(snapshot);
+  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
 export const setLastUsedSharedToken = async (
@@ -104,7 +100,9 @@ export const setLastUsedSharedToken = async (
   await collectionRef.doc(id).update(data);
 };
 
-export const getSharedTokensByAccessToken = async (accessToken: string): Promise<FirestoreIdData<SharedToken>[]> => {
+export const getSharedTokensByAccessToken = async (
+  accessToken: string
+): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef.where('accessToken', '==', accessToken).get();
-  return convertToIdData(snapshot);
+  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };

@@ -1,7 +1,7 @@
-import { RecordUserWithProfile, RecordV2User, TwUserData, UserData } from '@yukukuru/types';
+import { RecordUserWithProfile, RecordV2User, TwUser, UserTwitter } from '@yukukuru/types';
 import { TwitterUser } from '../twitter/types';
 
-export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData['twitter'] => {
+export const convertTwitterUserToUserTwitter = (user: TwitterUser): UserTwitter => {
   return {
     id: user.id,
     screenName: user.username,
@@ -13,7 +13,7 @@ export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData
   };
 };
 
-export const convertTwitterUserToRecordUserData =
+export const convertTwitterUserToRecordUser =
   (maybeDeletedOrSuspended = false) =>
   (user: TwitterUser): RecordUserWithProfile => {
     return {
@@ -25,7 +25,7 @@ export const convertTwitterUserToRecordUserData =
     };
   };
 
-export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 'lastUpdated'> => {
+export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUser, 'lastUpdated'> => {
   return {
     id: user.id,
     screenName: user.username,
@@ -34,9 +34,9 @@ export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 
   };
 };
 
-export const convertTwUserDataToRecordUserData =
+export const convertTwUserToRecordUser =
   (maybeDeletedOrSuspended = false) =>
-  (twUser: TwUserData): RecordUserWithProfile => {
+  (twUser: TwUser): RecordUserWithProfile => {
     return {
       id: twUser.id,
       screenName: twUser.screenName,
@@ -46,10 +46,18 @@ export const convertTwUserDataToRecordUserData =
     };
   };
 
-export const convertTwUserDataToRecordV2User = (twUser: TwUserData): RecordV2User => {
+export const convertTwUserToRecordV2User = (twUser: TwUser): RecordV2User => {
   return {
     screenName: twUser.screenName,
     displayName: twUser.name,
     photoUrl: twUser.photoUrl,
+  };
+};
+
+export const convertTwitterUserToRecordV2User = (twitterUser: TwitterUser): RecordV2User => {
+  return {
+    screenName: twitterUser.username,
+    displayName: twitterUser.name,
+    photoUrl: twitterUser.profile_image_url,
   };
 };

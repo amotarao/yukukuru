@@ -1,11 +1,11 @@
-import { UserData } from '@yukukuru/types';
+import { User } from '@yukukuru/types';
 import { usersCollection } from '.';
 
 /**
  * ユーザーの active を true にする
  */
 export async function setUserToActive(id: string): Promise<void> {
-  const data: Pick<UserData, 'active'> = { active: true };
+  const data: Pick<User, 'active'> = { active: true };
   await usersCollection.doc(id).update(data);
 }
 
@@ -13,6 +13,6 @@ export async function setUserToActive(id: string): Promise<void> {
  * ユーザーの active を false にする
  */
 export async function setUserToNotActive(id: string): Promise<void> {
-  const data: Pick<UserData, 'active'> = { active: false };
+  const data: Pick<User, 'active'> = { active: false };
   await usersCollection.doc(id).update(data);
 }

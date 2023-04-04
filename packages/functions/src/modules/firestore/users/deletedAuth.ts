@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { User } from '@yukukuru/types';
 import { usersCollection } from '.';
 
 /**
@@ -6,6 +6,6 @@ import { usersCollection } from '.';
  * auth が削除された場合に実行
  */
 export async function setUserDeletedAuth(id: string): Promise<void> {
-  const data: Pick<UserData, 'deletedAuth'> = { deletedAuth: true };
+  const data: Pick<User, 'deletedAuth'> = { deletedAuth: true };
   await usersCollection.doc(id).update(data);
 }

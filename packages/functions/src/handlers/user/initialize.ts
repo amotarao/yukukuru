@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
-import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
+import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getAppClient } from '../../modules/twitter/client';
 
@@ -35,7 +35,7 @@ export const initialize = functions
       return;
     }
 
-    await initializeUser(uid, convertTwitterUserToUserDataTwitter(response.users[0]));
+    await initializeUser(uid, convertTwitterUserToUserTwitter(response.users[0]));
 
     console.log(`✔️ Completed initialize user document for [${uid}].`);
   });
