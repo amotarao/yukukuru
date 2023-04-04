@@ -66,7 +66,7 @@ export const run = functions
 
     const response = await getMe(client);
     if ('error' in response) {
-      console.log(response.error);
+      console.log(JSON.stringify(response.error));
 
       // 認証エラー
       if (response.error.isAuthError) {
@@ -81,8 +81,8 @@ export const run = functions
       }
 
       // 403
-      // アカウントが削除済みの場合に発生する
-      if (response.error.code === 403) {
+      // アカウントが削除済み、一時的なロックが発生している場合に発生する
+      if (response.error.data.title === 'Forbidden') {
         await setInvalidSharedToken(id, now);
         return;
       }
