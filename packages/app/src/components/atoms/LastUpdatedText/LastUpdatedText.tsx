@@ -21,6 +21,9 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
     const now = dayjs();
     const diff = now.diff(date);
 
+    if (diff < 1000 * 60) {
+      return 'たった今';
+    }
     if (diff < 1000 * 60 * 60) {
       return `${now.diff(date, 'm')}分前`;
     }
