@@ -133,24 +133,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdatedTwUsers",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "group",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "pausedGetFollower",
           "order": "ASCENDING"
         }
@@ -217,6 +199,20 @@
         {
           "fieldPath": "getEndDate",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "watchesV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ended",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "ASCENDING"
         }
       ]
     },

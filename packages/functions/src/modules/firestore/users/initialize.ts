@@ -11,7 +11,6 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     active: true,
     deletedAuth: false,
     lastUpdated: new Date(0),
-    lastUpdatedTwUsers: new Date(0),
     lastUpdatedCheckIntegrity: new Date(0),
     nextCursor: '-1',
     currentWatchesId: '',
@@ -22,6 +21,9 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     _getFollowersV2Status: {
       lastRun: new Date(0),
       nextToken: null,
+    },
+    _checkIntegrityV2Status: {
+      lastRun: new Date(0),
     },
   };
   await usersCollection.doc(id).set(data, { merge: true });

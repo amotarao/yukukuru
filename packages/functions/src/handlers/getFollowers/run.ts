@@ -5,6 +5,7 @@ import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/setWatch';
+import { checkJustPublished } from '../../modules/functions';
 import { publishMessages } from '../../modules/pubsub/publish';
 import {
   getFollowersIdsLegacy,
@@ -13,13 +14,6 @@ import {
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { topicName, Message } from './_pubsub';
-
-/**
- * 直前に publish されたかどうかを確認
- */
-const checkJustPublished = (now: string | Date, published: string | Date, diffMs: number = 1000 * 10): boolean => {
-  return new Date(now).getTime() - new Date(published).getTime() > diffMs;
-};
 
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions
