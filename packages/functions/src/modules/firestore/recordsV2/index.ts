@@ -19,13 +19,13 @@ export const addRecordsV2 = async (uid: string, items: RecordV2<FirestoreDateLik
 
 export const getRecordsV2ByDuration = async (
   uid: string,
-  startAfter: Date,
+  startAt: Date,
   endAt?: Date
 ): Promise<QueryDocumentSnapshot<RecordV2>[]> => {
   const collection = getRecordsV2Collection(uid);
   const snapshot = endAt
-    ? await collection.orderBy('date').startAfter(startAfter).endAt(endAt).get()
-    : await collection.orderBy('date').startAfter(startAfter).get();
+    ? await collection.orderBy('date').startAt(startAt).endAt(endAt).get()
+    : await collection.orderBy('date').startAt(startAt).get();
   return snapshot.docs as QueryDocumentSnapshot<RecordV2>[];
 };
 
