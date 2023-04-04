@@ -15,8 +15,8 @@ export const initializeGetFollowersV2Status = functions
     const now = dayjs(context.timestamp);
     const groups = [getGroupFromTime(1, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
-    const result = await Promise.all(
-      docs.map(async (doc) => {
+    const result = await Promise.all([
+      ...docs.map(async (doc) => {
         const exists = '_getFollowersV2Status' in doc.data();
         if (exists) {
           return false;
@@ -26,7 +26,17 @@ export const initializeGetFollowersV2Status = functions
           '_getFollowersV2Status.nextToken': null,
         });
         return true;
-      })
-    );
+      }),
+      ...docs.map(async (doc) => {
+        const exists = '_checkIntegrityV2Status' in doc.data();
+        if (exists) {
+          return false;
+        }
+        await doc.ref.update({
+          '_checkIntegrityV2Status.lastRun': new Date(0),
+        });
+        return true;
+      }),
+    ]);
     console.log(`updated ${result.filter((s) => s).length} items.`);
   });

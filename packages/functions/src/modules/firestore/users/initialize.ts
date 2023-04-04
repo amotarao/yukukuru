@@ -27,6 +27,9 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
       lastRun: new Date(0),
       nextToken: null,
     },
+    _checkIntegrityV2Status: {
+      lastRun: new Date(0),
+    },
   };
   await usersCollection.doc(id).set(data, { merge: true });
 };

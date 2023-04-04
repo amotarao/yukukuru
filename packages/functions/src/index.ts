@@ -1,4 +1,5 @@
 export * as checkIntegrity from './handlers/checkIntegrity';
+export * as checkIntegrityV2 from './handlers/checkIntegrityV2';
 export * as getFollowers from './handlers/getFollowers';
 export * as getFollowersV2 from './handlers/getFollowersV2';
 export * as token from './handlers/token';
