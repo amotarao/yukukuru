@@ -20,7 +20,7 @@ export type MyPageProps = {
   records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
   hasNext: boolean;
   hasToken: boolean;
-  lastRunnedGetFollowers: Date;
+  lastRun: Date | null;
   currentAccount: { id: string; twitter: UserData['twitter'] } | null;
   multiAccounts: { id: string; twitter: UserData['twitter'] }[];
   getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
@@ -41,13 +41,13 @@ const JustRegisteredView: React.FC = () => {
 /**
  * 取得はできているが、表示するデータがないことを表示するコンポーネント
  */
-const NoListView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoListView: React.FC<Pick<MyPageProps, 'lastRun'>> = ({ lastRun }) => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
-      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
+      {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
     </div>
   );
 };
@@ -55,10 +55,7 @@ const NoListView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ las
 /**
  * リストコンポーネント
  */
-const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
-  records,
-  lastRunnedGetFollowers,
-}) => {
+const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records, lastRun }) => {
   let currentDate = '';
   let currentTime = '';
 
@@ -74,7 +71,7 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>
           </li>
         </ul>
       </nav>
-      <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
+      {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
         {records.map((record, i) => {
           if ('text' in record) {
@@ -139,20 +136,17 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
-  records,
-  lastRunnedGetFollowers,
-}) => {
+const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records, lastRun }) => {
   if (records.length > 0) {
-    return <ListView records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+    return <ListView records={records} lastRun={lastRun} />;
   }
 
-  // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
-  if (lastRunnedGetFollowers.getTime() === 0) {
+  // lastRun が 0 の場合、watches 取得処理が1回も完了していない
+  if (lastRun === null || lastRun.getTime() === 0) {
     return <JustRegisteredView />;
   }
 
-  return <NoListView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  return <NoListView lastRun={lastRun} />;
 };
 
 /**
@@ -164,7 +158,7 @@ export const MyPage: React.FC<MyPageProps> = ({
   records,
   hasNext,
   hasToken,
-  lastRunnedGetFollowers,
+  lastRun,
   currentAccount,
   multiAccounts,
   getNextRecords,
@@ -222,7 +216,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />
+            <Home records={records} lastRun={lastRun} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
