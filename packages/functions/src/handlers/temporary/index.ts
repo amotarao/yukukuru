@@ -4,7 +4,7 @@ import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { getGroupFromTime } from '../../modules/group';
 
-export const deleteLastUpdatedField = functions
+export const addLastUpdatedField = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
