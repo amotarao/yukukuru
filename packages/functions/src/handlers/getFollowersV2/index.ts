@@ -102,7 +102,7 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
-    const { role, active, deletedAuth, _getFollowersV2Status } = snapshot.data();
+    const { role, active, deletedAuth, twitter, _getFollowersV2Status } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない
     if (!active || deletedAuth) {
@@ -111,8 +111,12 @@ const filterExecutable =
 
     const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
 
-    // 3分の間隔を開ける
-    if (minutes < 3) {
+    // 公開アカウントでは 3分の間隔を開ける
+    if (!twitter.protected && minutes < 3) {
+      return false;
+    }
+    // 非公開アカウントでは 15分の間隔を開ける
+    if (twitter.protected && minutes < 15) {
       return false;
     }
 
