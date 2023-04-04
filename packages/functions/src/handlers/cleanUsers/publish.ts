@@ -31,12 +31,12 @@ export const publish = functions
 
     // publish データ作成・送信
     const messages: Message[] = docs.map((doc) => {
-      const { active, deletedAuth, lastUpdated, twitter } = doc.data();
+      const { active, deletedAuth, _getFollowersV2Status, twitter } = doc.data();
       return {
         uid: doc.id,
         active: active,
         deletedAuth: deletedAuth,
-        lastUpdated: lastUpdated.toDate(),
+        lastUpdated: _getFollowersV2Status.lastRun.toDate(),
         followersCount: twitter.followersCount,
         publishedAt: now,
       };
