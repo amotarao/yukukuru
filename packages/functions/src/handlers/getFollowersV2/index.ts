@@ -9,6 +9,7 @@ import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
+import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
@@ -139,13 +140,6 @@ const filterExecutable =
 
     return false;
   };
-
-/**
- * 直前に publish されたかどうかを確認
- */
-const checkJustPublished = (now: string | Date, published: string | Date, diffMs: number = 1000 * 10): boolean => {
-  return new Date(now).getTime() - new Date(published).getTime() > diffMs;
-};
 
 /** PubSub: フォロワー取得 個々の実行 */
 export const run = functions

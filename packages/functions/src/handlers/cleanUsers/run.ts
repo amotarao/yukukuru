@@ -5,14 +5,8 @@ import { deleteAuth } from '../../modules/auth/delete';
 import { getUserLastViewing } from '../../modules/firestore/userStatuses/lastViewing';
 import { getWatchesIds } from '../../modules/firestore/watches/getWatches';
 import { removeWatches } from '../../modules/firestore/watches/removeWatches';
+import { checkJustPublished } from '../../modules/functions';
 import { topicName, Message } from './_pubsub';
-
-/**
- * 直前に publish されたかどうかを確認
- */
-const checkJustPublished = (now: string | Date, published: string | Date, diffMs: number = 1000 * 10): boolean => {
-  return new Date(now).getTime() - new Date(published).getTime() > diffMs;
-};
 
 /**
  * 実行可能かどうかを確認
