@@ -1,6 +1,7 @@
+import { Record, RecordV2 } from '@yukukuru/types';
 import {
   collection,
-  DocumentData,
+  CollectionReference,
   getDocs,
   limit,
   orderBy,
@@ -20,8 +21,29 @@ import { firestore } from '../firebase';
 export const getRecords = async (
   uid: string,
   startAfterDoc: QueryDocumentSnapshot | null
-): Promise<QuerySnapshot<DocumentData>> => {
-  const ref = collection(firestore, 'users', uid, 'records');
+): Promise<QuerySnapshot<Record>> => {
+  const ref = collection(firestore, 'users', uid, 'records') as CollectionReference<Record>;
+  let q = query(ref, orderBy('durationEnd', 'desc'));
+  if (startAfterDoc) {
+    q = query(q, startAfter(startAfterDoc));
+  }
+  q = query(q, limit(50));
+
+  const qs = await getDocs(q);
+  return qs;
+};
+
+/**
+ * Firestore から RecordsV2 を取得
+ *
+ * @param uid 取得対象ユーザーのUID
+ * @param startAfter cursor
+ */
+export const getRecordsV2 = async (
+  uid: string,
+  startAfterDoc: QueryDocumentSnapshot | null
+): Promise<QuerySnapshot<RecordV2>> => {
+  const ref = collection(firestore, 'users', uid, 'recordsV2') as CollectionReference<RecordV2>;
   let q = query(ref, orderBy('durationEnd', 'desc'));
   if (startAfterDoc) {
     q = query(q, startAfter(startAfterDoc));
