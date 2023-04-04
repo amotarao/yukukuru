@@ -9,7 +9,7 @@ import {
   setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub';
-import { getMe } from '../../modules/twitter/api/me';
+import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 
 const topicName = 'checkValiditySharedToken';
@@ -31,7 +31,7 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/10 * * * *')
+  .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const validDocs = await getValidSharedTokenDocsOrderByLastChecked(100);
@@ -64,7 +64,7 @@ export const run = functions
       accessSecret: accessTokenSecret,
     });
 
-    const response = await getMe(client);
+    const response = await getUsers(client, ['783214']);
     if ('error' in response) {
       console.log(JSON.stringify(response.error));
 
