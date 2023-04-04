@@ -34,7 +34,7 @@ export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 
   };
 };
 
-export const convertTwUserDataToRecordUserData =
+export const convertTwUserToRecordUserData =
   (maybeDeletedOrSuspended = false) =>
   (twUser: TwUserData): RecordUserWithProfile => {
     return {
@@ -46,10 +46,18 @@ export const convertTwUserDataToRecordUserData =
     };
   };
 
-export const convertTwUserDataToRecordV2User = (twUser: TwUserData): RecordV2User => {
+export const convertTwUserToRecordV2User = (twUser: TwUserData): RecordV2User => {
   return {
     screenName: twUser.screenName,
     displayName: twUser.name,
     photoUrl: twUser.photoUrl,
+  };
+};
+
+export const convertTwitterUserToRecordV2User = (twitterUser: TwitterUser): RecordV2User => {
+  return {
+    screenName: twitterUser.username,
+    displayName: twitterUser.name,
+    photoUrl: twitterUser.profile_image_url,
   };
 };
