@@ -6,7 +6,6 @@ import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/shared
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
-import { getDiffMinutes } from '../../modules/time';
 import { Message, topicName } from './_pubsub';
 
 /**
@@ -33,7 +32,7 @@ export const publish = functions
       getGroupFromTime(1, now.add(10, 'minutes').toDate()),
     ];
     const docs = await getUserDocsByGroups(groups);
-    const targetDocs = docs.filter(filterExecutable(now.toDate()));
+    const targetDocs = docs.filter(filterExecutable);
     const sharedTokens = await getSharedTokensForGetFollowersV2(now.toDate(), targetDocs.length);
 
     // publish データ作成・送信
@@ -64,14 +63,12 @@ export const publish = functions
   });
 
 /** 実行可能かどうかを確認 */
-const filterExecutable =
-  (now: Date) =>
-  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
-    const { _getFollowersV1Status } = snapshot.data();
+const filterExecutable = (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+  const { _getFollowersV1Status } = snapshot.data();
 
-    const minutes = getDiffMinutes(now, _getFollowersV1Status.lastUpdated.toDate());
-    if (minutes < 5) {
-      return false;
-    }
+  // 1回きりの実行
+  if (_getFollowersV1Status.lastUpdated.toDate().getTime() === new Date(0).getTime()) {
     return true;
-  };
+  }
+  return false;
+};

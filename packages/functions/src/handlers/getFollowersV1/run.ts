@@ -1,7 +1,5 @@
-import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV1ErrorCode } from 'twitter-api-v2';
-import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { setWatch } from '../../modules/firestore/watches/set';
@@ -115,7 +113,7 @@ const getFollowersIdsStep = async (
   if ('error' in response) {
     // v1.1 API は v2 と違い、アカウントロックのエラーが発生することがあるため、最終使用日時を1週間後に更新して、処理を中断する
     if (response.error.hasErrorCode(EApiV1ErrorCode.AccountLocked)) {
-      await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers'], dayjs(now).add(1, 'w').toDate());
+      // await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers'], dayjs(now).add(1, 'w').toDate());
     }
     const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
     throw new Error(message);
@@ -166,6 +164,6 @@ const saveDocsStep = async (
   const ended = nextCursor === '0' || nextCursor === '-1';
   const watchId = await setWatch(uid, ids, now, ended);
   await setUserResultLegacy(uid, watchId, ended, nextCursor, now);
-  await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now);
+  // await setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };
