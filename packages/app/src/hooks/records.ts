@@ -59,6 +59,7 @@ type DispatchAction =
       payload: {
         docs: QueryDocumentSnapshot<Record>[];
         ended: boolean;
+        cursor: QueryDocumentSnapshot | null;
       };
     }
   | {
@@ -66,6 +67,8 @@ type DispatchAction =
       payload: {
         docs: QueryDocumentSnapshot<RecordV2>[];
         ended: boolean;
+        cursor: QueryDocumentSnapshot | Date | null;
+        cursorV2: QueryDocumentSnapshot | null;
       };
     }
   | {
@@ -109,8 +112,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     }
 
     case 'AddItems': {
-      const { docs, ended } = action.payload;
-      const cursor = docs.at(-1) ?? null;
+      const { docs, ended, cursor } = action.payload;
 
       return {
         ...state,
@@ -122,8 +124,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     }
 
     case 'AddItemsV2': {
-      const { docs, ended } = action.payload;
-      const cursorV2 = docs.at(-1) ?? null;
+      const { docs, ended, cursor, cursorV2 } = action.payload;
 
       return {
         ...state,
@@ -132,7 +133,7 @@ const reducer = (state: State, action: DispatchAction): State => {
         // V1 に続きがある可能性があるので必ず true
         hasNext: true,
         isComputedFetchV2: ended,
-        cursor: docs.at(-1)?.data().date.toDate() ?? null,
+        cursor,
         cursorV2,
       };
     }
@@ -162,29 +163,66 @@ type Action = {
 export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const getRecordsV1 = useCallback(
+    (cursor = state.cursor) => {
+      (async () => {
+        if (!uid) return;
+        await fetchRecords(uid, 50, cursor).then(({ docs }) => {
+          cursor instanceof Date &&
+            docs.length &&
+            dispatch({
+              type: 'AddText',
+              payload: { text: 'このあたりでは記録が二重で表示されている可能性があります' },
+            });
+
+          dispatch({
+            type: 'AddItems',
+            payload: {
+              docs,
+              ended: docs.length < 50,
+              cursor: docs.at(-1) ?? null,
+            },
+          });
+        });
+        dispatch({ type: 'FinishLoadRecords' });
+      })();
+    },
+    [state, uid]
+  );
+
+  const getRecordsV2 = useCallback(() => {
+    (async () => {
+      if (!uid) return;
+      await fetchRecordsV2(uid, 50, state.cursorV2).then(({ docs }) => {
+        const ended = docs.length < 50;
+        const cursor = docs.at(-1)?.data().date.toDate() ?? null;
+        const cursorV2 = docs.at(-1) ?? null;
+
+        dispatch({
+          type: 'AddItemsV2',
+          payload: {
+            docs,
+            ended,
+            cursor,
+            cursorV2,
+          },
+        });
+
+        // V2 での取得が完了している場合は V1 の取得も行う
+        if (ended) {
+          getRecordsV1(cursor);
+        }
+      });
+      dispatch({ type: 'FinishLoadRecords' });
+    })();
+  }, [state, uid, getRecordsV1]);
+
   /**
    * Records を取得し処理する
    */
   const getRecords = useCallback(() => {
-    (async () => {
-      if (!uid) return;
-      !state.isComputedFetchV2
-        ? await fetchRecordsV2(uid, 50, state.cursorV2).then(({ docs }) => {
-            const ended = docs.length < 50;
-            dispatch({ type: 'AddItemsV2', payload: { docs, ended } });
-          })
-        : await fetchRecords(uid, 50, state.cursor).then(({ docs }) => {
-            state.cursor instanceof Date &&
-              docs.length &&
-              dispatch({
-                type: 'AddText',
-                payload: { text: 'このあたりでは記録が二重で表示されている可能性があります' },
-              });
-            dispatch({ type: 'AddItems', payload: { docs, ended: docs.length < 50 } });
-          });
-      dispatch({ type: 'FinishLoadRecords' });
-    })();
-  }, [state, uid]);
+    !state.isComputedFetchV2 ? getRecordsV2() : getRecordsV1();
+  }, [state, getRecordsV2, getRecordsV1]);
 
   /**
    * UID が変更した際は初期化する
