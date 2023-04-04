@@ -6,6 +6,7 @@ export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData
     id: user.id,
     screenName: user.username,
     name: user.name,
+    protected: user.protected,
     photoUrl: user.profile_image_url,
     followersCount: user.public_metrics.followers_count || 0,
     verified: user.verified,

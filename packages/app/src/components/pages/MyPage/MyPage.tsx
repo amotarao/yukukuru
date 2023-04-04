@@ -2,7 +2,7 @@ import { UserData, Record, RecordV2 } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
 import { dayjs } from '../../../modules/dayjs';
@@ -103,7 +103,7 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>
           currentTime = timeText;
 
           return (
-            <div key={record.id}>
+            <Fragment key={record.id}>
               {isShownDate && (
                 <h2
                   className={classNames(
@@ -128,7 +128,7 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>
                   record={data}
                 />
               </div>
-            </div>
+            </Fragment>
           );
         })}
       </section>

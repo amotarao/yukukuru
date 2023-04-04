@@ -4,6 +4,7 @@ import { PickedTwitterUser, TwitterErrorUser, TwitterUser } from './types';
 export const toRequiredTwitterUser = (user: PickedTwitterUser): TwitterUser => {
   return {
     ...user,
+    protected: user.protected || false,
     profile_image_url: user.profile_image_url || '',
     public_metrics: user.public_metrics || {
       followers_count: 0,
