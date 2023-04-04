@@ -12,12 +12,12 @@ import { setWatchV2 } from '../../modules/firestore/watchesV2';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { getDiffMinutes } from '../../modules/time';
 import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
-import { getDiffMinutes } from '../../utils/time';
 
 const topicName = 'getFollowersV2';
 

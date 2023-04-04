@@ -13,10 +13,10 @@ import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { getDiffMinutes } from '../../modules/time';
+import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
+import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
-import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../utils/followers/diffV2';
-import { mergeWatchesV2 } from '../../utils/followers/watchesV2';
-import { getDiffMinutes } from '../../utils/time';
 
 const topicName = 'checkIntegrityV2';
 
