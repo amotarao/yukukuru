@@ -7,11 +7,12 @@ import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens/get';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
+import { setUesrTwitter, setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
@@ -161,7 +162,7 @@ export const run = functions
       }
       console.log(`⚙️ Starting get followers of [${uid}].`);
 
-      await checkOwnUserStatus(twitterId, sharedToken);
+      await checkOwnUserStatus(uid, twitterId, sharedToken);
       const { users, nextToken } = await getFollowersIdsStep(
         now,
         uid,
@@ -183,7 +184,11 @@ export const run = functions
  * 自身のアカウント状態を確認
  * 削除または凍結されている場合は、処理を中断する
  */
-const checkOwnUserStatus = async (twitterId: string, sharedToken: Message['sharedToken']): Promise<void> => {
+const checkOwnUserStatus = async (
+  uid: string,
+  twitterId: string,
+  sharedToken: Message['sharedToken']
+): Promise<void> => {
   const sharedClient = getClient({
     accessToken: sharedToken.accessToken,
     accessSecret: sharedToken.accessTokenSecret,
@@ -195,6 +200,11 @@ const checkOwnUserStatus = async (twitterId: string, sharedToken: Message['share
   }
   if (response.errorUsers.length > 0) {
     throw new Error(`❗️Own is deleted or suspended.`);
+  }
+
+  const user = response.users[0];
+  if (user) {
+    await setUesrTwitter(uid, convertTwitterUserToUserDataTwitter(user));
   }
 };
 

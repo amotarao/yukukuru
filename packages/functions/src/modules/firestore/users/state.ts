@@ -62,19 +62,6 @@ export const setUserGetFollowersV2Status = async (
   );
 };
 
-export const updateUserTwitterInfo = async (
-  userId: string,
-  twitter: UserData['twitter'],
-  date: Date
-): Promise<void> => {
-  const ref = usersCollection.doc(userId);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedUserTwitterInfo' | 'twitter'> = {
-    lastUpdatedUserTwitterInfo: date,
-    twitter,
-  };
-  await ref.update(data);
-};
-
 export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
   const ref = usersCollection.doc(uid);
   const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {
@@ -86,5 +73,11 @@ export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise
 export const setCheckIntegrityV2Status = async (userId: string, date: Date): Promise<void> => {
   await usersCollection.doc(userId).update({
     '_checkIntegrityV2Status.lastRun': date,
+  });
+};
+
+export const setUesrTwitter = async (userId: string, twitter: UserData['twitter']): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    twitter,
   });
 };

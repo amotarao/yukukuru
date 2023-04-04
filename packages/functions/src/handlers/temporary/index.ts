@@ -60,3 +60,21 @@ export const deleteLastUpdatedTwUsersField = functions
     await bulkWriter.close();
     console.log(`deleted ${snapshot.docs.length} items.`);
   });
+
+export const deleteLastUpdatedUserTwitterInfo = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(async () => {
+    const snapshot = await usersCollection.orderBy('lastUpdatedUserTwitterInfo').limit(100).get();
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.forEach((doc) => {
+      bulkWriter.update(doc.ref, { lastUpdatedUserTwitterInfo: FieldValue.delete() } as any);
+    });
+    await bulkWriter.close();
+    console.log(`deleted ${snapshot.docs.length} items.`);
+  });
