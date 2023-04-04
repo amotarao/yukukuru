@@ -151,24 +151,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdatedUserTwitterInfo",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "group",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "pausedGetFollower",
           "order": "ASCENDING"
         }

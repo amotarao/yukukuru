@@ -23,9 +23,6 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** 整合性チェック 最終実行日時 */
   lastUpdatedCheckIntegrity: T;
 
-  /** Twitter情報 最終実行日時 */
-  lastUpdatedUserTwitterInfo: T;
-
   /** getFollowersV2 の状態保存 */
   _getFollowersV2Status: {
     lastRun: T;
