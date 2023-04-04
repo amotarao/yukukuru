@@ -8,7 +8,7 @@ type Subscription = {
 };
 
 export const useSubscription = () => {
-  const [{ uid }] = useAuth();
+  const [{ uid, isLoading: isAuthLoading }] = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSupporter, setIsSupporter] = useState<boolean | null>(null);
 
@@ -28,7 +28,7 @@ export const useSubscription = () => {
   }, [uid]);
 
   return {
-    isLoading,
+    isLoading: isAuthLoading || isLoading,
     isSupporter,
   };
 };
