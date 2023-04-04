@@ -66,7 +66,7 @@ export const run = functions
 
     const response = await getMe(client);
     if ('error' in response) {
-      console.log(response.error);
+      console.log(JSON.stringify(response.error));
 
       // 認証エラー
       if (response.error.isAuthError) {
