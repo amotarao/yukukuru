@@ -5,6 +5,7 @@ import * as functions from 'firebase-functions';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub/publish';
+import { getDiffMinutes } from '../../utils/time';
 import { Message, topicName } from './_pubsub';
 
 /**
@@ -51,10 +52,10 @@ const filterExecutable =
       return false;
     }
 
-    const minutes = dayjs(now).diff(dayjs(lastUpdatedCheckIntegrity.toDate()), 'minutes');
+    const minutes = getDiffMinutes(now, lastUpdatedCheckIntegrity.toDate());
 
     // 10分経過していれば実行
-    if (minutes < 10 - 1) {
+    if (minutes < 10) {
       return false;
     }
     return true;
