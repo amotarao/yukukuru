@@ -1,4 +1,4 @@
-import { getDiffMinutes } from './time';
+import { getDiffMinutes } from '.';
 
 describe('getDiffMinutes', () => {
   test('同じ時刻同士では差が0', () => {

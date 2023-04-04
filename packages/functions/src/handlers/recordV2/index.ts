@@ -2,13 +2,13 @@ import { RecordV2, TwUserData, WatchV2 } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
-import { getToken } from '../../modules/firestore/tokens/get';
+import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
+import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
-import { mergeWatchesV2 } from '../../utils/followers/watchesV2';
 import { TwitterErrorUser } from './../../modules/twitter/types';
 
 /** Firestore: watch が作成されたときの処理 */
