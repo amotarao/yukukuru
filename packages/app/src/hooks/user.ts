@@ -5,19 +5,19 @@ import { firestore } from '../modules/firebase';
 
 type State = {
   isLoading: boolean;
-  lastRunnedGetFollowers: Date;
+  lastRun: Date | null;
 };
 
 const initialState: State = {
   isLoading: true,
-  lastRunnedGetFollowers: new Date(0),
+  lastRun: new Date(0),
 };
 
 type DispatchAction =
   | {
       type: 'SetLastRunnedGetFollowers';
       payload: {
-        lastRunnedGetFollowers: Date;
+        lastRun: Date | null;
       };
     }
   | {
@@ -30,7 +30,7 @@ const reducer = (state: State, action: DispatchAction): State => {
       return {
         ...state,
         isLoading: false,
-        lastRunnedGetFollowers: action.payload.lastRunnedGetFollowers,
+        lastRun: action.payload.lastRun,
       };
     }
 
@@ -62,11 +62,11 @@ export const useUser = (uid: string | null): [Readonly<State>] => {
         return;
       }
 
-      const lastRunnedGetFollowersV1 = (doc.get('lastUpdated') as Timestamp).toDate();
-      const lastRunnedGetFollowersV2 = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
-      const lastRunnedGetFollowers =
-        lastRunnedGetFollowersV2 > new Date(0) ? lastRunnedGetFollowersV2 : lastRunnedGetFollowersV1;
-      dispatch({ type: 'SetLastRunnedGetFollowers', payload: { lastRunnedGetFollowers } });
+      const lastRun = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
+      dispatch({
+        type: 'SetLastRunnedGetFollowers',
+        payload: { lastRun: lastRun > new Date(0) ? lastRun : null },
+      });
       unsubscribe();
     });
 
