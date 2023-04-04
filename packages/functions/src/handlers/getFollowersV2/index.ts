@@ -43,7 +43,7 @@ type Message = {
  * フォロワー取得 定期実行
  *
  * 毎分実行
- * グループ毎に 5分おきに実行
+ * グループ毎に 3分おきに実行
  */
 export const publish = functions
   .region('asia-northeast1')
