@@ -3,10 +3,7 @@ import { ApiResponseError } from 'twitter-api-v2';
 const logError = (error: unknown): void => {
   if (error && error instanceof ApiResponseError) {
     console.error(`❗️[Twitter Error] Failed to run Twitter API: "${error.message}", and check detail next line.`);
-    console.error(`error: ${error}`);
-    console.error(`data: ${JSON.stringify(error.data, null, 2)}`);
-    console.error(`isAuthError: ${error.isAuthError}`);
-    console.error(`rateLimitError: ${error.rateLimitError}`);
+    console.error(JSON.stringify(error));
     return;
   }
 
