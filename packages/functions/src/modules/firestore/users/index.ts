@@ -32,3 +32,9 @@ export const removeIdFromAllowedAccessUsers = async (id: string, targetId: strin
   };
   await ref.update(data);
 };
+
+/** ユーザーを取得 */
+export const getUser = async (id: string): Promise<UserData> => {
+  const doc = await usersCollection.doc(id).get();
+  return doc.data() as UserData;
+};

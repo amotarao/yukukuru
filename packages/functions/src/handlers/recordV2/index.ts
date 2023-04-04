@@ -4,6 +4,7 @@ import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
 import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsers } from '../../modules/firestore/twUsers';
+import { getUser } from '../../modules/firestore/users';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
@@ -15,7 +16,7 @@ import { TwitterErrorUser } from './../../modules/twitter/types';
 export const generateRecords = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 30,
     memory: '512MB',
   })
   .firestore.document('users/{userId}/watchesV2/{watchId}')
@@ -49,6 +50,13 @@ export const generateRecords = functions
     if (kuru.length === 0 && yuku.length === 0) {
       console.log(`✔️ Not exists diff.`);
       return;
+    }
+
+    // 「くる」ユーザーがいる場合、TwUsers に登録がない場合があるので、フォロワー数の時間分待機する
+    if (kuru.length > 0) {
+      const userData = await getUser(userId);
+      const waitingSecs = Math.ceil((Math.min(userData.twitter.followersCount, 10000) / 400) * 0.25);
+      await new Promise((resolve) => setTimeout(resolve, waitingSecs));
     }
 
     const twitterIds = [...yuku, ...kuru];
