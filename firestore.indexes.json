@@ -71,20 +71,6 @@
       ]
     },
     {
-      "collectionGroup": "sharedTokens",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "_invalidV1",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "_lastUsed.v1_getFollowersIds",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [

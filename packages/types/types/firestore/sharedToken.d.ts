@@ -11,13 +11,6 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
   /** 無効かどうか */
   _invalid: boolean;
 
-  /**
-   * v1.1 API が無効かどうか
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  _invalidV1: boolean;
-
   /** 最終更新日時 */
   _lastUpdated: T;
 
@@ -26,14 +19,6 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
 
   /** 最終利用日時 */
   _lastUsed: {
-    /**
-     * v1.1 GET /followers/ids
-     *
-     * @see https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids
-     * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-     */
-    v1_getFollowersIds: T;
-
     /**
      * v2 GET /2/users/:id/followers
      *
