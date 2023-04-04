@@ -12,7 +12,7 @@ import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
-import { publishMessages } from '../../modules/pubsub/publish';
+import { publishMessages } from '../../modules/pubsub';
 import { getDiffMinutes } from '../../modules/time';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';

@@ -2,7 +2,7 @@ import { RecordV2, TwUserData, WatchV2 } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
-import { getToken } from '../../modules/firestore/tokens/get';
+import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsers } from '../../modules/firestore/twUsers';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';

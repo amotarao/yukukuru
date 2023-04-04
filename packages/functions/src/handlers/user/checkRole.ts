@@ -7,7 +7,7 @@ import {
   setRoleToUser,
 } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
-import { publishMessages } from '../../modules/pubsub/publish';
+import { publishMessages } from '../../modules/pubsub';
 
 const topicName = 'checkRole';
 

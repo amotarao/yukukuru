@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
-import { publishMessages } from '../../modules/pubsub/publish';
+import { publishMessages } from '../../modules/pubsub';
 import { Message, topicName } from './_pubsub';
 
 /**
