@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
 import { FieldValue } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
+import { firestore } from '../../modules/firebase';
 import { getUserDocsByGroups, usersCollection } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 
@@ -52,8 +53,10 @@ export const deleteLastUpdatedTwUsersField = functions
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const snapshot = await usersCollection.orderBy('lastUpdatedTwUsers').limit(100).get();
-    const result = await Promise.all(
-      snapshot.docs.map((doc) => doc.ref.update({ lastUpdatedTwUsers: FieldValue.delete() } as any))
-    );
-    console.log(`deleted ${result.length} items.`);
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.forEach((doc) => {
+      bulkWriter.update(doc.ref, { lastUpdatedTwUsers: FieldValue.delete() } as any);
+    });
+    await bulkWriter.close();
+    console.log(`deleted ${snapshot.docs.length} items.`);
   });
