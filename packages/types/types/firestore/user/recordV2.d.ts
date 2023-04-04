@@ -17,7 +17,7 @@ export type RecordV2<T extends FirestoreDateLike = Timestamp> = {
   status: 'active' | 'deleted' | 'suspended' | 'unknown';
 
   /** ユーザー情報 */
-  user?: RecordV2User;
+  user: RecordV2User | null;
 
   /** 論理削除したかどうか */
   _deleted: boolean;

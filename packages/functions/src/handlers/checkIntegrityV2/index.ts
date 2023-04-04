@@ -151,6 +151,7 @@ export const run = functions
           date: diff.date,
           twitterId: diff.twitterId,
           status: 'unknown',
+          user: null,
           _deleted: false,
           _addedBy: 'checkIntegrityV2',
           _deletedBy: null,
