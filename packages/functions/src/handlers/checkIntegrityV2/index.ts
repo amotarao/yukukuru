@@ -59,14 +59,14 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
-    const { active, deletedAuth, _checkIntegrityV2 } = snapshot.data();
+    const { active, deletedAuth, _checkIntegrityV2Status } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない
     if (!active || deletedAuth) {
       return false;
     }
 
-    const minutes = dayjs(now).diff(dayjs(_checkIntegrityV2.lastRun.toDate()), 'minutes');
+    const minutes = dayjs(now).diff(dayjs(_checkIntegrityV2Status.lastRun.toDate()), 'minutes');
 
     // 10分経過していれば実行
     if (minutes < 10 - 1) {

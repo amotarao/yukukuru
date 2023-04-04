@@ -30,7 +30,7 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   };
 
   /** _checkIntegrityV2 の状態保存 */
-  _checkIntegrityV2: {
+  _checkIntegrityV2Status: {
     lastRun: T;
   };
 

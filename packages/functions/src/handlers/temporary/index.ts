@@ -28,12 +28,12 @@ export const initializeGetFollowersV2Status = functions
         return true;
       }),
       ...docs.map(async (doc) => {
-        const exists = '_checkIntegrityV2' in doc.data();
+        const exists = '_checkIntegrityV2Status' in doc.data();
         if (exists) {
           return false;
         }
         await doc.ref.update({
-          '_checkIntegrityV2.lastRun': new Date(0),
+          '_checkIntegrityV2Status.lastRun': new Date(0),
         });
         return true;
       }),
