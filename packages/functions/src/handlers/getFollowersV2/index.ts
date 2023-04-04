@@ -85,8 +85,8 @@ export const publish = functions
           paginationToken: doc.data()._getFollowersV2Status.nextToken,
           sharedToken: {
             id: sharedToken.id,
-            accessToken: sharedToken.data.accessToken,
-            accessTokenSecret: sharedToken.data.accessTokenSecret,
+            accessToken: sharedToken.data().accessToken,
+            accessTokenSecret: sharedToken.data().accessTokenSecret,
           },
           publishedAt: now.toDate(),
         };
