@@ -1,4 +1,4 @@
-import { RecordV2, TwUserData, WatchV2 } from '@yukukuru/types';
+import { RecordV2, TwUser, WatchV2 } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
@@ -69,7 +69,7 @@ const generateRecord =
     date: Date,
     twitterUsers: TwitterUser[],
     twitterErrorUsers: TwitterErrorUser[],
-    twUsers: TwUserData[]
+    twUsers: TwUser[]
   ) =>
   (twitterId: string): RecordV2<Date> => {
     const status = twitterErrorUsers.find((user) => user.id === twitterId)?.type ?? 'active';
@@ -113,7 +113,7 @@ const getOwnClient = async (uid: string) => {
 const getTwitterUsers = async (
   userId: string,
   twitterIds: string[]
-): Promise<{ twitterUsers: TwitterUser[]; twitterErrorUsers: TwitterErrorUser[]; twUsers: TwUserData[] }> => {
+): Promise<{ twitterUsers: TwitterUser[]; twitterErrorUsers: TwitterErrorUser[]; twUsers: TwUser[] }> => {
   const client = await getOwnClient(userId);
   const response = await getUsers(client, twitterIds);
   if ('users' in response) {

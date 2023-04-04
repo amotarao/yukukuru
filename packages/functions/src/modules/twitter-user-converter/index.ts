@@ -1,4 +1,4 @@
-import { RecordUserWithProfile, RecordV2User, TwUserData, UserData } from '@yukukuru/types';
+import { RecordUserWithProfile, RecordV2User, TwUser, UserData } from '@yukukuru/types';
 import { TwitterUser } from '../twitter/types';
 
 export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData['twitter'] => {
@@ -25,7 +25,7 @@ export const convertTwitterUserToRecordUserData =
     };
   };
 
-export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 'lastUpdated'> => {
+export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUser, 'lastUpdated'> => {
   return {
     id: user.id,
     screenName: user.username,
@@ -36,7 +36,7 @@ export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUserData, 
 
 export const convertTwUserToRecordUserData =
   (maybeDeletedOrSuspended = false) =>
-  (twUser: TwUserData): RecordUserWithProfile => {
+  (twUser: TwUser): RecordUserWithProfile => {
     return {
       id: twUser.id,
       screenName: twUser.screenName,
@@ -46,7 +46,7 @@ export const convertTwUserToRecordUserData =
     };
   };
 
-export const convertTwUserToRecordV2User = (twUser: TwUserData): RecordV2User => {
+export const convertTwUserToRecordV2User = (twUser: TwUser): RecordV2User => {
   return {
     screenName: twUser.screenName,
     displayName: twUser.name,
