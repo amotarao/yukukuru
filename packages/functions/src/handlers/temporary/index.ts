@@ -50,13 +50,10 @@ export const bindTwUserRecordV2 = functions
     const result = await Promise.all(
       targetDocs.map(async (doc) => {
         const twUser = twUsers.find((twUser) => twUser.id === doc.data().twitterId);
-        if (!twUser) return false;
         await doc.ref.update({
-          user: convertTwUserToRecordV2User(twUser),
+          user: twUser ? convertTwUserToRecordV2User(twUser) : null,
         });
-        return true;
       })
     );
-
-    console.log(`updated ${result.filter((r) => r).length} items.`);
+    console.log(`updated ${result.length} items.`);
   });
