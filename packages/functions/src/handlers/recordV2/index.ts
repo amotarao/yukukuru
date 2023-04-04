@@ -118,7 +118,8 @@ const getTwitterUsers = async (
   const client = await getOwnClient(userId);
   const response = await getUsers(client, twitterIds);
   if ('users' in response) {
-    return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: [] };
+    const errorTwUsers = await getTwUsers(response.errorUsers.map((user) => user.id)).catch(() => []);
+    return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: errorTwUsers };
   }
   console.log(`ℹ️ Not exists token or failed to get twitter users.`);
 
