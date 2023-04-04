@@ -82,7 +82,7 @@ export const run = functions
 
       // 403
       // アカウントが削除済みの場合に発生する
-      if (response.error.code === 403) {
+      if (response.error.data.title === 'Forbidden') {
         await setInvalidSharedToken(id, now);
         return;
       }
