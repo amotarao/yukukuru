@@ -9,6 +9,7 @@ import {
   QueryDocumentSnapshot,
   QuerySnapshot,
   startAfter,
+  where,
 } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
@@ -18,16 +19,17 @@ import { firestore } from '../firebase';
  * @param uid 取得対象ユーザーのUID
  * @param startAfter cursor
  */
-export const getRecords = async (
+export const fetchRecords = async (
   uid: string,
-  startAfterDoc: QueryDocumentSnapshot | null
+  limitCount: number,
+  startAfterDoc: QueryDocumentSnapshot | Date | null
 ): Promise<QuerySnapshot<Record>> => {
   const ref = collection(firestore, 'users', uid, 'records') as CollectionReference<Record>;
   let q = query(ref, orderBy('durationEnd', 'desc'));
   if (startAfterDoc) {
     q = query(q, startAfter(startAfterDoc));
   }
-  q = query(q, limit(50));
+  q = query(q, limit(limitCount));
 
   const qs = await getDocs(q);
   return qs;
@@ -39,16 +41,18 @@ export const getRecords = async (
  * @param uid 取得対象ユーザーのUID
  * @param startAfter cursor
  */
-export const getRecordsV2 = async (
+export const fetchRecordsV2 = async (
   uid: string,
+  limitCount: number,
   startAfterDoc: QueryDocumentSnapshot | null
 ): Promise<QuerySnapshot<RecordV2>> => {
   const ref = collection(firestore, 'users', uid, 'recordsV2') as CollectionReference<RecordV2>;
-  let q = query(ref, orderBy('durationEnd', 'desc'));
+  let q = query(ref, where('_deleted', '==', false));
+  q = query(q, orderBy('date', 'desc'));
   if (startAfterDoc) {
     q = query(q, startAfter(startAfterDoc));
   }
-  q = query(q, limit(50));
+  q = query(q, limit(limitCount));
 
   const qs = await getDocs(q);
   return qs;

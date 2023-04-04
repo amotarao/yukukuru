@@ -1,15 +1,7 @@
-import { FirestoreIdData, Record, RecordV2 } from '@yukukuru/types';
+import { Record, RecordV2 } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
-import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
-
-const convertRecordItems = (snapshot: QueryDocumentSnapshot): FirestoreIdData<Record> => {
-  const item: FirestoreIdData<Record> = {
-    id: snapshot.id,
-    data: snapshot.data() as Record,
-  };
-  return item;
-};
+import { fetchRecords, fetchRecordsV2 } from '../modules/firestore/records';
 
 type State = {
   /** 初期状態かどうか */
@@ -25,13 +17,19 @@ type State = {
   isFirstLoaded: boolean;
 
   /** 記録リスト */
-  items: FirestoreIdData<Record | RecordV2>[];
+  records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;
 
+  /** V2 の取得が完了しているかどうか */
+  isComputedFetchV2: boolean;
+
   /** カーソル */
-  cursor: QueryDocumentSnapshot | null;
+  cursor: QueryDocumentSnapshot | Date | null;
+
+  /** カーソル */
+  cursorV2: QueryDocumentSnapshot | null;
 };
 
 const initialState: State = {
@@ -39,9 +37,11 @@ const initialState: State = {
   isFirstLoading: false,
   isNextLoading: false,
   isFirstLoaded: false,
-  items: [],
+  records: [],
   hasNext: true,
+  isComputedFetchV2: false,
   cursor: null,
+  cursorV2: null,
 };
 
 type DispatchAction =
@@ -57,7 +57,21 @@ type DispatchAction =
   | {
       type: 'AddItems';
       payload: {
-        docs: QueryDocumentSnapshot[];
+        docs: QueryDocumentSnapshot<Record>[];
+        ended: boolean;
+      };
+    }
+  | {
+      type: 'AddItemsV2';
+      payload: {
+        docs: QueryDocumentSnapshot<RecordV2>[];
+        ended: boolean;
+      };
+    }
+  | {
+      type: 'AddText';
+      payload: {
+        text: string;
       };
     }
   | {
@@ -95,17 +109,38 @@ const reducer = (state: State, action: DispatchAction): State => {
     }
 
     case 'AddItems': {
-      const docs = action.payload.docs;
-      const count = docs.length;
-      const items = docs.map(convertRecordItems);
-      const cursor = count > 0 ? docs[count - 1] : null;
+      const { docs, ended } = action.payload;
+      const cursor = docs.at(-1) ?? null;
 
       return {
         ...state,
         initial: false,
-        items: [...state.items, ...items],
-        hasNext: count >= 50,
+        records: [...state.records, ...docs],
+        hasNext: !ended,
         cursor,
+      };
+    }
+
+    case 'AddItemsV2': {
+      const { docs, ended } = action.payload;
+      const cursorV2 = docs.at(-1) ?? null;
+
+      return {
+        ...state,
+        initial: false,
+        records: [...state.records, ...docs],
+        // V1 に続きがある可能性があるので必ず true
+        hasNext: true,
+        isComputedFetchV2: ended,
+        cursor: docs.at(-1)?.data().date.toDate() ?? null,
+        cursorV2,
+      };
+    }
+
+    case 'AddText': {
+      return {
+        ...state,
+        records: [...state.records, { text: action.payload.text }],
       };
     }
 
@@ -132,14 +167,24 @@ export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
    */
   const getRecords = useCallback(() => {
     (async () => {
-      if (!uid) {
-        return;
-      }
-      const { docs } = await getRecordsFromFirestore(uid, state.cursor);
-      dispatch({ type: 'AddItems', payload: { docs } });
+      if (!uid) return;
+      !state.isComputedFetchV2
+        ? await fetchRecordsV2(uid, 50, state.cursorV2).then(({ docs }) => {
+            const ended = docs.length < 50;
+            dispatch({ type: 'AddItemsV2', payload: { docs, ended } });
+          })
+        : await fetchRecords(uid, 50, state.cursor).then(({ docs }) => {
+            state.cursor instanceof Date &&
+              docs.length &&
+              dispatch({
+                type: 'AddText',
+                payload: { text: 'このあたりでは記録が二重で表示されている可能性があります' },
+              });
+            dispatch({ type: 'AddItems', payload: { docs, ended: docs.length < 50 } });
+          });
       dispatch({ type: 'FinishLoadRecords' });
     })();
-  }, [state.cursor, uid]);
+  }, [state, uid]);
 
   /**
    * UID が変更した際は初期化する
