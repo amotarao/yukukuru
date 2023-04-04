@@ -1,4 +1,4 @@
-import dayjs = require('dayjs');
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV1ErrorCode } from 'twitter-api-v2';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
