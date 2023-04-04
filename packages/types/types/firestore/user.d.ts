@@ -76,11 +76,4 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
    * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
    */
   pausedGetFollower: boolean;
-
-  /**
-   * 整合性チェック 最終実行日時
-   *
-   * @deprecated 廃止予定
-   */
-  lastUpdatedCheckIntegrity: T;
 };

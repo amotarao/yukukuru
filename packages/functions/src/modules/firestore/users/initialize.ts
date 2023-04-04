@@ -11,7 +11,6 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     active: true,
     deletedAuth: false,
     lastUpdated: new Date(0),
-    lastUpdatedCheckIntegrity: new Date(0),
     nextCursor: '-1',
     currentWatchesId: '',
     pausedGetFollower: false,
