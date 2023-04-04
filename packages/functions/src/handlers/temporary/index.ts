@@ -1,7 +1,8 @@
-import { FieldValue } from 'firebase-admin/firestore';
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { firestore } from '../../modules/firebase';
-import { usersCollection } from '../../modules/firestore/users';
+import { getUserDocsByGroups } from '../../modules/firestore/users';
+import { setUserResultLegacy } from '../../modules/firestore/users/state';
+import { getGroupFromTime } from '../../modules/group';
 
 export const deleteLastUpdatedField = functions
   .region('asia-northeast1')
@@ -11,17 +12,19 @@ export const deleteLastUpdatedField = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(async () => {
-    const snapshot = await usersCollection.orderBy('lastUpdated').limit(100).get();
-    const bulkWriter = firestore.bulkWriter();
-    snapshot.docs.forEach((doc) => {
-      bulkWriter.update(doc.ref, {
-        lastUpdated: FieldValue.delete(),
-        nextCursor: FieldValue.delete(),
-        currentWatchesId: FieldValue.delete(),
-        pausedGetFollower: FieldValue.delete(),
-      } as any);
-    });
-    await bulkWriter.close();
-    console.log(`deleted ${snapshot.docs.length} items.`);
+  .onRun(async (context) => {
+    const now = dayjs(context.timestamp);
+    const groups = [getGroupFromTime(1, now.toDate())];
+    const docs = await getUserDocsByGroups(groups);
+
+    const result = await Promise.all(
+      docs.map(async (doc) => {
+        if ('_getFollowersV1Status' in doc.data()) {
+          return false;
+        }
+        await setUserResultLegacy(doc.id, '', true, '', new Date(0));
+        return true;
+      })
+    );
+    console.log(`updated ${result.filter((r) => r).length} items.`);
   });
