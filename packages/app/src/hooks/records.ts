@@ -1,4 +1,4 @@
-import { FirestoreIdData, Record } from '@yukukuru/types';
+import { FirestoreIdData, Record, RecordV2 } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
 import { getRecords as getRecordsFromFirestore } from '../modules/firestore/records';
@@ -25,7 +25,7 @@ type State = {
   isFirstLoaded: boolean;
 
   /** 記録リスト */
-  items: FirestoreIdData<Record>[];
+  items: FirestoreIdData<Record | RecordV2>[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;

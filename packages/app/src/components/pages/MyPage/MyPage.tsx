@@ -1,4 +1,4 @@
-import { FirestoreIdData, UserData, Record } from '@yukukuru/types';
+import { FirestoreIdData, UserData, Record, RecordV2 } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,7 @@ import styles from './styles.module.scss';
 export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: FirestoreIdData<Record>[];
+  records: FirestoreIdData<Record | RecordV2>[];
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
@@ -54,8 +54,8 @@ const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({
 /**
  * リストコンポーネント
  */
-const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
-  items,
+const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
+  records,
   lastRunnedGetFollowers,
 }) => {
   let currentDate = '';
@@ -75,8 +75,8 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
       </nav>
       <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
-        {items.map((item) => {
-          const date = dayjs(item.data.durationEnd.toDate());
+        {records.map((item) => {
+          const date = dayjs('date' in item.data ? item.data.date.toDate() : item.data.durationEnd.toDate());
           const dateText = date.format('L');
           const isShownDate = currentDate !== dateText;
           currentDate = dateText;
@@ -120,7 +120,7 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
                     'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
                     item.data.type === 'yuku' ? 'self-start' : 'self-end'
                   )}
-                  {...item.data}
+                  record={item.data}
                 />
               </div>
             </>
@@ -134,9 +134,12 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length > 0) {
-    return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
+  records,
+  lastRunnedGetFollowers,
+}) => {
+  if (records.length > 0) {
+    return <ListView records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
   // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
@@ -153,7 +156,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
-  items,
+  records,
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
@@ -214,7 +217,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
+            <Home records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>

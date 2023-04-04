@@ -19,7 +19,8 @@ const Page: React.FC = () => {
   }, [authUid]);
 
   const [{ isLoading: userIsLoading, lastRunnedGetFollowers }] = useUser(currentUid);
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items, hasNext }, { getNextRecords }] = useRecords(currentUid);
+  const [{ isFirstLoading, isFirstLoaded, isNextLoading, items: records, hasNext }, { getNextRecords }] =
+    useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
   const [{ accounts: multiAccounts }] = useMultiAccounts(authUid);
 
@@ -48,7 +49,7 @@ const Page: React.FC = () => {
           {...{
             isLoading,
             isNextLoading,
-            items,
+            records,
             hasNext,
             hasToken,
             lastRunnedGetFollowers,
