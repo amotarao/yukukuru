@@ -51,32 +51,4 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
     /** 認証済みユーザーかどうか */
     verified: boolean;
   };
-
-  /**
-   * フォロワー一覧取得 最終実行日時
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  lastUpdated: T;
-
-  /**
-   * フォロワー一覧取得 state cursor
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  nextCursor: string;
-
-  /**
-   * フォロワー一覧取得 state doc-id
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  currentWatchesId: string;
-
-  /**
-   * フォロワー一覧取得 state 途中かどうか
-   *
-   * @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド
-   */
-  pausedGetFollower: boolean;
 };
