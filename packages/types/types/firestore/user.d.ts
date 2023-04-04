@@ -17,9 +17,6 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   /** アクセス許可されたユーザーリスト */
   allowedAccessUsers?: string[];
 
-  /** フォロワー情報取得 最終実行日時 */
-  lastUpdatedTwUsers: T;
-
   /** Twitter情報 最終実行日時 */
   lastUpdatedUserTwitterInfo: T;
 
