@@ -46,7 +46,8 @@ export const setRecordsV2DeletedByCheckIntegrity = async (uid: string, ids: stri
 
   ids.forEach((id) => {
     bulkWriter.update(getRecordsV2Collection(uid).doc(id), {
-      _deletedByCheckIntegrity: true,
+      _deleted: true,
+      _deletedBy: 'checkIntegrityV2',
     });
   });
 

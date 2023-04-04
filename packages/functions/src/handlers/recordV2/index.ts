@@ -87,8 +87,9 @@ const generateRecord =
       date,
       twitterId,
       status,
-      _addedByCheckIntegrity: false,
-      _deletedByCheckIntegrity: false,
+      _deleted: false,
+      _addedBy: 'recordV2',
+      _deletedBy: '',
     };
 
     const twUser = twUsers.find((twUser) => twUser.id === twitterId);

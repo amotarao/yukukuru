@@ -19,11 +19,14 @@ export type RecordV2<T extends FirestoreDateLike = Timestamp> = {
   /** ユーザー情報 */
   user?: RecordV2User;
 
-  /** checkIntegrity により追加 */
-  _addedByCheckIntegrity: boolean;
+  /** 論理削除したかどうか */
+  _deleted: boolean;
 
-  /** checkIntegrity により削除 */
-  _deletedByCheckIntegrity: boolean;
+  /** 追加した関数 */
+  _addedBy: 'recordV2' | 'checkIntegrityV2';
+
+  /** 削除した関数 */
+  _deletedBy: 'checkIntegrityV2' | '';
 };
 
 export type RecordV2User = {

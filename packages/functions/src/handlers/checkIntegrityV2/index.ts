@@ -150,8 +150,9 @@ export const run = functions
           date: diff.date,
           twitterId: diff.twitterId,
           status: 'unknown',
-          _addedByCheckIntegrity: true,
-          _deletedByCheckIntegrity: false,
+          _deleted: false,
+          _addedBy: 'checkIntegrityV2',
+          _deletedBy: '',
         };
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
         if (twUser) {
