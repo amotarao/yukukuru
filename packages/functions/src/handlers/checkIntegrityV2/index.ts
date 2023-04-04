@@ -152,7 +152,7 @@ export const run = functions
           status: 'unknown',
           _deleted: false,
           _addedBy: 'checkIntegrityV2',
-          _deletedBy: '',
+          _deletedBy: null,
         };
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
         if (twUser) {

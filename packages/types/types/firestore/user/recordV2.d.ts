@@ -26,7 +26,7 @@ export type RecordV2<T extends FirestoreDateLike = Timestamp> = {
   _addedBy: 'recordV2' | 'checkIntegrityV2';
 
   /** 削除した関数 */
-  _deletedBy: 'checkIntegrityV2' | '';
+  _deletedBy: 'checkIntegrityV2' | null;
 };
 
 export type RecordV2User = {
