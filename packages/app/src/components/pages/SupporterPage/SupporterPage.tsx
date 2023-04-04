@@ -63,33 +63,37 @@ export const SupporterPage: React.FC = () => {
                 <p className="font-bold tracking-wide text-main">月額 99円</p>
               </dt>
               <dd className="px-4 py-8">
-                <ul className="flex flex-col gap-4">
+                <ul className="grid gap-8">
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
-                      <span className="text-main">最短5分おき*に更新</span>
+                      <span className="text-main">最短3分おきに更新</span>
                       <Icon type="check_circle" />
                     </p>
-                    <p className="pl-7 text-sm text-sub">* フォロワー1.5万人超ごとに +5分</p>
-                    <p className="hidden pl-7 text-sm text-sub sm:block">&nbsp;</p>
+                    <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
+                      <li>フォロワー1万人ごとに +3分</li>
+                      <li>非公開アカウントでは15分おき</li>
+                      <li>※Twitterの仕様変更のため調整中</li>
+                    </ul>
                   </li>
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
                       <span className="text-main">複数アカウント切り替え</span>
                       <Icon type="check_circle" aria-label="可能" />
                     </p>
-                    <p className="pl-7 text-sm text-sub">
-                      *{' '}
-                      <a
-                        className="underline"
-                        href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
-                          '◆ゆくくるサポーター 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポーターへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポーター登録したアカウント: \n◇連携したいアカウント(複数可): '
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        DMでアカウントをお知らせください
-                      </a>
-                    </p>
+                    <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
+                      <li>
+                        <a
+                          className="underline"
+                          href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
+                            '◆ゆくくるサポーター 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポーターへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポーター登録したアカウント: \n◇連携したいアカウント(複数可): '
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          このリンクからDMで申請
+                        </a>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
                 <div className="mt-8">
@@ -102,7 +106,7 @@ export const SupporterPage: React.FC = () => {
                   ) : !isSupporter ? (
                     <CheckoutButton>登録</CheckoutButton>
                   ) : (
-                    <ConfirmButton>登録情報確認・解約など</ConfirmButton>
+                    <ConfirmButton>登録内容 確認・変更・解約</ConfirmButton>
                   )}
                 </div>
               </dd>
@@ -113,21 +117,26 @@ export const SupporterPage: React.FC = () => {
                 <p className="font-bold tracking-wide text-main">月額 0円</p>
               </dt>
               <dd className="px-4 py-8">
-                <ul className="flex flex-col gap-4">
+                <ul className="grid gap-8">
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
-                      <span className="text-main">6〜72時間おき*に更新</span>
+                      <span className="text-main">6〜72時間おきに更新</span>
                       <Icon type="check_circle" />
                     </p>
-                    <p className="pl-7 text-sm text-sub">* ランダムに実行</p>
-                    <p className="pl-7 text-sm text-sub">* フォロワー1.5万人超ごとに +5分</p>
+                    <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
+                      <li>フォロワー1万人ごとに +3分</li>
+                      <li>非公開アカウントでは15分おき</li>
+                      <li>※Twitterの仕様変更のため調整中</li>
+                    </ul>
                   </li>
                   <li className="">
                     <p className="flex flex-row-reverse items-center justify-end gap-2 text-lg">
                       <span className="text-main">複数アカウント切り替え</span>
                       <Icon type="cross" aria-label="不可" />
                     </p>
-                    <p className="hidden pl-7 text-sm text-sub sm:block">&nbsp;</p>
+                    <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
+                      <li className="hidden sm:block">&nbsp;</li>
+                    </ul>
                   </li>
                 </ul>
                 <div className="mt-8">
