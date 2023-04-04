@@ -1,4 +1,4 @@
-export type TokenData = {
+export type Token = {
   /** アクセストークン */
   twitterAccessToken: string;
 

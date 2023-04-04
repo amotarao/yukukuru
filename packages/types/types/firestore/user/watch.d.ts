@@ -1,7 +1,7 @@
 import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../../firestore';
 
-export type WatchData<T extends FirestoreDateLike = Timestamp> = {
+export type Watch<T extends FirestoreDateLike = Timestamp> = {
   /** フォロワーのIDリスト */
   followers: string[];
 

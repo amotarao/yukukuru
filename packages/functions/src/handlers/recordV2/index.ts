@@ -122,8 +122,8 @@ const getTwitterUsers = async (
   console.log(`ℹ️ Not exists token or failed to get twitter users.`);
 
   // TwUsers に登録がない場合があるので、フォロワー数の時間分待機する
-  const userData = await getUser(userId);
-  const waitingSecs = Math.ceil((Math.min(userData.twitter.followersCount, 10000) / 400) * 0.25);
+  const User = await getUser(userId);
+  const waitingSecs = Math.ceil((Math.min(User.twitter.followersCount, 10000) / 400) * 0.25);
   await new Promise((resolve) => setTimeout(resolve, waitingSecs));
   const twUsers = await getTwUsers(twitterIds).catch(() => []);
 

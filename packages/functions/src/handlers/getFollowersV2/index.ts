@@ -1,4 +1,4 @@
-import { UserData } from '@yukukuru/types';
+import { User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -13,7 +13,7 @@ import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
 import { getDiffMinutes } from '../../modules/time';
-import { convertTwitterUserToUserDataTwitter } from '../../modules/twitter-user-converter';
+import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
@@ -85,8 +85,8 @@ export const publish = functions
           paginationToken: doc.data()._getFollowersV2Status.nextToken,
           sharedToken: {
             id: sharedToken.id,
-            accessToken: sharedToken.data.accessToken,
-            accessTokenSecret: sharedToken.data.accessTokenSecret,
+            accessToken: sharedToken.data().accessToken,
+            accessTokenSecret: sharedToken.data().accessTokenSecret,
           },
           publishedAt: now.toDate(),
         };
@@ -101,7 +101,7 @@ export const publish = functions
 /** 実行可能かどうかを確認 */
 const filterExecutable =
   (now: Date) =>
-  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+  (snapshot: QueryDocumentSnapshot<User>): boolean => {
     const { role, active, deletedAuth, twitter, _getFollowersV2Status } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない
@@ -210,7 +210,7 @@ const checkOwnUserStatus = async (
 
   const user = response.users[0];
   if (user) {
-    await setUesrTwitter(uid, convertTwitterUserToUserDataTwitter(user));
+    await setUesrTwitter(uid, convertTwitterUserToUserTwitter(user));
   }
 };
 

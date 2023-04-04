@@ -1,4 +1,4 @@
-import { RecordV2, UserData } from '@yukukuru/types';
+import { RecordV2, User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -59,7 +59,7 @@ export const publish = functions
 /** 実行可能かどうかを確認 */
 const filterExecutable =
   (now: Date) =>
-  (snapshot: QueryDocumentSnapshot<UserData>): boolean => {
+  (snapshot: QueryDocumentSnapshot<User>): boolean => {
     const { active, deletedAuth, _checkIntegrityV2Status } = snapshot.data();
 
     // 無効または削除済みユーザーの場合は実行しない

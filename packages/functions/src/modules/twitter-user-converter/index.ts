@@ -1,7 +1,7 @@
-import { RecordUserWithProfile, RecordV2User, TwUser, UserData } from '@yukukuru/types';
+import { RecordUserWithProfile, RecordV2User, TwUser, UserTwitter } from '@yukukuru/types';
 import { TwitterUser } from '../twitter/types';
 
-export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData['twitter'] => {
+export const convertTwitterUserToUserTwitter = (user: TwitterUser): UserTwitter => {
   return {
     id: user.id,
     screenName: user.username,
@@ -13,7 +13,7 @@ export const convertTwitterUserToUserDataTwitter = (user: TwitterUser): UserData
   };
 };
 
-export const convertTwitterUserToRecordUserData =
+export const convertTwitterUserToRecordUser =
   (maybeDeletedOrSuspended = false) =>
   (user: TwitterUser): RecordUserWithProfile => {
     return {
@@ -34,7 +34,7 @@ export const convertTwitterUserToTwUser = (user: TwitterUser): Omit<TwUser, 'las
   };
 };
 
-export const convertTwUserToRecordUserData =
+export const convertTwUserToRecordUser =
   (maybeDeletedOrSuspended = false) =>
   (twUser: TwUser): RecordUserWithProfile => {
     return {

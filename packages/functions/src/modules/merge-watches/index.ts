@@ -1,8 +1,8 @@
-import { WatchData } from '@yukukuru/types';
+import { Watch } from '@yukukuru/types';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as _ from 'lodash';
 
-type MergedWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDate'>;
+type MergedWatch = Pick<Watch, 'followers' | 'getStartDate' | 'getEndDate'>;
 
 /**
  * 分散された watches を まとめる
@@ -12,13 +12,13 @@ type MergedWatchData = Pick<WatchData, 'followers' | 'getStartDate' | 'getEndDat
  * @param limit まとめたあとのデータの最大件数
  */
 export const mergeWatches = (
-  watches: QueryDocumentSnapshot<WatchData>[],
+  watches: QueryDocumentSnapshot<Watch>[],
   includeFirst = false,
   limit = -1
-): { ids: string[]; watch: MergedWatchData }[] => {
+): { ids: string[]; watch: MergedWatch }[] => {
   const uniqWatches = _.uniqBy(watches, (watch) => watch.data().getEndDate.toDate().getTime());
-  const currentWatches: QueryDocumentSnapshot<WatchData>[] = [];
-  const watchesGroups: QueryDocumentSnapshot<WatchData>[][] = [];
+  const currentWatches: QueryDocumentSnapshot<Watch>[] = [];
+  const watchesGroups: QueryDocumentSnapshot<Watch>[][] = [];
 
   uniqWatches.map((watch) => {
     // limit が与えられているとき(0以上)は、そこでマージの処理の実行を終了する
@@ -33,7 +33,7 @@ export const mergeWatches = (
     }
   });
 
-  const convertedWatches: { ids: string[]; watch: MergedWatchData }[] = watchesGroups.map((targetWatches) => {
+  const convertedWatches: { ids: string[]; watch: MergedWatch }[] = watchesGroups.map((targetWatches) => {
     const ids = targetWatches.map((watch) => watch.id);
     const watch = {
       followers: _.uniq(_.flatten(targetWatches.map((watch) => watch.data().followers))),

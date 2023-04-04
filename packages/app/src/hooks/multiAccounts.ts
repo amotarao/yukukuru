@@ -1,11 +1,11 @@
-import { UserData } from '@yukukuru/types';
+import { UserTwitter } from '@yukukuru/types';
 import { collection, getDocs, doc, where, query, onSnapshot } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
 type User = {
   id: string;
-  twitter: UserData['twitter'];
+  twitter: UserTwitter;
 };
 
 type State = {
@@ -115,7 +115,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
         return;
       }
 
-      const twitter = doc.get('twitter') as UserData['twitter'];
+      const twitter = doc.get('twitter') as UserTwitter;
       const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
@@ -127,7 +127,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
     getDocs(q).then((snapshot) => {
       const users = snapshot.docs.map((doc) => {
         const id = doc.id;
-        const twitter = doc.get('twitter') as UserData['twitter'];
+        const twitter = doc.get('twitter') as UserTwitter;
         return { id, twitter };
       });
       dispatch({ type: 'SetUsers', payload: { _users: users } });

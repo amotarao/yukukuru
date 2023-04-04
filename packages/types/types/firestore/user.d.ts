@@ -1,7 +1,7 @@
 import { Timestamp } from '@firebase/firestore-types';
 import { FirestoreDateLike } from '../firestore';
 
-export type UserData<T extends FirestoreDateLike = Timestamp> = {
+export type User<T extends FirestoreDateLike = Timestamp> = {
   /** ロール */
   role: 'supporter' | null;
 
@@ -29,28 +29,7 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
   };
 
   /** Twitter情報 */
-  twitter: {
-    /** Twitter UID (ユニークな数字のID) */
-    id: string;
-
-    /** Twitter ID (@から始まるID) */
-    screenName: string;
-
-    /** 名前 (プロフィールの名前) */
-    name: string;
-
-    /** 非公開ユーザーかどうか */
-    protected: boolean;
-
-    /** プロフィール画像の URL */
-    photoUrl: string;
-
-    /** フォロワー数 */
-    followersCount: number;
-
-    /** 認証済みユーザーかどうか */
-    verified: boolean;
-  };
+  twitter: UserTwitter;
 
   /** @deprecated 廃止予定の Twitter API v1.1 ベースのフィールド */
   _getFollowersV1Status: {
@@ -63,4 +42,27 @@ export type UserData<T extends FirestoreDateLike = Timestamp> = {
     /** フォロワー一覧取得 state 途中かどうか */
     pausedGetFollower: boolean;
   };
+};
+
+export type UserTwitter = {
+  /** Twitter UID (ユニークな数字のID) */
+  id: string;
+
+  /** Twitter ID (@から始まるID) */
+  screenName: string;
+
+  /** 名前 (プロフィールの名前) */
+  name: string;
+
+  /** 非公開ユーザーかどうか */
+  protected: boolean;
+
+  /** プロフィール画像の URL */
+  photoUrl: string;
+
+  /** フォロワー数 */
+  followersCount: number;
+
+  /** 認証済みユーザーかどうか */
+  verified: boolean;
 };
