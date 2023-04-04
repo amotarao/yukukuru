@@ -132,7 +132,7 @@ const filterExecutable =
     }
 
     // 前回の実行から72時間以上経っていたら無条件に実行する
-    if (minutes > 60 * 72) {
+    if (minutes >= 60 * 72) {
       return true;
     }
 
