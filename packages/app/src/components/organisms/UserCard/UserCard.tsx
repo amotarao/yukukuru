@@ -57,7 +57,7 @@ const checkWithProfile = (user: RecordUser): user is RecordUserWithProfile => {
   return 'displayName' in user && 'screenName' in user && 'photoUrl' in user;
 };
 
-const checkWithProfileV2 = (user?: RecordV2User): user is RecordV2User => !!user;
+const checkWithProfileV2 = (user: RecordV2User | null): user is RecordV2User => !!user;
 
 export type UserCardProps = {
   className?: string;
