@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
+import { FieldValue } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { getUserDocsByGroups } from '../../modules/firestore/users';
+import { getUserDocsByGroups, usersCollection } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 
 export const initializeGetFollowersV2Status = functions
@@ -29,4 +30,20 @@ export const initializeGetFollowersV2Status = functions
       })
     );
     console.log(`updated ${result.filter((s) => s).length} items.`);
+  });
+
+export const deleteLastUpdatedUserTwitterInfo = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(async () => {
+    const snapshot = await usersCollection.orderBy('lastUpdatedUserTwitterInfo').limit(100).get();
+    const result = await Promise.all(
+      snapshot.docs.map((doc) => doc.ref.update({ lastUpdatedUserTwitterInfo: FieldValue.delete() } as any))
+    );
+    console.log(`deleted ${result.length} items.`);
   });
