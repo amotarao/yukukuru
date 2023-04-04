@@ -79,6 +79,7 @@ const generateRecord =
       date,
       twitterId,
       status,
+      user: null,
       _deleted: false,
       _addedBy: 'recordV2',
       _deletedBy: null,
