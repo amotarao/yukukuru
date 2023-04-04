@@ -1,6 +1,7 @@
-import { FirestoreIdData, UserData, Record } from '@yukukuru/types';
+import { UserData, Record, RecordV2 } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
+import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 import { useRecords } from '../../../hooks/records';
 import { useAnalytics } from '../../../modules/analytics';
@@ -16,7 +17,7 @@ import styles from './styles.module.scss';
 export type MyPageProps = {
   isLoading: boolean;
   isNextLoading: boolean;
-  items: FirestoreIdData<Record>[];
+  records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
   hasNext: boolean;
   hasToken: boolean;
   lastRunnedGetFollowers: Date;
@@ -27,9 +28,9 @@ export type MyPageProps = {
 };
 
 /**
- * アイテムがないことを表示するコンポーネント
+ * 登録したてでデータ取得が1回も行われていないことを表示するコンポーネント
  */
-const NoItemView: React.FC = () => {
+const JustRegisteredView: React.FC = () => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
@@ -38,9 +39,9 @@ const NoItemView: React.FC = () => {
 };
 
 /**
- * 表示するデータがないことを表示するコンポーネント
+ * 取得はできているが、表示するデータがないことを表示するコンポーネント
  */
-const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
+const NoListView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({ lastRunnedGetFollowers }) => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
@@ -54,8 +55,8 @@ const NoViewItemView: React.FC<Pick<MyPageProps, 'lastRunnedGetFollowers'>> = ({
 /**
  * リストコンポーネント
  */
-const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
-  items,
+const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
+  records,
   lastRunnedGetFollowers,
 }) => {
   let currentDate = '';
@@ -75,8 +76,20 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
       </nav>
       <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRunnedGetFollowers} />
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
-        {items.map((item) => {
-          const date = dayjs(item.data.durationEnd.toDate());
+        {records.map((record, i) => {
+          if ('text' in record) {
+            return (
+              <p
+                key={`text-${i}`}
+                className="mx-auto mt-8 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-16"
+              >
+                {record.text}
+              </p>
+            );
+          }
+
+          const data = record.data();
+          const date = dayjs('date' in data ? data.date.toDate() : data.durationEnd.toDate());
           const dateText = date.format('L');
           const isShownDate = currentDate !== dateText;
           currentDate = dateText;
@@ -90,40 +103,32 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
           currentTime = timeText;
 
           return (
-            <>
+            <div key={record.id}>
               {isShownDate && (
                 <h2
                   className={classNames(
                     'mx-auto mt-16 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back first:mt-0 sm:mt-20 sm:-mb-8 sm:first:mt-0',
                     styles.recordHead
                   )}
-                  key={`${item.id}-head`}
                 >
                   {dateText}
                 </h2>
               )}
               {isShownTime && (
-                <p
-                  className="mx-auto mt-8 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-16"
-                  key={`${item.id}-time`}
-                >
+                <p className="mx-auto mt-8 mb-2 w-fit rounded-full bg-back px-4 py-1 text-center text-xs tracking-wider text-sub sm:mb-0 sm:mt-16">
                   {timeText}
                 </p>
               )}
-              <div
-                className={classNames('mb-4 px-6 sm:px-4', styles.userSection)}
-                data-type={item.data.type}
-                key={`${item.id}-card`}
-              >
+              <div className={classNames('mb-4 px-6 sm:px-4', styles.userSection)} data-type={data.type}>
                 <UserCard
                   className={classNames(
                     'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
-                    item.data.type === 'yuku' ? 'self-start' : 'self-end'
+                    data.type === 'yuku' ? 'self-start' : 'self-end'
                   )}
-                  {...item.data}
+                  record={data}
                 />
               </div>
-            </>
+            </div>
           );
         })}
       </section>
@@ -134,17 +139,20 @@ const ListView: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> 
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({ items, lastRunnedGetFollowers }) => {
-  if (items.length > 0) {
-    return <ListView items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRunnedGetFollowers'>> = ({
+  records,
+  lastRunnedGetFollowers,
+}) => {
+  if (records.length > 0) {
+    return <ListView records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />;
   }
 
   // lastRunnedGetFollowers が 0 の場合、watches 取得処理が1回も完了していない
   if (lastRunnedGetFollowers.getTime() === 0) {
-    return <NoItemView />;
+    return <JustRegisteredView />;
   }
 
-  return <NoViewItemView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
+  return <NoListView lastRunnedGetFollowers={lastRunnedGetFollowers} />;
 };
 
 /**
@@ -153,7 +161,7 @@ const Home: React.FC<Pick<MyPageProps, 'items' | 'lastRunnedGetFollowers'>> = ({
 export const MyPage: React.FC<MyPageProps> = ({
   isLoading,
   isNextLoading,
-  items,
+  records,
   hasNext,
   hasToken,
   lastRunnedGetFollowers,
@@ -214,7 +222,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           <LoadingCircle />
         ) : (
           <>
-            <Home items={items} lastRunnedGetFollowers={lastRunnedGetFollowers} />
+            <Home records={records} lastRunnedGetFollowers={lastRunnedGetFollowers} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>

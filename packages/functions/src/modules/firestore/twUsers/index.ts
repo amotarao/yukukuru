@@ -2,8 +2,8 @@ import { FirestoreDateLike, TwUserData } from '@yukukuru/types';
 import * as admin from 'firebase-admin';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
-import { TwitterUser } from '../../twitter';
 import { convertTwitterUserToTwUser } from '../../twitter-user-converter';
+import { TwitterUser } from '../../twitter/types';
 import { bulkWriterErrorHandler } from '../error';
 
 const collection = firestore.collection('twUsers') as CollectionReference<TwUserData<FirestoreDateLike>>;
@@ -56,14 +56,9 @@ export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
  * @param ids 取得するユーザーIDリスト
  */
 export const getTwUsers = async (ids: string[]): Promise<TwUserData[]> => {
-  const requests = ids.map(async (id) => {
-    const snapshot = await collection.doc(id).get();
-    return snapshot;
-  });
-
-  const results = await Promise.all(requests);
-
-  return results.filter((result) => result.exists).map((result) => result.data() as TwUserData);
+  if (ids.length === 0) return [];
+  const snapshots = await firestore.getAll(...ids.map((id) => collection.doc(id)));
+  return snapshots.filter((snapshot) => snapshot.exists).map((result) => result.data() as TwUserData);
 };
 
 /**

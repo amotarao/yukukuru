@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "recordsV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_deleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "sharedTokens",
       "queryScope": "COLLECTION",
       "fields": [
@@ -98,24 +112,6 @@
         },
         {
           "fieldPath": "followers",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "group",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "lastUpdatedCheckIntegrity",
           "order": "ASCENDING"
         }
       ]
@@ -237,11 +233,45 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "watchesV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ended",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "watchesV2",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ended",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
     {
       "collectionGroup": "watches",
+      "fieldPath": "followers",
+      "ttl": false,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "watchesV2",
       "fieldPath": "followers",
       "ttl": false,
       "indexes": []

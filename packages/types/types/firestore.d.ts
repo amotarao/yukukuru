@@ -4,7 +4,9 @@ export * from './firestore/token';
 export * from './firestore/twUser';
 export * from './firestore/user';
 export * from './firestore/user/record';
+export * from './firestore/user/recordV2';
 export * from './firestore/user/watch';
+export * from './firestore/user/watchV2';
 export * from './firestore/userStatus';
 
 export type FirestoreIdData<T> = {

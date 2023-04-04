@@ -3,12 +3,18 @@ import { twitterClientErrorHandler } from '../error';
 
 export const getFollowersIdsLegacyMaxResultsMax = 5000;
 
+/**
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの型
+ */
 export type TwitterGetFollowersIdsLegacyParameters = {
   userId: string;
   cursor?: string;
   count?: number;
 };
 
+/**
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの型
+ */
 export type TwitterGetFollowersIdsLegacyResponse = Required<
   Pick<UserFollowerIdsV1Paginator['data'], 'ids' | 'next_cursor_str'>
 >;
@@ -25,7 +31,7 @@ export type TwitterGetFollowersIdsLegacyResponse = Required<
 export const getFollowersIdsSingleLegacy = async (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = getFollowersIdsLegacyMaxResultsMax }: TwitterGetFollowersIdsLegacyParameters
-): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
+): Promise<TwitterGetFollowersIdsLegacyResponse | { error: ApiResponseError }> => {
   return client.v1
     .userFollowerIds({
       user_id: userId,
@@ -36,7 +42,7 @@ export const getFollowersIdsSingleLegacy = async (
     .then((res) => {
       const { ids, next_cursor_str } = res.data;
       const response: TwitterGetFollowersIdsLegacyResponse = { ids, next_cursor_str: next_cursor_str || '0' };
-      return { response };
+      return response;
     })
     .catch(twitterClientErrorHandler);
 };
@@ -55,7 +61,7 @@ export const getFollowersIdsSingleLegacy = async (
 export const getFollowersIdsLegacy = async (
   client: TwitterApiReadOnly,
   { userId, cursor = '-1', count = getFollowersIdsLegacyMaxResultsMax * 15 }: TwitterGetFollowersIdsLegacyParameters
-): Promise<{ response: TwitterGetFollowersIdsLegacyResponse } | { error: ApiResponseError }> => {
+): Promise<TwitterGetFollowersIdsLegacyResponse | { error: ApiResponseError }> => {
   const ids: string[] = [];
   let nextCursor = cursor;
 
@@ -67,24 +73,24 @@ export const getFollowersIdsLegacy = async (
       userId,
       cursor: nextCursor,
     };
-    const result = await getFollowersIdsSingleLegacy(client, obj);
+    const response = await getFollowersIdsSingleLegacy(client, obj);
 
     // エラーが発生した場合
-    if ('error' in result) {
+    if ('error' in response) {
       // 1回でも取得が完了している場合は、すでに取得されているデータを返すため、繰り返し処理を終了する
       if (getCount > 0) {
         break;
       }
 
       // 1回目でのエラーの場合は、エラーのみを返す
-      return result;
+      return response;
     }
 
-    ids.push(...result.response.ids);
-    nextCursor = result.response.next_cursor_str || '0';
+    ids.push(...response.ids);
+    nextCursor = response.next_cursor_str || '0';
 
     // カーソルが 0 になった場合は、最終地点のため、繰り返し処理を終了する
-    if (result.response.next_cursor_str === '0') {
+    if (response.next_cursor_str === '0') {
       break;
     }
 
@@ -96,5 +102,5 @@ export const getFollowersIdsLegacy = async (
     next_cursor_str: nextCursor,
   };
 
-  return { response };
+  return response;
 };

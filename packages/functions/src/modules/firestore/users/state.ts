@@ -1,7 +1,5 @@
 import { FirestoreDateLike, UserData } from '@yukukuru/types';
-import { firestore } from '../../firebase';
-
-const collection = firestore.collection('users');
+import { usersCollection } from '.';
 
 /**
  * フォロワー取得処理の状態を保存
@@ -11,6 +9,7 @@ const collection = firestore.collection('users');
  * @param ended 取得が終了している (カーソルが 0 か -1) かどうか
  * @param nextCursor 次のカーソル
  * @param date 現在の日時
+ * @deprecated 廃止予定の Twitter API v1.1 ベースの関数
  */
 export const setUserResultLegacy = async (
   userId: string,
@@ -19,7 +18,7 @@ export const setUserResultLegacy = async (
   nextCursor: string,
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
+  const ref = usersCollection.doc(userId);
 
   if (ended) {
     const data: Pick<
@@ -42,31 +41,35 @@ export const setUserResultLegacy = async (
   }
 };
 
-export const updateUserLastUpdatedTwUsers = async (userId: string, date: Date): Promise<void> => {
-  const ref = collection.doc(userId);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedTwUsers'> = {
-    lastUpdatedTwUsers: date,
-  };
-  await ref.update(data);
-};
-
-export const updateUserTwitterInfo = async (
+/**
+ * フォロワー取得処理の状態を保存
+ */
+export const setUserGetFollowersV2Status = async (
   userId: string,
-  twitter: UserData['twitter'],
+  nextToken: string | null,
+  ended: boolean,
   date: Date
 ): Promise<void> => {
-  const ref = collection.doc(userId);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedUserTwitterInfo' | 'twitter'> = {
-    lastUpdatedUserTwitterInfo: date,
-    twitter,
-  };
-  await ref.update(data);
+  await usersCollection.doc(userId).update(
+    ended
+      ? {
+          '_getFollowersV2Status.lastRun': date,
+          '_getFollowersV2Status.nextToken': nextToken,
+        }
+      : {
+          '_getFollowersV2Status.nextToken': nextToken,
+        }
+  );
 };
 
-export const updateUserCheckIntegrity = async (uid: string, date: Date): Promise<void> => {
-  const ref = collection.doc(uid);
-  const data: Pick<UserData<FirestoreDateLike>, 'lastUpdatedCheckIntegrity'> = {
-    lastUpdatedCheckIntegrity: date,
-  };
-  await ref.update(data);
+export const setCheckIntegrityV2Status = async (userId: string, date: Date): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    '_checkIntegrityV2Status.lastRun': date,
+  });
+};
+
+export const setUesrTwitter = async (userId: string, twitter: UserData['twitter']): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    twitter,
+  });
 };

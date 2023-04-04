@@ -34,7 +34,17 @@ service cloud.firestore {
         allow read: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
       }
 
+      match /recordsV2/{recordID} {
+        allow write: if false;
+        allow read: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
+      }
+
       match /watches/{watchID} {
+        allow write: if false;
+        allow read: if isAdmin();
+      }
+
+      match /watchesV2/{watchID} {
         allow write: if false;
         allow read: if isAdmin();
       }
