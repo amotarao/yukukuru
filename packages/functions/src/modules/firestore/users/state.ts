@@ -75,3 +75,9 @@ export const setCheckIntegrityV2Status = async (userId: string, date: Date): Pro
     '_checkIntegrityV2Status.lastRun': date,
   });
 };
+
+export const setUesrTwitter = async (userId: string, twitter: UserData['twitter']): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    twitter,
+  });
+};
