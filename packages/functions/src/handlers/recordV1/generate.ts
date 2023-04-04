@@ -10,7 +10,7 @@ import { setTokenInvalid } from '../../modules/firestore/tokens';
 import { getTwUser, setTwUsers } from '../../modules/firestore/twUsers';
 import { mergeWatches } from '../../modules/merge-watches';
 import {
-  convertTwUserDataToRecordUserData,
+  convertTwUserToRecordUserData,
   convertTwitterUserToRecordUserData,
 } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
@@ -61,7 +61,7 @@ const generateRecord =
         };
         return item;
       }
-      return convertTwUserDataToRecordUserData(true)(twUser);
+      return convertTwUserToRecordUserData(true)(twUser);
     };
 
     const user = await findUser(id);

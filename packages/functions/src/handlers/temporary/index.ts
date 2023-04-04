@@ -7,7 +7,7 @@ import { getTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setUserResultLegacy } from '../../modules/firestore/users/state';
 import { getGroupFromTime } from '../../modules/group';
-import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
+import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
 
 export const addLastUpdatedField = functions
   .region('asia-northeast1')
@@ -52,7 +52,7 @@ export const bindTwUserRecordV2 = functions
         const twUser = twUsers.find((twUser) => twUser.id === doc.data().twitterId);
         if (!twUser) return false;
         await doc.ref.update({
-          user: convertTwUserDataToRecordV2User(twUser),
+          user: convertTwUserToRecordV2User(twUser),
         });
         return true;
       })

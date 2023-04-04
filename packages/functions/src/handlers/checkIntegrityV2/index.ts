@@ -16,7 +16,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { getDiffMinutes } from '../../modules/time';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
-import { convertTwUserDataToRecordV2User } from '../../modules/twitter-user-converter';
+import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
 
 const topicName = 'checkIntegrityV2';
 
@@ -157,7 +157,7 @@ export const run = functions
         };
         const twUser = twUsers.find((twUser) => twUser.id === diff.twitterId);
         if (twUser) {
-          record.user = convertTwUserDataToRecordV2User(twUser);
+          record.user = convertTwUserToRecordV2User(twUser);
         }
         return record;
       });
