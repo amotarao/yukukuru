@@ -20,6 +20,12 @@ export const initializeUser = async (id: string, twitter: UserData['twitter']): 
     _checkIntegrityV2Status: {
       lastRun: new Date(0),
     },
+    _getFollowersV1Status: {
+      lastUpdated: new Date(0),
+      nextCursor: '-1',
+      currentWatchesId: '',
+      pausedGetFollower: false,
+    },
   };
   await usersCollection.doc(id).set(data, { merge: true });
 };
