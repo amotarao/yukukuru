@@ -5,7 +5,7 @@ const truncateDate = (date: Date): Date => {
 };
 
 export const getDiffMinutes = (to: Date, from: Date): number => {
-  const truncatedto = truncateDate(to);
+  const truncatedTo = truncateDate(to);
   const truncatedFrom = truncateDate(from);
-  return dayjs(truncatedto).diff(dayjs(truncatedFrom), 'minutes');
+  return dayjs(truncatedTo).diff(dayjs(truncatedFrom), 'minutes');
 };
