@@ -9,10 +9,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { Message, topicName } from './_pubsub';
 
 /**
- * フォロワー取得 定期実行
- *
- * 毎分実行
- * グループ毎に 5分おきに実行
+ * フォロワー取得 定期実行 (最後の実行)
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -20,17 +17,13 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('* * * * *')
+  .pubsub.schedule('15 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
 
     // 対象ユーザーの取得
-    const groups = [
-      getGroupFromTime(1, now.toDate()),
-      getGroupFromTime(1, now.add(5, 'minutes').toDate()),
-      getGroupFromTime(1, now.add(10, 'minutes').toDate()),
-    ];
+    const groups = [getGroupFromTime(12, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable);
     const sharedTokens = await getSharedTokensForGetFollowersV2(now.toDate(), targetDocs.length);
