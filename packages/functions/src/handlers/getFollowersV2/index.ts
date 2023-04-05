@@ -8,7 +8,11 @@ import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { setUserTwitter, setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
+import {
+  setUserTwitter,
+  setUserTwitterProtected,
+  setUserGetFollowersV2Status,
+} from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
@@ -180,14 +184,7 @@ export const run = functions
 
       const client = await getTwitterClientStep(sharedToken, uid);
       await checkOwnUserStatusStep(client, uid, twitterId);
-      const { users, nextToken } = await getFollowersIdsStep(
-        client,
-        now,
-        uid,
-        twitterId,
-        paginationToken,
-        message.json as Message
-      );
+      const { users, nextToken } = await getFollowersIdsStep(client, now, uid, twitterId, paginationToken);
       const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, users);
       await saveDocsStep(now, uid, savingIds, nextToken, sharedToken);
 
@@ -242,8 +239,7 @@ const getFollowersIdsStep = async (
   now: Date,
   uid: string,
   twitterId: string,
-  nextToken: string | null,
-  message: Message
+  nextToken: string | null
 ) => {
   const response = await getFollowers(client, {
     userId: twitterId,
@@ -251,23 +247,10 @@ const getFollowersIdsStep = async (
     maxResults: getFollowersMaxResultsMax * 10, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
   });
 
-  // 非公開ユーザーの場合、Authorization Error となる
-  // 自身のトークンを使用して再度実行する
+  // 非公開アカウントと思われる場合、Authorization Error となる
   if ('authorizationError' in response) {
-    const token = await getToken(uid);
-    if (token) {
-      const newMessage: Message = {
-        ...message,
-        sharedToken: {
-          id: uid,
-          accessToken: token.twitterAccessToken,
-          accessTokenSecret: token.twitterAccessTokenSecret,
-        },
-      };
-      await publishMessages(topicName, [newMessage]);
-      throw new Error(`🔄 Retry get followers ids of [${uid}].`);
-    }
-    throw new Error('❗️Failed to get own token.');
+    await setUserTwitterProtected(uid);
+    throw new Error('❗️Authorization Error. Maybe protected user.');
   }
 
   if ('error' in response) {

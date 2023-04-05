@@ -34,6 +34,12 @@ export const setUserTwitter = async (userId: string, twitter: UserTwitter): Prom
   });
 };
 
+export const setUserTwitterProtected = async (userId: string): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    'twitter.protected': true,
+  });
+};
+
 /**
  * フォロワー取得処理の状態を保存
  *
