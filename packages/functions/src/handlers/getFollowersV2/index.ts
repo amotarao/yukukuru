@@ -2,6 +2,7 @@ import { User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
+import { TwitterApiReadOnly } from 'twitter-api-v2';
 import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
@@ -31,12 +32,15 @@ type Message = {
   /** カーソル */
   paginationToken: string | null;
 
-  /** 共有トークン */
+  /**
+   * 共有トークン
+   * 非公開アカウントでは利用できないため、null を送る
+   */
   sharedToken: {
     id: string;
     accessToken: string;
     accessTokenSecret: string;
-  };
+  } | null;
 
   /** 送信日時 */
   publishedAt: Date | string;
@@ -74,20 +78,26 @@ export const publish = functions
     // publish データ作成・送信
     const messages: Message[] = targetDocs
       .map((doc, i) => {
+        // SharedToken の件数が少ない場合は実行しない
+        // 本番環境ではユーザーが多いので基本的には十分な件数がある
         const sharedToken = sharedTokens.at(i);
         if (!sharedToken) {
           console.log(`❗️ No shared token available for [${doc.id}]`);
           return null;
         }
+
         const message: Message = {
           uid: doc.id,
           twitterId: doc.data().twitter.id,
           paginationToken: doc.data()._getFollowersV2Status.nextToken,
-          sharedToken: {
-            id: sharedToken.id,
-            accessToken: sharedToken.data().accessToken,
-            accessTokenSecret: sharedToken.data().accessTokenSecret,
-          },
+          // 非公開アカウントの場合は共有トークンを送らない
+          sharedToken: doc.data().twitter.protected
+            ? null
+            : {
+                id: sharedToken.id,
+                accessToken: sharedToken.data().accessToken,
+                accessTokenSecret: sharedToken.data().accessTokenSecret,
+              },
           publishedAt: now.toDate(),
         };
         return message;
@@ -166,18 +176,19 @@ export const run = functions
         console.error(`❗️Failed to run functions: published more than 10 seconds ago.`);
         return;
       }
-      console.log(`⚙️ Starting get followers of [${uid}].`);
+      console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
-      await checkOwnUserStatus(uid, twitterId, sharedToken);
+      const client = await getTwitterClientStep(sharedToken, uid);
+      await checkOwnUserStatusStep(client, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(
+        client,
         now,
         uid,
         twitterId,
         paginationToken,
-        sharedToken,
         message.json as Message
       );
-      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(uid, users, sharedToken);
+      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, users);
       await saveDocsStep(now, uid, savingIds, nextToken, sharedToken);
 
       console.log(`✔️ Completed get followers of [${uid}].`);
@@ -186,21 +197,30 @@ export const run = functions
     }
   });
 
+const getTwitterClientStep = async (sharedToken: Message['sharedToken'], uid: string): Promise<TwitterApiReadOnly> => {
+  if (sharedToken) {
+    return getClient({
+      accessToken: sharedToken.accessToken,
+      accessSecret: sharedToken.accessTokenSecret,
+    });
+  }
+
+  const token = await getToken(uid);
+  if (!token) {
+    throw new Error('❗️No token.');
+  }
+  return getClient({
+    accessToken: token.twitterAccessToken,
+    accessSecret: token.twitterAccessTokenSecret,
+  });
+};
+
 /**
  * 自身のアカウント状態を確認
  * 削除または凍結されている場合は、処理を中断する
  */
-const checkOwnUserStatus = async (
-  uid: string,
-  twitterId: string,
-  sharedToken: Message['sharedToken']
-): Promise<void> => {
-  const sharedClient = getClient({
-    accessToken: sharedToken.accessToken,
-    accessSecret: sharedToken.accessTokenSecret,
-  });
-
-  const response = await getUsers(sharedClient, [twitterId]);
+const checkOwnUserStatusStep = async (client: TwitterApiReadOnly, uid: string, twitterId: string): Promise<void> => {
+  const response = await getUsers(client, [twitterId]);
   if ('error' in response) {
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
@@ -218,19 +238,14 @@ const checkOwnUserStatus = async (
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStep = async (
+  client: TwitterApiReadOnly,
   now: Date,
   uid: string,
   twitterId: string,
   nextToken: string | null,
-  sharedToken: Message['sharedToken'],
   message: Message
 ) => {
-  const sharedClient = getClient({
-    accessToken: sharedToken.accessToken,
-    accessSecret: sharedToken.accessTokenSecret,
-  });
-
-  const response = await getFollowers(sharedClient, {
+  const response = await getFollowers(client, {
     userId: twitterId,
     paginationToken: nextToken,
     maxResults: getFollowersMaxResultsMax * 10, // Firestore ドキュメントデータサイズ制限、Twitter API 取得制限を考慮した数値
@@ -256,7 +271,7 @@ const getFollowersIdsStep = async (
   }
 
   if ('error' in response) {
-    const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    const message = `❗️Failed to get users from Twitter of [${uid}].`;
     throw new Error(message);
   }
 
@@ -270,20 +285,15 @@ const getFollowersIdsStep = async (
  * ただし、取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
  */
 const ignoreMaybeDeletedOrSuspendedStep = async (
+  client: TwitterApiReadOnly,
   uid: string,
-  followers: TwitterUser[],
-  sharedToken: Message['sharedToken']
+  followers: TwitterUser[]
 ): Promise<TwitterUser[]> => {
-  const sharedClient = getClient({
-    accessToken: sharedToken.accessToken,
-    accessSecret: sharedToken.accessTokenSecret,
-  });
-
   const followersIds = followers.map((follower) => follower.id);
-  const response = await getUsers(sharedClient, followersIds);
+  const response = await getUsers(client, followersIds);
 
   if ('error' in response) {
-    const message = `❗️Failed to get users from Twitter of [${uid}]. Shared token id is [${sharedToken.id}].`;
+    const message = `❗️Failed to get users from Twitter of [${uid}].`;
     console.error(message);
     return followers;
   }
@@ -308,7 +318,7 @@ const saveDocsStep = async (
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
-    setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now),
+    setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
   await setTwUsers(followers);
