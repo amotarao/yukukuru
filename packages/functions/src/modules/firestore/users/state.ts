@@ -28,7 +28,7 @@ export const setCheckIntegrityV2Status = async (userId: string, date: Date): Pro
   });
 };
 
-export const setUesrTwitter = async (userId: string, twitter: UserTwitter): Promise<void> => {
+export const setUserTwitter = async (userId: string, twitter: UserTwitter): Promise<void> => {
   await usersCollection.doc(userId).update({
     twitter,
   });

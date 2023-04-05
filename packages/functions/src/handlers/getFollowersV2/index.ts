@@ -8,7 +8,7 @@ import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { setUesrTwitter, setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
+import { setUserTwitter, setUserGetFollowersV2Status } from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
@@ -230,7 +230,7 @@ const checkOwnUserStatusStep = async (client: TwitterApiReadOnly, uid: string, t
 
   const user = response.users[0];
   if (user) {
-    await setUesrTwitter(uid, convertTwitterUserToUserTwitter(user));
+    await setUserTwitter(uid, convertTwitterUserToUserTwitter(user));
   }
 };
 
