@@ -20,17 +20,13 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('* * * * *')
+  .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
 
     // 対象ユーザーの取得
-    const groups = [
-      getGroupFromTime(1, now.toDate()),
-      getGroupFromTime(1, now.add(5, 'minutes').toDate()),
-      getGroupFromTime(1, now.add(10, 'minutes').toDate()),
-    ];
+    const groups = [getGroupFromTime(12, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable);
     const sharedTokens = await getSharedTokensForGetFollowersV2(now.toDate(), targetDocs.length);
