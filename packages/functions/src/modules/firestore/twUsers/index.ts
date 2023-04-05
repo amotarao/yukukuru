@@ -55,7 +55,7 @@ export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
  *
  * @param ids 取得するユーザーIDリスト
  */
-export const getTwUsers = async (ids: string[]): Promise<TwUser[]> => {
+export const getTwUsersByIds = async (ids: string[]): Promise<TwUser[]> => {
   if (ids.length === 0) return [];
   const snapshots = await firestore.getAll(...ids.map((id) => collection.doc(id)));
   return snapshots.filter((snapshot) => snapshot.exists).map((result) => result.data() as TwUser);
