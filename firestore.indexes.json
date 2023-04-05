@@ -2,6 +2,20 @@
   "indexes": [
     {
       "collectionGroup": "recordsV2",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "user",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "recordsV2",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -236,6 +250,29 @@
     }
   ],
   "fieldOverrides": [
+    {
+      "collectionGroup": "recordsV2",
+      "fieldPath": "user",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    },
     {
       "collectionGroup": "watches",
       "fieldPath": "followers",
