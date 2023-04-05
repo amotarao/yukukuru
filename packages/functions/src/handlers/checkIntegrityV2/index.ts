@@ -7,7 +7,7 @@ import {
   getRecordsV2ByDuration,
   setRecordsV2DeletedByCheckIntegrity,
 } from '../../modules/firestore/recordsV2';
-import { getTwUsers } from '../../modules/firestore/twUsers';
+import { getTwUsersByIds } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
@@ -130,7 +130,7 @@ export const run = functions
     // 存在すべきなのに存在しない差分
     const notExistsDiffs = checkDiffV2(currentDiffs, firestoreDiffs);
     if (notExistsDiffs.length) {
-      const twUsers = await getTwUsers(notExistsDiffs.map((diff) => diff.twitterId));
+      const twUsers = await getTwUsersByIds(notExistsDiffs.map((diff) => diff.twitterId));
       console.log('ℹ️ notExistsDiffs');
       notExistsDiffs.forEach((diff) => console.log(JSON.stringify(diff)));
       const records = notExistsDiffs.map((diff) => {

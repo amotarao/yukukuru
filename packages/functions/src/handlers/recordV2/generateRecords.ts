@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
 import { getToken } from '../../modules/firestore/tokens';
-import { getTwUsers } from '../../modules/firestore/twUsers';
+import { getTwUsersByIds } from '../../modules/firestore/twUsers';
 import { getUser } from '../../modules/firestore/users';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
@@ -118,7 +118,7 @@ const getTwitterUsers = async (
   const client = await getOwnClient(userId);
   const response = await getUsers(client, twitterIds);
   if ('users' in response) {
-    const errorTwUsers = await getTwUsers(response.errorUsers.map((user) => user.id)).catch(() => []);
+    const errorTwUsers = await getTwUsersByIds(response.errorUsers.map((user) => user.id)).catch(() => []);
     return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: errorTwUsers };
   }
   console.log(`ℹ️ Not exists token or failed to get twitter users.`);
@@ -127,7 +127,7 @@ const getTwitterUsers = async (
   const User = await getUser(userId);
   const waitingSecs = Math.ceil((Math.min(User.twitter.followersCount, 10000) / 400) * 0.25);
   await new Promise((resolve) => setTimeout(resolve, waitingSecs));
-  const twUsers = await getTwUsers(twitterIds).catch(() => []);
+  const twUsers = await getTwUsersByIds(twitterIds).catch(() => []);
 
   return { twitterUsers: [], twitterErrorUsers: [], twUsers };
 };
