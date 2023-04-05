@@ -27,8 +27,8 @@ export const deleteGetFollowersV1Field = functions
 export const deleteWatches = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 10,
-    memory: '256MB',
+    timeoutSeconds: 30,
+    memory: '512MB',
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
