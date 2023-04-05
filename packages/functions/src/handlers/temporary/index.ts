@@ -1,15 +1,12 @@
 import { RecordV2 } from '@yukukuru/types';
-import * as dayjs from 'dayjs';
-import { QuerySnapshot } from 'firebase-admin/firestore';
+import { QuerySnapshot, FieldValue } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { getTwUsers } from '../../modules/firestore/twUsers';
-import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { setUserResultLegacy } from '../../modules/firestore/users/state';
-import { getGroupFromTime } from '../../modules/group';
+import { usersCollection } from '../../modules/firestore/users';
 import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
 
-export const addLastUpdatedField = functions
+export const deleteGetFollowersV1Field = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -17,21 +14,16 @@ export const addLastUpdatedField = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(async (context) => {
-    const now = dayjs(context.timestamp);
-    const groups = [getGroupFromTime(1, now.toDate())];
-    const docs = await getUserDocsByGroups(groups);
-
-    const result = await Promise.all(
-      docs.map(async (doc) => {
-        if ('_getFollowersV1Status' in doc.data()) {
-          return false;
-        }
-        await setUserResultLegacy(doc.id, '', true, '', new Date(0));
-        return true;
+  .onRun(async () => {
+    const snapshot = await usersCollection.orderBy('_getFollowersV1Status').limit(100).get();
+    await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        await doc.ref.update({
+          _getFollowersV1Status: FieldValue.delete(),
+        } as any);
       })
     );
-    console.log(`updated ${result.filter((r) => r).length} items.`);
+    console.log(`deleted ${snapshot.docs.length} items.`);
   });
 
 export const bindTwUserRecordV2 = functions
