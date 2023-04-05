@@ -14,16 +14,18 @@ export const checkRecords = functions
   .pubsub.schedule('*/5 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
-    const snapshot = (await firestore.collectionGroup('recordsV2').get()) as QuerySnapshot<RecordV2>;
-    const targetDocs = snapshot.docs.filter((doc) => !doc.data().user);
-    const twitterIds = targetDocs.map((doc) => doc.data().twitterId);
+    const snapshot = (await firestore
+      .collectionGroup('recordsV2')
+      .where('user', '==', null)
+      .orderBy('date', 'desc')
+      .limit(100)
+      .get()) as QuerySnapshot<RecordV2>;
+    const twitterIds = snapshot.docs.map((doc) => doc.data().twitterId);
     const twUsers = await getTwUsers(twitterIds);
     const result = await Promise.all(
-      targetDocs.map(async (doc) => {
+      snapshot.docs.map(async (doc) => {
         const twUser = twUsers.find((twUser) => twUser.id === doc.data().twitterId);
-        await doc.ref.update({
-          user: twUser ? convertTwUserToRecordV2User(twUser) : null,
-        });
+        await doc.ref.update({ user: twUser ? convertTwUserToRecordV2User(twUser) : null });
       })
     );
     console.log(`updated ${result.length} items.`);
