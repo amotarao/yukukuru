@@ -311,5 +311,8 @@ const saveDocsStep = async (
     setLastUsedSharedToken(sharedToken.id, ['v2_getUserFollowers', 'v2_getUsers'], now),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
-  await setTwUsers(followers);
+
+  // TwUsers の保存
+  // Firestore への書き込みが多くなりすぎるので、ランダムで 10% のユーザーを保存
+  await setTwUsers(followers.filter(() => Math.random() < 0.1));
 };
