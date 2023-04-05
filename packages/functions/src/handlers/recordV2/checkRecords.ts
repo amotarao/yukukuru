@@ -2,7 +2,7 @@ import { RecordV2 } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
-import { getTwUsers } from '../../modules/firestore/twUsers';
+import { getTwUsersByIds } from '../../modules/firestore/twUsers';
 import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
 
 export const checkRecords = functions
@@ -21,7 +21,7 @@ export const checkRecords = functions
       .limit(100)
       .get()) as QuerySnapshot<RecordV2>;
     const twitterIds = snapshot.docs.map((doc) => doc.data().twitterId);
-    const twUsers = await getTwUsers(twitterIds);
+    const twUsers = await getTwUsersByIds(twitterIds);
     const result = await Promise.all(
       snapshot.docs.map(async (doc) => {
         const twUser = twUsers.find((twUser) => twUser.id === doc.data().twitterId);

@@ -55,7 +55,7 @@ export const setTwUsers = async (users: TwitterUser[]): Promise<void> => {
  *
  * @param ids 取得するユーザーIDリスト
  */
-export const getTwUsers = async (ids: string[]): Promise<TwUser[]> => {
+export const getTwUsersByIds = async (ids: string[]): Promise<TwUser[]> => {
   if (ids.length === 0) return [];
   const snapshots = await firestore.getAll(...ids.map((id) => collection.doc(id)));
   return snapshots.filter((snapshot) => snapshot.exists).map((result) => result.data() as TwUser);
@@ -74,4 +74,21 @@ export const getTwUser = async (id: string): Promise<TwUser | null> => {
   }
 
   return snapshot.data() as TwUser;
+};
+
+export const getOldTwUsers = async (before: Date, limit: number): Promise<TwUser[]> => {
+  const snapshots = await collection.where('lastUpdated', '<', before).orderBy('lastUpdated').limit(limit).get();
+  return snapshots.docs.map((doc) => doc.data() as TwUser);
+};
+
+export const deleteTwUsers = async (ids: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+
+  ids.forEach((id) => {
+    const ref = collection.doc(id);
+    bulkWriter.delete(ref);
+  });
+
+  await bulkWriter.close();
 };
