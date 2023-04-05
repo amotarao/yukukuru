@@ -51,20 +51,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "_lastUsed.v1_getFollowersIds",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "sharedTokens",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "_invalid",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "_lastUsed.v2_getUserFollowers",
           "order": "ASCENDING"
         }
@@ -221,20 +207,6 @@
       ]
     },
     {
-      "collectionGroup": "watches",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ended",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "getEndDate",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "watchesV2",
       "queryScope": "COLLECTION",
       "fields": [
@@ -286,12 +258,6 @@
           "queryScope": "COLLECTION_GROUP"
         }
       ]
-    },
-    {
-      "collectionGroup": "watches",
-      "fieldPath": "followers",
-      "ttl": false,
-      "indexes": []
     },
     {
       "collectionGroup": "watchesV2",

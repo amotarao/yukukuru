@@ -1,10 +1,9 @@
-import * as dayjs from 'dayjs';
+import { FieldValue } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
-import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { setUserResultLegacy } from '../../modules/firestore/users/state';
-import { getGroupFromTime } from '../../modules/group';
+import { firestore } from '../../modules/firebase';
+import { usersCollection } from '../../modules/firestore/users';
 
-export const addLastUpdatedField = functions
+export const deleteGetFollowersV1Field = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
@@ -12,19 +11,33 @@ export const addLastUpdatedField = functions
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(async (context) => {
-    const now = dayjs(context.timestamp);
-    const groups = [getGroupFromTime(1, now.toDate())];
-    const docs = await getUserDocsByGroups(groups);
-
-    const result = await Promise.all(
-      docs.map(async (doc) => {
-        if ('_getFollowersV1Status' in doc.data()) {
-          return false;
-        }
-        await setUserResultLegacy(doc.id, '', true, '', new Date(0));
-        return true;
+  .onRun(async () => {
+    const snapshot = await usersCollection.orderBy('_getFollowersV1Status').limit(100).get();
+    await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        await doc.ref.update({
+          _getFollowersV1Status: FieldValue.delete(),
+        } as any);
       })
     );
-    console.log(`updated ${result.filter((r) => r).length} items.`);
+    console.log(`deleted ${snapshot.docs.length} items.`);
+  });
+
+/** watches コレクション 削除 */
+export const deleteWatches = functions
+  .region('asia-northeast1')
+  .runWith({
+    timeoutSeconds: 10,
+    memory: '256MB',
+  })
+  .pubsub.schedule('* * * * *')
+  .timeZone('Asia/Tokyo')
+  .onRun(async () => {
+    const snapshot = await firestore.collectionGroup('watches').limit(300).get();
+    const bulkWriter = firestore.bulkWriter();
+    snapshot.docs.forEach((doc) => {
+      bulkWriter.delete(doc.ref);
+    });
+    await bulkWriter.close();
+    console.log(`deleted ${snapshot.docs.length} items.`);
   });

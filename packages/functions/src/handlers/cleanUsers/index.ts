@@ -4,7 +4,6 @@ import { getStripeRole } from '../../modules/auth/claim';
 import { deleteAuth } from '../../modules/auth/delete';
 import { getUserLastViewing } from '../../modules/firestore/userStatuses';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { deleteWatches, getWatchesCount, getWatchesIds } from '../../modules/firestore/watches';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
@@ -136,19 +135,6 @@ export const run = functions
     }
 
     console.log(`⚙️ Starting clean user of [${uid}].`);
-
-    const watchIds = await getWatchesIds(uid, 300);
-    await deleteWatches(uid, watchIds);
-
-    if (watchIds.length > 0) {
-      console.log(`✔️ Completed remove ${watchIds.length} watches of [${uid}].`);
-    }
-
-    const watchesCount = await getWatchesCount(uid);
-    if (watchesCount > 0) {
-      console.log(`✔️ Completed (paused) clean user of [${uid}].`);
-      return;
-    }
 
     const result = await deleteAuth(uid)
       .then(() => true)

@@ -21,7 +21,7 @@ export const UserRow: React.FC<UserRowProps> = ({ className, doc }) => {
   useEffect(() => {
     if (!entry?.isIntersecting) return;
     (async () => {
-      const q = collection(firestore, 'users', doc.id, 'watches');
+      const q = collection(firestore, 'users', doc.id, 'watchesV2');
       const count = await getCountFromServer(q);
       setWatchesCount(count.data().count);
     })();
@@ -30,7 +30,7 @@ export const UserRow: React.FC<UserRowProps> = ({ className, doc }) => {
   useEffect(() => {
     if (!entry?.isIntersecting) return;
     (async () => {
-      const q = collection(firestore, 'users', doc.id, 'records');
+      const q = collection(firestore, 'users', doc.id, 'recordsV2');
       const count = await getCountFromServer(q);
       setRecordsCount(count.data().count);
     })();

@@ -13,7 +13,6 @@ import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
-import { getDiffMinutes } from '../../modules/time';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
@@ -28,24 +27,21 @@ type Message = {
   publishedAt: Date | string;
 };
 
-/**
- * 整合性チェック 定期実行
- * 整合性チェックのキューを作成
- */
+/** 整合性チェック 定期実行 */
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('* * * * *')
+  .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
 
-    const groups = [getGroupFromTime(1, now.toDate())];
+    const groups = [getGroupFromTime(12, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
-    const targetDocs = docs.filter(filterExecutable(now.toDate()));
+    const targetDocs = docs.filter(filterExecutable);
 
     const messages: Message[] = targetDocs.map((doc) => ({
       uid: doc.id,
@@ -57,26 +53,18 @@ export const publish = functions
   });
 
 /** 実行可能かどうかを確認 */
-const filterExecutable =
-  (now: Date) =>
-  (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { active, deletedAuth, _checkIntegrityV2Status } = snapshot.data();
+const filterExecutable = (snapshot: QueryDocumentSnapshot<User>): boolean => {
+  const { active, deletedAuth } = snapshot.data();
 
-    // 無効または削除済みユーザーの場合は実行しない
-    if (!active || deletedAuth) {
-      return false;
-    }
+  // 無効または削除済みユーザーの場合は実行しない
+  if (!active || deletedAuth) {
+    return false;
+  }
 
-    const minutes = getDiffMinutes(now, _checkIntegrityV2Status.lastRun.toDate());
+  return true;
+};
 
-    // 10分経過していれば実行
-    if (minutes < 10) {
-      return false;
-    }
-    return true;
-  };
-
-/** PubSub: 整合性チェック 個々の実行 */
+/** 整合性チェック 個々の実行 */
 export const run = functions
   .region('asia-northeast1')
   .runWith({
