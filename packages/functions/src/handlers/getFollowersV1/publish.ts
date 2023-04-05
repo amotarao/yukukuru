@@ -9,10 +9,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { Message, topicName } from './_pubsub';
 
 /**
- * フォロワー取得 定期実行
- *
- * 毎分実行
- * グループ毎に 5分おきに実行
+ * フォロワー取得 定期実行 (最後の実行)
  */
 export const publish = functions
   .region('asia-northeast1')
@@ -20,7 +17,7 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('15 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
