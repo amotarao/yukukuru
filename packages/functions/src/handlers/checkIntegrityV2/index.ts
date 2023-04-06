@@ -35,12 +35,12 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('*/24 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
 
-    const groups = [getGroupFromTime(12, now.toDate())];
+    const groups = [getGroupFromTime(24, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
