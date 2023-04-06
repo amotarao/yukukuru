@@ -9,7 +9,6 @@ export const convertTwitterUserToUserTwitter = (user: TwitterUser): UserTwitter 
     protected: user.protected,
     photoUrl: user.profile_image_url,
     followersCount: user.public_metrics.followers_count || 0,
-    verified: user.verified,
   };
 };
 
