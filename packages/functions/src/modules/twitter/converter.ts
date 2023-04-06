@@ -12,7 +12,6 @@ export const toRequiredTwitterUser = (user: PickedTwitterUser): TwitterUser => {
       tweet_count: 0,
       listed_count: 0,
     },
-    verified: user.verified || false,
   };
 };
 
