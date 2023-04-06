@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { setRoleToUser } from '../../modules/firestore/users';
-import { getWriteType } from '../../modules/firestore/utils';
+import { getWriteType } from '../../modules/functions/firestore';
 
 /**
  * サブスクリプションが更新されたときの処理
