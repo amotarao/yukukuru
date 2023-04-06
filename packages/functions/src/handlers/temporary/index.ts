@@ -11,7 +11,7 @@ export const deleteWatches = functions
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
-    const snapshot = await firestore.collectionGroup('watches').limit(300).get();
+    const snapshot = await firestore.collectionGroup('watches').select().limit(300).get();
     const bulkWriter = firestore.bulkWriter();
     snapshot.docs.forEach((doc) => {
       bulkWriter.delete(doc.ref);
