@@ -13,6 +13,7 @@ import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
+import { getDiffDays } from '../../modules/time';
 import { DiffV2, checkDiffV2, getDiffV2Followers } from '../../modules/twitter-followers/diffV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserToRecordV2User } from '../../modules/twitter-user-converter';
@@ -34,14 +35,14 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('*/2 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);
 
-    const groups = [getGroupFromTime(12, now.toDate())];
+    const groups = [getGroupFromTime(2, now.toDate())];
     const docs = await getUserDocsByGroups(groups);
-    const targetDocs = docs.filter(filterExecutable);
+    const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
     const messages: Message[] = targetDocs.map((doc) => ({
       uid: doc.id,
@@ -53,16 +54,30 @@ export const publish = functions
   });
 
 /** 実行可能かどうかを確認 */
-const filterExecutable = (snapshot: QueryDocumentSnapshot<User>): boolean => {
-  const { active, deletedAuth } = snapshot.data();
+const filterExecutable =
+  (now: Date) =>
+  (snapshot: QueryDocumentSnapshot<User>): boolean => {
+    const { role, active, deletedAuth, _checkIntegrityV2Status } = snapshot.data();
 
-  // 無効または削除済みユーザーの場合は実行しない
-  if (!active || deletedAuth) {
-    return false;
-  }
+    // 無効または削除済みユーザーの場合は実行しない
+    if (!active || deletedAuth) {
+      return false;
+    }
 
-  return true;
-};
+    // サポーターの場合はいつでも許可
+    if (role === 'supporter') {
+      return true;
+    }
+
+    const days = getDiffDays(now, _checkIntegrityV2Status.lastRun.toDate());
+
+    // サポーター以外は7日間間隔を空ける
+    if (days < 7) {
+      return false;
+    }
+
+    return true;
+  };
 
 /** 整合性チェック 個々の実行 */
 export const run = functions
