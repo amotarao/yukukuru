@@ -1,3 +1,4 @@
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
@@ -35,11 +36,15 @@ export const publish = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/5 * * * *')
+  .pubsub.schedule('15 * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(async () => {
-    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(100);
-    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(10);
+  .onRun(async (context) => {
+    const now = new Date(context.timestamp);
+    const beforeDate = dayjs(now).subtract(3, 'days').toDate();
+
+    // 3日前以前のトークンをチェック
+    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(beforeDate, 97);
+    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(beforeDate, 3);
 
     const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
       id: doc.id,
