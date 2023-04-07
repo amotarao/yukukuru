@@ -78,7 +78,10 @@ export const publish = functions
     ];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
-    const sharedTokens = await getSharedTokensForGetFollowersV2(now.toDate(), targetDocs.length);
+    const sharedTokens = await getSharedTokensForGetFollowersV2(
+      now.subtract(15, 'minutes').toDate(),
+      targetDocs.length
+    );
 
     // publish データ作成・送信
     const messages: Message[] = targetDocs
