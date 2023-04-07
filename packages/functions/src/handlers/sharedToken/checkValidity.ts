@@ -66,8 +66,6 @@ export const run = functions
 
     const response = await getUsers(client, ['783214']);
     if ('error' in response) {
-      console.log(JSON.stringify(response.error));
-
       // 認証エラー
       if (response.error.isAuthError) {
         await deleteSharedToken(id);
