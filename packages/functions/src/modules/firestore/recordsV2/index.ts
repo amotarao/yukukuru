@@ -1,10 +1,17 @@
 import { FirestoreDateLike, RecordV2 } from '@yukukuru/types';
-import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
+import {
+  CollectionGroup,
+  CollectionReference,
+  DocumentReference,
+  QueryDocumentSnapshot,
+} from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 import { bulkWriterErrorHandler } from '../error';
 
 const getRecordsV2Collection = (docId: string) =>
   firestore.collection('users').doc(docId).collection('recordsV2') as CollectionReference<RecordV2<FirestoreDateLike>>;
+
+const recordsV2CollectionGroup = firestore.collectionGroup('recordsV2') as CollectionGroup<RecordV2<FirestoreDateLike>>;
 
 export const addRecordsV2 = async (uid: string, items: RecordV2<FirestoreDateLike>[]): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
@@ -49,6 +56,24 @@ export const setRecordsV2DeletedByCheckIntegrity = async (uid: string, ids: stri
       _deleted: true,
       _deletedBy: 'checkIntegrityV2',
     });
+  });
+
+  await bulkWriter.close();
+};
+
+export const getRecordsV2NullTwitterUser = async (): Promise<QueryDocumentSnapshot<RecordV2>[]> => {
+  const snapshot = await recordsV2CollectionGroup.where('user', '==', null).orderBy('date', 'desc').limit(100).get();
+  return snapshot.docs as QueryDocumentSnapshot<RecordV2>[];
+};
+
+export const setRecordsV2TwitterUser = async (
+  items: { ref: DocumentReference<RecordV2>; data: RecordV2['user'] }[]
+): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+
+  items.forEach((item) => {
+    bulkWriter.update(item.ref, { user: item.data });
   });
 
   await bulkWriter.close();
