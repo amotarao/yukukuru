@@ -8,9 +8,6 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   /** 有効かどうか */
   active: boolean;
 
-  /** auth が削除されているかどうか */
-  deletedAuth: boolean;
-
   /** グループ番号 0-14 のいずれか */
   group: number;
 
