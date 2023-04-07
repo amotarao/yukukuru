@@ -1,5 +1,4 @@
-import { Timestamp } from '@firebase/firestore-types';
-import { Record } from '@yukukuru/types';
+import { Record, Timestamp } from '@yukukuru/types';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { firestore, bucket } from '../../modules/firebase';
