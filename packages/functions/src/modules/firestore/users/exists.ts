@@ -6,7 +6,7 @@ import { usersCollection } from '.';
  * @param id ユーザーID
  * @returns 存在するかどうか
  */
-export const existsUserDocument = async (id: string): Promise<boolean> => {
+export const existsUser = async (id: string): Promise<boolean> => {
   const snapshot = await usersCollection.doc(id).get();
   return snapshot.exists;
 };

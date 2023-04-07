@@ -38,3 +38,7 @@ export const getUser = async (id: string): Promise<User> => {
   const doc = await usersCollection.doc(id).get();
   return doc.data() as User;
 };
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await usersCollection.doc(id).delete();
+};

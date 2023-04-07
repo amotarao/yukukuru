@@ -7,6 +7,7 @@ export * from './firestore/user/record';
 export * from './firestore/user/recordV2';
 export * from './firestore/user/watchV2';
 export * from './firestore/userStatus';
+export * from './firestore/deletedUser';
 
 export type FirestoreDateLike = Date | Timestamp | FieldValue;
 
