@@ -33,7 +33,7 @@ export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
-    memory: '256MB',
+    memory: '128MB',
   })
   .pubsub.schedule('*/2 * * * *')
   .timeZone('Asia/Tokyo')
@@ -83,8 +83,8 @@ const filterExecutable =
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 60,
-    memory: '4GB',
+    timeoutSeconds: 20,
+    memory: '1GB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
