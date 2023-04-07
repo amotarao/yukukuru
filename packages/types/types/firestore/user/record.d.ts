@@ -1,5 +1,4 @@
-import { Timestamp } from '@firebase/firestore-types';
-import { FirestoreDateLike } from '../../firestore';
+import { FirestoreDateLike, Timestamp } from '../../firestore';
 
 export type RecordType = 'yuku' | 'kuru';
 
