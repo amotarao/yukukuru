@@ -12,7 +12,7 @@ export const onDelete = functions
     memory: '128MB',
   })
   .auth.user()
-  .onDelete(async ({ uid }) => {
+  .onDelete(async ({ uid }, context) => {
     const exists = await existsUser(uid);
     if (!exists) {
       throw new Error('❌ Not found user document.');
@@ -24,6 +24,7 @@ export const onDelete = functions
     await setDeletedUser(uid, {
       role,
       twitter: user.twitter,
+      _deleted: new Date(context.timestamp),
     });
     await deleteUser(uid);
   });
