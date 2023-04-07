@@ -1,4 +1,4 @@
-import { FirestoreDateLike, RecordV2 } from '@yukukuru/types';
+import { FirestoreDateLike, RecordV2, RecordV2User } from '@yukukuru/types';
 import {
   CollectionGroup,
   CollectionReference,
@@ -67,7 +67,7 @@ export const getRecordsV2NullTwitterUser = async (): Promise<QueryDocumentSnapsh
 };
 
 export const setRecordsV2TwitterUser = async (
-  items: { ref: DocumentReference<RecordV2>; data: RecordV2['user'] }[]
+  items: { ref: DocumentReference<RecordV2>; data: RecordV2User }[]
 ): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
   bulkWriter.onWriteError(bulkWriterErrorHandler);
