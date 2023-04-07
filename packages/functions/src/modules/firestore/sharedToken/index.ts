@@ -1,5 +1,4 @@
 import { FirestoreDateLike, SharedToken } from '@yukukuru/types';
-import * as dayjs from 'dayjs';
 import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
@@ -41,16 +40,28 @@ export const updateSharedToken = async (
 };
 
 export const getValidSharedTokenDocsOrderByLastChecked = async (
+  beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef.where('_invalid', '==', false).orderBy('_lastChecked', 'asc').limit(limit).get();
+  const snapshot = await collectionRef
+    .where('_invalid', '==', false)
+    .where('_lastChecked', '<', beforeDate)
+    .orderBy('_lastChecked', 'asc')
+    .limit(limit)
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
 export const getInvalidSharedTokenDocsOrderByLastChecked = async (
+  beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef.where('_invalid', '==', true).orderBy('_lastChecked', 'asc').limit(limit).get();
+  const snapshot = await collectionRef
+    .where('_invalid', '==', true)
+    .where('_lastChecked', '<', beforeDate)
+    .orderBy('_lastChecked', 'asc')
+    .limit(limit)
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
@@ -75,14 +86,26 @@ export const deleteSharedToken = async (id: string): Promise<void> => {
 };
 
 export const getSharedTokensForGetFollowersV2 = async (
-  now: Date,
+  beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const beforeDate = dayjs(now).subtract(15, 'minutes').toDate();
   const snapshot = await collectionRef
     .where('_invalid', '==', false)
     .where('_lastUsed.v2_getUserFollowers', '<', beforeDate)
     .orderBy('_lastUsed.v2_getUserFollowers')
+    .limit(limit)
+    .get();
+  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
+};
+
+export const getSharedTokensForGetUsers = async (
+  beforeDate: Date,
+  limit: number
+): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
+  const snapshot = await collectionRef
+    .where('_invalid', '==', false)
+    .where('_lastUsed.v2_getUsers', '<', beforeDate)
+    .orderBy('_lastUsed.v2_getUsers')
     .limit(limit)
     .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];

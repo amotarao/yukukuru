@@ -1,3 +1,4 @@
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
@@ -25,24 +26,32 @@ type Message = {
   accessTokenSecret: string;
 };
 
+export const publishCheckValiditySharedToken = async (...messages: Message[]): Promise<void> => {
+  await publishMessages(topicName, messages);
+};
+
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/5 * * * *')
+  .pubsub.schedule('15 * * * *')
   .timeZone('Asia/Tokyo')
-  .onRun(async () => {
-    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(100);
-    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(10);
+  .onRun(async (context) => {
+    const now = new Date(context.timestamp);
+    const beforeDate = dayjs(now).subtract(3, 'days').toDate();
+
+    // 3日前以前のトークンをチェック
+    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(beforeDate, 97);
+    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(beforeDate, 3);
 
     const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
       id: doc.id,
       accessToken: doc.data().accessToken,
       accessTokenSecret: doc.data().accessTokenSecret,
     }));
-    await publishMessages(topicName, messages);
+    await publishCheckValiditySharedToken(...messages);
     console.log(`✔️ Completed publish ${messages.length} message.`);
   });
 
@@ -66,16 +75,16 @@ export const run = functions
 
     const response = await getUsers(client, ['783214']);
     if ('error' in response) {
-      console.log(JSON.stringify(response.error));
-
       // 認証エラー
       if (response.error.isAuthError) {
+        console.log('❗️ Auth Error.');
         await deleteSharedToken(id);
         return;
       }
       // サポート外のトークン
       // トークンが空欄の際に発生する
       if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
+        console.log('❗️ Unsupported Authentication.');
         await deleteSharedToken(id);
         return;
       }
@@ -83,11 +92,12 @@ export const run = functions
       // 403
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
+        console.log('❗️ Forbidden.');
         await setInvalidSharedToken(id, now);
         return;
       }
 
-      throw new Error(`❗️[Error]: Failed to access Twitter API v2: ${response.error.message}`);
+      throw new Error('❌ Failed to access Twitter API v2');
     }
 
     // 同じアクセストークンを持つドキュメントを削除

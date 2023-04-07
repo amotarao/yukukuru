@@ -50,7 +50,4 @@ export type UserTwitter = {
 
   /** フォロワー数 */
   followersCount: number;
-
-  /** 認証済みユーザーかどうか */
-  verified: boolean;
 };

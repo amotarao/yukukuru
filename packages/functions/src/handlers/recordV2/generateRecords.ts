@@ -1,4 +1,4 @@
-import { RecordV2, TwUser, WatchV2 } from '@yukukuru/types';
+import { RecordV2, RecordV2Type, TwUser, WatchV2 } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
@@ -65,7 +65,7 @@ export const generateRecords = functions
 /** Record データの生成 */
 const generateRecord =
   (
-    type: RecordV2['type'],
+    type: RecordV2Type,
     date: Date,
     twitterUsers: TwitterUser[],
     twitterErrorUsers: TwitterErrorUser[],

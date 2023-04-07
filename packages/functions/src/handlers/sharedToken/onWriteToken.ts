@@ -2,7 +2,7 @@ import { Token } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { initializeSharedToken, updateSharedToken } from '../../modules/firestore/sharedToken';
 import { existsSharedToken } from '../../modules/firestore/sharedToken/index';
-import { getWriteType } from '../../modules/firestore/utils';
+import { getWriteType } from '../../modules/functions/firestore';
 
 /** Firestore: トークンが更新されたときの処理 */
 export const onWriteToken = functions
