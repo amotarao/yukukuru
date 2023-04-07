@@ -23,7 +23,7 @@ type RecordsSectionProps = {
 
 const RecordsSection: React.FC<RecordsSectionProps> = ({ className, userId }) => {
   const q = query<RecordData>(
-    collection(firestore, 'users', userId, 'records') as CollectionReference<RecordData>,
+    collection(firestore, 'users', userId, 'recordsV2') as CollectionReference<RecordData>,
     orderBy('durationEnd'),
     limitToLast(100)
   );
@@ -89,7 +89,7 @@ type WatchesSectionProps = {
 };
 
 const WatchesSection: React.FC<WatchesSectionProps> = ({ className, userId }) => {
-  const q = query(collection(firestore, 'users', userId, 'watches'), orderBy('getStartDate'), limitToLast(30));
+  const q = query(collection(firestore, 'users', userId, 'watchesV2'), orderBy('getStartDate'), limitToLast(30));
   const [snapshot, loading, error] = useCollectionOnce(q);
 
   return (
