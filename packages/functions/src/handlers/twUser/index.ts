@@ -5,7 +5,7 @@ import { deleteTwUsers, getOldTwUsers } from '../../modules/firestore/twUsers';
 export const deleteOldTwUsers = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
+    timeoutSeconds: 20,
     memory: '256MB',
   })
   .pubsub.schedule('*/12 * * * *')

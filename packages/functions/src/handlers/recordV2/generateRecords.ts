@@ -17,7 +17,7 @@ export const generateRecords = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 20,
-    memory: '512MB',
+    memory: '256MB',
   })
   .firestore.document('users/{userId}/watchesV2/{watchId}')
   .onCreate(async (snapshot, context) => {
