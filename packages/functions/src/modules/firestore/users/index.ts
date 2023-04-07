@@ -36,5 +36,12 @@ export const removeIdFromAllowedAccessUsers = async (id: string, targetId: strin
 /** ユーザーを取得 */
 export const getUser = async (id: string): Promise<User> => {
   const doc = await usersCollection.doc(id).get();
+  if (!doc.exists) {
+    throw new Error('❌ Not found user.');
+  }
   return doc.data() as User;
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await usersCollection.doc(id).delete();
 };

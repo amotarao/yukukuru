@@ -17,9 +17,6 @@ type Message = {
   /** 有効かどうか */
   active: boolean;
 
-  /** auth が削除されているかどうか */
-  deletedAuth: boolean;
-
   /** フォロワー一覧取得 最終実行日時 */
   lastRun: Date | string;
 
@@ -54,11 +51,10 @@ export const publish = functions
 
     // publish データ作成・送信
     const messages: Message[] = docs.map((doc) => {
-      const { active, deletedAuth, _getFollowersV2Status } = doc.data();
+      const { active, _getFollowersV2Status } = doc.data();
       return {
         uid: doc.id,
         active: active,
-        deletedAuth: deletedAuth,
         lastRun: _getFollowersV2Status.lastRun.toDate(),
         publishedAt: now,
       };
@@ -72,20 +68,14 @@ export const publish = functions
 const checkCleanable = async (params: {
   uid: string;
   active: boolean;
-  deletedAuth: boolean;
   lastRun: string | Date;
   now: Date;
 }): Promise<boolean> => {
-  const { uid, active, deletedAuth, lastRun, now } = params;
+  const { uid, active, lastRun, now } = params;
 
   // サポーターの場合は実行しない
   const role = await getStripeRole(uid);
   if (role === 'supporter') {
-    return false;
-  }
-
-  // 既に削除されている場合は実行しない
-  if (deletedAuth) {
     return false;
   }
 
@@ -120,7 +110,7 @@ export const run = functions
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
-    const { uid, active, deletedAuth, lastRun, publishedAt } = message.json as Message;
+    const { uid, active, lastRun, publishedAt } = message.json as Message;
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
@@ -129,7 +119,7 @@ export const run = functions
       return;
     }
 
-    const cleanable = await checkCleanable({ uid, active, deletedAuth, lastRun, now });
+    const cleanable = await checkCleanable({ uid, active, lastRun, now });
     if (!cleanable) {
       return;
     }
