@@ -23,6 +23,7 @@ import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/a
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
+import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
 
 const topicName = 'getFollowersV2';
 
@@ -182,10 +183,10 @@ export const run = functions
       }
       console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
-      const client = await getTwitterClientStep(sharedToken, uid);
-      await checkOwnUserStatusStep(client, uid, twitterId);
-      const { users, nextToken } = await getFollowersIdsStep(client, now, uid, twitterId, paginationToken);
-      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(client, uid, users);
+      const twitterClientWithToken = await getTwitterClientWithIdStep(sharedToken, uid);
+      await checkOwnUserStatusStep(twitterClientWithToken, uid, twitterId);
+      const { users, nextToken } = await getFollowersIdsStep(twitterClientWithToken, uid, twitterId, paginationToken);
+      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(twitterClientWithToken, uid, users);
       await saveDocsStep(now, uid, savingIds, nextToken, sharedToken);
 
       console.log(`✔️ Completed get followers of [${uid}].`);
@@ -194,31 +195,58 @@ export const run = functions
     }
   });
 
-const getTwitterClientStep = async (sharedToken: Message['sharedToken'], uid: string): Promise<TwitterApiReadOnly> => {
+type TwitterClientWithToken = {
+  client: TwitterApiReadOnly;
+  token: {
+    id: string;
+    accessToken: string;
+    accessTokenSecret: string;
+  };
+};
+
+const getTwitterClientWithIdStep = async (
+  sharedToken: Message['sharedToken'],
+  uid: string
+): Promise<TwitterClientWithToken> => {
   if (sharedToken) {
-    return getClient({
-      accessToken: sharedToken.accessToken,
-      accessSecret: sharedToken.accessTokenSecret,
-    });
+    return {
+      client: getClient({
+        accessToken: sharedToken.accessToken,
+        accessSecret: sharedToken.accessTokenSecret,
+      }),
+      token: sharedToken,
+    };
   }
 
   const token = await getToken(uid);
   if (!token) {
     throw new Error('❗️No token.');
   }
-  return getClient({
-    accessToken: token.twitterAccessToken,
-    accessSecret: token.twitterAccessTokenSecret,
-  });
+  return {
+    client: getClient({
+      accessToken: token.twitterAccessToken,
+      accessSecret: token.twitterAccessTokenSecret,
+    }),
+    token: {
+      id: uid,
+      accessToken: token.twitterAccessToken,
+      accessTokenSecret: token.twitterAccessTokenSecret,
+    },
+  };
 };
 
 /**
  * 自身のアカウント状態を確認
  * 削除または凍結されている場合は、処理を中断する
  */
-const checkOwnUserStatusStep = async (client: TwitterApiReadOnly, uid: string, twitterId: string): Promise<void> => {
+const checkOwnUserStatusStep = async (
+  { client, token }: TwitterClientWithToken,
+  uid: string,
+  twitterId: string
+): Promise<void> => {
   const response = await getUsers(client, [twitterId]);
   if ('error' in response) {
+    await publishCheckValiditySharedToken(token);
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
   if (response.errorUsers.length > 0) {
@@ -235,8 +263,7 @@ const checkOwnUserStatusStep = async (client: TwitterApiReadOnly, uid: string, t
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStep = async (
-  client: TwitterApiReadOnly,
-  now: Date,
+  { client, token }: TwitterClientWithToken,
   uid: string,
   twitterId: string,
   nextToken: string | null
@@ -254,6 +281,7 @@ const getFollowersIdsStep = async (
   }
 
   if ('error' in response) {
+    await publishCheckValiditySharedToken(token);
     const message = `❗️Failed to get users from Twitter of [${uid}].`;
     throw new Error(message);
   }
@@ -268,7 +296,7 @@ const getFollowersIdsStep = async (
  * ただし、取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
  */
 const ignoreMaybeDeletedOrSuspendedStep = async (
-  client: TwitterApiReadOnly,
+  { client }: TwitterClientWithToken,
   uid: string,
   followers: TwitterUser[]
 ): Promise<TwitterUser[]> => {

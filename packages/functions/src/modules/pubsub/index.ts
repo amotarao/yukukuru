@@ -7,8 +7,9 @@ export const publishMessages = async <T extends Record<string, unknown>>(
   items: T[]
 ): Promise<void> => {
   const topic = pubsub.topic(topicName);
-  const publishes = items.map(async (item) => {
-    await topic.publishMessage({ json: item });
-  });
-  await Promise.all(publishes);
+  await Promise.all(
+    items.map(async (item) => {
+      await topic.publishMessage({ json: item });
+    })
+  );
 };

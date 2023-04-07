@@ -25,6 +25,10 @@ type Message = {
   accessTokenSecret: string;
 };
 
+export const publishCheckValiditySharedToken = async (...messages: Message[]): Promise<void> => {
+  await publishMessages(topicName, messages);
+};
+
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
@@ -42,7 +46,7 @@ export const publish = functions
       accessToken: doc.data().accessToken,
       accessTokenSecret: doc.data().accessTokenSecret,
     }));
-    await publishMessages(topicName, messages);
+    await publishCheckValiditySharedToken(...messages);
     console.log(`✔️ Completed publish ${messages.length} message.`);
   });
 
