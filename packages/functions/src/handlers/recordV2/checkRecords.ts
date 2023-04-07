@@ -20,6 +20,10 @@ export const checkRecords = functions
     const now = dayjs(context.timestamp);
     const [token] = await getSharedTokensForGetUsers(now.subtract(15, 'minutes').toDate(), 1);
 
+    if (!token) {
+      throw new Error('❌ Not found token.');
+    }
+
     const snapshot = (await firestore
       .collectionGroup('recordsV2')
       .where('user', '==', null)
