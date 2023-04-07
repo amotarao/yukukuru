@@ -8,7 +8,7 @@ export const deleteOldTwUsers = functions
     timeoutSeconds: 30,
     memory: '256MB',
   })
-  .pubsub.schedule('20 * * * *')
+  .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = dayjs(context.timestamp);

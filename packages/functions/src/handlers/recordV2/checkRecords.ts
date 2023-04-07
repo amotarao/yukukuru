@@ -11,7 +11,7 @@ export const checkRecords = functions
     timeoutSeconds: 10,
     memory: '256MB',
   })
-  .pubsub.schedule('*/12 * * * *')
+  .pubsub.schedule('*/5 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const snapshot = (await firestore
