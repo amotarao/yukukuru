@@ -20,7 +20,7 @@ export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
-    memory: '256MB',
+    memory: '128MB',
   })
   .pubsub.schedule('10 0-14 * * *')
   .timeZone('Asia/Tokyo')
