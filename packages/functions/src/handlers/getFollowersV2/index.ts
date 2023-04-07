@@ -120,10 +120,10 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, active, deletedAuth, twitter, _getFollowersV2Status } = snapshot.data();
+    const { role, active, twitter, _getFollowersV2Status } = snapshot.data();
 
-    // 無効または削除済みユーザーの場合は実行しない
-    if (!active || deletedAuth) {
+    // 無効なユーザーの場合は実行しない
+    if (!active) {
       return false;
     }
 

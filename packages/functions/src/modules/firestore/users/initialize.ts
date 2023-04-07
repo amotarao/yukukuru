@@ -9,7 +9,6 @@ export const initializeUser = async (id: string, twitter: UserTwitter): Promise<
   const data: User<FirestoreDateLike> = {
     role: null,
     active: true,
-    deletedAuth: false,
     group: getGroupIndex(id),
     allowedAccessUsers: [],
     twitter,
