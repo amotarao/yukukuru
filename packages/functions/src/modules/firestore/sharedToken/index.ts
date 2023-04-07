@@ -41,16 +41,28 @@ export const updateSharedToken = async (
 };
 
 export const getValidSharedTokenDocsOrderByLastChecked = async (
+  beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef.where('_invalid', '==', false).orderBy('_lastChecked', 'asc').limit(limit).get();
+  const snapshot = await collectionRef
+    .where('_invalid', '==', false)
+    .where('_lastChecked', '<', beforeDate)
+    .orderBy('_lastChecked', 'asc')
+    .limit(limit)
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
 export const getInvalidSharedTokenDocsOrderByLastChecked = async (
+  beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef.where('_invalid', '==', true).orderBy('_lastChecked', 'asc').limit(limit).get();
+  const snapshot = await collectionRef
+    .where('_invalid', '==', true)
+    .where('_lastChecked', '<', beforeDate)
+    .orderBy('_lastChecked', 'asc')
+    .limit(limit)
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
