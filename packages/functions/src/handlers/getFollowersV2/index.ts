@@ -67,7 +67,7 @@ type Message = {
 export const publish = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 10,
+    timeoutSeconds: 20,
     memory: '256MB',
   })
   .pubsub.schedule('* * * * *')
@@ -101,19 +101,18 @@ export const publish = functions
           return null;
         }
 
-        const data = doc.data();
         const message: Message = {
           uid: doc.id,
-          twitterId: data.twitter.id,
-          role: data.role,
-          paginationToken: data._getFollowersV2Status.nextToken,
+          twitterId: doc.data().twitter.id,
+          role: doc.data().role,
+          paginationToken: doc.data()._getFollowersV2Status.nextToken,
           // lastSetTwUsers が存在しない場合があるため、存在チェック
           lastSetTwUsers:
-            'lastSetTwUsers' in data._getFollowersV2Status
-              ? data._getFollowersV2Status.lastSetTwUsers.toDate()
+            'lastSetTwUsers' in doc.data()._getFollowersV2Status
+              ? doc.data()._getFollowersV2Status.lastSetTwUsers.toDate()
               : new Date(0),
           // 非公開アカウントの場合は共有トークンを送らない
-          sharedToken: data.twitter.protected
+          sharedToken: doc.data().twitter.protected
             ? null
             : {
                 id: sharedToken.id,
