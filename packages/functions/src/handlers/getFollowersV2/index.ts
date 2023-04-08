@@ -184,7 +184,7 @@ const filterExecutable =
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
+    timeoutSeconds: 45,
     memory: '512MB',
   })
   .pubsub.topic(topicName)

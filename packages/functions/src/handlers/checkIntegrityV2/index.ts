@@ -83,8 +83,8 @@ const filterExecutable =
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '1GB',
+    timeoutSeconds: 60,
+    memory: '4GB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
