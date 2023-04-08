@@ -36,7 +36,7 @@ export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
-    memory: '256MB',
+    memory: '128MB',
   })
   .pubsub.schedule('5 0-14 * * *')
   .timeZone('Asia/Tokyo')
@@ -105,8 +105,8 @@ const checkCleanable = async (params: {
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
-    memory: '256MB',
+    timeoutSeconds: 10,
+    memory: '128MB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {

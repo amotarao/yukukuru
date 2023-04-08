@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
 import { getToken } from '../../modules/firestore/tokens';
-import { getTwUsersByIds } from '../../modules/firestore/twUsers';
+import { getTwUsersByIds, setTwUsers } from '../../modules/firestore/twUsers';
 import { getUser } from '../../modules/firestore/users';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
@@ -17,7 +17,7 @@ export const generateRecords = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 20,
-    memory: '512MB',
+    memory: '256MB',
   })
   .firestore.document('users/{userId}/watchesV2/{watchId}')
   .onCreate(async (snapshot, context) => {
@@ -58,6 +58,7 @@ export const generateRecords = functions
       ...kuru.map(generateRecord('kuru', newWatch.date, twitterUsers, twitterErrorUsers, twUsers)),
     ];
     await addRecordsV2(userId, records);
+    await setTwUsers(twitterUsers);
 
     console.log(`✔️ Completed generate records for [${userId}].`);
   });

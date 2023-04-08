@@ -12,12 +12,13 @@ import {
   setUserTwitter,
   setUserTwitterProtected,
   setUserGetFollowersV2Status,
+  setUserGetFollowersV2LastSetTwUsers,
 } from '../../modules/firestore/users/state';
 import { setWatchV2 } from '../../modules/firestore/watchesV2';
 import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
-import { getDiffMinutes } from '../../modules/time';
+import { getDiffDays, getDiffMinutes } from '../../modules/time';
 import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
 import { getUsers } from '../../modules/twitter/api/users';
@@ -34,8 +35,14 @@ type Message = {
   /** Twitter UID */
   twitterId: string;
 
+  /** ロール */
+  role: 'supporter' | null;
+
   /** カーソル */
   paginationToken: string | null;
+
+  /** SetTwUsers 前回実行日時 */
+  lastSetTwUsers: Date | string;
 
   /**
    * 共有トークン
@@ -61,7 +68,7 @@ export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
-    memory: '256MB',
+    memory: '128MB',
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
@@ -94,12 +101,19 @@ export const publish = functions
           return null;
         }
 
+        const data = doc.data();
         const message: Message = {
           uid: doc.id,
-          twitterId: doc.data().twitter.id,
-          paginationToken: doc.data()._getFollowersV2Status.nextToken,
+          twitterId: data.twitter.id,
+          role: data.role,
+          paginationToken: data._getFollowersV2Status.nextToken,
+          // lastSetTwUsers が存在しない場合があるため、存在チェック
+          lastSetTwUsers:
+            'lastSetTwUsers' in data._getFollowersV2Status
+              ? data._getFollowersV2Status.lastSetTwUsers.toDate()
+              : new Date(0),
           // 非公開アカウントの場合は共有トークンを送らない
-          sharedToken: doc.data().twitter.protected
+          sharedToken: data.twitter.protected
             ? null
             : {
                 id: sharedToken.id,
@@ -170,13 +184,14 @@ const filterExecutable =
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 45,
+    timeoutSeconds: 30,
     memory: '512MB',
   })
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
     try {
-      const { uid, twitterId, paginationToken, sharedToken, publishedAt } = message.json as Message;
+      const { uid, twitterId, role, paginationToken, lastSetTwUsers, sharedToken, publishedAt } =
+        message.json as Message;
       const now = new Date(context.timestamp);
 
       // 10秒以内の実行に限る
@@ -189,8 +204,15 @@ export const run = functions
       const twitterClientWithToken = await getTwitterClientWithIdStep(sharedToken, uid);
       await checkOwnUserStatusStep(twitterClientWithToken, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(twitterClientWithToken, uid, twitterId, paginationToken);
-      const savingIds = await ignoreMaybeDeletedOrSuspendedStep(twitterClientWithToken, uid, users);
-      await saveDocsStep(now, uid, savingIds, nextToken, sharedToken);
+      const savingTwitterUsers = await ignoreMaybeDeletedOrSuspendedStep(twitterClientWithToken, uid, users);
+      await saveDocsStep(
+        now,
+        uid,
+        savingTwitterUsers.map((user) => user.id),
+        nextToken,
+        sharedToken
+      );
+      await saveTwUsersStep(now, uid, new Date(lastSetTwUsers), role, savingTwitterUsers, nextToken === null);
 
       console.log(`✔️ Completed get followers of [${uid}].`);
     } catch (e) {
@@ -323,20 +345,42 @@ const ignoreMaybeDeletedOrSuspendedStep = async (
 const saveDocsStep = async (
   now: Date,
   uid: string,
-  followers: TwitterUser[],
+  followersIds: string[],
   nextToken: string | null,
   sharedToken: Message['sharedToken']
 ): Promise<void> => {
   const ended = nextToken === null;
-  const followersIds = followers.map((follower) => follower.id);
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
     setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
+};
 
-  // TwUsers の保存
-  // Firestore への書き込みが多くなりすぎるので、ランダムで 10% のユーザーを保存
-  await setTwUsers(followers.filter(() => Math.random() < 0.1));
+/**
+ * TwUsers の保存
+ * 書き込み件数が多すぎるので、回数を調整している
+ */
+const saveTwUsersStep = async (
+  now: Date,
+  uid: string,
+  lastSetTwUsers: Date,
+  role: 'supporter' | null,
+  twitterUsers: TwitterUser[],
+  ended: boolean
+) => {
+  const days = getDiffDays(now, lastSetTwUsers);
+
+  // サポーターは7日以上間隔をあける
+  if (role === 'supporter' && days <= 7) {
+    return;
+  }
+  // サポーター以外は30日以上間隔をあける
+  if (role === null && days <= 30) {
+    return;
+  }
+
+  await setTwUsers(twitterUsers);
+  ended && (await setUserGetFollowersV2LastSetTwUsers(uid, now));
 };

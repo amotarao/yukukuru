@@ -4,6 +4,7 @@ import { DocumentReference } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { getRecordsV2NullTwitterUser, setRecordsV2TwitterUser } from '../../modules/firestore/recordsV2';
 import { getSharedTokensForGetUsers } from '../../modules/firestore/sharedToken';
+import { setTwUsers } from '../../modules/firestore/twUsers';
 import { convertTwitterUserToRecordV2User } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
@@ -11,7 +12,7 @@ import { getClient } from '../../modules/twitter/client';
 export const checkRecords = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 10,
+    timeoutSeconds: 20,
     memory: '256MB',
   })
   .pubsub.schedule('*/5 * * * *')
@@ -30,8 +31,8 @@ export const checkRecords = functions
       accessToken: token.data().accessToken,
       accessSecret: token.data().accessTokenSecret,
     });
-    const twitterUsers = await getUsers(client, twitterIds);
-    if ('error' in twitterUsers) {
+    const response = await getUsers(client, twitterIds);
+    if ('error' in response) {
       throw new Error('❌ Failed to get twitter users.');
     }
 
@@ -41,11 +42,12 @@ export const checkRecords = functions
     };
     const items: Item[] = docs
       .map((doc) => {
-        const twitterUser = twitterUsers.users.find((twitterUser) => twitterUser.id === doc.data().twitterId);
+        const twitterUser = response.users.find((twitterUser) => twitterUser.id === doc.data().twitterId);
         if (!twitterUser) return null;
         return { ref: doc.ref, data: convertTwitterUserToRecordV2User(twitterUser) };
       })
       .filter((item): item is Item => item !== null);
     await setRecordsV2TwitterUser(items);
+    await setTwUsers(response.users);
     console.log(`updated ${items.length} items.`);
   });
