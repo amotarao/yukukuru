@@ -68,7 +68,7 @@ export const publish = functions
   .region('asia-northeast1')
   .runWith({
     timeoutSeconds: 10,
-    memory: '128MB',
+    memory: '256MB',
   })
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
@@ -184,7 +184,7 @@ const filterExecutable =
 export const run = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 30,
+    timeoutSeconds: 45,
     memory: '512MB',
   })
   .pubsub.topic(topicName)
