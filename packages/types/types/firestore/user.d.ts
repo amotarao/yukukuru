@@ -17,6 +17,7 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   _getFollowersV2Status: {
     lastRun: T;
     nextToken: string | null;
+    lastSetTwUsers: T;
   };
 
   /** _checkIntegrityV2 の状態保存 */

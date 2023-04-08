@@ -39,3 +39,9 @@ export const setUserTwitterProtected = async (userId: string): Promise<void> => 
     'twitter.protected': true,
   });
 };
+
+export const setUserGetFollowersV2LastSetTwUsers = async (userId: string, date: Date): Promise<void> => {
+  await usersCollection.doc(userId).update({
+    '_getFollowersV2Status.lastSetTwUsers': date,
+  });
+};
