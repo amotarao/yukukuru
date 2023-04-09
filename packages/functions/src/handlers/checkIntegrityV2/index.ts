@@ -11,6 +11,7 @@ import { getTwUsersByIds } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { setCheckIntegrityV2Status } from '../../modules/firestore/users/state';
 import { deleteWatchesV2, getOldestEndedWatchesV2Ids, getWatchesV2 } from '../../modules/firestore/watchesV2';
+import { checkJustPublished } from '../../modules/functions';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
 import { getDiffDays } from '../../modules/time';
@@ -92,7 +93,7 @@ export const run = functions
     const now = new Date(context.timestamp);
 
     // 10秒以内の実行に限る
-    if (now.getTime() - new Date(publishedAt).getTime() > 1000 * 10) {
+    if (checkJustPublished(now, publishedAt)) {
       console.error(`❗️[Error]: Failed to run functions: published more than 10 seconds ago.`);
       return;
     }

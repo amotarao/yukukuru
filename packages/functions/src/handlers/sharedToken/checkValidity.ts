@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
+  existsSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
@@ -68,6 +69,8 @@ export const run = functions
 
     console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
 
+    const exists = await existsSharedToken(id);
+
     const client = getClient({
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
@@ -78,14 +81,14 @@ export const run = functions
       // 認証エラー
       if (response.error.isAuthError) {
         console.log('❗️ Auth Error.');
-        await deleteSharedToken(id);
+        exists && (await deleteSharedToken(id));
         return;
       }
       // サポート外のトークン
       // トークンが空欄の際に発生する
       if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
         console.log('❗️ Unsupported Authentication.');
-        await deleteSharedToken(id);
+        exists && (await deleteSharedToken(id));
         return;
       }
 
@@ -93,7 +96,7 @@ export const run = functions
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
         console.log('❗️ Forbidden.');
-        await setInvalidSharedToken(id, now);
+        exists && (await setInvalidSharedToken(id, now));
         return;
       }
 
@@ -104,5 +107,5 @@ export const run = functions
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
     await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
-    await setValidSharedToken(id, now);
+    exists && (await setValidSharedToken(id, now));
   });
