@@ -3,7 +3,7 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
+import { existsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
 import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
@@ -352,7 +352,9 @@ const saveDocsStep = async (
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
-    setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now),
+    existsSharedToken(sharedToken ? sharedToken.id : uid).then(() => {
+      setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
+    }),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };
