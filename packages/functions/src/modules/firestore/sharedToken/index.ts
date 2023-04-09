@@ -22,7 +22,7 @@ export const initializeSharedToken = async (
       v2_getUsers: new Date(2000, 0, 1),
     },
   };
-  collectionRef.doc(id).set(data);
+  collectionRef.doc(id).set(data, { merge: true });
 };
 
 export const updateSharedToken = async (
