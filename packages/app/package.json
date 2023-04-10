@@ -7,8 +7,10 @@
     "node": "16"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && next export && next-sitemap",
+    "dev": "run-p dev:*",
+    "dev:next": "next dev",
+    "dev:path": "pathpida --watch",
+    "build": "pathpida && next build && next export && next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
