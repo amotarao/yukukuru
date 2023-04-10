@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { pagesPath } from '../../../lib/$path';
 import { DummyUserCard } from '../../organisms/UserCard';
 import myPageStyles from '../MyPage/styles.module.scss';
 import styles from './styles.module.scss';
@@ -27,7 +28,7 @@ export const TopPage: React.FC = () => {
           <wbr />
           いなくなったかを記録します
         </p>
-        <Link className="rounded border border-primary px-4 py-1 text-primary" href="/my">
+        <Link className="rounded border border-primary px-4 py-1 text-primary" href={pagesPath.my.$url()}>
           マイページ・ログイン
         </Link>
         <div className="flex flex-col gap-2">
