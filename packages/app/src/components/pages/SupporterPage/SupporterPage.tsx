@@ -6,6 +6,7 @@ import { useAuth } from '../../../hooks/auth';
 import { useMultiAccounts } from '../../../hooks/multiAccounts';
 import { usePlanPrice } from '../../../hooks/usePlanPrice';
 import { useSubscription } from '../../../hooks/useSubscription';
+import { pagesPath } from '../../../lib/$path';
 import { addCheckoutSession } from '../../../modules/firestore/stripe';
 import { getPortalLink } from '../../../modules/functions/stripe';
 import { AccountSelector } from '../../organisms/AccountSelector';
@@ -100,7 +101,10 @@ export const SupporterPage: React.FC = () => {
                   {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
-                    <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.$url()}
+                    >
                       ログイン
                     </Link>
                   ) : !isSupporter ? (
@@ -143,7 +147,10 @@ export const SupporterPage: React.FC = () => {
                   {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
-                    <Link className="block rounded-md border border-current px-4 py-2 text-center text-lg" href="/my">
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.$url()}
+                    >
                       ログイン
                     </Link>
                   ) : !isSupporter ? (
@@ -165,7 +172,7 @@ export const SupporterPage: React.FC = () => {
             ご理解のほどよろしくお願いいたします
           </p>
           <p>
-            <Link className="underline" href="/sct">
+            <Link className="underline" href={pagesPath.sct.$url()}>
               特定商取引法に基づく表記
             </Link>
           </p>

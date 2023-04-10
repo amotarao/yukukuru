@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Switch from 'react-switch';
+import { pagesPath } from '../../../lib/$path';
 import { ThemeContainer } from '../../../store/theme';
 import { TweetButton } from '../TweetButton';
 
@@ -41,11 +42,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
         <li className="border-b border-b-back-2">
           <Link
             className="block w-full grow px-4 py-3 text-left"
-            href="/"
+            href={pagesPath.$url()}
             onClick={async (e) => {
               e.preventDefault();
               await signOut();
-              router.push('/');
+              router.push(pagesPath.$url());
             }}
           >
             <p>ログアウト</p>
@@ -54,11 +55,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
         <li className="border-b border-b-back-2">
           <Link
             className="block w-full grow px-4 py-3 text-left"
-            href="/my"
+            href={pagesPath.my.$url()}
             onClick={async (e) => {
               e.preventDefault();
               await signIn();
-              router.push('/my');
+              router.push(pagesPath.my.$url());
             }}
           >
             <p>

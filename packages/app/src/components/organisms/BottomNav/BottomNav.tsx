@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
+import { pagesPath } from '../../../lib/$path';
 import { Icon } from '../../shared/Icon';
 import styles from './styles.module.scss';
 
@@ -31,19 +32,19 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange = () => n
     () => [
       {
         type: 'my' as const,
-        href: '/my',
+        href: pagesPath.my.$url(),
         title: 'ホーム',
         icon: 'home' as const,
       },
       {
         type: 'supporter' as const,
-        href: '/supporter',
+        href: pagesPath.supporter.$url(),
         title: 'サポーター',
         icon: 'membership' as const,
       },
       {
         type: 'settings' as const,
-        href: '/settings',
+        href: pagesPath.my.settings.$url(),
         title: '設定',
         icon: 'cog' as const,
       },

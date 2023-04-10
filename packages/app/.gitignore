@@ -1,3 +1,4 @@
+src/lib/$path.ts
 .DS_Store
 .env
 .env.*
