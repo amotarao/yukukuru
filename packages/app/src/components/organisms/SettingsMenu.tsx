@@ -40,6 +40,14 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
           </div>
         </li>
         <li className="border-b border-b-back-2">
+          <Link className="block w-full grow px-4 py-3 text-left" href={pagesPath.my.settings.link_accounts.$url()}>
+            <p>
+              アカウント連携
+              <span className="mt-1 block text-xs">サポーター向け機能</span>
+            </p>
+          </Link>
+        </li>
+        <li className="border-b border-b-back-2">
           <Link
             className="block w-full grow px-4 py-3 text-left"
             href={pagesPath.$url()}

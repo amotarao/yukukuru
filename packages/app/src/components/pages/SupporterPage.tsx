@@ -80,16 +80,9 @@ export const SupporterPage: React.FC = () => {
                     </p>
                     <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
                       <li>
-                        <a
-                          className="underline"
-                          href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
-                            '◆ゆくくるサポーター 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポーターへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポーター登録したアカウント: \n◇連携したいアカウント(複数可): '
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          このリンクからDMで申請
-                        </a>
+                        <Link className="underline" href={pagesPath.my.settings.link_accounts.$url()}>
+                          「設定 &gt; アカウント連携」から設定
+                        </Link>
                       </li>
                     </ul>
                   </li>
