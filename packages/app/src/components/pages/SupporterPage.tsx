@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../hooks/auth';
-import { useMultiAccounts } from '../../hooks/multiAccounts';
+import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { usePlanPrice } from '../../hooks/usePlanPrice';
 import { useSubscription } from '../../hooks/useSubscription';
 import { pagesPath } from '../../lib/$path';
@@ -16,10 +16,7 @@ import { Icon } from '../shared/Icon';
 export const SupporterPage: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ accounts }] = useMultiAccounts(uid);
-  const currentAccount = useMemo(() => {
-    return accounts.find((account) => account.id === uid) || null;
-  }, [uid, accounts]);
+  const [{ currentAccount }] = useMultiAccounts(uid);
 
   return (
     <div>
