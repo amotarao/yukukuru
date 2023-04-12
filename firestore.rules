@@ -20,13 +20,13 @@ service cloud.firestore {
 
     function isAllowedAccess(userID) {
       return exists(/databases/$(database)/documents/users/$(userID))
-             && 'allowedAccessUsers' in get(/databases/$(database)/documents/users/$(userID)).data
-             && request.auth.uid in get(/databases/$(database)/documents/users/$(userID)).data.allowedAccessUsers;
+             && 'linkedUserIds' in get(/databases/$(database)/documents/users/$(userID)).data
+             && request.auth.uid in get(/databases/$(database)/documents/users/$(userID)).data.linkedUserIds;
     }
 
     match /users/{userID} {
       allow write: if false;
-      allow list: if isAdmin() || ('allowedAccessUsers' in resource.data && request.auth.uid in resource.data.allowedAccessUsers) || isMe(userID);
+      allow list: if isAdmin() || ('linkedUserIds' in resource.data && request.auth.uid in resource.data.linkedUserIds) || isMe(userID);
       allow get: if isAdmin() || isAllowedAccess(userID) || isMe(userID);
 
       match /records/{recordID} {

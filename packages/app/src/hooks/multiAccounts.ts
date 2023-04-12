@@ -123,7 +123,7 @@ export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
     });
 
     // 閲覧可能ユーザー
-    const q = query(collection(firestore, 'users'), where('allowedAccessUsers', 'array-contains', authUid));
+    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', authUid));
     getDocs(q).then((snapshot) => {
       const users = snapshot.docs.map((doc) => {
         const id = doc.id;
