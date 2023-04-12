@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { pagesPath } from '../../lib/$path';
 import { DummyUserCard } from '../organisms/UserCard';
-import myPageStyles from '../MyPage/styles.module.scss';
+import myPageStyles from './MyPage.module.scss';
 import styles from './TopPage.module.scss';
 
 export const TopPage: React.FC = () => {
