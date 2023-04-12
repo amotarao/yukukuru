@@ -162,7 +162,7 @@ export const useMultiAccounts = (
     {
       isLoading: state._loading > 0,
       accounts: state.accounts,
-      currentAccount: state.accounts.find((account) => account.id === currentUid) || null,
+      currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
     },
   ];
 };
