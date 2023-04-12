@@ -2,16 +2,16 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import { useAuth } from '../../../hooks/auth';
-import { useMultiAccounts } from '../../../hooks/multiAccounts';
-import { usePlanPrice } from '../../../hooks/usePlanPrice';
-import { useSubscription } from '../../../hooks/useSubscription';
-import { pagesPath } from '../../../lib/$path';
-import { addCheckoutSession } from '../../../modules/firestore/stripe';
-import { getPortalLink } from '../../../modules/functions/stripe';
-import { AccountSelector } from '../../organisms/AccountSelector';
-import { BottomNav } from '../../organisms/BottomNav/BottomNav';
-import { Icon } from '../../shared/Icon';
+import { useAuth } from '../../hooks/auth';
+import { useMultiAccounts } from '../../hooks/multiAccounts';
+import { usePlanPrice } from '../../hooks/usePlanPrice';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pagesPath } from '../../lib/$path';
+import { addCheckoutSession } from '../../modules/firestore/stripe';
+import { getPortalLink } from '../../modules/functions/stripe';
+import { AccountSelector } from '../organisms/AccountSelector';
+import { BottomNav } from '../organisms/BottomNav';
+import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();

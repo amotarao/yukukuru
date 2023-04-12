@@ -2,10 +2,10 @@ import { UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { useSubscription } from '../../../hooks/useSubscription';
-import { pagesPath } from '../../../lib/$path';
-import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
-import { Icon } from '../../shared/Icon';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pagesPath } from '../../lib/$path';
+import { TwitterUserIcon } from '../atoms/TwitterUserIcon';
+import { Icon } from '../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;

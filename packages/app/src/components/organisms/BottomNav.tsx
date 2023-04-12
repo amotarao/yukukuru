@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
-import { pagesPath } from '../../../lib/$path';
-import { Icon } from '../../shared/Icon';
-import styles from './styles.module.scss';
+import { pagesPath } from '../../lib/$path';
+import { Icon } from '../shared/Icon';
+import styles from './BottomNav.module.scss';
 
 export type NavType = 'my' | 'supporter' | 'settings';
 
