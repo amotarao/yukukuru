@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import Link from 'next/link';
+import { pagesPath } from '../../../lib/$path';
 import styles from './styles.module.scss';
 
 const isTouchDevice = () => {
@@ -31,7 +32,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
         </button>
       </div>
       <div className="mb-4">
-        <Link className="inline-block rounded border border-sub px-4 py-1 text-sub" href="/">
+        <Link className="inline-block rounded border border-sub px-4 py-1 text-sub" href={pagesPath.$url()}>
           トップページ
         </Link>
       </div>

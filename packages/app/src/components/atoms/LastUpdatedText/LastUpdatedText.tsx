@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { useSubscription } from '../../../hooks/useSubscription';
+import { pagesPath } from '../../../lib/$path';
 import { dayjs } from '../../../modules/dayjs';
 
 const ads = ['月額99円で最短5分おきに更新', '月額99円で複数アカウント切り替え'];
@@ -47,7 +48,7 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
       </p>
       {isLoading || isSupporter ? null : (
         <p>
-          <Link className="font-bold text-primary underline" href="/supporter">
+          <Link className="font-bold text-primary underline" href={pagesPath.supporter.$url()}>
             {ad}
           </Link>
         </p>

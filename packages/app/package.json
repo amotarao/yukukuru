@@ -1,14 +1,16 @@
 {
   "name": "@yukukuru/app",
-  "version": "1.8.18",
+  "version": "1.8.19",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
     "node": "16"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && next export && next-sitemap",
+    "dev": "run-p dev:*",
+    "dev:next": "next dev",
+    "dev:path": "pathpida --watch",
+    "build": "pathpida && next build && next export && next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
@@ -40,6 +42,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "npm-run-all": "^4.1.5",
+    "pathpida": "^0.20.1",
     "prettier": "^2.8.2",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "sass": "^1.57.1",

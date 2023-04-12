@@ -17,18 +17,18 @@ export const setRoleToUser = async (id: string, role: User['role']): Promise<voi
   await ref.update(data);
 };
 
-/** 対象のユーザーが allowedAccessUsers に含まれるユーザーリストを取得 */
-export const getUsersInAllowedAccessUsers = async (id: string): Promise<{ id: string; data: User }[]> => {
-  const snapshot = await usersCollection.where('allowedAccessUsers', 'array-contains', id).get();
-  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as User }));
+/** 対象のユーザーが linkedUserIds に含まれるユーザーリストを取得 */
+export const getUserDocsInLinkedUserIds = async (id: string): Promise<QueryDocumentSnapshot<User>[]> => {
+  const snapshot = await usersCollection.where('linkedUserIds', 'array-contains', id).get();
+  return snapshot.docs as QueryDocumentSnapshot<User>[];
 };
 
-/** 対象ユーザーを allowedAccessUsers から削除 */
-export const removeIdFromAllowedAccessUsers = async (id: string, targetId: string): Promise<void> => {
+/** 対象ユーザーを linkedUserIds から削除 */
+export const removeIdFromLinkedUserIds = async (id: string, targetId: string): Promise<void> => {
   const ref = usersCollection.doc(id);
   // FieldValue を用いるため、型定義が難しい
   const data = {
-    allowedAccessUsers: FieldValue.arrayRemove(targetId),
+    linkedUserIds: FieldValue.arrayRemove(targetId),
   };
   await ref.update(data);
 };

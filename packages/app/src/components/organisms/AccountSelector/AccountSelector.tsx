@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useSubscription } from '../../../hooks/useSubscription';
+import { pagesPath } from '../../../lib/$path';
 import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
 import { Icon } from '../../shared/Icon';
 
@@ -88,7 +89,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
             })}
             <Link
               className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
-              href="/supporter"
+              href={pagesPath.supporter.$url()}
               onClick={() => {
                 setIsShownModal(false);
               }}
