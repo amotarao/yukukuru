@@ -4,10 +4,10 @@ import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
 import { useAuth } from '../../hooks/auth';
-import { useMultiAccounts } from '../../hooks/multiAccounts';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 import { useLastRun } from '../../hooks/useLastRun';
+import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
@@ -22,12 +22,10 @@ const Page: React.FC = () => {
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext }, { getNextRecords }] =
     useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
-  const [{ accounts: multiAccounts }] = useMultiAccounts(authUid);
+  const [{ isLoading: isLoadingMultiAccounts, accounts: multiAccounts, currentAccount }] = useMultiAccounts(authUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
-  const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading;
-
-  const currentAccount = multiAccounts.find((account) => account?.id === currentUid) || null;
+  const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading || isLoadingMultiAccounts;
 
   // lastViewing 送信
   useEffect(() => {

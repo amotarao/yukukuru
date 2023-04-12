@@ -94,7 +94,9 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boolean } & Pick<State, 'accounts'>>] => {
+export const useMultiAccounts = (
+  uid: string | null
+): [Readonly<Pick<State, 'accounts'> & { isLoading: boolean; currentAccount: User | null }>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isSupporter } = useSubscription();
 
@@ -159,6 +161,7 @@ export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boo
     {
       isLoading: state._loading > 0,
       accounts: state.accounts,
+      currentAccount: state.accounts.find((account) => account.id === uid) || null,
     },
   ];
 };
