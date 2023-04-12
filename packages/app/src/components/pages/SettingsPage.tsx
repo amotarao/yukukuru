@@ -12,7 +12,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ signIn, signOut }) =
     <div className="mx-auto max-w-md pb-40 sm:max-w-xl">
       <PageHeader>設定</PageHeader>
       <SettingsMenu signIn={signIn} signOut={signOut} />
-      <BottomNav active="settings" />
+      <BottomNav active="settings" scrollToTopOnActive />
     </div>
   );
 };
