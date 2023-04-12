@@ -1,5 +1,5 @@
 import { UserTwitter } from '@yukukuru/types';
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 import { useSubscription } from './useSubscription';
@@ -11,16 +11,20 @@ type User = {
 
 type State = {
   accounts: User[];
+  linkedUsers: User[];
   _loading: number;
   _authUser: User | null;
   _users: User[];
+  _linkedUserIds: string[];
 };
 
 const initialState: State = {
   accounts: [],
+  linkedUsers: [],
   _loading: 0,
   _authUser: null,
   _users: [],
+  _linkedUserIds: [],
 };
 
 type DispatchAction =
@@ -34,6 +38,18 @@ type DispatchAction =
       type: 'SetUsers';
       payload: {
         _users: State['_users'];
+      };
+    }
+  | {
+      type: 'SetLinkedUserIds';
+      payload: {
+        _linkedUserIds: State['_linkedUserIds'];
+      };
+    }
+  | {
+      type: 'SetLinkedUsers';
+      payload: {
+        linkedUsers: State['linkedUsers'];
       };
     }
   | {
@@ -69,7 +85,12 @@ const reducer = (state: State, action: DispatchAction): State => {
         accounts,
       };
     }
-
+    case 'SetLinkedUserIds': {
+      return {
+        ...state,
+        _linkedUserIds: action.payload._linkedUserIds,
+      };
+    }
     case 'StartLoading': {
       return {
         ...state,
@@ -97,16 +118,23 @@ const reducer = (state: State, action: DispatchAction): State => {
 export const useMultiAccounts = (
   authUid: string | null,
   currentUid: string | null
-): [Readonly<Pick<State, 'accounts'> & { isLoading: boolean; currentAccount: User | null }>] => {
+): [
+  Readonly<
+    Pick<State, 'accounts' | 'linkedUsers'> & {
+      isLoading: boolean;
+      currentAccount: User | null;
+    }
+  >
+] => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isSupporter } = useSubscription();
 
-  // uid に変更があれば、初期化
+  // authUid に変更があれば、初期化
   useEffect(() => {
     dispatch({ type: 'Initialize' });
   }, [authUid]);
 
-  // uid に変化があれば、Twitter プロフィール取得処理
+  // authUid に変化があれば、Twitter プロフィール取得処理
   useEffect(() => {
     if (!authUid) return;
 
@@ -158,11 +186,70 @@ export const useMultiAccounts = (
     };
   }, [authUid, isSupporter]);
 
+  // authUid に変化があれば、linkedUsers の取得
+  useEffect(() => {
+    if (!authUid) return;
+    dispatch({ type: 'StartLoading' });
+
+    const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
+      if (!doc.exists()) {
+        dispatch({
+          type: 'SetLinkedUserIds',
+          payload: { _linkedUserIds: [] },
+        });
+        dispatch({ type: 'FinishLoading' });
+        return;
+      }
+
+      const linkedUserIds = (doc.get('linkedUserIds') as string[] | undefined) || [];
+      dispatch({
+        type: 'SetLinkedUserIds',
+        payload: { _linkedUserIds: linkedUserIds },
+      });
+      dispatch({ type: 'FinishLoading' });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [authUid]);
+
+  // linkedUsers に変化があれば、それぞれの Twitter プロフィールの取得
+  useEffect(() => {
+    if (state._linkedUserIds.length === 0) {
+      dispatch({
+        type: 'SetLinkedUsers',
+        payload: { linkedUsers: [] },
+      });
+      return;
+    }
+
+    dispatch({ type: 'StartLoading' });
+
+    const q = query(collection(firestore, 'users'), where(documentId(), 'in', state._linkedUserIds));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const linkedUsers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        twitter: doc.get('twitter') as UserTwitter,
+      }));
+      dispatch({
+        type: 'SetLinkedUsers',
+        payload: { linkedUsers },
+      });
+      dispatch({ type: 'FinishLoading' });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [state._linkedUserIds]);
+
   return [
     {
       isLoading: state._loading > 0,
       accounts: state.accounts,
       currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
+      linkedUsers: state.linkedUsers,
     },
   ];
 };
