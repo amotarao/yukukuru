@@ -16,7 +16,7 @@ import { Icon } from '../shared/Icon';
 export const SupporterPage: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ currentAccount }] = useMultiAccounts(uid, null);
+  const { currentAccount } = useMultiAccounts(uid, null);
 
   return (
     <div>

@@ -28,10 +28,12 @@ export default Page;
 const Main: React.FC = () => {
   const [{ isLoading: isLoadingAuth, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount, linkAccountRequests }] = useMultiAccounts(
-    uid,
-    null
-  );
+  const {
+    isLoading: isLoadingMultiAccounts,
+    accounts,
+    currentAccount,
+    linkAccountRequests,
+  } = useMultiAccounts(uid, null);
 
   if (isLoadingAuth || isLoadingSubscription || isLoadingMultiAccounts) {
     return <LoadingCircle />;

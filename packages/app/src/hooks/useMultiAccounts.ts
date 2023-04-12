@@ -126,14 +126,12 @@ const reducer = (state: State, action: DispatchAction): State => {
 export const useMultiAccounts = (
   authUid: string | null,
   currentUid: string | null
-): [
-  Readonly<
-    Pick<State, 'accounts' | 'linkAccountRequests'> & {
-      isLoading: boolean;
-      currentAccount: User | null;
-    }
-  >
-] => {
+): Readonly<
+  Pick<State, 'accounts' | 'linkAccountRequests'> & {
+    isLoading: boolean;
+    currentAccount: User | null;
+  }
+> => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // authUid に変更があれば、初期化
@@ -223,12 +221,10 @@ export const useMultiAccounts = (
     };
   }, [authUid]);
 
-  return [
-    {
-      isLoading: state._loadings.some((loading) => loading),
-      accounts: state.accounts,
-      currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
-      linkAccountRequests: state.linkAccountRequests,
-    },
-  ];
+  return {
+    isLoading: state._loadings.some((loading) => loading),
+    accounts: state.accounts,
+    currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
+    linkAccountRequests: state.linkAccountRequests,
+  };
 };
