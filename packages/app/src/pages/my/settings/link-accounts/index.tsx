@@ -63,7 +63,7 @@ const Page: React.FC = () => {
               {/* ToDo: 保留に追加するロジック */}
               <section>
                 <h2 className="mb-3 px-4 text-xs font-bold">新しいアカウントを連携</h2>
-                <div className="grid h-10 grid-cols-[1fr_40px] px-4">
+                <form className="grid h-10 grid-cols-[1fr_40px] px-4">
                   <div className="flex items-stretch">
                     <p className="grid place-items-center rounded-l bg-back-2 px-2">@</p>
                     <input
@@ -77,7 +77,7 @@ const Page: React.FC = () => {
                   <button type="submit" className="grid place-items-center rounded-r bg-primary">
                     <Icon className="h-6 w-6 text-back" type="add" />
                   </button>
-                </div>
+                </form>
               </section>
               {/* ToDo: サポーターの場合、登録不可 */}
               <section>
