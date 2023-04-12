@@ -11,11 +11,11 @@ import { useSubscription } from '../../../../hooks/useSubscription';
 import { pagesPath } from '../../../../lib/$path';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, uid }, { signIn }] = useAuth();
+  const [{ isLoading: isLoadingAuth, signedIn, signingIn, uid }, { signIn }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
   const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount }] = useMultiAccounts(uid);
 
-  const isLoading = authIsLoading || isLoadingSubscription || isLoadingMultiAccounts;
+  const isLoading = isLoadingAuth || isLoadingSubscription || isLoadingMultiAccounts;
 
   return (
     <>
