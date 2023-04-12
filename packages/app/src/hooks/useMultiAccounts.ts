@@ -73,7 +73,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         accounts: authUser ? [authUser, ...state._users] : [...state._users],
       };
     }
-
     case 'SetUsers': {
       const users = action.payload._users;
       const accounts = state._authUser ? [state._authUser] : [];
@@ -91,26 +90,26 @@ const reducer = (state: State, action: DispatchAction): State => {
         _linkedUserIds: action.payload._linkedUserIds,
       };
     }
+    case 'SetLinkedUsers': {
+      return {
+        ...state,
+        linkedUsers: action.payload.linkedUsers,
+      };
+    }
     case 'StartLoading': {
       return {
         ...state,
         _loading: state._loading + 1,
       };
     }
-
     case 'FinishLoading': {
       return {
         ...state,
         _loading: state._loading - 1,
       };
     }
-
     case 'Initialize': {
       return initialState;
-    }
-
-    default: {
-      return state;
     }
   }
 };
