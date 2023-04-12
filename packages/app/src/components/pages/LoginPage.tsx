@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
-import { pagesPath } from '../../../lib/$path';
-import styles from './styles.module.scss';
+import { pagesPath } from '../../lib/$path';
+import styles from './LoginPage.module.scss';
 
 const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;

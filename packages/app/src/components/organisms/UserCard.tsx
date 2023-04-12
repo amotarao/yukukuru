@@ -1,6 +1,6 @@
 import { Record, RecordUser, RecordUserWithProfile, RecordV2, RecordV2User } from '@yukukuru/types';
 import classNames from 'classnames';
-import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
+import { TwitterUserIcon } from '../atoms/TwitterUserIcon';
 
 export type CardProps = {
   className?: string;

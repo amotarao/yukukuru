@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Switch from 'react-switch';
-import { pagesPath } from '../../../lib/$path';
-import { ThemeContainer } from '../../../store/theme';
-import { TweetButton } from '../TweetButton';
+import { pagesPath } from '../../lib/$path';
+import { ThemeContainer } from '../../store/theme';
+import { TweetButton } from './TweetButton';
 
 type SettingsMenuProps = {
   signIn: () => void;

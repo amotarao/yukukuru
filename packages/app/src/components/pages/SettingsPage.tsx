@@ -1,5 +1,5 @@
-import { BottomNav } from '../../organisms/BottomNav';
-import { SettingsMenu } from '../../organisms/SettingsMenu';
+import { BottomNav } from '../organisms/BottomNav';
+import { SettingsMenu } from '../organisms/SettingsMenu';
 
 export type SettingsPageProps = {
   signIn: () => void;
