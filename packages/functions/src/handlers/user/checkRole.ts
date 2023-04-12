@@ -1,11 +1,6 @@
 import * as functions from 'firebase-functions';
 import { getStripeRole } from '../../modules/auth/claim';
-import {
-  getUserDocsByGroups,
-  getUsersInLinkedUserIds,
-  removeIdFromLinkedUserIds,
-  setRoleToUser,
-} from '../../modules/firestore/users';
+import { getUserDocsByGroups, setRoleToUser } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';
 
@@ -47,13 +42,4 @@ export const run = functions
 
     const role = await getStripeRole(userId);
     await setRoleToUser(userId, role);
-
-    if (role !== 'supporter') {
-      const users = await getUsersInLinkedUserIds(userId);
-      await Promise.all(
-        users.map(async (user) => {
-          await removeIdFromLinkedUserIds(user.id, userId);
-        })
-      );
-    }
   });
