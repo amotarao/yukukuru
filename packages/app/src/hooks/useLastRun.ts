@@ -1,5 +1,5 @@
 import { Timestamp } from '@yukukuru/types';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -10,14 +10,14 @@ type State = {
 
 const initialState: State = {
   isLoading: true,
-  lastRun: new Date(0),
+  lastRun: null,
 };
 
 type DispatchAction =
   | {
-      type: 'SetLastRunnedGetFollowers';
+      type: 'SetLastRun';
       payload: {
-        lastRun: Date | null;
+        lastRun: State['lastRun'];
       };
     }
   | {
@@ -26,53 +26,45 @@ type DispatchAction =
 
 const reducer = (state: State, action: DispatchAction): State => {
   switch (action.type) {
-    case 'SetLastRunnedGetFollowers': {
+    case 'SetLastRun': {
       return {
         ...state,
         isLoading: false,
         lastRun: action.payload.lastRun,
       };
     }
-
     case 'StartLoading': {
       return {
         ...state,
         isLoading: true,
       };
     }
-
-    default: {
-      return state;
-    }
   }
 };
 
-export const useUser = (uid: string | null): [Readonly<State>] => {
+export const useLastRun = (uid: string | null): [Readonly<State>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if (!uid) {
-      return;
-    }
+    if (!uid) return;
 
     dispatch({ type: 'StartLoading' });
 
-    const unsubscribe = onSnapshot(doc(firestore, 'users', uid), (doc) => {
+    getDoc(doc(firestore, 'users', uid)).then((doc) => {
       if (!doc.exists()) {
+        dispatch({
+          type: 'SetLastRun',
+          payload: { lastRun: null },
+        });
         return;
       }
 
       const lastRun = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
       dispatch({
-        type: 'SetLastRunnedGetFollowers',
+        type: 'SetLastRun',
         payload: { lastRun: lastRun > new Date(0) ? lastRun : null },
       });
-      unsubscribe();
     });
-
-    return () => {
-      unsubscribe();
-    };
   }, [uid]);
 
   return [state];

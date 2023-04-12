@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/auth';
 import { useMultiAccounts } from '../../hooks/multiAccounts';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
-import { useUser } from '../../hooks/user';
+import { useLastRun } from '../../hooks/useLastRun';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
@@ -18,7 +18,7 @@ const Page: React.FC = () => {
     setCurrentUid(authUid);
   }, [authUid]);
 
-  const [{ isLoading: userIsLoading, lastRun }] = useUser(currentUid);
+  const [{ isLoading: userIsLoading, lastRun }] = useLastRun(currentUid);
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext }, { getNextRecords }] =
     useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
