@@ -178,7 +178,7 @@ export const SupporterPage: React.FC = () => {
           </p>
         </section>
       </div>
-      {signedIn && <BottomNav active="supporter" />}
+      {signedIn && <BottomNav active="supporter" scrollToTopOnActive />}
     </div>
   );
 };

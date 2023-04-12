@@ -226,7 +226,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      <BottomNav active="my" />
+      <BottomNav active="my" scrollToTopOnActive />
     </div>
   );
 };
