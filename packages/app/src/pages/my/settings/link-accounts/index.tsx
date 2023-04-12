@@ -1,4 +1,6 @@
+import { UserTwitter } from '@yukukuru/types';
 import Head from 'next/head';
+import { useState } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
 import { LoadingCircle } from '../../../../components/atoms/LoadingCircle';
 import { AccountSelector } from '../../../../components/organisms/AccountSelector';
@@ -7,7 +9,6 @@ import { LoginPage } from '../../../../components/pages/LoginPage';
 import { Icon } from '../../../../components/shared/Icon';
 import { useAuth } from '../../../../hooks/auth';
 import { useMultiAccounts } from '../../../../hooks/useMultiAccounts';
-import { useSubscription } from '../../../../hooks/useSubscription';
 import { pagesPath } from '../../../../lib/$path';
 
 const Page: React.FC = () => {
@@ -27,15 +28,15 @@ export default Page;
 
 const Main: React.FC = () => {
   const [{ isLoading: isLoadingAuth, uid }] = useAuth();
-  const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
   const {
     isLoading: isLoadingMultiAccounts,
     accounts,
     currentAccount,
     linkAccountRequests,
+    addLinkAccountRequest,
   } = useMultiAccounts(uid, null);
 
-  if (isLoadingAuth || isLoadingSubscription || isLoadingMultiAccounts) {
+  if (isLoadingAuth || isLoadingMultiAccounts) {
     return <LoadingCircle />;
   }
 
@@ -70,24 +71,11 @@ const Main: React.FC = () => {
                 ))}
             </ul>
           </Section>
-          {/* ToDo: 保留に追加するロジック */}
-          <Section head="新しいアカウントを連携">
-            <form className="grid h-10 grid-cols-[1fr_40px] px-4">
-              <div className="flex items-stretch">
-                <p className="grid place-items-center rounded-l bg-back-2 px-2">@</p>
-                <input
-                  className="w-full border border-back-2 bg-back px-2 py-[7px]"
-                  placeholder="Twitter ID"
-                  required
-                  pattern="^[a-zA-Z0-9_]+$"
-                  maxLength={15}
-                />
-              </div>
-              <button type="submit" className="grid place-items-center rounded-r bg-primary">
-                <Icon className="h-6 w-6 text-back" type="add" />
-              </button>
-            </form>
-          </Section>
+          <AddRequestSection
+            accounts={accounts}
+            currentAccount={currentAccount}
+            addLinkAccountRequest={addLinkAccountRequest}
+          />
           {/* ToDo: サポーターの場合、登録不可 */}
           <Section head="連携手順">
             <ol className="mx-4 grid list-decimal gap-1 pl-4 text-sm">
@@ -100,6 +88,62 @@ const Main: React.FC = () => {
       </div>
       <BottomNav active="settings" />
     </>
+  );
+};
+
+const AddRequestSection: React.FC<{
+  accounts: {
+    id: string;
+    twitter: UserTwitter;
+  }[];
+  currentAccount: {
+    id: string;
+    twitter: UserTwitter;
+  } | null;
+  addLinkAccountRequest: (screenName: string) => void;
+}> = ({ accounts, currentAccount, addLinkAccountRequest }) => {
+  const [screenName, setScreenName] = useState('');
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+
+    if (currentAccount?.twitter.screenName === screenName) {
+      alert('ログイン中以外のユーザー名を入力してください');
+      setScreenName('');
+      return;
+    }
+    if (accounts.some((account) => account.twitter.screenName === screenName)) {
+      alert('既に連携済みです');
+      setScreenName('');
+      return;
+    }
+
+    addLinkAccountRequest(screenName);
+    setScreenName('');
+  };
+
+  return (
+    <Section head="新しいアカウントを連携">
+      <form className="grid h-10 grid-cols-[1fr_40px] px-4" onSubmit={handleSubmit}>
+        <div className="flex items-stretch">
+          <p className="grid place-items-center rounded-l bg-back-2 px-2">@</p>
+          <input
+            className="w-full border border-back-2 bg-back px-2 py-[7px]"
+            placeholder="ユーザー名"
+            value={screenName}
+            required
+            pattern="^[a-zA-Z0-9_]+$"
+            maxLength={15}
+            onChange={(e) => {
+              setScreenName(e.target.value.trim());
+            }}
+          />
+        </div>
+        <button type="submit" className="grid place-items-center rounded-r bg-primary">
+          <Icon className="h-6 w-6 text-back" type="add" />
+        </button>
+      </form>
+    </Section>
   );
 };
 

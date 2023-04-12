@@ -1,6 +1,6 @@
 import { LinkAccountRequest, UserTwitter } from '@yukukuru/types';
-import { collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
-import { useEffect, useReducer } from 'react';
+import { addDoc, collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
+import { useCallback, useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
 type User = {
@@ -130,6 +130,7 @@ export const useMultiAccounts = (
   Pick<State, 'accounts' | 'linkAccountRequests'> & {
     isLoading: boolean;
     currentAccount: User | null;
+    addLinkAccountRequest: (screenName: string) => void;
   }
 > => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -221,10 +222,37 @@ export const useMultiAccounts = (
     };
   }, [authUid]);
 
+  const addLinkAccountRequest = useCallback(
+    (screenName: string) => {
+      if (!authUid) return;
+      const account = state.accounts.find((account) => account.id === authUid);
+      if (!account) return;
+
+      const data: LinkAccountRequest = {
+        step: 'create',
+        error: null,
+        canView: [authUid],
+        from: {
+          uid: authUid,
+          screenName: account.twitter.screenName,
+          twitter: account.twitter,
+        },
+        to: {
+          uid: null,
+          screenName,
+          twitter: null,
+        },
+      };
+      addDoc(collection(firestore, 'linkAccountRequests'), data);
+    },
+    [authUid, state.accounts]
+  );
+
   return {
     isLoading: state._loadings.some((loading) => loading),
     accounts: state.accounts,
     currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
     linkAccountRequests: state.linkAccountRequests,
+    addLinkAccountRequest,
   };
 };
