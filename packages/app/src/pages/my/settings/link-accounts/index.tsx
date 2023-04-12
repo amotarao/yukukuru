@@ -13,7 +13,7 @@ import { pagesPath } from '../../../../lib/$path';
 const Page: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn, signingIn, uid }, { signIn }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount }] = useMultiAccounts(uid);
+  const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount }] = useMultiAccounts(uid, null);
 
   const isLoading = isLoadingAuth || isLoadingSubscription || isLoadingMultiAccounts;
 
