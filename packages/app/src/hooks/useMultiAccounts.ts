@@ -133,7 +133,7 @@ export const useMultiAccounts = (
     dispatch({ type: 'Initialize' });
   }, [authUid]);
 
-  // authUid に変化があれば、Twitter プロフィール取得処理
+  // authUid に変化があれば、twitter, linkedUsers の取得処理
   useEffect(() => {
     if (!authUid) return;
 
@@ -142,12 +142,22 @@ export const useMultiAccounts = (
     const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
       if (!doc.exists()) {
         dispatch({ type: 'SetAuthUser', payload: { _authUser: null } });
+        dispatch({
+          type: 'SetLinkedUserIds',
+          payload: { _linkedUserIds: [] },
+        });
         dispatch({ type: 'FinishLoading' });
         return;
       }
       const twitter = doc.get('twitter') as UserTwitter;
       const user: User = { id: authUid, twitter };
+      const linkedUserIds = doc.get('linkedUserIds') as string[];
+
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
+      dispatch({
+        type: 'SetLinkedUserIds',
+        payload: { _linkedUserIds: linkedUserIds },
+      });
       dispatch({ type: 'FinishLoading' });
     });
 
@@ -184,34 +194,6 @@ export const useMultiAccounts = (
       unsubscribe();
     };
   }, [authUid, isSupporter]);
-
-  // authUid に変化があれば、linkedUsers の取得
-  useEffect(() => {
-    if (!authUid) return;
-    dispatch({ type: 'StartLoading' });
-
-    const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
-      if (!doc.exists()) {
-        dispatch({
-          type: 'SetLinkedUserIds',
-          payload: { _linkedUserIds: [] },
-        });
-        dispatch({ type: 'FinishLoading' });
-        return;
-      }
-
-      const linkedUserIds = (doc.get('linkedUserIds') as string[] | undefined) || [];
-      dispatch({
-        type: 'SetLinkedUserIds',
-        payload: { _linkedUserIds: linkedUserIds },
-      });
-      dispatch({ type: 'FinishLoading' });
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [authUid]);
 
   // linkedUsers に変化があれば、それぞれの Twitter プロフィールの取得
   useEffect(() => {
