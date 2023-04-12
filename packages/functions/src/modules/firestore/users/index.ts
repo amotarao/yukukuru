@@ -18,9 +18,9 @@ export const setRoleToUser = async (id: string, role: User['role']): Promise<voi
 };
 
 /** 対象のユーザーが linkedUserIds に含まれるユーザーリストを取得 */
-export const getUsersInLinkedUserIds = async (id: string): Promise<{ id: string; data: User }[]> => {
+export const getUserDocsInLinkedUserIds = async (id: string): Promise<QueryDocumentSnapshot<User>[]> => {
   const snapshot = await usersCollection.where('linkedUserIds', 'array-contains', id).get();
-  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as User }));
+  return snapshot.docs as QueryDocumentSnapshot<User>[];
 };
 
 /** 対象ユーザーを linkedUserIds から削除 */
