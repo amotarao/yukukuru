@@ -2,7 +2,6 @@ import { UserTwitter } from '@yukukuru/types';
 import { collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
-import { useSubscription } from './useSubscription';
 
 type User = {
   id: string;
@@ -11,8 +10,7 @@ type User = {
 
 type State = {
   accounts: User[];
-  linkedUsers: User[];
-  _loadings: [boolean, boolean, boolean];
+  _loadings: [boolean, boolean];
   _authUser: User | null;
   _users: User[];
   _linkedUserIds: string[];
@@ -20,8 +18,7 @@ type State = {
 
 const initialState: State = {
   accounts: [],
-  linkedUsers: [],
-  _loadings: [false, false, false],
+  _loadings: [false, false],
   _authUser: null,
   _users: [],
   _linkedUserIds: [],
@@ -44,12 +41,6 @@ type DispatchAction =
       type: 'SetLinkedUserIds';
       payload: {
         _linkedUserIds: State['_linkedUserIds'];
-      };
-    }
-  | {
-      type: 'SetLinkedUsers';
-      payload: {
-        linkedUsers: State['linkedUsers'];
       };
     }
   | {
@@ -96,12 +87,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         _linkedUserIds: action.payload._linkedUserIds,
       };
     }
-    case 'SetLinkedUsers': {
-      return {
-        ...state,
-        linkedUsers: action.payload.linkedUsers,
-      };
-    }
     case 'StartLoading': {
       const loadings = state._loadings;
       loadings[action.payload.target] = true;
@@ -129,14 +114,13 @@ export const useMultiAccounts = (
   currentUid: string | null
 ): [
   Readonly<
-    Pick<State, 'accounts' | 'linkedUsers'> & {
+    Pick<State, 'accounts'> & {
       isLoading: boolean;
       currentAccount: User | null;
     }
   >
 ] => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { isSupporter } = useSubscription();
 
   // authUid に変更があれば、初期化
   useEffect(() => {
@@ -176,58 +160,26 @@ export const useMultiAccounts = (
     };
   }, [authUid]);
 
-  // Twitter プロフィール取得処理
-  useEffect(() => {
-    if (!authUid || !isSupporter) return;
-
-    dispatch({ type: 'StartLoading', payload: { target: 1 } });
-
-    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', authUid));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const users = snapshot.docs.map((doc) => {
-          const id = doc.id;
-          const twitter = doc.get('twitter') as UserTwitter;
-          return { id, twitter };
-        });
-        dispatch({ type: 'SetUsers', payload: { _users: users } });
-        dispatch({ type: 'FinishLoading', payload: { target: 1 } });
-      },
-      () => {
-        dispatch({ type: 'SetUsers', payload: { _users: [] } });
-        dispatch({ type: 'FinishLoading', payload: { target: 1 } });
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [authUid, isSupporter]);
-
-  // linkedUsers に変化があれば、それぞれの Twitter プロフィールの取得
+  // linkedUserIds に変化があれば、それぞれの Twitter プロフィールの取得
   useEffect(() => {
     if (state._linkedUserIds.length === 0) {
       dispatch({
-        type: 'SetLinkedUsers',
-        payload: { linkedUsers: [] },
+        type: 'SetUsers',
+        payload: { _users: [] },
       });
       return;
     }
 
-    dispatch({ type: 'StartLoading', payload: { target: 2 } });
+    dispatch({ type: 'StartLoading', payload: { target: 1 } });
 
     const q = query(collection(firestore, 'users'), where(documentId(), 'in', state._linkedUserIds));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const linkedUsers = snapshot.docs.map((doc) => ({
+      const users = snapshot.docs.map((doc) => ({
         id: doc.id,
         twitter: doc.get('twitter') as UserTwitter,
       }));
-      dispatch({
-        type: 'SetLinkedUsers',
-        payload: { linkedUsers },
-      });
-      dispatch({ type: 'FinishLoading', payload: { target: 2 } });
+      dispatch({ type: 'SetUsers', payload: { _users: users } });
+      dispatch({ type: 'FinishLoading', payload: { target: 1 } });
     });
 
     return () => {
@@ -240,7 +192,6 @@ export const useMultiAccounts = (
       isLoading: state._loadings.some((loading) => loading),
       accounts: state.accounts,
       currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
-      linkedUsers: state.linkedUsers,
     },
   ];
 };
