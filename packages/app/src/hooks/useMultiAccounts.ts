@@ -12,7 +12,7 @@ type User = {
 type State = {
   accounts: User[];
   linkedUsers: User[];
-  _loading: number;
+  _loadings: [boolean, boolean, boolean];
   _authUser: User | null;
   _users: User[];
   _linkedUserIds: string[];
@@ -21,7 +21,7 @@ type State = {
 const initialState: State = {
   accounts: [],
   linkedUsers: [],
-  _loading: 0,
+  _loadings: [false, false, false],
   _authUser: null,
   _users: [],
   _linkedUserIds: [],
@@ -54,9 +54,15 @@ type DispatchAction =
     }
   | {
       type: 'StartLoading';
+      payload: {
+        target: number;
+      };
     }
   | {
       type: 'FinishLoading';
+      payload: {
+        target: number;
+      };
     }
   | {
       type: 'Initialize';
@@ -97,15 +103,19 @@ const reducer = (state: State, action: DispatchAction): State => {
       };
     }
     case 'StartLoading': {
+      const loadings = state._loadings;
+      loadings[action.payload.target] = true;
       return {
         ...state,
-        _loading: state._loading + 1,
+        _loadings: loadings,
       };
     }
     case 'FinishLoading': {
+      const loadings = state._loadings;
+      loadings[action.payload.target] = false;
       return {
         ...state,
-        _loading: state._loading - 1,
+        _loadings: loadings,
       };
     }
     case 'Initialize': {
@@ -137,7 +147,7 @@ export const useMultiAccounts = (
   useEffect(() => {
     if (!authUid) return;
 
-    dispatch({ type: 'StartLoading' });
+    dispatch({ type: 'StartLoading', payload: { target: 0 } });
 
     const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
       if (!doc.exists()) {
@@ -146,7 +156,7 @@ export const useMultiAccounts = (
           type: 'SetLinkedUserIds',
           payload: { _linkedUserIds: [] },
         });
-        dispatch({ type: 'FinishLoading' });
+        dispatch({ type: 'FinishLoading', payload: { target: 0 } });
         return;
       }
       const twitter = doc.get('twitter') as UserTwitter;
@@ -158,7 +168,7 @@ export const useMultiAccounts = (
         type: 'SetLinkedUserIds',
         payload: { _linkedUserIds: linkedUserIds },
       });
-      dispatch({ type: 'FinishLoading' });
+      dispatch({ type: 'FinishLoading', payload: { target: 0 } });
     });
 
     return () => {
@@ -170,7 +180,7 @@ export const useMultiAccounts = (
   useEffect(() => {
     if (!authUid || !isSupporter) return;
 
-    dispatch({ type: 'StartLoading' });
+    dispatch({ type: 'StartLoading', payload: { target: 1 } });
 
     const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', authUid));
     const unsubscribe = onSnapshot(
@@ -182,11 +192,11 @@ export const useMultiAccounts = (
           return { id, twitter };
         });
         dispatch({ type: 'SetUsers', payload: { _users: users } });
-        dispatch({ type: 'FinishLoading' });
+        dispatch({ type: 'FinishLoading', payload: { target: 1 } });
       },
       () => {
         dispatch({ type: 'SetUsers', payload: { _users: [] } });
-        dispatch({ type: 'FinishLoading' });
+        dispatch({ type: 'FinishLoading', payload: { target: 1 } });
       }
     );
 
@@ -205,7 +215,7 @@ export const useMultiAccounts = (
       return;
     }
 
-    dispatch({ type: 'StartLoading' });
+    dispatch({ type: 'StartLoading', payload: { target: 2 } });
 
     const q = query(collection(firestore, 'users'), where(documentId(), 'in', state._linkedUserIds));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -217,7 +227,7 @@ export const useMultiAccounts = (
         type: 'SetLinkedUsers',
         payload: { linkedUsers },
       });
-      dispatch({ type: 'FinishLoading' });
+      dispatch({ type: 'FinishLoading', payload: { target: 2 } });
     });
 
     return () => {
@@ -227,7 +237,7 @@ export const useMultiAccounts = (
 
   return [
     {
-      isLoading: state._loading > 0,
+      isLoading: state._loadings.some((loading) => loading),
       accounts: state.accounts,
       currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
       linkedUsers: state.linkedUsers,
