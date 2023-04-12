@@ -69,6 +69,7 @@ const Page: React.FC = () => {
                     <input
                       className="w-full border border-back-2 bg-back px-2 py-[7px]"
                       placeholder="Twitter ID"
+                      required
                       pattern="^[a-zA-Z0-9_]+$"
                       maxLength={15}
                     />
