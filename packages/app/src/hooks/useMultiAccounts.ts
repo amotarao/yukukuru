@@ -1,4 +1,4 @@
-import { UserTwitter } from '@yukukuru/types';
+import { LinkAccountRequest, UserTwitter } from '@yukukuru/types';
 import { collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
@@ -10,7 +10,8 @@ type User = {
 
 type State = {
   accounts: User[];
-  _loadings: [boolean, boolean];
+  linkAccountRequests: { id: string; data: LinkAccountRequest }[];
+  _loadings: [boolean, boolean, boolean];
   _authUser: User | null;
   _users: User[];
   _linkedUserIds: string[];
@@ -18,7 +19,8 @@ type State = {
 
 const initialState: State = {
   accounts: [],
-  _loadings: [false, false],
+  linkAccountRequests: [],
+  _loadings: [false, false, false],
   _authUser: null,
   _users: [],
   _linkedUserIds: [],
@@ -41,6 +43,12 @@ type DispatchAction =
       type: 'SetLinkedUserIds';
       payload: {
         _linkedUserIds: State['_linkedUserIds'];
+      };
+    }
+  | {
+      type: 'SetLinkAccountRequests';
+      payload: {
+        linkAccountRequests: State['linkAccountRequests'];
       };
     }
   | {
@@ -87,6 +95,12 @@ const reducer = (state: State, action: DispatchAction): State => {
         _linkedUserIds: action.payload._linkedUserIds,
       };
     }
+    case 'SetLinkAccountRequests': {
+      return {
+        ...state,
+        linkAccountRequests: action.payload.linkAccountRequests,
+      };
+    }
     case 'StartLoading': {
       const loadings = state._loadings;
       loadings[action.payload.target] = true;
@@ -114,7 +128,7 @@ export const useMultiAccounts = (
   currentUid: string | null
 ): [
   Readonly<
-    Pick<State, 'accounts'> & {
+    Pick<State, 'accounts' | 'linkAccountRequests'> & {
       isLoading: boolean;
       currentAccount: User | null;
     }
@@ -187,11 +201,34 @@ export const useMultiAccounts = (
     };
   }, [state._linkedUserIds]);
 
+  // authUid に変化があれば、linkAccountRequests 取得
+  useEffect(() => {
+    if (!authUid) return;
+
+    dispatch({ type: 'StartLoading', payload: { target: 2 } });
+
+    const q = query(collection(firestore, 'linkAccountRequests'), where('canView', 'array-contains', authUid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      dispatch({
+        type: 'SetLinkAccountRequests',
+        payload: {
+          linkAccountRequests: snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() as LinkAccountRequest })),
+        },
+      });
+      dispatch({ type: 'FinishLoading', payload: { target: 2 } });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [authUid]);
+
   return [
     {
       isLoading: state._loadings.some((loading) => loading),
       accounts: state.accounts,
       currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
+      linkAccountRequests: state.linkAccountRequests,
     },
   ];
 };

@@ -28,7 +28,10 @@ export default Page;
 const Main: React.FC = () => {
   const [{ isLoading: isLoadingAuth, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount }] = useMultiAccounts(uid, null);
+  const [{ isLoading: isLoadingMultiAccounts, accounts, currentAccount, linkAccountRequests }] = useMultiAccounts(
+    uid,
+    null
+  );
 
   if (isLoadingAuth || isLoadingSubscription || isLoadingMultiAccounts) {
     return <LoadingCircle />;
@@ -43,19 +46,18 @@ const Main: React.FC = () => {
           <p className="text-sm">でログイン中</p>
         </div>
         <div className="grid gap-8">
-          <Section head="連携済みアカウント">
-            <ul>
-              {accounts
-                .filter((account) => account.id !== uid)
-                .map((account) => (
-                  <li key={account.id} className="border-t border-back-2">
-                    <div className="px-4 py-2 tracking-wide">@{account.twitter.screenName}</div>
+          {linkAccountRequests.length > 0 && (
+            <Section head="リクエスト">
+              <ul>
+                {linkAccountRequests.map((request) => (
+                  <li key={request.id} className="border-t border-back-2">
+                    <div className="px-4 py-2 tracking-wide">@{request.data.from.screenName}</div>
                   </li>
                 ))}
-            </ul>
-          </Section>
-          {/* ToDo: 保留リストを表示 */}
-          <Section head="保留中">
+              </ul>
+            </Section>
+          )}
+          <Section head="連携済みアカウント">
             <ul>
               {accounts
                 .filter((account) => account.id !== uid)
