@@ -2,6 +2,7 @@ import { UserTwitter } from '@yukukuru/types';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
+import { useSubscription } from './useSubscription';
 
 type User = {
   id: string;
@@ -95,6 +96,7 @@ const reducer = (state: State, action: DispatchAction): State => {
 
 export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boolean } & Pick<State, 'accounts'>>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { isSupporter } = useSubscription();
 
   // uid に変更があれば、初期化
   useEffect(() => {
@@ -126,7 +128,7 @@ export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boo
 
   // Twitter プロフィール取得処理
   useEffect(() => {
-    if (!uid) return;
+    if (!uid || !isSupporter) return;
 
     dispatch({ type: 'StartLoading' });
 
@@ -151,7 +153,7 @@ export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boo
     return () => {
       unsubscribe();
     };
-  }, [uid]);
+  }, [uid, isSupporter]);
 
   return [
     {
