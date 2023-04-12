@@ -63,6 +63,7 @@ const Main: React.FC = () => {
               <ul>
                 {comingRequests.map((request) => (
                   <li key={request.id} className="border-t border-back-2">
+                    {/* ToDo: リクエストの承認をできるようにする */}
                     <div className="px-4 py-2 tracking-wide">@{request.data.from.screenName}</div>
                   </li>
                 ))}
@@ -85,6 +86,7 @@ const Main: React.FC = () => {
               <ul>
                 {sendingRequests.map((request) => (
                   <li key={request.id} className="border-t border-back-2">
+                    {/* ToDo: エラーがある際に表示 */}
                     <div className="px-4 py-2 tracking-wide">@{request.data.to.screenName}</div>
                   </li>
                 ))}
