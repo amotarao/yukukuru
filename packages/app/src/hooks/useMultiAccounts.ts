@@ -95,7 +95,8 @@ const reducer = (state: State, action: DispatchAction): State => {
 };
 
 export const useMultiAccounts = (
-  uid: string | null
+  authUid: string | null,
+  currentUid: string | null
 ): [Readonly<Pick<State, 'accounts'> & { isLoading: boolean; currentAccount: User | null }>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isSupporter } = useSubscription();
@@ -103,22 +104,22 @@ export const useMultiAccounts = (
   // uid に変更があれば、初期化
   useEffect(() => {
     dispatch({ type: 'Initialize' });
-  }, [uid]);
+  }, [authUid]);
 
   // uid に変化があれば、Twitter プロフィール取得処理
   useEffect(() => {
-    if (!uid) return;
+    if (!authUid) return;
 
     dispatch({ type: 'StartLoading' });
 
-    const unsubscribe = onSnapshot(doc(firestore, 'users', uid), (doc) => {
+    const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
       if (!doc.exists()) {
         dispatch({ type: 'SetAuthUser', payload: { _authUser: null } });
         dispatch({ type: 'FinishLoading' });
         return;
       }
       const twitter = doc.get('twitter') as UserTwitter;
-      const user: User = { id: uid, twitter };
+      const user: User = { id: authUid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
     });
@@ -126,15 +127,15 @@ export const useMultiAccounts = (
     return () => {
       unsubscribe();
     };
-  }, [uid]);
+  }, [authUid]);
 
   // Twitter プロフィール取得処理
   useEffect(() => {
-    if (!uid || !isSupporter) return;
+    if (!authUid || !isSupporter) return;
 
     dispatch({ type: 'StartLoading' });
 
-    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', uid));
+    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', authUid));
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -155,13 +156,13 @@ export const useMultiAccounts = (
     return () => {
       unsubscribe();
     };
-  }, [uid, isSupporter]);
+  }, [authUid, isSupporter]);
 
   return [
     {
       isLoading: state._loading > 0,
       accounts: state.accounts,
-      currentAccount: state.accounts.find((account) => account.id === uid) || null,
+      currentAccount: state.accounts.find((account) => account.id === currentUid) || null,
     },
   ];
 };

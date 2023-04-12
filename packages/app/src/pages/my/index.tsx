@@ -22,7 +22,10 @@ const Page: React.FC = () => {
   const [{ isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext }, { getNextRecords }] =
     useRecords(currentUid);
   const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
-  const [{ isLoading: isLoadingMultiAccounts, accounts: multiAccounts, currentAccount }] = useMultiAccounts(authUid);
+  const [{ isLoading: isLoadingMultiAccounts, accounts: multiAccounts, currentAccount }] = useMultiAccounts(
+    authUid,
+    currentUid
+  );
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
   const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading || isLoadingMultiAccounts;
@@ -50,7 +53,7 @@ const Page: React.FC = () => {
             records,
             hasNext,
             hasToken,
-            lastRun: lastRun,
+            lastRun,
             currentAccount,
             multiAccounts,
             getNextRecords,
