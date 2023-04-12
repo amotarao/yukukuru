@@ -11,7 +11,7 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   group: number;
 
   /** 連携したユーザー ID リスト */
-  linkedUserIds?: string[];
+  linkedUserIds: string[];
 
   /** getFollowersV2 の状態保存 */
   _getFollowersV2Status: {
