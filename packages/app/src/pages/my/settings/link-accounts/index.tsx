@@ -66,7 +66,12 @@ const Page: React.FC = () => {
                 <div className="grid h-10 grid-cols-[1fr_40px] px-4">
                   <div className="flex items-stretch">
                     <p className="grid place-items-center rounded-l bg-back-2 px-2">@</p>
-                    <input className="w-full border border-back-2 px-2 py-[7px]" placeholder="Twitter ID" />
+                    <input
+                      className="w-full border border-back-2 bg-back px-2 py-[7px]"
+                      placeholder="Twitter ID"
+                      pattern="^[a-zA-Z0-9_]+$"
+                      maxLength={15}
+                    />
                   </div>
                   <button type="submit" className="grid place-items-center rounded-r bg-primary">
                     <Icon className="h-6 w-6 text-back" type="add" />
