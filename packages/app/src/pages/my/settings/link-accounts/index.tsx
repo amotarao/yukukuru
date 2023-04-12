@@ -1,6 +1,6 @@
 import { UserTwitter } from '@yukukuru/types';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
 import { LoadingCircle } from '../../../../components/atoms/LoadingCircle';
 import { AccountSelector } from '../../../../components/organisms/AccountSelector';
@@ -36,6 +36,15 @@ const Main: React.FC = () => {
     addLinkAccountRequest,
   } = useMultiAccounts(uid, null);
 
+  const comingRequests = useMemo(() => {
+    return linkAccountRequests.filter((request) => request.data.step === 'created' || request.data.step === 'approve');
+  }, [linkAccountRequests]);
+  const sendingRequests = useMemo(() => {
+    return linkAccountRequests.filter(
+      (request) => request.data.step === 'create' || request.data.step === 'created' || request.data.step === 'error'
+    );
+  }, [linkAccountRequests]);
+
   if (isLoadingAuth || isLoadingMultiAccounts) {
     return <LoadingCircle />;
   }
@@ -49,10 +58,10 @@ const Main: React.FC = () => {
           <p className="text-sm">でログイン中</p>
         </div>
         <div className="grid gap-8">
-          {linkAccountRequests.length > 0 && (
+          {comingRequests.length > 0 && (
             <Section head="リクエスト">
               <ul>
-                {linkAccountRequests.map((request) => (
+                {comingRequests.map((request) => (
                   <li key={request.id} className="border-t border-back-2">
                     <div className="px-4 py-2 tracking-wide">@{request.data.from.screenName}</div>
                   </li>
@@ -71,6 +80,17 @@ const Main: React.FC = () => {
                 ))}
             </ul>
           </Section>
+          {sendingRequests.length > 0 && (
+            <Section head="連携待ち">
+              <ul>
+                {sendingRequests.map((request) => (
+                  <li key={request.id} className="border-t border-back-2">
+                    <div className="px-4 py-2 tracking-wide">@{request.data.to.screenName}</div>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
           <AddRequestSection
             accounts={accounts}
             currentAccount={currentAccount}
@@ -123,7 +143,7 @@ const AddRequestSection: React.FC<{
   };
 
   return (
-    <Section head="新しいアカウントを連携">
+    <Section head="アカウントを連携">
       <form className="grid h-10 grid-cols-[1fr_40px] px-4" onSubmit={handleSubmit}>
         <div className="flex items-stretch">
           <p className="grid place-items-center rounded-l bg-back-2 px-2">@</p>
