@@ -1,5 +1,5 @@
 import { UserTwitter } from '@yukukuru/types';
-import { collection, getDocs, doc, where, query, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -9,15 +9,15 @@ type User = {
 };
 
 type State = {
-  isLoading: boolean;
   accounts: User[];
+  _loading: number;
   _authUser: User | null;
   _users: User[];
 };
 
 const initialState: State = {
-  isLoading: true,
   accounts: [],
+  _loading: 0,
   _authUser: null,
   _users: [],
 };
@@ -26,7 +26,7 @@ type DispatchAction =
   | {
       type: 'SetAuthUser';
       payload: {
-        _authUser: NonNullable<State['_authUser']>;
+        _authUser: State['_authUser'];
       };
     }
   | {
@@ -53,7 +53,7 @@ const reducer = (state: State, action: DispatchAction): State => {
       return {
         ...state,
         _authUser: authUser,
-        accounts: [authUser, ...state._users],
+        accounts: authUser ? [authUser, ...state._users] : [...state._users],
       };
     }
 
@@ -72,14 +72,14 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'StartLoading': {
       return {
         ...state,
-        isLoading: true,
+        _loading: state._loading + 1,
       };
     }
 
     case 'FinishLoading': {
       return {
         ...state,
-        isLoading: false,
+        _loading: state._loading - 1,
       };
     }
 
@@ -93,50 +93,70 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-export const useMultiAccounts = (authUid: string | null): [Readonly<State>] => {
+export const useMultiAccounts = (uid: string | null): [Readonly<{ isLoading: boolean } & Pick<State, 'accounts'>>] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // authUid に変更があれば初期化
+  // uid に変更があれば、初期化
   useEffect(() => {
     dispatch({ type: 'Initialize' });
-  }, [authUid]);
+  }, [uid]);
 
-  // Twitter プロフィール取得処理
+  // uid に変化があれば、Twitter プロフィール取得処理
   useEffect(() => {
-    if (!authUid) {
-      return;
-    }
+    if (!uid) return;
 
     dispatch({ type: 'StartLoading' });
 
-    // 認証ユーザー
-    const unsubscribe = onSnapshot(doc(firestore, 'users', authUid), (doc) => {
+    const unsubscribe = onSnapshot(doc(firestore, 'users', uid), (doc) => {
       if (!doc.exists()) {
+        dispatch({ type: 'SetAuthUser', payload: { _authUser: null } });
+        dispatch({ type: 'FinishLoading' });
         return;
       }
-
       const twitter = doc.get('twitter') as UserTwitter;
-      const user: User = { id: authUid, twitter };
+      const user: User = { id: uid, twitter };
       dispatch({ type: 'SetAuthUser', payload: { _authUser: user } });
       dispatch({ type: 'FinishLoading' });
-      unsubscribe();
-    });
-
-    // 閲覧可能ユーザー
-    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', authUid));
-    getDocs(q).then((snapshot) => {
-      const users = snapshot.docs.map((doc) => {
-        const id = doc.id;
-        const twitter = doc.get('twitter') as UserTwitter;
-        return { id, twitter };
-      });
-      dispatch({ type: 'SetUsers', payload: { _users: users } });
     });
 
     return () => {
       unsubscribe();
     };
-  }, [authUid]);
+  }, [uid]);
 
-  return [state];
+  // Twitter プロフィール取得処理
+  useEffect(() => {
+    if (!uid) return;
+
+    dispatch({ type: 'StartLoading' });
+
+    const q = query(collection(firestore, 'users'), where('linkedUserIds', 'array-contains', uid));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const users = snapshot.docs.map((doc) => {
+          const id = doc.id;
+          const twitter = doc.get('twitter') as UserTwitter;
+          return { id, twitter };
+        });
+        dispatch({ type: 'SetUsers', payload: { _users: users } });
+        dispatch({ type: 'FinishLoading' });
+      },
+      () => {
+        dispatch({ type: 'SetUsers', payload: { _users: [] } });
+        dispatch({ type: 'FinishLoading' });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [uid]);
+
+  return [
+    {
+      isLoading: state._loading > 0,
+      accounts: state.accounts,
+    },
+  ];
 };
