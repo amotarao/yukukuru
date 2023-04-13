@@ -79,21 +79,47 @@ service cloud.firestore {
     }
 
     match /linkAccountRequests/{requestID} {
-      allow create: if request.resource.data.size() == 5
-                       && request.resource.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
-                       && request.resource.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+      function typeCheck(rsrc) {
+        return rsrc.data.size() == 5
+               && rsrc.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
+               && rsrc.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+               && rsrc.data.step is string
+               && rsrc.data.step in ['create', 'cancel', 'approve', 'reject']
+               && rsrc.data.error == null || rsrc.data.error is string
+               && rsrc.data.canView is list
+               && rsrc.data.canView.size() in [1, 2]
+               && rsrc.data.from is map
+               && rsrc.data.from.screenName is string
+               && rsrc.data.from.uid is string
+               && rsrc.data.from.twitter is map
+               && rsrc.data.to is map
+               && rsrc.data.to.screenName is string
+               && (rsrc.data.to.uid == null || rsrc.data.to.uid is string)
+               && (rsrc.data.to.twitter == null || rsrc.data.to.twitter is map)
+      }
+
+      function fromIsMe(rsrc) {
+        return rsrc.data.from.uid == request.auth.uid
+      }
+
+      function toIsMe(rsrc) {
+        return rsrc.data.to.uid == request.auth.uid
+      }
+
+      allow create: if typeCheck(request.resource)
                        && request.resource.data.step == 'create'
-                       && request.resource.data.error == null
-                       && request.resource.data.canView is list
                        && request.resource.data.canView.size() == 1
                        && request.auth.uid in request.resource.data.canView
-                       && request.resource.data.from.uid == request.auth.uid
-                       && request.resource.data.from.screenName is string
-                       && request.resource.data.from.twitter is map
-                       && request.resource.data.to.uid == null
-                       && request.resource.data.to.screenName is string
-                       && request.resource.data.to.twitter == null
-      allow read: if request.auth.uid in resource.data.canView;
+                       && fromIsMe(request.resource)
+
+      allow update: if typeCheck(request.resource)
+                       && request.auth.uid in request.resource.data.canView
+                       && (
+                            (request.resource.data.step in ['create', 'cancel'] && fromIsMe(request.resource))
+                            || (request.resource.data.step in ['approve', 'reject'] && toIsMe(request.resource))
+                          )
+
+      allow read: if request.auth.uid in resource.data.canView
     }
 
     // Stripe Extension
