@@ -94,8 +94,17 @@ const Main: React.FC = () => {
             </Section>
           )}
           <AddRequestSection
-            accounts={accounts}
-            currentAccount={currentAccount}
+            ignoreScreenNames={[
+              ...(currentAccount ? [{ type: 'own' as const, screenName: currentAccount.twitter.screenName }] : []),
+              ...accounts.map((account) => ({
+                type: 'already-linked' as const,
+                screenName: account.twitter.screenName,
+              })),
+              ...sendingRequests.map((request) => ({
+                type: 'already-requested' as const,
+                screenName: request.data.to.screenName,
+              })),
+            ]}
             addLinkAccountRequest={addLinkAccountRequest}
           />
           {/* ToDo: サポーターの場合、登録不可 */}
@@ -114,28 +123,23 @@ const Main: React.FC = () => {
 };
 
 const AddRequestSection: React.FC<{
-  accounts: {
-    id: string;
-    twitter: UserTwitter;
-  }[];
-  currentAccount: {
-    id: string;
-    twitter: UserTwitter;
-  } | null;
+  ignoreScreenNames: { type: 'own' | 'already-linked' | 'already-requested'; screenName: string }[];
   addLinkAccountRequest: (screenName: string) => void;
-}> = ({ accounts, currentAccount, addLinkAccountRequest }) => {
+}> = ({ ignoreScreenNames, addLinkAccountRequest }) => {
   const [screenName, setScreenName] = useState('');
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
-    if (currentAccount?.twitter.screenName === screenName) {
-      alert('ログイン中以外のユーザー名を入力してください');
-      setScreenName('');
-      return;
-    }
-    if (accounts.some((account) => account.twitter.screenName === screenName)) {
-      alert('既に連携済みです');
+    const ignore = ignoreScreenNames.find((ignore) => ignore.screenName === screenName);
+    if (ignore) {
+      ignore.type === 'own'
+        ? alert('ログイン中以外のユーザー名を入力してください')
+        : ignore.type === 'already-linked'
+        ? alert('既に連携済みです')
+        : ignore.type === 'already-requested'
+        ? alert('既に連携リクエスト済みです')
+        : null;
       setScreenName('');
       return;
     }
