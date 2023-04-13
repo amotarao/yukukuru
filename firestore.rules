@@ -23,25 +23,24 @@ service cloud.firestore {
     }
 
     function isLinkedUser(userID) {
-      return isSupporter()
-             && exists(/databases/$(database)/documents/users/$(userID))
+      return exists(/databases/$(database)/documents/users/$(userID))
              && 'linkedUserIds' in get(/databases/$(database)/documents/users/$(userID)).data
              && request.auth.uid in get(/databases/$(database)/documents/users/$(userID)).data.linkedUserIds;
     }
 
     match /users/{userID} {
       allow write: if false;
-      allow list: if isAdmin() || (isSupporter() && ('linkedUserIds' in resource.data && request.auth.uid in resource.data.linkedUserIds)) || isMe(userID);
+      allow list: if isAdmin() || ('linkedUserIds' in resource.data && request.auth.uid in resource.data.linkedUserIds) || isMe(userID);
       allow get: if isAdmin() || isLinkedUser(userID) || isMe(userID);
 
       match /records/{recordID} {
         allow write: if false;
-        allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+        allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
       }
 
       match /recordsV2/{recordID} {
         allow write: if false;
-        allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+        allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
       }
 
       match /watchesV2/{watchID} {
@@ -62,11 +61,11 @@ service cloud.firestore {
                       && request.resource.data.keys().hasOnly(['twitterAccessToken', 'twitterAccessTokenSecret'])
                       && request.resource.data.twitterAccessToken is string
                       && request.resource.data.twitterAccessTokenSecret is string;
-      allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+      allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
     }
 
     match /userStatuses/{userID} {
-      allow write: if (isLinkedUser(userID) || isMe(userID))
+      allow write: if ((isLinkedUser(userID) && isSupporter()) || isMe(userID))
                       && request.resource.data.size() == 1
                       && request.resource.data.keys().hasAll(['lastViewing'])
                       && request.resource.data.keys().hasOnly(['lastViewing'])
@@ -77,6 +76,24 @@ service cloud.firestore {
     match /csvExportRequests/{requestID} {
       allow write: if isAdmin();
       allow read: if isAdmin();
+    }
+
+    match /linkAccountRequests/{requestID} {
+      allow create: if request.resource.data.size() == 5
+                       && request.resource.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
+                       && request.resource.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+                       && request.resource.data.step == 'create'
+                       && request.resource.data.error == null
+                       && request.resource.data.canView is list
+                       && request.resource.data.canView.size() == 1
+                       && request.auth.uid in request.resource.data.canView
+                       && request.resource.data.from.uid == request.auth.uid
+                       && request.resource.data.from.screenName is string
+                       && request.resource.data.from.twitter is map
+                       && request.resource.data.to.uid == null
+                       && request.resource.data.to.screenName is string
+                       && request.resource.data.to.twitter == null
+      allow read: if request.auth.uid in resource.data.canView;
     }
 
     // Stripe Extension
