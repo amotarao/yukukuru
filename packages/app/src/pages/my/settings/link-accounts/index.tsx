@@ -161,7 +161,7 @@ const Main: React.FC = () => {
           />
           <Section head="連携手順">
             <p className="mx-4 text-sm">
-              アカウント連携をすることで、再ログインすることなく、ゆくくるの表示を簡単に切り替えることができます。
+              アカウント連携をすることで、マイページのゆくくる表示を、再ログインすることなくアカウントを簡単に切り替えることができます。
             </p>
             <ol className="mx-4 mt-3 grid list-decimal gap-1 pl-4 text-sm">
               <li>上のフォームからアカウント連携リクエストを送信</li>
