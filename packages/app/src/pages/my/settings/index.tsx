@@ -10,7 +10,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>設定 - ゆくくる beta</title>
+        <title>設定 - ゆくくる</title>
       </Head>
       {isLoading || signingIn ? (
         <LoadingCircle />

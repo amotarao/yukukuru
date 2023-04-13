@@ -42,7 +42,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>マイページ - ゆくくる beta</title>
+        <title>マイページ - ゆくくる</title>
       </Head>
       {authIsLoading || signingIn ? (
         <LoadingCircle />
