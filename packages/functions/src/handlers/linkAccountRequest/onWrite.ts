@@ -1,5 +1,5 @@
 import { LinkAccountRequest } from '@yukukuru/types';
-import { DocumentSnapshot, FieldValue } from 'firebase-admin/firestore';
+import { DocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { addLinkedUserIds } from '../../modules/firestore/users/linkedUserIds';
 import { getUserByTwitterScreenName } from '../../modules/firestore/users/twitter';
@@ -41,11 +41,21 @@ export const onWriteRequest = functions
           return;
         }
 
+        const [from] = data.canView;
         await after.ref.update({
           step: 'created',
-          canView: FieldValue.arrayUnion(user.id),
+          canView: [from, user.id],
           'to.uid': user.id,
           'to.twitter': user.data.twitter,
+        });
+        return;
+      }
+
+      case 'cancel': {
+        const [from] = data.canView;
+        await after.ref.update({
+          step: 'canceled',
+          canView: [from],
         });
         return;
       }
@@ -60,10 +70,10 @@ export const onWriteRequest = functions
       }
 
       case 'reject': {
-        const [, to] = data.canView;
+        const [from] = data.canView;
         await after.ref.update({
           step: 'rejected',
-          canView: FieldValue.arrayRemove(to),
+          canView: [from],
         });
         return;
       }
