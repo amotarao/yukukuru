@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
 import { LoadingCircle } from '../../../../components/atoms/LoadingCircle';
@@ -158,13 +159,28 @@ const Main: React.FC = () => {
             ]}
             addLinkAccountRequest={addLinkAccountRequest}
           />
-          {/* ToDo: サポーターの場合、登録不可 */}
           <Section head="連携手順">
-            <ol className="mx-4 grid list-decimal gap-1 pl-4 text-sm">
-              <li>サポーター登録したアカウントで、連携するアカウントを登録</li>
-              <li>Twitterでアカウントを切り替え、ゆくくるにログイン</li>
-              <li>「設定 &gt; アカウント連携」から承認</li>
+            <p className="mx-4 text-sm">
+              アカウント連携をすることで、再ログインすることなく、ゆくくるの表示を簡単に切り替えることができます。
+            </p>
+            <ol className="mx-4 mt-3 grid list-decimal gap-1 pl-4 text-sm">
+              <li>上のフォームからアカウント連携リクエストを送信</li>
+              <li>
+                <a className="text-primary underline" href="https://twitter.com/" target="_blank" rel="noreferrer">
+                  ブラウザ版Twitter
+                </a>
+                でアカウントを切り替え
+              </li>
+              <li>ゆくくるに再ログイン</li>
+              <li>「設定 &gt; アカウント連携」からリクエスト承認</li>
             </ol>
+            <p className="mx-4 mt-3 text-sm">
+              複数アカウント切り替えは
+              <Link className="text-primary underline" href={pagesPath.supporter.$url()}>
+                サポーター
+              </Link>
+              の機能です。
+            </p>
           </Section>
         </div>
       </div>
