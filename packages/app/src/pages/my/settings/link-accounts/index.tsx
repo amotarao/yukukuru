@@ -129,7 +129,8 @@ const Main: React.FC = () => {
                         <button
                           className="grid h-10 w-10 place-items-center"
                           onClick={() => {
-                            const result = window.confirm('連携リクエストをキャンセルしますか？');
+                            const result =
+                              !!request.data.error || window.confirm('連携リクエストをキャンセルしますか？');
                             if (!result) return;
                             updateLinkAccountRequest(request.id, 'cancel');
                           }}
