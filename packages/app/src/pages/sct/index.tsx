@@ -4,7 +4,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>特定商取引法に基づく表記 - ゆくくる beta</title>
+        <title>特定商取引法に基づく表記 - ゆくくる</title>
       </Head>
       <main className="mx-auto max-w-[480px] px-4 py-12">
         <h1 className="mb-8 text-xl font-bold">特定商取引法に基づく表記</h1>

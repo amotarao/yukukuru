@@ -17,7 +17,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>アカウント連携 - ゆくくる beta</title>
+        <title>アカウント連携 - ゆくくる</title>
       </Head>
       {isLoading || signingIn ? <LoadingCircle /> : !signedIn ? <LoginPage signIn={signIn} /> : <Main />}
     </>
