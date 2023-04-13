@@ -1,5 +1,5 @@
 import { LinkAccountRequest, UserTwitter } from '@yukukuru/types';
-import { addDoc, collection, doc, documentId, onSnapshot, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, documentId, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { useCallback, useEffect, useReducer } from 'react';
 import { firestore } from '../modules/firebase';
 
@@ -131,6 +131,7 @@ export const useMultiAccounts = (
     isLoading: boolean;
     currentAccount: User | null;
     addLinkAccountRequest: (screenName: string) => void;
+    updateLinkAccountRequest: (requestId: string, step: 'create' | 'cancel' | 'approve' | 'reject') => void;
   }
 > => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -248,11 +249,19 @@ export const useMultiAccounts = (
     [authUid, state.accounts]
   );
 
+  const updateLinkAccountRequest = useCallback(
+    (requestId: string, step: 'create' | 'cancel' | 'approve' | 'reject') => {
+      updateDoc(doc(firestore, 'linkAccountRequests', requestId), { step });
+    },
+    []
+  );
+
   return {
     isLoading: state._loadings.some((loading) => loading),
     accounts: state.accounts,
     currentAccount: state.accounts.find((account) => account.id === (currentUid || authUid)) || null,
     linkAccountRequests: state.linkAccountRequests,
     addLinkAccountRequest,
+    updateLinkAccountRequest,
   };
 };

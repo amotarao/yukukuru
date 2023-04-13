@@ -33,6 +33,7 @@ const Main: React.FC = () => {
     currentAccount,
     linkAccountRequests,
     addLinkAccountRequest,
+    updateLinkAccountRequest,
   } = useMultiAccounts(uid, null);
 
   const comingRequests = useMemo(() => {
@@ -68,12 +69,22 @@ const Main: React.FC = () => {
                         {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
-                        {/* ToDo: reject処理追加 */}
-                        <button className="grid h-10 w-10 place-items-center">
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            const result = window.confirm('連携リクエストを却下しますか？');
+                            if (!result) return;
+                            updateLinkAccountRequest(request.id, 'reject');
+                          }}
+                        >
                           <Icon className="h-6 w-6 text-danger" type="cross" />
                         </button>
-                        {/* ToDo: approve処理追加 */}
-                        <button className="grid h-10 w-10 place-items-center">
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            updateLinkAccountRequest(request.id, 'approve');
+                          }}
+                        >
                           <Icon className="h-6 w-6 text-primary" type="check" />
                         </button>
                       </div>
@@ -111,8 +122,14 @@ const Main: React.FC = () => {
                         {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
-                        {/* ToDo: cancel処理追加 */}
-                        <button className="grid h-10 w-10 place-items-center">
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            const result = window.confirm('連携リクエストをキャンセルしますか？');
+                            if (!result) return;
+                            updateLinkAccountRequest(request.id, 'cancel');
+                          }}
+                        >
                           <Icon className="h-6 w-6 text-danger" type="cross" />
                         </button>
                       </div>
