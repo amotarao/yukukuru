@@ -37,13 +37,17 @@ const Main: React.FC = () => {
   } = useMultiAccounts(uid, null);
 
   const comingRequests = useMemo(() => {
-    return linkAccountRequests.filter((request) => request.data.step === 'created' || request.data.step === 'approve');
-  }, [linkAccountRequests]);
+    return linkAccountRequests
+      .filter((request) => request.data.step === 'created' || request.data.step === 'approve')
+      .filter((request) => request.data.to.uid === uid);
+  }, [linkAccountRequests, uid]);
   const sendingRequests = useMemo(() => {
-    return linkAccountRequests.filter(
-      (request) => request.data.step === 'create' || request.data.step === 'created' || request.data.step === 'error'
-    );
-  }, [linkAccountRequests]);
+    return linkAccountRequests
+      .filter(
+        (request) => request.data.step === 'create' || request.data.step === 'created' || request.data.step === 'error'
+      )
+      .filter((request) => request.data.from.uid === uid);
+  }, [linkAccountRequests, uid]);
 
   if (isLoadingAuth || isLoadingMultiAccounts) {
     return <LoadingCircle />;
