@@ -1,4 +1,3 @@
-import { UserTwitter } from '@yukukuru/types';
 import Head from 'next/head';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
@@ -63,31 +62,61 @@ const Main: React.FC = () => {
               <ul>
                 {comingRequests.map((request) => (
                   <li key={request.id} className="border-t border-back-2">
-                    {/* ToDo: リクエストの承認をできるようにする */}
-                    <div className="px-4 py-2 tracking-wide">@{request.data.from.screenName}</div>
+                    <div className="flex gap-2 px-4">
+                      <div className="shrink grow py-2">
+                        <p className="tracking-wide">@{request.data.from.screenName}</p>
+                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                      </div>
+                      <div className="flex shrink-0 grow-0 self-center">
+                        {/* ToDo: reject処理追加 */}
+                        <button className="grid h-10 w-10 place-items-center">
+                          <Icon className="h-6 w-6 text-danger" type="cross" />
+                        </button>
+                        {/* ToDo: approve処理追加 */}
+                        <button className="grid h-10 w-10 place-items-center">
+                          <Icon className="h-6 w-6 text-primary" type="check" />
+                        </button>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
             </Section>
           )}
-          <Section head="連携済みアカウント">
-            <ul>
-              {accounts
-                .filter((account) => account.id !== uid)
-                .map((account) => (
-                  <li key={account.id} className="border-t border-back-2">
-                    <div className="px-4 py-2 tracking-wide">@{account.twitter.screenName}</div>
-                  </li>
-                ))}
-            </ul>
-          </Section>
+          {accounts.filter((account) => account.id !== uid).length > 0 && (
+            <Section head="連携済みアカウント">
+              <ul>
+                {accounts
+                  .filter((account) => account.id !== uid)
+                  .map((account) => (
+                    <li key={account.id} className="border-t border-back-2">
+                      <div className="flex gap-2 px-4">
+                        <div className="shrink grow py-2">
+                          <p className="tracking-wide">@{account.twitter.screenName}</p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </Section>
+          )}
           {sendingRequests.length > 0 && (
             <Section head="連携待ち">
               <ul>
                 {sendingRequests.map((request) => (
                   <li key={request.id} className="border-t border-back-2">
-                    {/* ToDo: エラーがある際に表示 */}
-                    <div className="px-4 py-2 tracking-wide">@{request.data.to.screenName}</div>
+                    <div className="flex gap-2 px-4">
+                      <div className="shrink grow py-2">
+                        <p className="tracking-wide">@{request.data.to.screenName}</p>
+                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                      </div>
+                      <div className="flex shrink-0 grow-0 self-center">
+                        {/* ToDo: cancel処理追加 */}
+                        <button className="grid h-10 w-10 place-items-center">
+                          <Icon className="h-6 w-6 text-danger" type="cross" />
+                        </button>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>

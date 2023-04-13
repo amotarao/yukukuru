@@ -35,6 +35,11 @@ const icons = {
     viewBox: '0 96 960 960',
     path: 'M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z',
   },
+  check: {
+    size: 48,
+    viewBox: '0 96 960 960',
+    path: 'M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z',
+  },
 };
 
 export type IconType = keyof typeof icons;
