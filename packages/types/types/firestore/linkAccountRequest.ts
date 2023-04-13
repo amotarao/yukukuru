@@ -15,6 +15,7 @@ type RequestUserUnknown = {
 export type LinkAccountRequest =
   | {
       // 招待直後
+      // from の操作
       step: 'create';
       error: null;
       canView: [string];
@@ -30,7 +31,25 @@ export type LinkAccountRequest =
       to: RequestUser;
     }
   | {
+      // キャンセル直後
+      // from の操作
+      step: 'cancel';
+      error: null;
+      canView: [string] | [string, string];
+      from: RequestUser;
+      to: RequestUser | RequestUserUnknown;
+    }
+  | {
+      // キャンセル処理完了
+      step: 'canceled';
+      error: null;
+      canView: [string] | [string, string];
+      from: RequestUser;
+      to: RequestUser | RequestUserUnknown;
+    }
+  | {
       // 承認直後
+      // to の操作
       step: 'approve';
       error: null;
       canView: [string, string];
@@ -47,6 +66,7 @@ export type LinkAccountRequest =
     }
   | {
       // 拒否直後
+      // to の操作
       step: 'reject';
       error: null;
       canView: [string, string];
