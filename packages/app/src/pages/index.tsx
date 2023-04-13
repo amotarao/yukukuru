@@ -5,7 +5,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>ゆくくる beta</title>
+        <title>ゆくくる</title>
       </Head>
       <TopPage />
     </>

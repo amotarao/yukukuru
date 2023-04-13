@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { useSubscription } from '../../../hooks/useSubscription';
-import { pagesPath } from '../../../lib/$path';
-import { dayjs } from '../../../modules/dayjs';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pagesPath } from '../../lib/$path';
+import { dayjs } from '../../modules/dayjs';
 
 const ads = ['月額99円で最短5分おきに更新', '月額99円で複数アカウント切り替え'];
 

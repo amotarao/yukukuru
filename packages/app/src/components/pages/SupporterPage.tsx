@@ -2,24 +2,21 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import { useAuth } from '../../../hooks/auth';
-import { useMultiAccounts } from '../../../hooks/multiAccounts';
-import { usePlanPrice } from '../../../hooks/usePlanPrice';
-import { useSubscription } from '../../../hooks/useSubscription';
-import { pagesPath } from '../../../lib/$path';
-import { addCheckoutSession } from '../../../modules/firestore/stripe';
-import { getPortalLink } from '../../../modules/functions/stripe';
-import { AccountSelector } from '../../organisms/AccountSelector';
-import { BottomNav } from '../../organisms/BottomNav/BottomNav';
-import { Icon } from '../../shared/Icon';
+import { useAuth } from '../../hooks/auth';
+import { useMultiAccounts } from '../../hooks/useMultiAccounts';
+import { usePlanPrice } from '../../hooks/usePlanPrice';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pagesPath } from '../../lib/$path';
+import { addCheckoutSession } from '../../modules/firestore/stripe';
+import { getPortalLink } from '../../modules/functions/stripe';
+import { AccountSelector } from '../organisms/AccountSelector';
+import { BottomNav } from '../organisms/BottomNav';
+import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
   const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
-  const [{ accounts }] = useMultiAccounts(uid);
-  const currentAccount = useMemo(() => {
-    return accounts.find((account) => account.id === uid) || null;
-  }, [uid, accounts]);
+  const { currentAccount } = useMultiAccounts(uid, null);
 
   return (
     <div>
@@ -83,16 +80,9 @@ export const SupporterPage: React.FC = () => {
                     </p>
                     <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
                       <li>
-                        <a
-                          className="underline"
-                          href={`https://www.twitter.com/messages/compose?recipient_id=1150435427108585473&text=${encodeURIComponent(
-                            '◆ゆくくるサポーター 複数アカウント連携依頼\n\n◆注意事項\n・連携したいすべてのアカウントからDMを送信してください。\n・サポーターへの登録は1アカウントで構いません。\n・設定まで2〜3日お待ちいただく場合があります。\n\n◇サポーター登録したアカウント: \n◇連携したいアカウント(複数可): '
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          このリンクからDMで申請
-                        </a>
+                        <Link className="underline" href={pagesPath.my.settings.link_accounts.$url()}>
+                          「設定 &gt; アカウント連携」から設定
+                        </Link>
                       </li>
                     </ul>
                   </li>
@@ -178,7 +168,7 @@ export const SupporterPage: React.FC = () => {
           </p>
         </section>
       </div>
-      {signedIn && <BottomNav active="supporter" />}
+      {signedIn && <BottomNav active="supporter" scrollToTopOnActive />}
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { pagesPath } from '../../../lib/$path';
-import { DummyUserCard } from '../../organisms/UserCard';
-import myPageStyles from '../MyPage/styles.module.scss';
-import styles from './styles.module.scss';
+import { pagesPath } from '../../lib/$path';
+import { DummyUserCard } from '../organisms/UserCard';
+import myPageStyles from './MyPage.module.scss';
+import styles from './TopPage.module.scss';
 
 export const TopPage: React.FC = () => {
   useEffect(() => {
@@ -22,7 +22,7 @@ export const TopPage: React.FC = () => {
       )}
     >
       <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
-        <h1 className="text-3xl">ゆくくる beta</h1>
+        <h1 className="text-3xl">ゆくくる</h1>
         <p className="whitespace-nowrap text-sm">
           フォロワーがいつきたか・
           <wbr />

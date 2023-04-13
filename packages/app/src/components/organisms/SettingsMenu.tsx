@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Switch from 'react-switch';
-import { pagesPath } from '../../../lib/$path';
-import { ThemeContainer } from '../../../store/theme';
-import { TweetButton } from '../TweetButton';
+import { pagesPath } from '../../lib/$path';
+import { ThemeContainer } from '../../store/theme';
+import { TweetButton } from './TweetButton';
 
 type SettingsMenuProps = {
   signIn: () => void;
@@ -38,6 +38,14 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
               aria-label="ダークテーマにする"
             />
           </div>
+        </li>
+        <li className="border-b border-b-back-2">
+          <Link className="block w-full grow px-4 py-3 text-left" href={pagesPath.my.settings.link_accounts.$url()}>
+            <p>
+              アカウント連携
+              <span className="mt-1 block text-xs">サポーター向け機能</span>
+            </p>
+          </Link>
         </li>
         <li className="border-b border-b-back-2">
           <Link

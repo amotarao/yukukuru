@@ -2,10 +2,11 @@ import { UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { useSubscription } from '../../../hooks/useSubscription';
-import { pagesPath } from '../../../lib/$path';
-import { TwitterUserIcon } from '../../atoms/TwitterUserIcon';
-import { Icon } from '../../shared/Icon';
+import { useAuth } from '../../hooks/auth';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pagesPath } from '../../lib/$path';
+import { TwitterUserIcon } from '../atoms/TwitterUserIcon';
+import { Icon } from '../shared/Icon';
 
 export type AccountSelectorProps = {
   className?: string;
@@ -22,6 +23,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   multiAccounts,
   onChange = () => null,
 }) => {
+  const [{ uid }] = useAuth();
   const { isSupporter } = useSubscription();
   const [isShownModal, setIsShownModal] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
@@ -69,27 +71,29 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
               }
             }}
           >
-            {multiAccounts.map((account) => {
-              return (
-                <button
-                  key={account.id}
-                  className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-2 text-left last:border-b-0"
-                  onClick={() => {
-                    onChange(account.id);
-                    setIsShownModal(false);
-                  }}
-                >
-                  <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
-                  <span className="flex-1 text-xs line-clamp-1 sm:text-sm">@{account.twitter.screenName}</span>
-                  {account.id === currentAccount?.id && (
-                    <Icon className="ml-2 text-base text-primary" type="check_circle" />
-                  )}
-                </button>
-              );
-            })}
+            {multiAccounts
+              .filter((account) => isSupporter || account.id === uid)
+              .map((account) => {
+                return (
+                  <button
+                    key={account.id}
+                    className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-2 text-left last:border-b-0"
+                    onClick={() => {
+                      onChange(account.id);
+                      setIsShownModal(false);
+                    }}
+                  >
+                    <TwitterUserIcon className="mr-2 h-8 w-8 rounded-full" src={account.twitter.photoUrl} />
+                    <span className="flex-1 text-xs line-clamp-1 sm:text-sm">@{account.twitter.screenName}</span>
+                    {account.id === currentAccount?.id && (
+                      <Icon className="ml-2 text-base text-primary" type="check_circle" />
+                    )}
+                  </button>
+                );
+              })}
             <Link
               className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
-              href={pagesPath.supporter.$url()}
+              href={isSupporter ? pagesPath.my.settings.link_accounts.$url() : pagesPath.supporter.$url()}
               onClick={() => {
                 setIsShownModal(false);
               }}

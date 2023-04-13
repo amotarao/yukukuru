@@ -3,16 +3,16 @@ import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect, Fragment } from 'react';
-import { useRecords } from '../../../hooks/records';
-import { useAnalytics } from '../../../modules/analytics';
-import { dayjs } from '../../../modules/dayjs';
-import { LastUpdatedText } from '../../atoms/LastUpdatedText';
-import { LoadingCircle } from '../../atoms/LoadingCircle';
-import { AccountSelector } from '../../organisms/AccountSelector';
-import { BottomNav } from '../../organisms/BottomNav';
-import { ErrorWrapper } from '../../organisms/ErrorWrapper';
-import { UserCard } from '../../organisms/UserCard';
-import styles from './styles.module.scss';
+import { useRecords } from '../../hooks/records';
+import { useAnalytics } from '../../modules/analytics';
+import { dayjs } from '../../modules/dayjs';
+import { LastUpdatedText } from '../atoms/LastUpdatedText';
+import { LoadingCircle } from '../atoms/LoadingCircle';
+import { AccountSelector } from '../organisms/AccountSelector';
+import { BottomNav } from '../organisms/BottomNav';
+import { ErrorWrapper } from '../organisms/ErrorWrapper';
+import { UserCard } from '../organisms/UserCard';
+import styles from './MyPage.module.scss';
 
 export type MyPageProps = {
   isLoading: boolean;
@@ -226,7 +226,7 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      <BottomNav active="my" />
+      <BottomNav active="my" scrollToTopOnActive />
     </div>
   );
 };

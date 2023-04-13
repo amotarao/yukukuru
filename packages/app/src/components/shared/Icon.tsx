@@ -25,6 +25,21 @@ const icons = {
     size: 48,
     path: 'M7 25.85V31h34v-5.15ZM7 4h34q1.25 0 2.125.875T44 7v24q0 1.25-.875 2.125T41 34h-9.7v10L24 40.3 16.7 44V34H7q-1.25 0-2.125-.875T4 31V7q0-1.25.875-2.125T7 4Zm0 16.45h34V7H7ZM7 31V7v24Z',
   },
+  arrow_back: {
+    size: 48,
+    viewBox: '0 96 960 960',
+    path: 'M480 896 160 576l320-320 42 42-248 248h526v60H274l248 248-42 42Z',
+  },
+  add: {
+    size: 48,
+    viewBox: '0 96 960 960',
+    path: 'M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z',
+  },
+  check: {
+    size: 48,
+    viewBox: '0 96 960 960',
+    path: 'M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z',
+  },
 };
 
 export type IconType = keyof typeof icons;
@@ -40,7 +55,7 @@ export const Icon: React.FC<IconProps> = ({ className, type, ...props }) => {
   return (
     <svg
       className={classNames('where:h-[1em] where:w-[1em]', className)}
-      viewBox={`0 0 ${icon.size} ${icon.size}`}
+      viewBox={'viewBox' in icon ? icon.viewBox : `0 0 ${icon.size} ${icon.size}`}
       {...props}
     >
       <path d={icon.path} fill="currentColor"></path>

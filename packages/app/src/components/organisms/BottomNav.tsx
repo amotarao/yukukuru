@@ -1,31 +1,28 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
-import { pagesPath } from '../../../lib/$path';
-import { Icon } from '../../shared/Icon';
-import styles from './styles.module.scss';
+import { pagesPath } from '../../lib/$path';
+import { Icon } from '../shared/Icon';
+import styles from './BottomNav.module.scss';
 
 export type NavType = 'my' | 'supporter' | 'settings';
 
 export type BottomNavProps = {
   active: NavType;
-  onChange?: (nav: NavType) => void;
+  scrollToTopOnActive?: boolean;
 };
 
-export const BottomNav: React.FC<BottomNavProps> = ({ active, onChange = () => null }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ active, scrollToTopOnActive }) => {
   const onClick = useCallback(
     (type: NavType): React.MouseEventHandler<HTMLAnchorElement> =>
       (e) => {
-        // 同じページの場合、上部にスクロール
-        if (type === active) {
+        if (scrollToTopOnActive && type === active) {
           e.preventDefault();
           window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
           return;
         }
-
-        onChange(type);
       },
-    [active, onChange]
+    [active, scrollToTopOnActive]
   );
 
   const menuItems = useMemo(

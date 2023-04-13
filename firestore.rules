@@ -23,25 +23,24 @@ service cloud.firestore {
     }
 
     function isLinkedUser(userID) {
-      return isSupporter()
-             && exists(/databases/$(database)/documents/users/$(userID))
+      return exists(/databases/$(database)/documents/users/$(userID))
              && 'linkedUserIds' in get(/databases/$(database)/documents/users/$(userID)).data
              && request.auth.uid in get(/databases/$(database)/documents/users/$(userID)).data.linkedUserIds;
     }
 
     match /users/{userID} {
       allow write: if false;
-      allow list: if isAdmin() || (isSupporter() && ('linkedUserIds' in resource.data && request.auth.uid in resource.data.linkedUserIds)) || isMe(userID);
+      allow list: if isAdmin() || ('linkedUserIds' in resource.data && request.auth.uid in resource.data.linkedUserIds) || isMe(userID);
       allow get: if isAdmin() || isLinkedUser(userID) || isMe(userID);
 
       match /records/{recordID} {
         allow write: if false;
-        allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+        allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
       }
 
       match /recordsV2/{recordID} {
         allow write: if false;
-        allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+        allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
       }
 
       match /watchesV2/{watchID} {
@@ -62,11 +61,11 @@ service cloud.firestore {
                       && request.resource.data.keys().hasOnly(['twitterAccessToken', 'twitterAccessTokenSecret'])
                       && request.resource.data.twitterAccessToken is string
                       && request.resource.data.twitterAccessTokenSecret is string;
-      allow read: if isAdmin() || isLinkedUser(userID) || isMe(userID);
+      allow read: if isAdmin() || (isLinkedUser(userID) && isSupporter()) || isMe(userID);
     }
 
     match /userStatuses/{userID} {
-      allow write: if (isLinkedUser(userID) || isMe(userID))
+      allow write: if ((isLinkedUser(userID) && isSupporter()) || isMe(userID))
                       && request.resource.data.size() == 1
                       && request.resource.data.keys().hasAll(['lastViewing'])
                       && request.resource.data.keys().hasOnly(['lastViewing'])
@@ -77,6 +76,50 @@ service cloud.firestore {
     match /csvExportRequests/{requestID} {
       allow write: if isAdmin();
       allow read: if isAdmin();
+    }
+
+    match /linkAccountRequests/{requestID} {
+      function typeCheck(rsrc) {
+        return rsrc.data.size() == 5
+               && rsrc.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
+               && rsrc.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+               && rsrc.data.step is string
+               && rsrc.data.step in ['create', 'cancel', 'approve', 'reject']
+               && rsrc.data.error == null || rsrc.data.error is string
+               && rsrc.data.canView is list
+               && rsrc.data.canView.size() in [1, 2]
+               && rsrc.data.from is map
+               && rsrc.data.from.screenName is string
+               && rsrc.data.from.uid is string
+               && rsrc.data.from.twitter is map
+               && rsrc.data.to is map
+               && rsrc.data.to.screenName is string
+               && (rsrc.data.to.uid == null || rsrc.data.to.uid is string)
+               && (rsrc.data.to.twitter == null || rsrc.data.to.twitter is map)
+      }
+
+      function fromIsMe(rsrc) {
+        return rsrc.data.from.uid == request.auth.uid
+      }
+
+      function toIsMe(rsrc) {
+        return rsrc.data.to.uid == request.auth.uid
+      }
+
+      allow create: if typeCheck(request.resource)
+                       && request.resource.data.step == 'create'
+                       && request.resource.data.canView.size() == 1
+                       && request.auth.uid in request.resource.data.canView
+                       && fromIsMe(request.resource)
+
+      allow update: if typeCheck(request.resource)
+                       && request.auth.uid in request.resource.data.canView
+                       && (
+                            (request.resource.data.step in ['create', 'cancel'] && fromIsMe(request.resource))
+                            || (request.resource.data.step in ['approve', 'reject'] && toIsMe(request.resource))
+                          )
+
+      allow read: if request.auth.uid in resource.data.canView
     }
 
     // Stripe Extension
