@@ -78,6 +78,24 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
+    match /linkAccountRequests/{requestID} {
+      allow create: if request.resource.data.size() == 5
+                       && request.resource.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
+                       && request.resource.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+                       && request.resource.data.step == 'create'
+                       && request.resource.data.error == null
+                       && request.resource.data.canView is list
+                       && request.resource.data.canView.size() == 1
+                       && request.auth.uid in request.resource.data.canView
+                       && request.resource.data.from.uid == request.auth.uid
+                       && request.resource.data.from.screenName is string
+                       && request.resource.data.from.twitter is map
+                       && request.resource.data.to.uid == null
+                       && request.resource.data.to.screenName is string
+                       && request.resource.data.to.twitter == null
+      allow read: if request.auth.uid in resource.data.canView;
+    }
+
     // Stripe Extension
     match /stripeCustomers/{uid} {
       allow read: if request.auth.uid == uid;
