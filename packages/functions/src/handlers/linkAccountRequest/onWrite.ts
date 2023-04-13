@@ -58,5 +58,14 @@ export const onWriteRequest = functions
         });
         return;
       }
+
+      case 'reject': {
+        const [, to] = data.canView;
+        await after.ref.update({
+          step: 'rejected',
+          canView: FieldValue.arrayRemove(to),
+        });
+        return;
+      }
     }
   });

@@ -46,6 +46,22 @@ export type LinkAccountRequest =
       to: RequestUser;
     }
   | {
+      // 拒否直後
+      step: 'reject';
+      error: null;
+      canView: [string, string];
+      from: RequestUser;
+      to: RequestUser;
+    }
+  | {
+      // 拒否処理完了
+      step: 'rejected';
+      error: null;
+      canView: [string];
+      from: RequestUser;
+      to: RequestUser;
+    }
+  | {
       // エラー発生
       step: 'error';
       error: string;
