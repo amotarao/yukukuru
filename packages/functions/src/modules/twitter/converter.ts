@@ -1,4 +1,5 @@
 import { InlineErrorV2 } from 'twitter-api-v2';
+import { getInlineErrorV2Type } from './error';
 import { PickedTwitterUser, TwitterErrorUser, TwitterUser } from './types';
 
 export const toRequiredTwitterUser = (user: PickedTwitterUser): TwitterUser => {
@@ -20,11 +21,7 @@ export const convertErrorUsers = (errors?: InlineErrorV2[]): TwitterErrorUser[] 
     errors
       ?.map((errorUser): TwitterErrorUser | null => {
         const id = errorUser.resource_id;
-        const type = errorUser.detail.startsWith('Could not find user with ids:')
-          ? 'deleted'
-          : errorUser.detail.startsWith('User has been suspended:')
-          ? 'suspended'
-          : 'unknown';
+        const type = getInlineErrorV2Type(errorUser);
 
         if (!id || type === 'unknown') {
           console.log('Unknown error user', JSON.stringify(errorUser));
