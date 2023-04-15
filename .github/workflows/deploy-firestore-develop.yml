@@ -39,7 +39,7 @@ jobs:
         run: npm i -g firebase-tools
 
       - name: Deploy to Firebase
-        run: npx firebase deploy --only firestore --project $PROJECT_ID
+        run: npx firebase deploy -f --only firestore --project $PROJECT_ID
         env:
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID_DEVELOP }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

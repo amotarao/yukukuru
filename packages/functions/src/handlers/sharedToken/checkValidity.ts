@@ -2,16 +2,15 @@ import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
+  checkExistsSharedToken,
   deleteSharedToken,
-  existsSharedToken,
-  getInvalidSharedTokenDocsOrderByLastChecked,
+  getSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
-  getValidSharedTokenDocsOrderByLastChecked,
-  setInvalidSharedToken,
-  setValidSharedToken,
+  updateLastCheckedSharedToken,
 } from '../../modules/firestore/sharedToken';
+import { checkExistsToken, deleteToken } from '../../modules/firestore/tokens';
 import { publishMessages } from '../../modules/pubsub';
-import { getUsers } from '../../modules/twitter/api/users';
+import { getUser } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 
 const topicName = 'checkValiditySharedToken';
@@ -44,10 +43,8 @@ export const publish = functions
     const beforeDate = dayjs(now).subtract(3, 'days').toDate();
 
     // 3日前以前のトークンをチェック
-    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(beforeDate, 97);
-    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(beforeDate, 3);
-
-    const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
+    const docs = await getSharedTokenDocsOrderByLastChecked(beforeDate, 97);
+    const messages: Message[] = docs.map((doc) => ({
       id: doc.id,
       accessToken: doc.data().accessToken,
       accessTokenSecret: doc.data().accessTokenSecret,
@@ -69,26 +66,26 @@ export const run = functions
 
     console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
 
-    const exists = await existsSharedToken(id);
-
     const client = getClient({
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
     });
 
-    const response = await getUsers(client, ['783214']);
+    const officialTwitterId = '783214';
+    const response = await getUser(client, officialTwitterId);
     if ('error' in response) {
       // 認証エラー
       if (response.error.isAuthError) {
         console.log('❗️ Auth Error.');
-        exists && (await deleteSharedToken(id));
+        await deleteTokens(id);
         return;
       }
+
       // サポート外のトークン
       // トークンが空欄の際に発生する
       if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
         console.log('❗️ Unsupported Authentication.');
-        exists && (await deleteSharedToken(id));
+        await deleteTokens(id);
         return;
       }
 
@@ -96,7 +93,7 @@ export const run = functions
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
         console.log('❗️ Forbidden.');
-        exists && (await setInvalidSharedToken(id, now));
+        await deleteTokens(id);
         return;
       }
 
@@ -107,5 +104,17 @@ export const run = functions
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
     await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
-    exists && (await setValidSharedToken(id, now));
+    const existsSharedToken = await checkExistsSharedToken(id);
+    if (existsSharedToken) await updateLastCheckedSharedToken(id, now);
   });
+
+const deleteTokens = async (id: string): Promise<void> => {
+  await Promise.all([
+    checkExistsSharedToken(id).then(async (exists) => {
+      if (exists) await deleteSharedToken(id);
+    }),
+    checkExistsToken(id).then(async (exists) => {
+      if (exists) await deleteToken(id);
+    }),
+  ]);
+};

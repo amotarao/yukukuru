@@ -27,7 +27,7 @@ const Page: React.FC = () => {
 export default Page;
 
 const Main: React.FC = () => {
-  const [{ isLoading: isLoadingAuth, uid }] = useAuth();
+  const [{ isLoading: isLoadingAuth, uid }, { signIn }] = useAuth();
   const {
     isLoading: isLoadingMultiAccounts,
     accounts,
@@ -171,7 +171,17 @@ const Main: React.FC = () => {
                 </a>
                 でアカウントを切り替え
               </li>
-              <li>ゆくくるに再ログイン</li>
+              <li>
+                ゆくくるに
+                <button
+                  className="inline text-primary underline"
+                  onClick={() => {
+                    signIn();
+                  }}
+                >
+                  再ログイン
+                </button>
+              </li>
               <li>「設定 &gt; アカウント連携」からリクエスト承認</li>
             </ol>
             <p className="mx-4 mt-3 text-sm">

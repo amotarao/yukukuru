@@ -3,8 +3,8 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { existsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
-import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
+import { checkExistsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
+import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
@@ -21,7 +21,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { getDiffDays, getDiffMinutes } from '../../modules/time';
 import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
-import { getUsers } from '../../modules/twitter/api/users';
+import { getUser, getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
 import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
@@ -268,16 +268,16 @@ const checkOwnUserStatusStep = async (
   uid: string,
   twitterId: string
 ): Promise<void> => {
-  const response = await getUsers(client, [twitterId]);
+  const response = await getUser(client, twitterId);
   if ('error' in response) {
     await publishCheckValiditySharedToken(token);
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
-  if (response.errorUsers.length > 0) {
+  if ('errorUser' in response) {
     throw new Error(`❗️Own is deleted or suspended.`);
   }
 
-  const user = response.users[0];
+  const user = response.user;
   if (user) {
     await setUserTwitter(uid, convertTwitterUserToUserTwitter(user));
   }
@@ -352,8 +352,8 @@ const saveDocsStep = async (
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
-    existsSharedToken(sharedToken ? sharedToken.id : uid).then(() => {
-      setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
+    checkExistsSharedToken(sharedToken ? sharedToken.id : uid).then(() => {
+      updateLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
     }),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
