@@ -23,7 +23,7 @@ export const deleteFieldsSharedTokens = functions
       bulkWriter.delete(tokensCollectionRef.doc(doc.id));
     });
 
-    const hasInvalidSnapshot = await sharedTokensCollectionRef.orderBy('_invalid').limit(100).get();
+    const hasInvalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', false).limit(100).get();
     hasInvalidSnapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, {
         _invalid: FieldValue.delete(),
