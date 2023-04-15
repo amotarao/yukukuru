@@ -76,7 +76,7 @@ export const getUsers = async (
 export const getUser = async (
   client: TwitterApiReadOnly,
   id: string
-): Promise<{ user: TwitterUser } | { errorUser: boolean } | { error: ApiResponseError }> => {
+): Promise<{ user: TwitterUser } | { errorUser: TwitterErrorUser | null } | { error: ApiResponseError }> => {
   return client.v2
     .user(id, { ...userFields })
     .then((response) => {
@@ -89,7 +89,7 @@ export const getUser = async (
       }
 
       return {
-        errorUser: true,
+        errorUser: convertErrorUsers(response.errors)[0] ?? null,
       };
     })
     .catch(twitterClientErrorHandler);
