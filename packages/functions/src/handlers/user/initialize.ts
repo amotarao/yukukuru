@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { auth } from '../../modules/firebase';
 import { initializeUser } from '../../modules/firestore/users/initialize';
 import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
-import { getUsers } from '../../modules/twitter/api/users';
+import { getUser } from '../../modules/twitter/api/users';
 import { getAppClient } from '../../modules/twitter/client';
 
 /** Auth: ユーザーが作成されたときの処理 */
@@ -27,15 +27,15 @@ export const initialize = functions
     }
 
     const appClient = getAppClient();
-    const response = await getUsers(appClient, [twitterId]);
+    const response = await getUser(appClient, twitterId);
 
-    if ('error' in response || !response.users[0]) {
+    if ('error' in response || 'errorUser' in response) {
       await auth.deleteUser(uid);
       console.error(`❗️[Error]: Failed to initialize user for [${uid}]: Cannot get user from Twitter.`);
       return;
     }
 
-    await initializeUser(uid, convertTwitterUserToUserTwitter(response.users[0]));
+    await initializeUser(uid, convertTwitterUserToUserTwitter(response.user));
 
     console.log(`✔️ Completed initialize user document for [${uid}].`);
   });

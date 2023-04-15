@@ -11,7 +11,7 @@ import {
   setValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub';
-import { getUsers } from '../../modules/twitter/api/users';
+import { getUser } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 
 const topicName = 'checkValiditySharedToken';
@@ -76,7 +76,8 @@ export const run = functions
       accessSecret: accessTokenSecret,
     });
 
-    const response = await getUsers(client, ['783214']);
+    const officialTwitterId = '783214';
+    const response = await getUser(client, officialTwitterId);
     if ('error' in response) {
       // 認証エラー
       if (response.error.isAuthError) {
