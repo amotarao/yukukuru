@@ -7,9 +7,6 @@ export type SharedToken<T extends FirestoreDateLike = Timestamp> = {
   /** アクセストークンシークレット */
   accessTokenSecret: string;
 
-  /** 無効かどうか */
-  _invalid: boolean;
-
   /** 最終更新日時 */
   _lastUpdated: T;
 

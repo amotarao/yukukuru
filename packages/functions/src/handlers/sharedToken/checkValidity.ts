@@ -3,13 +3,13 @@ import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
-  existsSharedToken,
+  checkExistsSharedToken,
   getInvalidSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
-  updateInvalidSharedToken,
-  updateValidSharedToken,
+  updateLastCheckedSharedToken,
 } from '../../modules/firestore/sharedToken';
+import { checkExistsToken, deleteToken } from '../../modules/firestore/tokens';
 import { publishMessages } from '../../modules/pubsub';
 import { getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
@@ -69,8 +69,6 @@ export const run = functions
 
     console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
 
-    const exists = await existsSharedToken(id);
-
     const client = getClient({
       accessToken: accessToken,
       accessSecret: accessTokenSecret,
@@ -81,14 +79,15 @@ export const run = functions
       // 認証エラー
       if (response.error.isAuthError) {
         console.log('❗️ Auth Error.');
-        exists && (await deleteSharedToken(id));
+        await deleteTokens(id);
         return;
       }
+
       // サポート外のトークン
       // トークンが空欄の際に発生する
       if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
         console.log('❗️ Unsupported Authentication.');
-        exists && (await deleteSharedToken(id));
+        await deleteTokens(id);
         return;
       }
 
@@ -96,7 +95,7 @@ export const run = functions
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
         console.log('❗️ Forbidden.');
-        exists && (await updateInvalidSharedToken(id, now));
+        await deleteTokens(id);
         return;
       }
 
@@ -107,5 +106,17 @@ export const run = functions
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
     await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
-    exists && (await updateValidSharedToken(id, now));
+    const existsSharedToken = await checkExistsSharedToken(id);
+    if (existsSharedToken) await updateLastCheckedSharedToken(id, now);
   });
+
+const deleteTokens = async (id: string): Promise<void> => {
+  await Promise.all([
+    checkExistsSharedToken(id).then(async (exists) => {
+      if (exists) await deleteSharedToken(id);
+    }),
+    checkExistsToken(id).then(async (exists) => {
+      if (exists) await deleteToken(id);
+    }),
+  ]);
+};
