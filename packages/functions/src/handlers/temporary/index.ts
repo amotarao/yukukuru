@@ -3,7 +3,6 @@ import * as functions from 'firebase-functions';
 import { firestore } from '../../modules/firebase';
 import { bulkWriterErrorHandler } from '../../modules/firestore/error';
 import { sharedTokensCollectionRef } from '../../modules/firestore/sharedToken';
-import { tokensCollectionRef } from '../../modules/firestore/tokens';
 import { usersCollectionRef } from '../../modules/firestore/users';
 
 export const deleteFieldsSharedTokens = functions
@@ -48,7 +47,7 @@ export const deleteActiveFieldUser = functions
       } as any);
     });
 
-    const deletedAuthSnapshot = await tokensCollectionRef.orderBy('deletedAuth').limit(300).get();
+    const deletedAuthSnapshot = await usersCollectionRef.orderBy('deletedAuth').limit(300).get();
     deletedAuthSnapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, {
         deletedAuth: FieldValue.delete(),
