@@ -2,7 +2,8 @@ import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useMemo } from 'react';
+import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
 import { useAnalytics } from '../../modules/analytics';
 import { dayjs } from '../../modules/dayjs';
@@ -10,7 +11,6 @@ import { LastUpdatedText } from '../atoms/LastUpdatedText';
 import { LoadingCircle } from '../atoms/LoadingCircle';
 import { AccountSelector } from '../organisms/AccountSelector';
 import { BottomNav } from '../organisms/BottomNav';
-import { ErrorWrapper } from '../organisms/ErrorWrapper';
 import { UserCard } from '../organisms/UserCard';
 import styles from './MyPage.module.scss';
 
@@ -55,7 +55,11 @@ const NoListView: React.FC<Pick<MyPageProps, 'lastRun'>> = ({ lastRun }) => {
 /**
  * リストコンポーネント
  */
-const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records, lastRun }) => {
+const ListView: React.FC<
+  Pick<MyPageProps, 'records' | 'lastRun'> & {
+    prefix?: React.ReactNode;
+  }
+> = ({ prefix, records, lastRun }) => {
   let currentDate = '';
   let currentTime = '';
 
@@ -71,6 +75,7 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records,
           </li>
         </ul>
       </nav>
+      {prefix}
       {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
       <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
         {records.map((record, i) => {
@@ -136,17 +141,50 @@ const ListView: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records,
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'records' | 'lastRun'>> = ({ records, lastRun }) => {
+const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({ hasToken, records, lastRun }) => {
+  const [, { signIn }] = useAuth();
+
+  const error = useMemo(() => {
+    if (hasToken) {
+      return null;
+    }
+
+    return (
+      <div className="mx-[1rem] mt-[1rem] mb-[1.5rem]">
+        <button
+          className="block w-full rounded border border-danger py-[0.5rem] px-[1rem] text-sm text-danger"
+          onClick={() => {
+            signIn();
+          }}
+        >
+          Twitterの再連携が必要です。
+          <br />
+          <span className="underline">再ログイン</span>してください。
+        </button>
+      </div>
+    );
+  }, [hasToken, signIn]);
+
   if (records.length > 0) {
-    return <ListView records={records} lastRun={lastRun} />;
+    return <ListView prefix={error} records={records} lastRun={lastRun} />;
   }
 
   // lastRun が 0 の場合、watches 取得処理が1回も完了していない
   if (lastRun === null || lastRun.getTime() === 0) {
-    return <JustRegisteredView />;
+    return (
+      <>
+        <JustRegisteredView />
+        {error}
+      </>
+    );
   }
 
-  return <NoListView lastRun={lastRun} />;
+  return (
+    <>
+      <NoListView lastRun={lastRun} />
+      {error}
+    </>
+  );
 };
 
 /**
@@ -191,10 +229,6 @@ export const MyPage: React.FC<MyPageProps> = ({
     setPaging(paging + 1);
   };
 
-  const superReload = () => {
-    window.location.replace(window.location.href);
-  };
-
   return (
     <div className={styles.wrapper}>
       {currentAccount && (
@@ -205,18 +239,12 @@ export const MyPage: React.FC<MyPageProps> = ({
           onChange={onChangeCurrentUid}
         />
       )}
-      {!isLoading && !hasToken && (
-        <ErrorWrapper onClick={superReload}>
-          <p>ログアウトし、再度ログインしてください。</p>
-          <p>解消しない場合はこちらをタップしてください。</p>
-        </ErrorWrapper>
-      )}
       <main className={styles.main}>
         {isLoading ? (
           <LoadingCircle />
         ) : (
           <>
-            <Home records={records} lastRun={lastRun} />
+            <Home hasToken={hasToken} records={records} lastRun={lastRun} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
