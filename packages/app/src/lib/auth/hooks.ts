@@ -7,11 +7,8 @@ import { AuthContext } from './context';
 export const useAuth = () => {
   const { state, dispatch } = useContext(AuthContext);
 
-  console.log({ ...state });
-
   // ログイン状態の監視
   useEffect(() => {
-    console.log('dispatch: onAuthStateChanged');
     dispatch({ type: 'StartLoading' });
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
