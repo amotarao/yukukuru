@@ -2,10 +2,15 @@ import { Token } from '@yukukuru/types';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
 
-const collection = firestore.collection('tokens') as CollectionReference<Token>;
+const tokensCollection = firestore.collection('tokens') as CollectionReference<Token>;
 
-export const getToken = async (userId: string): Promise<Token | null> => {
-  const snapshot = await collection.doc(userId).get();
+export const checkExistsToken = async (id: string): Promise<boolean> => {
+  const snapshot = await tokensCollection.doc(id).get();
+  return snapshot.exists;
+};
+
+export const getToken = async (id: string): Promise<Token | null> => {
+  const snapshot = await tokensCollection.doc(id).get();
 
   if (!snapshot.exists) {
     return null;
@@ -23,6 +28,6 @@ export const getToken = async (userId: string): Promise<Token | null> => {
   return { twitterAccessToken, twitterAccessTokenSecret };
 };
 
-export const deleteToken = async (userId: string): Promise<void> => {
-  await collection.doc(userId).delete();
+export const deleteToken = async (id: string): Promise<void> => {
+  await tokensCollection.doc(id).delete();
 };

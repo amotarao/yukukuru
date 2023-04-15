@@ -5,14 +5,14 @@ import { firestore } from '../../firebase';
 const collectionId = 'sharedTokens';
 const collectionRef = firestore.collection(collectionId) as CollectionReference<SharedToken<FirestoreDateLike>>;
 
-export const existsSharedToken = async (id: string): Promise<boolean> => {
+export const checkExistsSharedToken = async (id: string): Promise<boolean> => {
   const doc = await collectionRef.doc(id).get();
   return doc.exists;
 };
 
 export const initializeSharedToken = async (
   id: string,
-  inputData: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_invalid' | '_lastUpdated'>
+  inputData: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_lastUpdated'>
 ): Promise<void> => {
   const data: SharedToken<Date> = {
     ...inputData,
@@ -27,12 +27,9 @@ export const initializeSharedToken = async (
 
 export const updateSharedToken = async (
   id: string,
-  inputData: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_invalid' | '_lastUpdated'>
+  inputData: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_lastUpdated'>
 ): Promise<void> => {
-  const data: Pick<
-    SharedToken<Date>,
-    'accessToken' | 'accessTokenSecret' | '_invalid' | '_lastUpdated' | '_lastChecked'
-  > = {
+  const data: Pick<SharedToken<Date>, 'accessToken' | 'accessTokenSecret' | '_lastUpdated' | '_lastChecked'> = {
     ...inputData,
     _lastChecked: inputData._lastUpdated,
   };
@@ -65,17 +62,8 @@ export const getInvalidSharedTokenDocsOrderByLastChecked = async (
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
-export const updateValidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
-  const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
-    _invalid: false,
-    _lastChecked: lastChecked,
-  };
-  await collectionRef.doc(id).update(data);
-};
-
-export const updateInvalidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
-  const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
-    _invalid: true,
+export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+  const data: Pick<SharedToken<Date>, '_lastChecked'> = {
     _lastChecked: lastChecked,
   };
   await collectionRef.doc(id).update(data);
