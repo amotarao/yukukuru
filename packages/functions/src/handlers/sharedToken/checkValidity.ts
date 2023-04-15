@@ -43,7 +43,7 @@ export const publish = functions
     const beforeDate = dayjs(now).subtract(3, 'days').toDate();
 
     // 3日前以前のトークンをチェック
-    const docs = await getSharedTokenDocsOrderByLastChecked(beforeDate, 97);
+    const docs = await getSharedTokenDocsOrderByLastChecked(beforeDate, 100);
     const messages: Message[] = docs.map((doc) => ({
       id: doc.id,
       accessToken: doc.data().accessToken,
@@ -65,6 +65,12 @@ export const run = functions
     const now = new Date(context.timestamp);
 
     console.log(`⚙️ Starting check validity Twitter token of [${id}].`);
+
+    if (!accessToken || !accessTokenSecret) {
+      console.log('❗️ Access Token is not set.');
+      await deleteTokens(id);
+      return;
+    }
 
     const client = getClient({
       accessToken: accessToken,
