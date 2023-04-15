@@ -1,4 +1,4 @@
-import { usersCollection } from '.';
+import { usersCollectionRef } from '.';
 
 /**
  * ユーザードキュメントが存在するかどうかを確認
@@ -7,6 +7,6 @@ import { usersCollection } from '.';
  * @returns 存在するかどうか
  */
 export const existsUser = async (id: string): Promise<boolean> => {
-  const snapshot = await usersCollection.doc(id).get();
+  const snapshot = await usersCollectionRef.doc(id).get();
   return snapshot.exists;
 };

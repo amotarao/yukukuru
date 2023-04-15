@@ -1,8 +1,8 @@
 import { FieldValue } from 'firebase-admin/firestore';
-import { usersCollection } from '.';
+import { usersCollectionRef } from '.';
 
 export const addLinkedUserIds = async (id: string, targetId: string): Promise<void> => {
-  await usersCollection.doc(id).update({
+  await usersCollectionRef.doc(id).update({
     linkedUserIds: FieldValue.arrayUnion(targetId),
   });
 };
