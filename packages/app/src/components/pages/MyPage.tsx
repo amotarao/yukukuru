@@ -23,7 +23,7 @@ export type MyPageProps = {
   lastRun: Date | null;
   currentAccount: { id: string; twitter: UserTwitter } | null;
   multiAccounts: { id: string; twitter: UserTwitter }[];
-  getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  getNextRecords: ReturnType<typeof useRecords>['getNextRecords'];
   onChangeCurrentUid: (uid: string) => void;
 };
 
