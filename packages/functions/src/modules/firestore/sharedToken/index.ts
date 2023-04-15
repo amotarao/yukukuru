@@ -3,10 +3,12 @@ import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/fires
 import { firestore } from '../../firebase';
 
 const collectionId = 'sharedTokens';
-const collectionRef = firestore.collection(collectionId) as CollectionReference<SharedToken<FirestoreDateLike>>;
+export const sharedTokensCollectionRef = firestore.collection(collectionId) as CollectionReference<
+  SharedToken<FirestoreDateLike>
+>;
 
 export const checkExistsSharedToken = async (id: string): Promise<boolean> => {
-  const doc = await collectionRef.doc(id).get();
+  const doc = await sharedTokensCollectionRef.doc(id).get();
   return doc.exists;
 };
 
@@ -22,7 +24,7 @@ export const initializeSharedToken = async (
       v2_getUsers: new Date(2000, 0, 1),
     },
   };
-  collectionRef.doc(id).set(data, { merge: true });
+  sharedTokensCollectionRef.doc(id).set(data, { merge: true });
 };
 
 export const updateSharedToken = async (
@@ -33,14 +35,14 @@ export const updateSharedToken = async (
     ...inputData,
     _lastChecked: inputData._lastUpdated,
   };
-  collectionRef.doc(id).update(data);
+  sharedTokensCollectionRef.doc(id).update(data);
 };
 
 export const getSharedTokenDocsOrderByLastChecked = async (
   beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef
+  const snapshot = await sharedTokensCollectionRef
     .where('_lastChecked', '<', beforeDate)
     .orderBy('_lastChecked', 'asc')
     .limit(limit)
@@ -52,18 +54,18 @@ export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date
   const data: Pick<SharedToken<Date>, '_lastChecked'> = {
     _lastChecked: lastChecked,
   };
-  await collectionRef.doc(id).update(data);
+  await sharedTokensCollectionRef.doc(id).update(data);
 };
 
 export const deleteSharedToken = async (id: string): Promise<void> => {
-  await collectionRef.doc(id).delete();
+  await sharedTokensCollectionRef.doc(id).delete();
 };
 
 export const getSharedTokensForGetFollowersV2 = async (
   beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef
+  const snapshot = await sharedTokensCollectionRef
     .where('_lastUsed.v2_getUserFollowers', '<', beforeDate)
     .orderBy('_lastUsed.v2_getUserFollowers')
     .limit(limit)
@@ -75,7 +77,7 @@ export const getSharedTokensForGetUsers = async (
   beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef
+  const snapshot = await sharedTokensCollectionRef
     .where('_lastUsed.v2_getUsers', '<', beforeDate)
     .orderBy('_lastUsed.v2_getUsers')
     .limit(limit)
@@ -92,12 +94,12 @@ export const updateLastUsedSharedToken = async (
   targetApis.forEach((api) => {
     data[`_lastUsed.${api}`] = now;
   });
-  await collectionRef.doc(id).update(data);
+  await sharedTokensCollectionRef.doc(id).update(data);
 };
 
 export const getSharedTokensByAccessToken = async (
   accessToken: string
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef.where('accessToken', '==', accessToken).get();
+  const snapshot = await sharedTokensCollectionRef.where('accessToken', '==', accessToken).get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
