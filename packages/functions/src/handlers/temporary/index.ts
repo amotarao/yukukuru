@@ -23,6 +23,7 @@ export const deleteFieldsSharedTokens = functions
       bulkWriter.delete(tokensCollectionRef.doc(doc.id));
     });
     if (invalidSnapshot.docs.length) {
+      await bulkWriter.close();
       console.log(`${invalidSnapshot.size} docs deleted.`);
       return;
     }
