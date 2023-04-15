@@ -1,3 +1,4 @@
+import { StripeRole } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { setRoleToUser } from '../../modules/firestore/users';
 import { getWriteType } from '../../modules/functions/firestore';
@@ -26,7 +27,7 @@ export const onWriteSubscription = functions
     }
 
     const { role, status } = change.after.data() as {
-      role: 'supporter' | null;
+      role: StripeRole;
       status: 'active' | string;
     };
     if (role === 'supporter' && status === 'active') {
