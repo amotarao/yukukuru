@@ -7,7 +7,7 @@ import { checkExistsSharedToken, getSharedTokensForGetFollowersV2 } from '../../
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
-import { getUserDocsByGroups } from '../../modules/firestore/users';
+import { getUserDocsByGroups, updateTwiterStatusOfUser } from '../../modules/firestore/users';
 import {
   setUserTwitter,
   setUserTwitterProtected,
@@ -130,11 +130,15 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, twitter, _getFollowersV2Status } = snapshot.data();
-
-    // ToDo: deletedOrSuspended 確認
+    const { role, twitter, _twitterStatus, _getFollowersV2Status } = snapshot.data();
 
     const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
+
+    // Twitter が削除等のエラーが発生している場合、1日間隔を空ける
+    // undefined チェックはあとで削除する
+    if (_twitterStatus !== undefined && _twitterStatus.status !== 'active' && minutes < 60 * 24) {
+      return false;
+    }
 
     // 公開アカウントでは 3分の間隔を開ける
     if (!twitter.protected && minutes < 3) {
@@ -195,7 +199,7 @@ export const run = functions
       console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
       const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(uid, sharedToken, twitterProtected);
-      await checkOwnUserStatusStep(sharedClient, uid, twitterId);
+      await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(
         ownClient || sharedClient,
         uid,
@@ -271,6 +275,7 @@ const getTwitterClientWithIdSetStep = async (
  * 削除または凍結されている場合は、処理を中断する
  */
 const checkOwnUserStatusStep = async (
+  now: Date,
   { client, token }: TwitterClientWithToken,
   uid: string,
   twitterId: string
@@ -281,12 +286,14 @@ const checkOwnUserStatusStep = async (
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
   if ('errorUser' in response) {
+    const status = response.errorUser?.status ?? 'unknown';
+    await updateTwiterStatusOfUser(uid, { lastChecked: now, status });
     throw new Error(`❗️Own is deleted or suspended.`);
   }
 
   const user = response.user;
   if (user) {
-    await setUserTwitter(uid, convertTwitterUserToUserTwitter(user));
+    await setUserTwitter(uid, convertTwitterUserToUserTwitter(user), { lastChecked: now, status: 'active' });
   }
 };
 
