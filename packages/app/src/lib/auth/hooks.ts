@@ -1,30 +1,11 @@
-import { onAuthStateChanged, signInWithPopup, signOut as authSignOut, TwitterAuthProvider } from 'firebase/auth';
-import { useContext, useEffect } from 'react';
+import { signInWithPopup, signOut as authSignOut, TwitterAuthProvider } from 'firebase/auth';
+import { useContext } from 'react';
 import { auth } from '../../modules/firebase';
 import { setToken } from '../../modules/firestore/tokens';
 import { AuthContext } from './context';
 
 export const useAuth = () => {
   const { state, dispatch } = useContext(AuthContext);
-
-  // ログイン状態の監視
-  useEffect(() => {
-    dispatch({ type: 'StartLoading' });
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid } = user;
-        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
-      } else {
-        dispatch({ type: 'ClearUser' });
-      }
-      dispatch({ type: 'FinishLoading' });
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [dispatch]);
 
   // サインイン処理
   const signIn = async () => {

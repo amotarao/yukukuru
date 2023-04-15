@@ -1,5 +1,6 @@
-import { UserInfo } from 'firebase/auth';
-import { createContext, useReducer } from 'react';
+import { UserInfo, onAuthStateChanged } from 'firebase/auth';
+import { createContext, useEffect, useReducer } from 'react';
+import { auth } from '../../modules/firebase';
 
 type State = {
   /** 読み込み中かどうか */
@@ -38,12 +39,6 @@ type DispatchAction =
       type: 'ClearUser';
     }
   | {
-      type: 'StartLoading';
-    }
-  | {
-      type: 'FinishLoading';
-    }
-  | {
       type: 'StartSignIn';
     }
   | {
@@ -55,6 +50,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'SetUser': {
       return {
         ...state,
+        isLoading: false,
         signedIn: true,
         user: action.payload.user,
         uid: action.payload.uid,
@@ -63,21 +59,10 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'ClearUser': {
       return {
         ...state,
+        isLoading: false,
         signedIn: false,
         user: null,
         uid: null,
-      };
-    }
-    case 'StartLoading': {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-    case 'FinishLoading': {
-      return {
-        ...state,
-        isLoading: false,
       };
     }
     case 'StartSignIn': {
@@ -105,6 +90,22 @@ export const AuthContext = createContext<{
 
 export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  // ログイン状態の監視
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid } = user;
+        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
+      } else {
+        dispatch({ type: 'ClearUser' });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
 };
