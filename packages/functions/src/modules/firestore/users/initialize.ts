@@ -1,6 +1,6 @@
 import { FirestoreDateLike, User, UserTwitter } from '@yukukuru/types';
 import { getGroupIndex } from '../../group';
-import { usersCollection } from '.';
+import { usersCollectionRef } from '.';
 
 /**
  * ユーザーを初期化
@@ -8,7 +8,6 @@ import { usersCollection } from '.';
 export const initializeUser = async (id: string, twitter: UserTwitter): Promise<void> => {
   const data: User<FirestoreDateLike> = {
     role: null,
-    active: true,
     group: getGroupIndex(id),
     linkedUserIds: [],
     twitter,
@@ -21,5 +20,5 @@ export const initializeUser = async (id: string, twitter: UserTwitter): Promise<
       lastRun: new Date(0),
     },
   };
-  await usersCollection.doc(id).set(data, { merge: true });
+  await usersCollectionRef.doc(id).set(data, { merge: true });
 };

@@ -58,12 +58,7 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, active, _checkIntegrityV2Status } = snapshot.data();
-
-    // 無効なユーザーの場合は実行しない
-    if (!active) {
-      return false;
-    }
+    const { role, _checkIntegrityV2Status } = snapshot.data();
 
     // サポーターの場合はいつでも許可
     if (role === 'supporter') {

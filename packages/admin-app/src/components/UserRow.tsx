@@ -38,9 +38,6 @@ export const UserRow: React.FC<UserRowProps> = ({ className, doc }) => {
 
   return (
     <tr ref={ref} key={doc.id} className={className}>
-      <td className="whitespace-nowrap p-2 px-3 text-sm">
-        {doc.get('active') && !doc.get('deletedAuth') ? 'YES' : 'NO'}
-      </td>
       <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">{doc.id}</td>
       <td className="whitespace-nowrap p-2 px-3 font-mono text-sm">
         <div className="flex items-center">
