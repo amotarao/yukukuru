@@ -70,8 +70,6 @@ const checkCleanable = async (params: { uid: string; lastRun: string | Date; now
     return false;
   }
 
-  // ToDo: deletedOrSuspended 確認
-
   // actlastRun が 90日以上前
   if (dayjs(now).diff(lastRun, 'day') >= 90) {
     return true;
