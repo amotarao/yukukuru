@@ -21,7 +21,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { getDiffDays, getDiffMinutes } from '../../modules/time';
 import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
-import { getUsers } from '../../modules/twitter/api/users';
+import { getUser, getUsers } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
 import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
@@ -268,16 +268,16 @@ const checkOwnUserStatusStep = async (
   uid: string,
   twitterId: string
 ): Promise<void> => {
-  const response = await getUsers(client, [twitterId]);
+  const response = await getUser(client, twitterId);
   if ('error' in response) {
     await publishCheckValiditySharedToken(token);
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
-  if (response.errorUsers.length > 0) {
+  if ('errorUser' in response) {
     throw new Error(`❗️Own is deleted or suspended.`);
   }
 
-  const user = response.users[0];
+  const user = response.user;
   if (user) {
     await setUserTwitter(uid, convertTwitterUserToUserTwitter(user));
   }

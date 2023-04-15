@@ -6,7 +6,8 @@ import { twitterClientErrorHandler } from '../error';
 import { TwitterErrorUser, TwitterUser } from '../types';
 
 /**
- * ユーザー情報を取得
+ * 複数アカウントのユーザー情報を取得
+ *
  * 1回 100人まで 取得可能
  * 15分につき 900回 実行可能
  *
@@ -31,7 +32,7 @@ const getUsersSingle = async (
 };
 
 /**
- * ユーザー情報を取得
+ * 複数アカウントのユーザー情報を取得
  */
 export const getUsers = async (
   client: TwitterApiReadOnly,
@@ -63,4 +64,33 @@ export const getUsers = async (
   }
   // データが0件かつエラーがあるので、最初のエラーを返す
   return { error: errors[0] };
+};
+
+/**
+ * ユーザー情報を取得
+ *
+ * 15分につき 900回 実行可能
+ *
+ * @see https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-id
+ */
+export const getUser = async (
+  client: TwitterApiReadOnly,
+  id: string
+): Promise<{ user: TwitterUser } | { errorUser: boolean } | { error: ApiResponseError }> => {
+  return client.v2
+    .user(id, { ...userFields })
+    .then((response) => {
+      const data = response.data as UserV2 | undefined;
+
+      if (data) {
+        return {
+          user: toRequiredTwitterUser(data),
+        };
+      }
+
+      return {
+        errorUser: true,
+      };
+    })
+    .catch(twitterClientErrorHandler);
 };
