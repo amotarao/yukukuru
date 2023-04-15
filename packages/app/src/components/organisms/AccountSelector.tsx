@@ -24,7 +24,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   onChange = () => null,
 }) => {
   const { uid } = useAuth();
-  const { isSupporter } = useSubscription();
+  const { stripeRole } = useSubscription();
   const [isShownModal, setIsShownModal] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -72,7 +72,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
             }}
           >
             {multiAccounts
-              .filter((account) => isSupporter || account.id === uid)
+              .filter((account) => stripeRole === 'supporter' || account.id === uid)
               .map((account) => {
                 return (
                   <button
@@ -93,12 +93,14 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
               })}
             <Link
               className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
-              href={isSupporter ? pagesPath.my.settings.link_accounts.$url() : pagesPath.supporter.$url()}
+              href={
+                stripeRole === 'supporter' ? pagesPath.my.settings.link_accounts.$url() : pagesPath.supporter.$url()
+              }
               onClick={() => {
                 setIsShownModal(false);
               }}
             >
-              {isSupporter ? 'アカウントを追加' : '月額99円で複数アカウント切り替え'}
+              {stripeRole === 'supporter' ? 'アカウントを追加' : '月額99円で複数アカウント切り替え'}
             </Link>
           </div>
         </div>

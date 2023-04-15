@@ -1,8 +1,9 @@
+import { StripeRole } from '..';
 import { FirestoreDateLike, Timestamp } from '../firestore';
 
 export type User<T extends FirestoreDateLike = Timestamp> = {
   /** ロール */
-  role: 'supporter' | null;
+  role: StripeRole;
 
   /** グループ番号 0-14 のいずれか */
   group: number;

@@ -14,7 +14,7 @@ import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
   const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();
-  const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
+  const { isLoading: isLoadingSubscription, stripeRole } = useSubscription();
   const { currentAccount } = useMultiAccounts(uid, null);
 
   return (
@@ -43,7 +43,7 @@ export const SupporterPage: React.FC = () => {
           ) : (
             <AccountSelector inactive currentAccount={currentAccount} multiAccounts={[]} />
           )}
-          {isLoadingAuth || isLoadingSubscription || isSupporter === null ? null : !signedIn ? null : !isSupporter ? (
+          {isLoadingAuth || isLoadingSubscription || !signedIn ? null : !stripeRole ? (
             <p>フリー利用</p>
           ) : (
             <p className="flex items-center gap-2 text-primary">
@@ -87,7 +87,7 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
+                  {isLoadingAuth || isLoadingSubscription ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link
@@ -96,7 +96,7 @@ export const SupporterPage: React.FC = () => {
                     >
                       ログイン
                     </Link>
-                  ) : !isSupporter ? (
+                  ) : !stripeRole ? (
                     <CheckoutButton>登録</CheckoutButton>
                   ) : (
                     <ConfirmButton>登録内容 確認・変更・解約</ConfirmButton>
@@ -133,7 +133,7 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription || isSupporter === null ? (
+                  {isLoadingAuth || isLoadingSubscription ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link
@@ -142,7 +142,7 @@ export const SupporterPage: React.FC = () => {
                     >
                       ログイン
                     </Link>
-                  ) : !isSupporter ? (
+                  ) : !stripeRole ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">フリー利用中</p>
                   ) : (
                     <p className="text-center text-lg sm:px-4 sm:py-2">サポーター登録済み</p>

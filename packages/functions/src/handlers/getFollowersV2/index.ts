@@ -1,4 +1,4 @@
-import { User } from '@yukukuru/types';
+import { StripeRole, User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -39,7 +39,7 @@ type Message = {
   twitterProtected: boolean;
 
   /** ロール */
-  role: 'supporter' | null;
+  role: StripeRole;
 
   /** カーソル */
   paginationToken: string | null;
@@ -403,7 +403,7 @@ const saveTwUsersStep = async (
   now: Date,
   uid: string,
   lastSetTwUsers: Date,
-  role: 'supporter' | null,
+  role: StripeRole,
   twitterUsers: TwitterUser[],
   ended: boolean
 ) => {
