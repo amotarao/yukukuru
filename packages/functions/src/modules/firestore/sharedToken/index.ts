@@ -36,25 +36,11 @@ export const updateSharedToken = async (
   collectionRef.doc(id).update(data);
 };
 
-export const getValidSharedTokenDocsOrderByLastChecked = async (
+export const getSharedTokenDocsOrderByLastChecked = async (
   beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef
-    .where('_invalid', '==', false)
-    .where('_lastChecked', '<', beforeDate)
-    .orderBy('_lastChecked', 'asc')
-    .limit(limit)
-    .get();
-  return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
-};
-
-export const getInvalidSharedTokenDocsOrderByLastChecked = async (
-  beforeDate: Date,
-  limit: number
-): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await collectionRef
-    .where('_invalid', '==', true)
     .where('_lastChecked', '<', beforeDate)
     .orderBy('_lastChecked', 'asc')
     .limit(limit)
@@ -78,7 +64,6 @@ export const getSharedTokensForGetFollowersV2 = async (
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef
-    .where('_invalid', '==', false)
     .where('_lastUsed.v2_getUserFollowers', '<', beforeDate)
     .orderBy('_lastUsed.v2_getUserFollowers')
     .limit(limit)
@@ -91,7 +76,6 @@ export const getSharedTokensForGetUsers = async (
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
   const snapshot = await collectionRef
-    .where('_invalid', '==', false)
     .where('_lastUsed.v2_getUsers', '<', beforeDate)
     .orderBy('_lastUsed.v2_getUsers')
     .limit(limit)

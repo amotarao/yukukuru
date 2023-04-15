@@ -2,11 +2,10 @@ import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
-  deleteSharedToken,
   checkExistsSharedToken,
-  getInvalidSharedTokenDocsOrderByLastChecked,
+  deleteSharedToken,
+  getSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
-  getValidSharedTokenDocsOrderByLastChecked,
   updateLastCheckedSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { checkExistsToken, deleteToken } from '../../modules/firestore/tokens';
@@ -44,10 +43,8 @@ export const publish = functions
     const beforeDate = dayjs(now).subtract(3, 'days').toDate();
 
     // 3日前以前のトークンをチェック
-    const validDocs = await getValidSharedTokenDocsOrderByLastChecked(beforeDate, 97);
-    const invalidDocs = await getInvalidSharedTokenDocsOrderByLastChecked(beforeDate, 3);
-
-    const messages: Message[] = [...validDocs, ...invalidDocs].map((doc) => ({
+    const docs = await getSharedTokenDocsOrderByLastChecked(beforeDate, 97);
+    const messages: Message[] = docs.map((doc) => ({
       id: doc.id,
       accessToken: doc.data().accessToken,
       accessTokenSecret: doc.data().accessTokenSecret,
