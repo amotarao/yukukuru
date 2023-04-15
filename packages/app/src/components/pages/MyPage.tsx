@@ -10,7 +10,6 @@ import { dayjs } from '../../modules/dayjs';
 import { LastUpdatedText } from '../atoms/LastUpdatedText';
 import { LoadingCircle } from '../atoms/LoadingCircle';
 import { AccountSelector } from '../organisms/AccountSelector';
-import { BottomNav } from '../organisms/BottomNav';
 import { UserCard } from '../organisms/UserCard';
 import styles from './MyPage.module.scss';
 
@@ -254,7 +253,6 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      <BottomNav active="my" scrollToTopOnActive />
     </div>
   );
 };

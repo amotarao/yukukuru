@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { LoadingCircle } from '../../../components/atoms/LoadingCircle';
+import { BottomNav } from '../../../components/organisms/BottomNav';
 import { LoginPage } from '../../../components/pages/LoginPage';
 import { SettingsPage } from '../../../components/pages/SettingsPage';
 import { useAuth } from '../../../lib/auth/hooks';
@@ -24,6 +25,7 @@ const Page: React.FC = () => {
           }}
         />
       )}
+      <BottomNav active="settings" scrollToTopOnActive />
     </>
   );
 };

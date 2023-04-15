@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
+import { BottomNav } from '../../components/organisms/BottomNav';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
@@ -64,6 +65,7 @@ const Page: React.FC = () => {
       ) : (
         <LoginPage signIn={signIn} />
       )}
+      <BottomNav active="my" scrollToTopOnActive />
     </>
   );
 };

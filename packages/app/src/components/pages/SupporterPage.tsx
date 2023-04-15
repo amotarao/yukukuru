@@ -10,7 +10,6 @@ import { useAuth } from '../../lib/auth/hooks';
 import { addCheckoutSession } from '../../modules/firestore/stripe';
 import { getPortalLink } from '../../modules/functions/stripe';
 import { AccountSelector } from '../organisms/AccountSelector';
-import { BottomNav } from '../organisms/BottomNav';
 import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
@@ -168,7 +167,6 @@ export const SupporterPage: React.FC = () => {
           </p>
         </section>
       </div>
-      {signedIn && <BottomNav active="supporter" scrollToTopOnActive />}
     </div>
   );
 };
