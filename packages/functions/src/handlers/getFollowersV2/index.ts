@@ -136,7 +136,7 @@ const filterExecutable =
 
     // Twitter が削除等のエラーが発生している場合、1日間隔を空ける
     // undefined チェックはあとで削除する
-    if (_twitterStatus !== undefined && _twitterStatus !== 'active' && minutes < 60 * 24) {
+    if (_twitterStatus !== undefined && _twitterStatus.status !== 'active' && minutes < 60 * 24) {
       return false;
     }
 
@@ -199,7 +199,7 @@ export const run = functions
       console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
       const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(uid, sharedToken, twitterProtected);
-      await checkOwnUserStatusStep(sharedClient, uid, twitterId);
+      await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(
         ownClient || sharedClient,
         uid,
@@ -275,6 +275,7 @@ const getTwitterClientWithIdSetStep = async (
  * 削除または凍結されている場合は、処理を中断する
  */
 const checkOwnUserStatusStep = async (
+  now: Date,
   { client, token }: TwitterClientWithToken,
   uid: string,
   twitterId: string
@@ -286,13 +287,13 @@ const checkOwnUserStatusStep = async (
   }
   if ('errorUser' in response) {
     const status = response.errorUser?.status ?? 'unknown';
-    await updateTwiterStatusOfUser(uid, status);
+    await updateTwiterStatusOfUser(uid, { lastChecked: now, status });
     throw new Error(`❗️Own is deleted or suspended.`);
   }
 
   const user = response.user;
   if (user) {
-    await setUserTwitter(uid, convertTwitterUserToUserTwitter(user), 'active');
+    await setUserTwitter(uid, convertTwitterUserToUserTwitter(user), { lastChecked: now, status: 'active' });
   }
 };
 

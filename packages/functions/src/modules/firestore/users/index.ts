@@ -46,7 +46,7 @@ export const deleteUser = async (id: string): Promise<void> => {
   await usersCollectionRef.doc(id).delete();
 };
 
-export const updateTwiterStatusOfUser = async (id: string, status: User['_twitterStatus']): Promise<void> => {
+export const updateTwiterStatusOfUser = async (id: string, status: User<Date>['_twitterStatus']): Promise<void> => {
   await usersCollectionRef.doc(id).update({
     _twitterStatus: status,
   });
