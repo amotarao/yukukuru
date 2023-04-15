@@ -30,7 +30,7 @@ export const onWriteSubscription = functions
       role: StripeRole;
       status: 'active' | string;
     };
-    if (role === 'supporter' && status === 'active') {
+    if (role && status === 'active') {
       await setRoleToUser(userId, role);
     }
   });
