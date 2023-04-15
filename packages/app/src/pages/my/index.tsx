@@ -11,7 +11,7 @@ import { useAuth } from '../../lib/auth/hooks';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const { isLoading: authIsLoading, signedIn, signingIn, uid: authUid, signIn } = useAuth();
+  const { isLoading: authIsLoading, signedIn, signingIn, uid: authUid } = useAuth();
 
   const [currentUid, setCurrentUid] = useState<string | null>(null);
   useEffect(() => {
@@ -63,7 +63,7 @@ const Page: React.FC = () => {
           }}
         />
       ) : (
-        <LoginPage signIn={signIn} />
+        <LoginPage />
       )}
       <BottomNav active="my" scrollToTopOnActive />
     </>

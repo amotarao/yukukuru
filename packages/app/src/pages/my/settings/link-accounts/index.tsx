@@ -12,14 +12,14 @@ import { pagesPath } from '../../../../lib/$path';
 import { useAuth } from '../../../../lib/auth/hooks';
 
 const Page: React.FC = () => {
-  const { isLoading, signedIn, signingIn, signIn } = useAuth();
+  const { isLoading, signedIn, signingIn } = useAuth();
 
   return (
     <>
       <Head>
         <title>アカウント連携 - ゆくくる</title>
       </Head>
-      {isLoading || signingIn ? <LoadingCircle /> : !signedIn ? <LoginPage signIn={signIn} /> : <Main />}
+      {isLoading || signingIn ? <LoadingCircle /> : !signedIn ? <LoginPage /> : <Main />}
       <BottomNav active="settings" />
     </>
   );
