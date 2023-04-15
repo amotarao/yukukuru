@@ -4,9 +4,6 @@ import { useEffect, useCallback, useReducer } from 'react';
 import { fetchRecords, fetchRecordsV2 } from '../modules/firestore/records';
 
 type State = {
-  /** 初期状態かどうか */
-  initial: boolean;
-
   /** 初期読み込み中かどうか */
   isFirstLoading: boolean;
 
@@ -22,26 +19,29 @@ type State = {
   /** 続きデータがあるかどうか */
   hasNext: boolean;
 
+  /** 初期状態かどうか */
+  _initialized: boolean;
+
   /** V2 の取得が完了しているかどうか */
-  isCompletedFetchV2: boolean;
+  _isCompletedFetchV2: boolean;
 
   /** カーソル */
-  cursor: QueryDocumentSnapshot | Date | null;
+  _cursor: QueryDocumentSnapshot | Date | null;
 
   /** カーソル */
-  cursorV2: QueryDocumentSnapshot | null;
+  _cursorV2: QueryDocumentSnapshot | null;
 };
 
 const initialState: State = {
-  initial: true,
   isFirstLoading: false,
   isNextLoading: false,
   isFirstLoaded: false,
   records: [],
   hasNext: true,
-  isCompletedFetchV2: false,
-  cursor: null,
-  cursorV2: null,
+  _initialized: false,
+  _isCompletedFetchV2: false,
+  _cursor: null,
+  _cursorV2: null,
 };
 
 type DispatchAction =
@@ -86,7 +86,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'StartLoadInitialRecords': {
       return {
         ...state,
-        initial: false,
+        _initialized: true,
         isFirstLoading: true,
         isNextLoading: false,
       };
@@ -94,7 +94,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'StartLoadNextRecords': {
       return {
         ...state,
-        initial: false,
+        _initialized: true,
         isFirstLoading: false,
         isNextLoading: true,
       };
@@ -102,7 +102,7 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'FinishLoadRecords': {
       return {
         ...state,
-        initial: false,
+        _initialized: true,
         isFirstLoaded: true,
         isFirstLoading: false,
         isNextLoading: false,
@@ -115,7 +115,7 @@ const reducer = (state: State, action: DispatchAction): State => {
         ...state,
         records: [...state.records, ...docs],
         hasNext: !ended,
-        cursor,
+        _cursor: cursor,
       };
     }
     case 'AddItemsV2': {
@@ -126,9 +126,9 @@ const reducer = (state: State, action: DispatchAction): State => {
         records: [...state.records, ...docs],
         // V1 に続きがある可能性があるので必ず true
         hasNext: true,
-        isCompletedFetchV2: ended,
-        cursor,
-        cursorV2,
+        _isCompletedFetchV2: ended,
+        _cursor: cursor,
+        _cursorV2: cursorV2,
       };
     }
     case 'AddText': {
@@ -147,7 +147,7 @@ export const useRecords = (uid: string | null) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const getRecordsV1 = useCallback(
-    async (cursor = state.cursor) => {
+    async (cursor = state._cursor) => {
       if (!uid) return;
       await fetchRecords(uid, 50, cursor).then(({ docs }) => {
         cursor instanceof Date &&
@@ -167,12 +167,12 @@ export const useRecords = (uid: string | null) => {
         });
       });
     },
-    [state.cursor, uid]
+    [state._cursor, uid]
   );
 
   const getRecordsV2 = useCallback(async () => {
     if (!uid) return;
-    await fetchRecordsV2(uid, 50, state.cursorV2).then(({ docs }) => {
+    await fetchRecordsV2(uid, 50, state._cursorV2).then(({ docs }) => {
       const ended = docs.length < 50;
       const cursor = docs.at(-1)?.data().date.toDate() ?? null;
       const cursorV2 = docs.at(-1) ?? null;
@@ -192,15 +192,15 @@ export const useRecords = (uid: string | null) => {
         return getRecordsV1(cursor);
       }
     });
-  }, [state.cursorV2, uid, getRecordsV1]);
+  }, [state._cursorV2, uid, getRecordsV1]);
 
   /**
    * Records を取得し処理する
    */
   const getRecords = useCallback(async () => {
-    !state.isCompletedFetchV2 ? await getRecordsV2() : await getRecordsV1();
+    !state._isCompletedFetchV2 ? await getRecordsV2() : await getRecordsV1();
     dispatch({ type: 'FinishLoadRecords' });
-  }, [state.isCompletedFetchV2, getRecordsV2, getRecordsV1]);
+  }, [state._isCompletedFetchV2, getRecordsV2, getRecordsV1]);
 
   /**
    * UID が変更した際は初期化する
@@ -213,12 +213,12 @@ export const useRecords = (uid: string | null) => {
    * 初回 Records を取得する
    */
   useEffect(() => {
-    if (!uid || !state.initial) {
+    if (!uid || state._initialized) {
       return;
     }
     dispatch({ type: 'StartLoadInitialRecords' });
     getRecords();
-  }, [uid, state.initial, getRecords]);
+  }, [uid, state._initialized, getRecords]);
 
   /**
    * 続きの Records を取得する
