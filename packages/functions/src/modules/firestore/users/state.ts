@@ -1,5 +1,5 @@
 import { UserTwitter } from '@yukukuru/types';
-import { usersCollection } from '.';
+import { usersCollectionRef } from '.';
 
 /**
  * フォロワー取得処理の状態を保存
@@ -10,7 +10,7 @@ export const setUserGetFollowersV2Status = async (
   ended: boolean,
   date: Date
 ): Promise<void> => {
-  await usersCollection.doc(userId).update(
+  await usersCollectionRef.doc(userId).update(
     ended
       ? {
           '_getFollowersV2Status.lastRun': date,
@@ -23,25 +23,25 @@ export const setUserGetFollowersV2Status = async (
 };
 
 export const setCheckIntegrityV2Status = async (userId: string, date: Date): Promise<void> => {
-  await usersCollection.doc(userId).update({
+  await usersCollectionRef.doc(userId).update({
     '_checkIntegrityV2Status.lastRun': date,
   });
 };
 
 export const setUserTwitter = async (userId: string, twitter: UserTwitter): Promise<void> => {
-  await usersCollection.doc(userId).update({
+  await usersCollectionRef.doc(userId).update({
     twitter,
   });
 };
 
 export const setUserTwitterProtected = async (userId: string): Promise<void> => {
-  await usersCollection.doc(userId).update({
+  await usersCollectionRef.doc(userId).update({
     'twitter.protected': true,
   });
 };
 
 export const setUserGetFollowersV2LastSetTwUsers = async (userId: string, date: Date): Promise<void> => {
-  await usersCollection.doc(userId).update({
+  await usersCollectionRef.doc(userId).update({
     '_getFollowersV2Status.lastSetTwUsers': date,
   });
 };

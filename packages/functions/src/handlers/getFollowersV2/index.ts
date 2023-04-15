@@ -35,6 +35,9 @@ type Message = {
   /** Twitter UID */
   twitterId: string;
 
+  /** 非公開かどうか */
+  twitterProtected: boolean;
+
   /** ロール */
   role: 'supporter' | null;
 
@@ -52,7 +55,7 @@ type Message = {
     id: string;
     accessToken: string;
     accessTokenSecret: string;
-  } | null;
+  };
 
   /** 送信日時 */
   publishedAt: Date | string;
@@ -104,21 +107,15 @@ export const publish = functions
         const message: Message = {
           uid: doc.id,
           twitterId: doc.data().twitter.id,
+          twitterProtected: doc.data().twitter.protected,
           role: doc.data().role,
           paginationToken: doc.data()._getFollowersV2Status.nextToken,
-          // lastSetTwUsers が存在しない場合があるため、存在チェック
-          lastSetTwUsers:
-            'lastSetTwUsers' in doc.data()._getFollowersV2Status
-              ? doc.data()._getFollowersV2Status.lastSetTwUsers.toDate()
-              : new Date(0),
-          // 非公開アカウントの場合は共有トークンを送らない
-          sharedToken: doc.data().twitter.protected
-            ? null
-            : {
-                id: sharedToken.id,
-                accessToken: sharedToken.data().accessToken,
-                accessTokenSecret: sharedToken.data().accessTokenSecret,
-              },
+          lastSetTwUsers: doc.data()._getFollowersV2Status.lastSetTwUsers.toDate(),
+          sharedToken: {
+            id: sharedToken.id,
+            accessToken: sharedToken.data().accessToken,
+            accessTokenSecret: sharedToken.data().accessTokenSecret,
+          },
           publishedAt: now.toDate(),
         };
         return message;
@@ -133,12 +130,9 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, active, twitter, _getFollowersV2Status } = snapshot.data();
+    const { role, twitter, _getFollowersV2Status } = snapshot.data();
 
-    // 無効なユーザーの場合は実行しない
-    if (!active) {
-      return false;
-    }
+    // ToDo: deletedOrSuspended 確認
 
     const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
 
@@ -189,7 +183,7 @@ export const run = functions
   .pubsub.topic(topicName)
   .onPublish(async (message, context) => {
     try {
-      const { uid, twitterId, role, paginationToken, lastSetTwUsers, sharedToken, publishedAt } =
+      const { uid, twitterId, twitterProtected, role, paginationToken, lastSetTwUsers, sharedToken, publishedAt } =
         message.json as Message;
       const now = new Date(context.timestamp);
 
@@ -200,16 +194,21 @@ export const run = functions
       }
       console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
-      const twitterClientWithToken = await getTwitterClientWithIdStep(sharedToken, uid);
-      await checkOwnUserStatusStep(twitterClientWithToken, uid, twitterId);
-      const { users, nextToken } = await getFollowersIdsStep(twitterClientWithToken, uid, twitterId, paginationToken);
-      const savingTwitterUsers = await ignoreMaybeDeletedOrSuspendedStep(twitterClientWithToken, uid, users);
+      const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(uid, sharedToken, twitterProtected);
+      await checkOwnUserStatusStep(sharedClient, uid, twitterId);
+      const { users, nextToken } = await getFollowersIdsStep(
+        ownClient || sharedClient,
+        uid,
+        twitterId,
+        paginationToken
+      );
+      const savingTwitterUsers = await ignoreMaybeDeletedOrSuspendedStep(sharedClient, uid, users);
       await saveDocsStep(
         now,
         uid,
         savingTwitterUsers.map((user) => user.id),
         nextToken,
-        sharedToken
+        [sharedClient, ownClient]
       );
       await saveTwUsersStep(now, uid, new Date(lastSetTwUsers), role, savingTwitterUsers, nextToken === null);
 
@@ -228,35 +227,43 @@ type TwitterClientWithToken = {
   };
 };
 
-const getTwitterClientWithIdStep = async (
+const getTwitterClientWithIdSetStep = async (
+  uid: string,
   sharedToken: Message['sharedToken'],
-  uid: string
-): Promise<TwitterClientWithToken> => {
-  if (sharedToken) {
-    return {
-      client: getClient({
-        accessToken: sharedToken.accessToken,
-        accessSecret: sharedToken.accessTokenSecret,
-      }),
-      token: sharedToken,
-    };
+  twitterProtected: Message['twitterProtected']
+): Promise<[TwitterClientWithToken, TwitterClientWithToken | null]> => {
+  const shared: TwitterClientWithToken = {
+    client: getClient({
+      accessToken: sharedToken.accessToken,
+      accessSecret: sharedToken.accessTokenSecret,
+    }),
+    token: sharedToken,
+  };
+
+  if (!twitterProtected) {
+    return [shared, null];
   }
 
   const token = await getToken(uid);
   if (!token) {
-    throw new Error('❗️No token.');
+    console.error('❗️No token.');
+    return [shared, null];
   }
-  return {
-    client: getClient({
-      accessToken: token.twitterAccessToken,
-      accessSecret: token.twitterAccessTokenSecret,
-    }),
-    token: {
-      id: uid,
-      accessToken: token.twitterAccessToken,
-      accessTokenSecret: token.twitterAccessTokenSecret,
+
+  return [
+    shared,
+    {
+      client: getClient({
+        accessToken: token.twitterAccessToken,
+        accessSecret: token.twitterAccessTokenSecret,
+      }),
+      token: {
+        id: uid,
+        accessToken: token.twitterAccessToken,
+        accessTokenSecret: token.twitterAccessTokenSecret,
+      },
     },
-  };
+  ];
 };
 
 /**
@@ -346,15 +353,33 @@ const saveDocsStep = async (
   uid: string,
   followersIds: string[],
   nextToken: string | null,
-  sharedToken: Message['sharedToken']
+  [sharedClient, ownClient]: [TwitterClientWithToken, TwitterClientWithToken | null]
 ): Promise<void> => {
   const ended = nextToken === null;
+
+  const updatingTokens = ownClient
+    ? [
+        checkExistsSharedToken(ownClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now);
+        }),
+        checkExistsSharedToken(sharedClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUsers', 'v2_getUser'], now);
+        }),
+      ]
+    : [
+        checkExistsSharedToken(sharedClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(
+            sharedClient.token.id,
+            ['v2_getUserFollowers', 'v2_getUsers', 'v2_getUser'],
+            now
+          );
+        }),
+      ];
+
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
-    checkExistsSharedToken(sharedToken ? sharedToken.id : uid).then(() => {
-      updateLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
-    }),
+    ...updatingTokens,
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
 };
