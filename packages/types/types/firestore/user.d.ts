@@ -4,9 +4,6 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   /** ロール */
   role: 'supporter' | null;
 
-  /** 有効かどうか */
-  active: boolean;
-
   /** グループ番号 0-14 のいずれか */
   group: number;
 

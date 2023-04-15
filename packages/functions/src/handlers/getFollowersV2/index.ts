@@ -133,12 +133,9 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, active, twitter, _getFollowersV2Status } = snapshot.data();
+    const { role, twitter, _getFollowersV2Status } = snapshot.data();
 
-    // 無効なユーザーの場合は実行しない
-    if (!active) {
-      return false;
-    }
+    // ToDo: deletedOrSuspended 確認
 
     const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
 

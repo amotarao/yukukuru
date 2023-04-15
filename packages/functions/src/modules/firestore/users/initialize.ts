@@ -8,7 +8,6 @@ import { usersCollection } from '.';
 export const initializeUser = async (id: string, twitter: UserTwitter): Promise<void> => {
   const data: User<FirestoreDateLike> = {
     role: null,
-    active: true,
     group: getGroupIndex(id),
     linkedUserIds: [],
     twitter,
