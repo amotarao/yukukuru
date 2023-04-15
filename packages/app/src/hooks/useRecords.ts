@@ -23,7 +23,7 @@ type State = {
   hasNext: boolean;
 
   /** V2 の取得が完了しているかどうか */
-  isComputedFetchV2: boolean;
+  isCompletedFetchV2: boolean;
 
   /** カーソル */
   cursor: QueryDocumentSnapshot | Date | null;
@@ -39,7 +39,7 @@ const initialState: State = {
   isFirstLoaded: false,
   records: [],
   hasNext: true,
-  isComputedFetchV2: false,
+  isCompletedFetchV2: false,
   cursor: null,
   cursorV2: null,
 };
@@ -91,7 +91,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         isNextLoading: false,
       };
     }
-
     case 'StartLoadNextRecords': {
       return {
         ...state,
@@ -100,7 +99,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         isNextLoading: true,
       };
     }
-
     case 'FinishLoadRecords': {
       return {
         ...state,
@@ -110,7 +108,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         isNextLoading: false,
       };
     }
-
     case 'AddItems': {
       const { docs, ended, cursor } = action.payload;
 
@@ -121,7 +118,6 @@ const reducer = (state: State, action: DispatchAction): State => {
         cursor,
       };
     }
-
     case 'AddItemsV2': {
       const { docs, ended, cursor, cursorV2 } = action.payload;
 
@@ -130,25 +126,19 @@ const reducer = (state: State, action: DispatchAction): State => {
         records: [...state.records, ...docs],
         // V1 に続きがある可能性があるので必ず true
         hasNext: true,
-        isComputedFetchV2: ended,
+        isCompletedFetchV2: ended,
         cursor,
         cursorV2,
       };
     }
-
     case 'AddText': {
       return {
         ...state,
         records: [...state.records, { text: action.payload.text }],
       };
     }
-
     case 'Initialize': {
       return initialState;
-    }
-
-    default: {
-      return state;
     }
   }
 };
@@ -182,7 +172,7 @@ export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
         });
       });
     },
-    [state, uid]
+    [state.cursor, uid]
   );
 
   const getRecordsV2 = useCallback(async () => {
@@ -207,15 +197,15 @@ export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
         return getRecordsV1(cursor);
       }
     });
-  }, [state, uid, getRecordsV1]);
+  }, [state.cursorV2, uid, getRecordsV1]);
 
   /**
    * Records を取得し処理する
    */
   const getRecords = useCallback(async () => {
-    !state.isComputedFetchV2 ? await getRecordsV2() : await getRecordsV1();
+    !state.isCompletedFetchV2 ? await getRecordsV2() : await getRecordsV1();
     dispatch({ type: 'FinishLoadRecords' });
-  }, [state, getRecordsV2, getRecordsV1]);
+  }, [state.isCompletedFetchV2, getRecordsV2, getRecordsV1]);
 
   /**
    * UID が変更した際は初期化する

@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
-import { useRecords } from '../../hooks/records';
-import { useToken } from '../../hooks/token';
 import { useLastRun } from '../../hooks/useLastRun';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
+import { useRecords } from '../../hooks/useRecords';
+import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 

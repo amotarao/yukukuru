@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect, Fragment, useMemo } from 'react';
-import { useRecords } from '../../hooks/records';
+import { useRecords } from '../../hooks/useRecords';
 import { useAuth } from '../../lib/auth/hooks';
 import { useAnalytics } from '../../modules/analytics';
 import { dayjs } from '../../modules/dayjs';
