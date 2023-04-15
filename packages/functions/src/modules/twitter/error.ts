@@ -29,6 +29,6 @@ const checkIsSuspended = (error: InlineErrorV2): boolean => {
   return error.detail.startsWith('User has been suspended:');
 };
 
-export const getInlineErrorV2Type = (error: InlineErrorV2): 'deleted' | 'suspended' | 'unknown' => {
+export const getInlineErrorV2Status = (error: InlineErrorV2): 'deleted' | 'suspended' | 'unknown' => {
   return checkIsDeleted(error) ? 'deleted' : checkIsSuspended(error) ? 'suspended' : 'unknown';
 };

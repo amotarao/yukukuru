@@ -73,7 +73,7 @@ const generateRecord =
     twUsers: TwUser[]
   ) =>
   (twitterId: string): RecordV2<Date> => {
-    const status = twitterErrorUsers.find((user) => user.id === twitterId)?.type ?? 'active';
+    const status = twitterErrorUsers.find((user) => user.id === twitterId)?.status ?? 'active';
 
     const record: RecordV2<Date> = {
       type,
