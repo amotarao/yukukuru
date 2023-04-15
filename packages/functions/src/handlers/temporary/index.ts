@@ -18,43 +18,15 @@ export const deleteFieldsSharedTokens = functions
     const bulkWriter = firestore.bulkWriter();
     bulkWriter.onWriteError(bulkWriterErrorHandler);
 
-    const invalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', true).get();
-    invalidSnapshot.docs.forEach((doc) => {
-      bulkWriter.delete(doc.ref);
-      bulkWriter.delete(tokensCollectionRef.doc(doc.id));
-    });
-    if (invalidSnapshot.docs.length) {
-      await bulkWriter.close();
-      console.log(`${invalidSnapshot.size} docs deleted.`);
-      return;
-    }
-
-    const invalidTokensSnapshot = await tokensCollectionRef.where('twitterAccessToken', '==', '').get();
-    invalidTokensSnapshot.docs.forEach((doc) => {
-      bulkWriter.delete(doc.ref);
-    });
-
-    const hasInvalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', false).limit(300).get();
-    hasInvalidSnapshot.docs.forEach((doc) => {
+    const snapshot = await sharedTokensCollectionRef.orderBy('_lastUsed.v1_getFollowersIds').limit(300).get();
+    snapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, {
-        _invalid: FieldValue.delete(),
-      } as any);
-    });
-
-    const hasInvalidV1Snapshot = await sharedTokensCollectionRef.orderBy('_invalidV1').limit(300).get();
-    hasInvalidV1Snapshot.docs.forEach((doc) => {
-      bulkWriter.update(doc.ref, {
-        _invalidV1: FieldValue.delete(),
+        '_lastUsed.v1_getFollowersIds': FieldValue.delete(),
       } as any);
     });
 
     await bulkWriter.close();
-    console.log(
-      `${[invalidTokensSnapshot, hasInvalidSnapshot, hasInvalidV1Snapshot].reduce(
-        (acc, cur) => acc + cur.size,
-        0
-      )} docs deleted.`
-    );
+    console.log(`${snapshot.size} docs deleted.`);
   });
 
 export const deleteActiveFieldUser = functions
