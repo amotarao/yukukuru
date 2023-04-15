@@ -60,8 +60,6 @@ const filterExecutable =
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
     const { role, _checkIntegrityV2Status } = snapshot.data();
 
-    // ToDo: deletedOrSuspended 確認
-
     // サポーターの場合はいつでも許可
     if (role === 'supporter') {
       return true;
