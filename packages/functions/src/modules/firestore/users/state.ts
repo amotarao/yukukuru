@@ -1,4 +1,4 @@
-import { UserTwitter } from '@yukukuru/types';
+import { User, UserTwitter } from '@yukukuru/types';
 import { usersCollectionRef } from '.';
 
 /**
@@ -28,9 +28,14 @@ export const setCheckIntegrityV2Status = async (userId: string, date: Date): Pro
   });
 };
 
-export const setUserTwitter = async (userId: string, twitter: UserTwitter): Promise<void> => {
+export const setUserTwitter = async (
+  userId: string,
+  twitter: UserTwitter,
+  status?: User['_twitterStatus']
+): Promise<void> => {
   await usersCollectionRef.doc(userId).update({
     twitter,
+    _twitterStatus: status,
   });
 };
 
