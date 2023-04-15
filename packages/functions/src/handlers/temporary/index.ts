@@ -11,7 +11,7 @@ export const deleteFieldsSharedTokens = functions
     timeoutSeconds: 20,
     memory: '512MB',
   })
-  .pubsub.schedule('*/5 * * * *')
+  .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async () => {
     const bulkWriter = firestore.bulkWriter();
@@ -33,14 +33,14 @@ export const deleteFieldsSharedTokens = functions
       bulkWriter.delete(doc.ref);
     });
 
-    const hasInvalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', false).limit(100).get();
+    const hasInvalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', false).limit(300).get();
     hasInvalidSnapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, {
         _invalid: FieldValue.delete(),
       } as any);
     });
 
-    const hasInvalidV1Snapshot = await sharedTokensCollectionRef.orderBy('_invalidV1').limit(100).get();
+    const hasInvalidV1Snapshot = await sharedTokensCollectionRef.orderBy('_invalidV1').limit(300).get();
     hasInvalidV1Snapshot.docs.forEach((doc) => {
       bulkWriter.update(doc.ref, {
         _invalidV1: FieldValue.delete(),
