@@ -1,20 +1,19 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 import { pagesPath } from '../../lib/$path';
+import { useAuth } from '../../lib/auth/hooks';
 import styles from './LoginPage.module.scss';
 
 const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
 
-export type LoginPageProps = {
-  signIn: () => void;
-};
-
 /**
  * マイページ全体のコンポーネント
  */
-export const LoginPage: React.FC<LoginPageProps> = ({ signIn }) => {
+export const LoginPage: React.FC = () => {
+  const { signIn } = useAuth();
+
   return (
     <div className={classNames('text-center', styles.wrapper)}>
       <h1 className="mb-4">

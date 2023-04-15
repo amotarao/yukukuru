@@ -2,9 +2,9 @@ import { UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { useAuth } from '../../hooks/auth';
 import { useSubscription } from '../../hooks/useSubscription';
 import { pagesPath } from '../../lib/$path';
+import { useAuth } from '../../lib/auth/hooks';
 import { TwitterUserIcon } from '../atoms/TwitterUserIcon';
 import { Icon } from '../shared/Icon';
 
@@ -23,7 +23,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   multiAccounts,
   onChange = () => null,
 }) => {
-  const [{ uid }] = useAuth();
+  const { uid } = useAuth();
   const { stripeRole } = useSubscription();
   const [isShownModal, setIsShownModal] = useState(false);
   const switchRef = useRef<HTMLButtonElement | null>(null);

@@ -3,14 +3,13 @@ import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect, Fragment, useMemo } from 'react';
-import { useAuth } from '../../hooks/auth';
-import { useRecords } from '../../hooks/records';
+import { useRecords } from '../../hooks/useRecords';
+import { useAuth } from '../../lib/auth/hooks';
 import { useAnalytics } from '../../modules/analytics';
 import { dayjs } from '../../modules/dayjs';
 import { LastUpdatedText } from '../atoms/LastUpdatedText';
 import { LoadingCircle } from '../atoms/LoadingCircle';
 import { AccountSelector } from '../organisms/AccountSelector';
-import { BottomNav } from '../organisms/BottomNav';
 import { UserCard } from '../organisms/UserCard';
 import styles from './MyPage.module.scss';
 
@@ -23,7 +22,7 @@ export type MyPageProps = {
   lastRun: Date | null;
   currentAccount: { id: string; twitter: UserTwitter } | null;
   multiAccounts: { id: string; twitter: UserTwitter }[];
-  getNextRecords: ReturnType<typeof useRecords>[1]['getNextRecords'];
+  getNextRecords: ReturnType<typeof useRecords>['getNextRecords'];
   onChangeCurrentUid: (uid: string) => void;
 };
 
@@ -142,7 +141,7 @@ const ListView: React.FC<
  * メインエリア
  */
 const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({ hasToken, records, lastRun }) => {
-  const [, { signIn }] = useAuth();
+  const { signIn } = useAuth();
 
   const error = useMemo(() => {
     if (hasToken) {
@@ -254,7 +253,6 @@ export const MyPage: React.FC<MyPageProps> = ({
           </>
         )}
       </main>
-      <BottomNav active="my" scrollToTopOnActive />
     </div>
   );
 };

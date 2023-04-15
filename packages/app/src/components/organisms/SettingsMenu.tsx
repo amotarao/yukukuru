@@ -2,16 +2,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Switch from 'react-switch';
 import { pagesPath } from '../../lib/$path';
+import { useAuth } from '../../lib/auth/hooks';
 import { ThemeContainer } from '../../store/theme';
 import { TweetButton } from './TweetButton';
 
-type SettingsMenuProps = {
-  signIn: () => void;
-  signOut: () => void | Promise<void>;
-};
-
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) => {
+export const SettingsMenu: React.FC = () => {
   const router = useRouter();
+  const { signIn, signOut } = useAuth();
   const { theme, setTheme } = ThemeContainer.useContainer();
 
   return (
