@@ -1,4 +1,4 @@
-import { ApiResponseError } from 'twitter-api-v2';
+import { ApiResponseError, InlineErrorV2 } from 'twitter-api-v2';
 
 const logError = (error: unknown): void => {
   if (error && error instanceof ApiResponseError) {
@@ -19,4 +19,16 @@ export const twitterClientErrorHandler = (error: unknown): { error: ApiResponseE
   }
 
   throw error;
+};
+
+const checkIsDeleted = (error: InlineErrorV2): boolean => {
+  return error.detail.startsWith('Could not find user with ids:');
+};
+
+const checkIsSuspended = (error: InlineErrorV2): boolean => {
+  return error.detail.startsWith('User has been suspended:');
+};
+
+export const getInlineErrorV2Status = (error: InlineErrorV2): 'deleted' | 'suspended' | 'unknown' => {
+  return checkIsDeleted(error) ? 'deleted' : checkIsSuspended(error) ? 'suspended' : 'unknown';
 };

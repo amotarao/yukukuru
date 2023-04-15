@@ -11,6 +11,10 @@ export const initializeUser = async (id: string, twitter: UserTwitter): Promise<
     group: getGroupIndex(id),
     linkedUserIds: [],
     twitter,
+    _twitterStatus: {
+      lastChecked: new Date(0),
+      status: 'active',
+    },
     _getFollowersV2Status: {
       lastRun: new Date(0),
       nextToken: null,

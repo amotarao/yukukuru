@@ -13,6 +13,12 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   /** Twitter情報 */
   twitter: UserTwitter;
 
+  /** Twitter の状態 */
+  _twitterStatus: {
+    lastChecked: T;
+    status: 'active' | 'deleted' | 'suspended' | 'unknown';
+  };
+
   /** getFollowersV2 の状態保存 */
   _getFollowersV2Status: {
     lastRun: T;
