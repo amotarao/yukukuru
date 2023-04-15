@@ -2,6 +2,7 @@ import { logEvent } from 'firebase/analytics';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useEffect } from 'react';
+import { AuthProvider } from '../lib/auth/context';
 import { useAnalytics } from '../modules/analytics';
 import { ThemeContainer } from '../store/theme';
 import '../styles/globals.css';
@@ -23,10 +24,12 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps, router }) => {
 
   return (
     <ThemeContainer.Provider>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <Component {...pageProps} />
+      </AuthProvider>
     </ThemeContainer.Provider>
   );
 };

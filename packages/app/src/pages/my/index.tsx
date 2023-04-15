@@ -3,15 +3,15 @@ import { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
-import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
 import { useToken } from '../../hooks/token';
 import { useLastRun } from '../../hooks/useLastRun';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
+import { useAuth } from '../../lib/auth/hooks';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid }, { signIn }] = useAuth();
+  const { isLoading: authIsLoading, signedIn, signingIn, uid: authUid, signIn } = useAuth();
 
   const [currentUid, setCurrentUid] = useState(authUid);
   useEffect(() => {

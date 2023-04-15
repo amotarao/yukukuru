@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { useState, useEffect, Fragment, useMemo } from 'react';
-import { useAuth } from '../../hooks/auth';
 import { useRecords } from '../../hooks/records';
+import { useAuth } from '../../lib/auth/hooks';
 import { useAnalytics } from '../../modules/analytics';
 import { dayjs } from '../../modules/dayjs';
 import { LastUpdatedText } from '../atoms/LastUpdatedText';
@@ -142,7 +142,7 @@ const ListView: React.FC<
  * メインエリア
  */
 const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({ hasToken, records, lastRun }) => {
-  const [, { signIn }] = useAuth();
+  const { signIn } = useAuth();
 
   const error = useMemo(() => {
     if (hasToken) {

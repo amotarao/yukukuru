@@ -7,12 +7,12 @@ import { AccountSelector } from '../../../../components/organisms/AccountSelecto
 import { BottomNav } from '../../../../components/organisms/BottomNav';
 import { LoginPage } from '../../../../components/pages/LoginPage';
 import { Icon } from '../../../../components/shared/Icon';
-import { useAuth } from '../../../../hooks/auth';
 import { useMultiAccounts } from '../../../../hooks/useMultiAccounts';
 import { pagesPath } from '../../../../lib/$path';
+import { useAuth } from '../../../../lib/auth/hooks';
 
 const Page: React.FC = () => {
-  const [{ isLoading, signedIn, signingIn }, { signIn }] = useAuth();
+  const { isLoading, signedIn, signingIn, signIn } = useAuth();
 
   return (
     <>
@@ -27,7 +27,7 @@ const Page: React.FC = () => {
 export default Page;
 
 const Main: React.FC = () => {
-  const [{ isLoading: isLoadingAuth, uid }, { signIn }] = useAuth();
+  const { isLoading: isLoadingAuth, uid, signIn } = useAuth();
   const {
     isLoading: isLoadingMultiAccounts,
     accounts,
