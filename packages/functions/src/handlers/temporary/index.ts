@@ -22,6 +22,12 @@ export const deleteFieldsSharedTokens = functions
       bulkWriter.delete(doc.ref);
       bulkWriter.delete(tokensCollectionRef.doc(doc.id));
     });
+    await bulkWriter.close();
+
+    const invalidTokensSnapshot = await tokensCollectionRef.where('twitterAccessToken', '==', '').get();
+    invalidTokensSnapshot.docs.forEach((doc) => {
+      bulkWriter.delete(doc.ref);
+    });
 
     const hasInvalidSnapshot = await sharedTokensCollectionRef.where('_invalid', '==', false).limit(100).get();
     hasInvalidSnapshot.docs.forEach((doc) => {
@@ -38,5 +44,10 @@ export const deleteFieldsSharedTokens = functions
     });
 
     await bulkWriter.close();
-    console.log(`${invalidSnapshot.size + hasInvalidSnapshot.size + hasInvalidV1Snapshot.size} docs deleted.`);
+    console.log(
+      `${[invalidSnapshot, invalidTokensSnapshot, hasInvalidSnapshot, hasInvalidV1Snapshot].reduce(
+        (acc, cur) => acc + cur.size,
+        0
+      )} docs deleted.`
+    );
   });
