@@ -136,7 +136,11 @@ const filterExecutable =
 
     // Twitter が削除等のエラーが発生している場合、1日間隔を空ける
     // undefined チェックはあとで削除する
-    if (_twitterStatus !== undefined && _twitterStatus.status !== 'active' && minutes < 60 * 24) {
+    if (
+      _twitterStatus !== undefined &&
+      _twitterStatus.status !== 'active' &&
+      getDiffMinutes(now, _twitterStatus.lastChecked.toDate()) < 60 * 24
+    ) {
       return false;
     }
 
