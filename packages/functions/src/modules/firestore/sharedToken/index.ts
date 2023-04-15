@@ -65,7 +65,7 @@ export const getInvalidSharedTokenDocsOrderByLastChecked = async (
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
-export const setValidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+export const updateValidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
   const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
     _invalid: false,
     _lastChecked: lastChecked,
@@ -73,7 +73,7 @@ export const setValidSharedToken = async (id: string, lastChecked: Date): Promis
   await collectionRef.doc(id).update(data);
 };
 
-export const setInvalidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+export const updateInvalidSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
   const data: Pick<SharedToken<Date>, '_invalid' | '_lastChecked'> = {
     _invalid: true,
     _lastChecked: lastChecked,
@@ -111,7 +111,7 @@ export const getSharedTokensForGetUsers = async (
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
-export const setLastUsedSharedToken = async (
+export const updateLastUsedSharedToken = async (
   id: string,
   targetApis: (keyof SharedToken['_lastUsed'])[],
   now: Date

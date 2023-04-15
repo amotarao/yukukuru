@@ -7,8 +7,8 @@ import {
   getInvalidSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   getValidSharedTokenDocsOrderByLastChecked,
-  setInvalidSharedToken,
-  setValidSharedToken,
+  updateInvalidSharedToken,
+  updateValidSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { publishMessages } from '../../modules/pubsub';
 import { getUsers } from '../../modules/twitter/api/users';
@@ -96,7 +96,7 @@ export const run = functions
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
         console.log('❗️ Forbidden.');
-        exists && (await setInvalidSharedToken(id, now));
+        exists && (await updateInvalidSharedToken(id, now));
         return;
       }
 
@@ -107,5 +107,5 @@ export const run = functions
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
     await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
 
-    exists && (await setValidSharedToken(id, now));
+    exists && (await updateValidSharedToken(id, now));
   });

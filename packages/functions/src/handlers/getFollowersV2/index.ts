@@ -4,7 +4,7 @@ import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
 import { existsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
-import { setLastUsedSharedToken } from '../../modules/firestore/sharedToken';
+import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
@@ -353,7 +353,7 @@ const saveDocsStep = async (
     setWatchV2(uid, followersIds, now, ended),
     setUserGetFollowersV2Status(uid, nextToken, ended, now),
     existsSharedToken(sharedToken ? sharedToken.id : uid).then(() => {
-      setLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
+      updateLastUsedSharedToken(sharedToken ? sharedToken.id : uid, ['v2_getUserFollowers', 'v2_getUsers'], now);
     }),
   ]);
   console.log(`⏳ Updated state to user document of [${uid}].`);
