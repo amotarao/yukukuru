@@ -46,7 +46,6 @@ const Page: NextPage = () => {
         <table className="table w-full">
           <thead>
             <tr className="border-b">
-              <th className="p-2 px-3 text-left">active</th>
               <th className="p-2 px-3 text-left">
                 <span className="mr-2">id</span>
                 <SortButton
