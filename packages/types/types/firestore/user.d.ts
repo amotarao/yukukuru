@@ -10,6 +10,9 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   /** 連携したユーザー ID リスト */
   linkedUserIds: string[];
 
+  /** Twitter情報 */
+  twitter: UserTwitter;
+
   /** getFollowersV2 の状態保存 */
   _getFollowersV2Status: {
     lastRun: T;
@@ -21,9 +24,6 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
   _checkIntegrityV2Status: {
     lastRun: T;
   };
-
-  /** Twitter情報 */
-  twitter: UserTwitter;
 };
 
 export type UserTwitter = {
