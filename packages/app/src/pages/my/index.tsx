@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
-import { useLastRun } from '../../hooks/useLastRun';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { useRecords } from '../../hooks/useRecords';
 import { useToken } from '../../hooks/useToken';
@@ -18,8 +17,8 @@ const Page: React.FC = () => {
     setCurrentUid(authUid);
   }, [authUid]);
 
-  const { isLoading: userIsLoading, lastRun } = useLastRun(currentUid);
-  const { isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext, getNextRecords } = useRecords(currentUid);
+  const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
+    useRecords(currentUid);
   const { isLoading: tokenIsLoading, hasToken } = useToken(currentUid);
   const {
     isLoading: isLoadingMultiAccounts,
@@ -28,7 +27,7 @@ const Page: React.FC = () => {
   } = useMultiAccounts(authUid, currentUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
-  const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading || isLoadingMultiAccounts;
+  const isLoading = authIsLoading || recordsIsLoading || isLoadingLastRun || tokenIsLoading || isLoadingMultiAccounts;
 
   // lastViewing 送信
   useEffect(() => {

@@ -1,6 +1,7 @@
-import { Record, RecordV2 } from '@yukukuru/types';
-import { QueryDocumentSnapshot } from 'firebase/firestore';
+import { Record, RecordV2, Timestamp } from '@yukukuru/types';
+import { QueryDocumentSnapshot, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
+import { firestore } from '../modules/firebase';
 import { fetchRecords, fetchRecordsV2 } from '../modules/firestore/records';
 
 type State = {
@@ -13,11 +14,17 @@ type State = {
   /** 読み込みが完了しているかどうか */
   isFirstLoaded: boolean;
 
+  /** lastRun が読み込み中かどうか */
+  isLoadingLastRun: boolean;
+
   /** 記録リスト */
   records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
 
   /** 続きデータがあるかどうか */
   hasNext: boolean;
+
+  /** lastRun */
+  lastRun: Date | null;
 
   /** 初期状態かどうか */
   _initialized: boolean;
@@ -36,8 +43,10 @@ const initialState: State = {
   isFirstLoading: false,
   isNextLoading: false,
   isFirstLoaded: false,
+  isLoadingLastRun: true,
   records: [],
   hasNext: true,
+  lastRun: null,
   _initialized: false,
   _isCompletedFetchV2: false,
   _cursor: null,
@@ -79,6 +88,15 @@ type DispatchAction =
     }
   | {
       type: 'Initialize';
+    }
+  | {
+      type: 'SetLastRun';
+      payload: {
+        lastRun: State['lastRun'];
+      };
+    }
+  | {
+      type: 'StartLoadingLastRun';
     };
 
 const reducer = (state: State, action: DispatchAction): State => {
@@ -140,6 +158,19 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'Initialize': {
       return initialState;
     }
+    case 'SetLastRun': {
+      return {
+        ...state,
+        isLoadingLastRun: false,
+        lastRun: action.payload.lastRun,
+      };
+    }
+    case 'StartLoadingLastRun': {
+      return {
+        ...state,
+        isLoadingLastRun: true,
+      };
+    }
   }
 };
 
@@ -194,24 +225,18 @@ export const useRecords = (uid: string | null) => {
     });
   }, [state._cursorV2, uid, getRecordsV1]);
 
-  /**
-   * Records を取得し処理する
-   */
+  // Records を取得し処理する
   const getRecords = useCallback(async () => {
     !state._isCompletedFetchV2 ? await getRecordsV2() : await getRecordsV1();
     dispatch({ type: 'FinishLoadRecords' });
   }, [state._isCompletedFetchV2, getRecordsV2, getRecordsV1]);
 
-  /**
-   * UID が変更した際は初期化する
-   */
+  // UID が変更した際は初期化する
   useEffect(() => {
     dispatch({ type: 'Initialize' });
   }, [uid]);
 
-  /**
-   * 初回 Records を取得する
-   */
+  // 初回 Records を取得する
   useEffect(() => {
     if (!uid || state._initialized) {
       return;
@@ -220,9 +245,7 @@ export const useRecords = (uid: string | null) => {
     getRecords();
   }, [uid, state._initialized, getRecords]);
 
-  /**
-   * 続きの Records を取得する
-   */
+  // 続きの Records を取得する
   const getNextRecords = () => {
     if (state.isNextLoading || !uid) {
       return;
@@ -230,6 +253,29 @@ export const useRecords = (uid: string | null) => {
     dispatch({ type: 'StartLoadNextRecords' });
     getRecords();
   };
+
+  // lastRun を取得する
+  useEffect(() => {
+    if (!uid) return;
+
+    dispatch({ type: 'StartLoadingLastRun' });
+
+    getDoc(doc(firestore, 'users', uid)).then((doc) => {
+      if (!doc.exists()) {
+        dispatch({
+          type: 'SetLastRun',
+          payload: { lastRun: null },
+        });
+        return;
+      }
+
+      const lastRun = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
+      dispatch({
+        type: 'SetLastRun',
+        payload: { lastRun: lastRun > new Date(0) ? lastRun : null },
+      });
+    });
+  }, [uid]);
 
   return {
     ...state,
