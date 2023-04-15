@@ -43,7 +43,7 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-export const useToken = (uid: string | null): [Readonly<State>] => {
+export const useToken = (uid: string | null) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -71,5 +71,7 @@ export const useToken = (uid: string | null): [Readonly<State>] => {
     };
   }, [uid]);
 
-  return [state];
+  return {
+    ...state,
+  };
 };

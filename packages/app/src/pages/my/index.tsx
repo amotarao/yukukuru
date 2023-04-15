@@ -1,27 +1,26 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
+import { BottomNav } from '../../components/organisms/BottomNav';
 import { LoginPage } from '../../components/pages/LoginPage';
 import { MyPage } from '../../components/pages/MyPage';
-import { useAuth } from '../../hooks/auth';
-import { useRecords } from '../../hooks/records';
-import { useToken } from '../../hooks/token';
-import { useLastRun } from '../../hooks/useLastRun';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
+import { useRecords } from '../../hooks/useRecords';
+import { useToken } from '../../hooks/useToken';
+import { useAuth } from '../../lib/auth/hooks';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
 
 const Page: React.FC = () => {
-  const [{ isLoading: authIsLoading, signedIn, signingIn, uid: authUid }, { signIn }] = useAuth();
+  const { isLoading: authIsLoading, signedIn, signingIn, uid: authUid } = useAuth();
 
-  const [currentUid, setCurrentUid] = useState(authUid);
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
   useEffect(() => {
     setCurrentUid(authUid);
   }, [authUid]);
 
-  const [{ isLoading: userIsLoading, lastRun }] = useLastRun(currentUid);
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext }, { getNextRecords }] =
+  const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
     useRecords(currentUid);
-  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
+  const { isLoading: tokenIsLoading, hasToken } = useToken(currentUid);
   const {
     isLoading: isLoadingMultiAccounts,
     accounts: multiAccounts,
@@ -29,7 +28,7 @@ const Page: React.FC = () => {
   } = useMultiAccounts(authUid, currentUid);
 
   const recordsIsLoading = isFirstLoading || !isFirstLoaded;
-  const isLoading = authIsLoading || recordsIsLoading || userIsLoading || tokenIsLoading || isLoadingMultiAccounts;
+  const isLoading = authIsLoading || recordsIsLoading || isLoadingLastRun || tokenIsLoading || isLoadingMultiAccounts;
 
   // lastViewing 送信
   useEffect(() => {
@@ -64,8 +63,9 @@ const Page: React.FC = () => {
           }}
         />
       ) : (
-        <LoginPage signIn={signIn} />
+        <LoginPage />
       )}
+      <BottomNav active="my" scrollToTopOnActive />
     </>
   );
 };

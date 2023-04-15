@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../lib/auth/hooks';
 import { getOwnActiveSubscriptions } from '../modules/firestore/stripe';
-import { useAuth } from './auth';
 
 type Subscription = {
   status: string;
@@ -8,7 +8,7 @@ type Subscription = {
 };
 
 export const useSubscription = () => {
-  const [{ uid, isLoading: isAuthLoading }] = useAuth();
+  const { uid, isLoading: isAuthLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSupporter, setIsSupporter] = useState<boolean | null>(null);
 

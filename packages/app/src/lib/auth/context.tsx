@@ -1,13 +1,6 @@
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut as authSignOut,
-  TwitterAuthProvider,
-  UserInfo,
-} from 'firebase/auth';
-import { useEffect, useReducer } from 'react';
-import { auth } from '../modules/firebase';
-import { setToken } from '../modules/firestore/tokens';
+import { UserInfo, onAuthStateChanged } from 'firebase/auth';
+import { createContext, useEffect, useReducer } from 'react';
+import { auth } from '../../modules/firebase';
 
 type State = {
   /** 読み込み中かどうか */
@@ -46,12 +39,6 @@ type DispatchAction =
       type: 'ClearUser';
     }
   | {
-      type: 'StartLoading';
-    }
-  | {
-      type: 'FinishLoading';
-    }
-  | {
       type: 'StartSignIn';
     }
   | {
@@ -63,67 +50,49 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'SetUser': {
       return {
         ...state,
+        isLoading: false,
         signedIn: true,
         user: action.payload.user,
         uid: action.payload.uid,
       };
     }
-
     case 'ClearUser': {
       return {
         ...state,
+        isLoading: false,
         signedIn: false,
         user: null,
         uid: null,
       };
     }
-
-    case 'StartLoading': {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-
-    case 'FinishLoading': {
-      return {
-        ...state,
-        isLoading: false,
-      };
-    }
-
     case 'StartSignIn': {
       return {
         ...state,
         signingIn: true,
       };
     }
-
     case 'FinishSignIn': {
       return {
         ...state,
         signingIn: false,
       };
     }
-
-    default: {
-      return state;
-    }
   }
 };
 
-type Action = {
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-};
+export const AuthContext = createContext<{
+  state: State;
+  dispatch: React.Dispatch<DispatchAction>;
+}>({
+  state: initialState,
+  dispatch: () => undefined,
+});
 
-export const useAuth = (): [Readonly<State>, Action] => {
+export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // ログイン状態の監視
   useEffect(() => {
-    dispatch({ type: 'StartLoading' });
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
@@ -131,34 +100,12 @@ export const useAuth = (): [Readonly<State>, Action] => {
       } else {
         dispatch({ type: 'ClearUser' });
       }
-      dispatch({ type: 'FinishLoading' });
     });
 
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [dispatch]);
 
-  // サインイン処理
-  const signIn = async () => {
-    dispatch({ type: 'StartSignIn' });
-
-    const twitterAuthProvider = new TwitterAuthProvider();
-    twitterAuthProvider.setCustomParameters({ lang: 'ja' });
-
-    const userCredential = await signInWithPopup(auth, twitterAuthProvider).catch((error: Error) => {
-      console.error(error.message);
-      return undefined;
-    });
-    await setToken(userCredential);
-
-    dispatch({ type: 'FinishSignIn' });
-  };
-
-  // サインアウト処理
-  const signOut = async () => {
-    await authSignOut(auth);
-  };
-
-  return [state, { signIn, signOut }];
+  return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
 };

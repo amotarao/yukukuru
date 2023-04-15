@@ -123,17 +123,7 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-export const useMultiAccounts = (
-  authUid: string | null,
-  currentUid: string | null
-): Readonly<
-  Pick<State, 'accounts' | 'linkAccountRequests'> & {
-    isLoading: boolean;
-    currentAccount: User | null;
-    addLinkAccountRequest: (screenName: string) => void;
-    updateLinkAccountRequest: (requestId: string, step: 'create' | 'cancel' | 'approve' | 'reject') => void;
-  }
-> => {
+export const useMultiAccounts = (authUid: string | null, currentUid: string | null) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // authUid に変更があれば、初期化

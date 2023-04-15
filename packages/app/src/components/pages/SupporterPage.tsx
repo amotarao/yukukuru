@@ -2,19 +2,18 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import { useAuth } from '../../hooks/auth';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { usePlanPrice } from '../../hooks/usePlanPrice';
 import { useSubscription } from '../../hooks/useSubscription';
 import { pagesPath } from '../../lib/$path';
+import { useAuth } from '../../lib/auth/hooks';
 import { addCheckoutSession } from '../../modules/firestore/stripe';
 import { getPortalLink } from '../../modules/functions/stripe';
 import { AccountSelector } from '../organisms/AccountSelector';
-import { BottomNav } from '../organisms/BottomNav';
 import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
-  const [{ isLoading: isLoadingAuth, signedIn, uid }] = useAuth();
+  const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();
   const { isLoading: isLoadingSubscription, isSupporter } = useSubscription();
   const { currentAccount } = useMultiAccounts(uid, null);
 
@@ -168,7 +167,6 @@ export const SupporterPage: React.FC = () => {
           </p>
         </section>
       </div>
-      {signedIn && <BottomNav active="supporter" scrollToTopOnActive />}
     </div>
   );
 };
@@ -180,7 +178,7 @@ const CheckoutButton: React.FC<{
   const [loading, setLoading] = useState(false);
 
   const stripe = useStripe();
-  const [{ uid }] = useAuth();
+  const { uid } = useAuth();
   const { planPrices, taxRates } = usePlanPrice();
   const supporterPriceId = useMemo(
     () => planPrices.find((price) => price.role === 'supporter')?.id ?? null,
