@@ -1,3 +1,5 @@
+'use client';
+
 import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import { logEvent } from 'firebase/analytics';

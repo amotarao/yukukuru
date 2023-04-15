@@ -1,3 +1,5 @@
+'use client';
+
 import { StripeRole } from '@yukukuru/types';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth/hooks';

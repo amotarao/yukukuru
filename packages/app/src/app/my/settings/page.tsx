@@ -1,3 +1,5 @@
+'use client';
+
 import Head from 'next/head';
 import { LoadingCircle } from '../../../components/atoms/LoadingCircle';
 import { BottomNav } from '../../../components/organisms/BottomNav';

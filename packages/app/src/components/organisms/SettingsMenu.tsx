@@ -1,5 +1,7 @@
+'use client';
+
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Switch from 'react-switch';
 import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
@@ -51,7 +53,7 @@ export const SettingsMenu: React.FC = () => {
             onClick={async (e) => {
               e.preventDefault();
               await signOut();
-              router.push(pagesPath.$url());
+              router.push(pagesPath.$url().pathname);
             }}
           >
             <p>ログアウト</p>
@@ -64,7 +66,7 @@ export const SettingsMenu: React.FC = () => {
             onClick={async (e) => {
               e.preventDefault();
               await signIn();
-              router.push(pagesPath.my.$url());
+              router.push(pagesPath.my.$url().pathname);
             }}
           >
             <p>
