@@ -143,12 +143,7 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
-type Action = {
-  /** 続きのデータを取得する */
-  getNextRecords: () => void;
-};
-
-export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
+export const useRecords = (uid: string | null) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const getRecordsV1 = useCallback(
@@ -236,5 +231,8 @@ export const useRecords = (uid: string | null): [Readonly<State>, Action] => {
     getRecords();
   };
 
-  return [state, { getNextRecords }];
+  return {
+    ...state,
+    getNextRecords,
+  };
 };

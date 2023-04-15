@@ -18,10 +18,9 @@ const Page: React.FC = () => {
     setCurrentUid(authUid);
   }, [authUid]);
 
-  const [{ isLoading: userIsLoading, lastRun }] = useLastRun(currentUid);
-  const [{ isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext }, { getNextRecords }] =
-    useRecords(currentUid);
-  const [{ isLoading: tokenIsLoading, hasToken }] = useToken(currentUid);
+  const { isLoading: userIsLoading, lastRun } = useLastRun(currentUid);
+  const { isFirstLoading, isFirstLoaded, isNextLoading, records, hasNext, getNextRecords } = useRecords(currentUid);
+  const { isLoading: tokenIsLoading, hasToken } = useToken(currentUid);
   const {
     isLoading: isLoadingMultiAccounts,
     accounts: multiAccounts,
