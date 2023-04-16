@@ -2,12 +2,15 @@ const plugin = require('tailwindcss/plugin');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.tsx'],
   theme: {
     screens: {
       sm: '640px',
     },
     extend: {
+      spacing: {
+        'safe-bottom': 'var(--safe-bottom)',
+      },
       colors: {
         main: 'var(--main)',
         sub: 'var(--sub)',
@@ -37,6 +40,9 @@ module.exports = {
           '"M+ 1p"',
           'sans-serif',
         ],
+      },
+      aria: {
+        current: 'current="page"',
       },
     },
   },
