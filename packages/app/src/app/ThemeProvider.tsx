@@ -2,6 +2,6 @@
 
 import { ThemeContainer } from '../store/theme';
 
-export default function ThemeProvider({ children }: { children?: React.ReactNode }) {
+export const ThemeProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return <ThemeContainer.Provider>{children}</ThemeContainer.Provider>;
-}
+};

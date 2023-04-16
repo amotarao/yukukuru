@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 import { AuthProvider } from '../lib/auth/context';
 import { FirebaseAnalytics } from './FirebaseAnalytics';
-import ThemeProvider from './theme-context';
+import { ThemeProvider } from './ThemeProvider';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
