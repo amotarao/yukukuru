@@ -5,7 +5,6 @@ import { addRecordsV2 } from '../../modules/firestore/recordsV2';
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsersByIds, setTwUsers } from '../../modules/firestore/twUsers';
-import { getUser } from '../../modules/firestore/users';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserToRecordV2User, convertTwitterUserToRecordV2User } from '../../modules/twitter-user-converter';
@@ -126,11 +125,6 @@ const getTwitterUsers = async (
     return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: errorTwUsers };
   }
   console.log(`ℹ️ Not exists token or failed to get twitter users.`);
-
-  // TwUsers に登録がない場合があるので、フォロワー数の時間分待機する
-  const User = await getUser(userId);
-  const waitingSecs = Math.ceil((Math.min(User.twitter.followersCount, 10000) / 400) * 0.25);
-  await new Promise((resolve) => setTimeout(resolve, waitingSecs));
   const twUsers = await getTwUsersByIds(twitterIds).catch(() => []);
 
   return { twitterUsers: [], twitterErrorUsers: [], twUsers };

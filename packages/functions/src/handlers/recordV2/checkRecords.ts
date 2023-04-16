@@ -12,7 +12,7 @@ import { getClient } from '../../modules/twitter/client';
 export const checkRecords = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 30,
     memory: '256MB',
   })
   .pubsub.schedule('*/5 * * * *')
