@@ -26,8 +26,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-switch": "^7.0.0",
-    "react-twitter-widgets": "^1.11.0",
-    "unstated-next": "^1.1.0"
+    "react-twitter-widgets": "^1.11.0"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
