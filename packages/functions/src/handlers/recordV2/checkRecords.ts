@@ -3,7 +3,7 @@ import * as dayjs from 'dayjs';
 import { DocumentReference } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { getRecordsV2NullTwitterUser, setRecordsV2TwitterUser } from '../../modules/firestore/recordsV2';
-import { getSharedTokensForGetUsers } from '../../modules/firestore/sharedToken';
+import { getSharedTokensForGetUsers, updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { convertTwitterUserToRecordV2User } from '../../modules/twitter-user-converter';
 import { getUsers } from '../../modules/twitter/api/users';
@@ -18,8 +18,8 @@ export const checkRecords = functions
   .pubsub.schedule('*/5 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
-    const now = dayjs(context.timestamp);
-    const [token] = await getSharedTokensForGetUsers(now.subtract(15, 'minutes').toDate(), 1);
+    const now = new Date(context.timestamp);
+    const [token] = await getSharedTokensForGetUsers(dayjs(now).subtract(15, 'minutes').toDate(), 1);
     if (!token) {
       throw new Error('❌ Not found token.');
     }
@@ -49,5 +49,6 @@ export const checkRecords = functions
       .filter((item): item is Item => item !== null);
     await setRecordsV2TwitterUser(items);
     await setTwUsers(response.users);
+    await updateLastUsedSharedToken(token.id, ['v2_getUsers'], now);
     console.log(`updated ${items.length} items.`);
   });

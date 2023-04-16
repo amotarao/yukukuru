@@ -349,16 +349,12 @@ const saveDocsStep = async (
           await updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now);
         }),
         checkExistsSharedToken(sharedClient.token.id).then(async () => {
-          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUsers', 'v2_getUser'], now);
+          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUser'], now);
         }),
       ]
     : [
         checkExistsSharedToken(sharedClient.token.id).then(async () => {
-          await updateLastUsedSharedToken(
-            sharedClient.token.id,
-            ['v2_getUserFollowers', 'v2_getUsers', 'v2_getUser'],
-            now
-          );
+          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUserFollowers', 'v2_getUser'], now);
         }),
       ];
 
