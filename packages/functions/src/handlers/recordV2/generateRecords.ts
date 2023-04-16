@@ -1,11 +1,11 @@
 import { RecordV2, RecordV2Type, TwUser, WatchV2 } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsersByIds, setTwUsers } from '../../modules/firestore/twUsers';
-import { getUser } from '../../modules/firestore/users';
 import { getLatestEndedWatchesV2Ids, getLatestWatchesV2FromId } from '../../modules/firestore/watchesV2';
 import { mergeWatchesV2 } from '../../modules/twitter-followers/watchesV2';
 import { convertTwUserToRecordV2User, convertTwitterUserToRecordV2User } from '../../modules/twitter-user-converter';
@@ -54,7 +54,7 @@ export const generateRecords = functions
       return;
     }
 
-    const { twitterUsers, twitterErrorUsers, twUsers } = await getTwitterUsers(userId, [...yuku, ...kuru]);
+    const { twitterUsers, twitterErrorUsers, twUsers } = await getTwitterUsers(now, userId, [...yuku, ...kuru]);
     const records = [
       ...yuku.map(generateRecord('yuku', newWatch.date, twitterUsers, twitterErrorUsers, twUsers)),
       ...kuru.map(generateRecord('kuru', newWatch.date, twitterUsers, twitterErrorUsers, twUsers)),
@@ -116,21 +116,24 @@ const getOwnClient = async (uid: string) => {
 };
 
 const getTwitterUsers = async (
+  now: Date,
   userId: string,
   twitterIds: string[]
 ): Promise<{ twitterUsers: TwitterUser[]; twitterErrorUsers: TwitterErrorUser[]; twUsers: TwUser[] }> => {
   const client = await getOwnClient(userId);
   const response = await getUsers(client, twitterIds);
+  if ('error' in response) {
+    // 429
+    if (response.error.data.title === 'Too Many Requests') {
+      console.log('❗️ Too Many Requests.');
+      await updateLastUsedSharedToken(userId, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+    }
+  }
   if ('users' in response) {
     const errorTwUsers = await getTwUsersByIds(response.errorUsers.map((user) => user.id)).catch(() => []);
     return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: errorTwUsers };
   }
   console.log(`ℹ️ Not exists token or failed to get twitter users.`);
-
-  // TwUsers に登録がない場合があるので、フォロワー数の時間分待機する
-  const User = await getUser(userId);
-  const waitingSecs = Math.ceil((Math.min(User.twitter.followersCount, 10000) / 400) * 0.25);
-  await new Promise((resolve) => setTimeout(resolve, waitingSecs));
   const twUsers = await getTwUsersByIds(twitterIds).catch(() => []);
 
   return { twitterUsers: [], twitterErrorUsers: [], twUsers };

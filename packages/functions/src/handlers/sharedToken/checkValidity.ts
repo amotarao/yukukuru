@@ -104,6 +104,13 @@ export const run = functions
         return;
       }
 
+      // 429
+      if (response.error.data.title === 'Too Many Requests') {
+        console.log('❗️ Too Many Requests.');
+        await updateLastUsedSharedToken(id, ['v2_getUser'], dayjs(now).add(6, 'hours').toDate());
+        return;
+      }
+
       throw new Error('❌ Failed to access Twitter API v2');
     }
 
