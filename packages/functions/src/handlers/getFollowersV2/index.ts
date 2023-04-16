@@ -205,6 +205,7 @@ export const run = functions
       const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(uid, sharedToken, twitterProtected);
       await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(
+        now,
         ownClient || sharedClient,
         uid,
         twitterId,
@@ -285,6 +286,12 @@ const checkOwnUserStatusStep = async (
 ): Promise<void> => {
   const response = await getUser(client, twitterId);
   if ('error' in response) {
+    // 429
+    if (response.error.data.title === 'Too Many Requests') {
+      await updateLastUsedSharedToken(token.id, ['v2_getUserFollowers'], dayjs(now).add(6, 'hours').toDate());
+      throw new Error('❗️ Too Many Requests.');
+    }
+
     await publishCheckValiditySharedToken(token);
     throw new Error(`❗️An error occurred while retrieving own status.`);
   }
@@ -304,6 +311,7 @@ const checkOwnUserStatusStep = async (
  * フォロワーIDリストの取得
  */
 const getFollowersIdsStep = async (
+  now: Date,
   { client, token }: TwitterClientWithToken,
   uid: string,
   twitterId: string,
@@ -322,6 +330,12 @@ const getFollowersIdsStep = async (
   }
 
   if ('error' in response) {
+    // 429
+    if (response.error.data.title === 'Too Many Requests') {
+      await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+      throw new Error('❗️ Too Many Requests.');
+    }
+
     await publishCheckValiditySharedToken(token);
     const message = `❗️Failed to get users from Twitter of [${uid}].`;
     throw new Error(message);

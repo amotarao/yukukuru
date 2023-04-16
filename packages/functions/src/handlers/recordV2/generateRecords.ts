@@ -1,4 +1,5 @@
 import { RecordV2, RecordV2Type, TwUser, WatchV2 } from '@yukukuru/types';
+import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
@@ -53,7 +54,7 @@ export const generateRecords = functions
       return;
     }
 
-    const { twitterUsers, twitterErrorUsers, twUsers } = await getTwitterUsers(userId, [...yuku, ...kuru]);
+    const { twitterUsers, twitterErrorUsers, twUsers } = await getTwitterUsers(now, userId, [...yuku, ...kuru]);
     const records = [
       ...yuku.map(generateRecord('yuku', newWatch.date, twitterUsers, twitterErrorUsers, twUsers)),
       ...kuru.map(generateRecord('kuru', newWatch.date, twitterUsers, twitterErrorUsers, twUsers)),
@@ -115,11 +116,19 @@ const getOwnClient = async (uid: string) => {
 };
 
 const getTwitterUsers = async (
+  now: Date,
   userId: string,
   twitterIds: string[]
 ): Promise<{ twitterUsers: TwitterUser[]; twitterErrorUsers: TwitterErrorUser[]; twUsers: TwUser[] }> => {
   const client = await getOwnClient(userId);
   const response = await getUsers(client, twitterIds);
+  if ('error' in response) {
+    // 429
+    if (response.error.data.title === 'Too Many Requests') {
+      console.log('❗️ Too Many Requests.');
+      await updateLastUsedSharedToken(userId, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+    }
+  }
   if ('users' in response) {
     const errorTwUsers = await getTwUsersByIds(response.errorUsers.map((user) => user.id)).catch(() => []);
     return { twitterUsers: response.users, twitterErrorUsers: response.errorUsers, twUsers: errorTwUsers };
