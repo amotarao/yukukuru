@@ -10,7 +10,7 @@
     "dev": "run-p dev:*",
     "dev:next": "next dev",
     "dev:path": "pathpida --watch",
-    "build": "pathpida && next build && next export && next-sitemap",
+    "build": "pathpida && next build && next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
@@ -21,13 +21,12 @@
     "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
     "firebase": "^9.17.2",
-    "next": "13.1.1",
+    "next": "13.3.0",
     "next-sitemap": "^3.1.45",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-switch": "^7.0.0",
-    "react-twitter-widgets": "^1.11.0",
-    "unstated-next": "^1.1.0"
+    "react-twitter-widgets": "^1.11.0"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
@@ -37,7 +36,7 @@
     "@typescript-eslint/parser": "^5.48.1",
     "autoprefixer": "^10.4.13",
     "eslint": "^8.31.0",
-    "eslint-config-next": "13.1.1",
+    "eslint-config-next": "13.3.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.31.11",

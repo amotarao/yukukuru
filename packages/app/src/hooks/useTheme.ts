@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { createContainer } from 'unstated-next';
 
 export type ThemeType = 'default' | 'dark';
 
-const useTheme = () => {
+export const useTheme = () => {
   const [isLoading, setLoading] = useState<boolean>(typeof window !== 'undefined');
   const [theme, setTheme] = useState<ThemeType>('default');
 
@@ -35,7 +34,3 @@ const useTheme = () => {
     setTheme,
   };
 };
-
-export type ThemeStoreType = ReturnType<typeof useTheme>;
-
-export const ThemeContainer = createContainer(useTheme);

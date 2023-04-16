@@ -1,3 +1,5 @@
+'use client';
+
 import { UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -94,7 +96,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
             <Link
               className="mx-auto flex w-full items-center border-b border-b-shadow p-4 py-3 text-left text-sm text-primary last:border-b-0"
               href={
-                stripeRole === 'supporter' ? pagesPath.my.settings.link_accounts.$url() : pagesPath.supporter.$url()
+                stripeRole === 'supporter' ? pagesPath.my.settings.link_accounts.$url() : pagesPath.my.supporter.$url()
               }
               onClick={() => {
                 setIsShownModal(false);

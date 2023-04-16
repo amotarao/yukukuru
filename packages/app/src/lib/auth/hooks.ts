@@ -1,7 +1,7 @@
 import { signInWithPopup, signOut as authSignOut, TwitterAuthProvider } from 'firebase/auth';
 import { useContext } from 'react';
-import { auth } from '../../modules/firebase';
-import { setToken } from '../../modules/firestore/tokens';
+import { auth } from '../firebase';
+import { setToken } from '../firestore/tokens';
 import { AuthContext } from './context';
 
 export const useAuth = () => {

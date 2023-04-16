@@ -1,3 +1,5 @@
+'use client';
+
 import classNames from 'classnames';
 import Link from 'next/link';
 import { pagesPath } from '../../lib/$path';
@@ -8,9 +10,6 @@ const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
 
-/**
- * マイページ全体のコンポーネント
- */
 export const LoginPage: React.FC = () => {
   const { signIn } = useAuth();
 

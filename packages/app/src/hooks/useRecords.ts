@@ -1,8 +1,8 @@
 import { Record, RecordV2, Timestamp } from '@yukukuru/types';
 import { QueryDocumentSnapshot, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
-import { firestore } from '../modules/firebase';
-import { fetchRecords, fetchRecordsV2 } from '../modules/firestore/records';
+import { firestore } from '../lib/firebase';
+import { fetchRecords, fetchRecordsV2 } from '../lib/firestore/records';
 
 type State = {
   /** 初期読み込み中かどうか */

@@ -1,20 +1,26 @@
+'use client';
+
 import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-import { useMultiAccounts } from '../../hooks/useMultiAccounts';
-import { usePlanPrice } from '../../hooks/usePlanPrice';
-import { useSubscription } from '../../hooks/useSubscription';
-import { pagesPath } from '../../lib/$path';
-import { useAuth } from '../../lib/auth/hooks';
-import { addCheckoutSession } from '../../modules/firestore/stripe';
-import { getPortalLink } from '../../modules/functions/stripe';
-import { AccountSelector } from '../organisms/AccountSelector';
-import { Icon } from '../shared/Icon';
+import { AccountSelector } from '../../../components/organisms/AccountSelector';
+import { Icon } from '../../../components/shared/Icon';
+import { useMultiAccounts } from '../../../hooks/useMultiAccounts';
+import { usePlanPrice } from '../../../hooks/usePlanPrice';
+import { useSubscription } from '../../../hooks/useSubscription';
+import { pagesPath } from '../../../lib/$path';
+import { useAuth } from '../../../lib/auth/hooks';
+import { addCheckoutSession } from '../../../lib/firestore/stripe';
+import { getPortalLink } from '../../../lib/functions/stripe';
 
-export const SupporterPage: React.FC = () => {
-  const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();
-  const { isLoading: isLoadingSubscription, stripeRole } = useSubscription();
+type SupporterPageProps = {
+  withAuth: boolean;
+};
+
+export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
+  const { signedIn, uid } = useAuth();
+  const { isLoading, stripeRole } = useSubscription();
   const { currentAccount } = useMultiAccounts(uid, null);
 
   return (
@@ -38,12 +44,12 @@ export const SupporterPage: React.FC = () => {
       </header>
       <div className="mx-auto max-w-[480px] px-8 pb-40 sm:max-w-[800px]">
         <section className="flex items-center justify-center gap-4">
-          {!currentAccount ? (
-            <div className="h-[32px] sm:h-[40px]"></div>
-          ) : (
+          {!withAuth ? null : currentAccount ? (
             <AccountSelector inactive currentAccount={currentAccount} multiAccounts={[]} />
+          ) : (
+            <div className="h-[32px] sm:h-[40px]"></div>
           )}
-          {isLoadingAuth || isLoadingSubscription || !signedIn ? null : !stripeRole ? (
+          {!withAuth ? null : isLoading || !signedIn ? null : !stripeRole ? (
             <p>フリー利用</p>
           ) : (
             <p className="flex items-center gap-2 text-primary">
@@ -87,7 +93,14 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {!withAuth ? (
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.supporter.$url()}
+                    >
+                      ログイン
+                    </Link>
+                  ) : isLoading ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link
@@ -133,7 +146,14 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {!withAuth ? (
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.supporter.$url()}
+                    >
+                      ログイン
+                    </Link>
+                  ) : isLoading ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link

@@ -1,16 +1,19 @@
+'use client';
+
 import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
-import { logEvent } from 'firebase/analytics';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
-import { useState, useEffect, Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { LastUpdatedText } from '../../components/atoms/LastUpdatedText';
+import { LoadingCircle } from '../../components/atoms/LoadingCircle';
+import { AccountSelector } from '../../components/organisms/AccountSelector';
+import { UserCard } from '../../components/organisms/UserCard';
+import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { useRecords } from '../../hooks/useRecords';
+import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
-import { useAnalytics } from '../../modules/analytics';
-import { dayjs } from '../../modules/dayjs';
-import { LastUpdatedText } from '../atoms/LastUpdatedText';
-import { LoadingCircle } from '../atoms/LoadingCircle';
-import { AccountSelector } from '../organisms/AccountSelector';
-import { UserCard } from '../organisms/UserCard';
+import { dayjs } from '../../lib/dayjs';
+import { setLastViewing } from '../../lib/firestore/userStatuses';
 import styles from './MyPage.module.scss';
 
 export type MyPageProps = {
@@ -189,44 +192,33 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
 /**
  * マイページ全体のコンポーネント
  */
-export const MyPage: React.FC<MyPageProps> = ({
-  isLoading,
-  isNextLoading,
-  records,
-  hasNext,
-  hasToken,
-  lastRun,
-  currentAccount,
-  multiAccounts,
-  getNextRecords,
-  onChangeCurrentUid,
-}) => {
-  const [paging, setPaging] = useState<number>(1);
-  const analytics = useAnalytics();
+export const MyPage: React.FC = () => {
+  const { uid: authUid } = useAuth();
 
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
   useEffect(() => {
-    if (isLoading || isNextLoading) {
+    setCurrentUid(authUid);
+  }, [authUid]);
+
+  const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
+    useRecords(currentUid);
+  const { isLoading: isLoadingToken, hasToken } = useToken(currentUid);
+  const {
+    isLoading: isLoadingMultiAccounts,
+    accounts: multiAccounts,
+    currentAccount,
+  } = useMultiAccounts(authUid, currentUid);
+
+  const isLoadingRecords = isFirstLoading || !isFirstLoaded;
+  const isLoading = isLoadingRecords || isLoadingLastRun || isLoadingToken || isLoadingMultiAccounts;
+
+  // lastViewing 送信
+  useEffect(() => {
+    if (!currentUid) {
       return;
     }
-
-    analytics &&
-      logEvent(analytics, 'element_show', {
-        event_category: 'has_next',
-        event_label: hasNext ? `has_next_p-${paging}` : `has_not_next_p-${paging}`,
-        value: 100,
-      });
-  }, [analytics, isLoading, isNextLoading, hasNext, paging]);
-
-  const getNext = () => {
-    getNextRecords();
-    analytics &&
-      logEvent(analytics, 'button_click', {
-        event_category: 'click_next',
-        event_label: `click_next_p-${paging}`,
-        value: 100,
-      });
-    setPaging(paging + 1);
-  };
+    setLastViewing(currentUid);
+  }, [currentUid]);
 
   return (
     <div className={styles.wrapper}>
@@ -235,7 +227,9 @@ export const MyPage: React.FC<MyPageProps> = ({
           className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
-          onChange={onChangeCurrentUid}
+          onChange={(uid) => {
+            setCurrentUid(uid);
+          }}
         />
       )}
       <main className={styles.main}>
@@ -246,7 +240,13 @@ export const MyPage: React.FC<MyPageProps> = ({
             <Home hasToken={hasToken} records={records} lastRun={lastRun} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
-              <button className={styles.getNextButton} disabled={isNextLoading} onClick={getNext}>
+              <button
+                className={styles.getNextButton}
+                disabled={isNextLoading}
+                onClick={() => {
+                  getNextRecords();
+                }}
+              >
                 続きを取得
               </button>
             )}

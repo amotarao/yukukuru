@@ -1,7 +1,7 @@
 import { Token } from '@yukukuru/types';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useReducer } from 'react';
-import { firestore } from '../modules/firebase';
+import { firestore } from '../lib/firebase';
 
 type State = {
   isLoading: boolean;

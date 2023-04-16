@@ -1,7 +1,7 @@
 import { LinkAccountRequest, UserTwitter } from '@yukukuru/types';
 import { addDoc, collection, doc, documentId, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { useCallback, useEffect, useReducer } from 'react';
-import { firestore } from '../modules/firebase';
+import { firestore } from '../lib/firebase';
 
 type User = {
   id: string;

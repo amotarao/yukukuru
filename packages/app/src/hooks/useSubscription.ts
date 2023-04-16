@@ -1,7 +1,7 @@
 import { StripeRole } from '@yukukuru/types';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth/hooks';
-import { getOwnActiveSubscriptions } from '../modules/firestore/stripe';
+import { getOwnActiveSubscriptions } from '../lib/firestore/stripe';
 
 type Subscription = {
   status: string;
