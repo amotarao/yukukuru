@@ -4,6 +4,8 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
+import { AccountSelector } from '../../components/organisms/AccountSelector';
+import { Icon } from '../../components/shared/Icon';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { usePlanPrice } from '../../hooks/usePlanPrice';
 import { useSubscription } from '../../hooks/useSubscription';
@@ -11,8 +13,6 @@ import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
 import { addCheckoutSession } from '../../modules/firestore/stripe';
 import { getPortalLink } from '../../modules/functions/stripe';
-import { AccountSelector } from '../organisms/AccountSelector';
-import { Icon } from '../shared/Icon';
 
 export const SupporterPage: React.FC = () => {
   const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();

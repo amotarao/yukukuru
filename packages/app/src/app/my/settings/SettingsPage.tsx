@@ -1,5 +1,5 @@
-import { PageHeader } from '../PageHeader';
-import { SettingsMenu } from '../organisms/SettingsMenu';
+import { PageHeader } from '../../../components/PageHeader';
+import { SettingsMenu } from '../../../components/organisms/SettingsMenu';
 
 export const SettingsPage: React.FC = () => {
   return (

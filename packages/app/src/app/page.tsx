@@ -1,4 +1,4 @@
-import { TopPage } from '../components/pages/TopPage';
+import { TopPage } from './TopPage';
 
 export default function Page() {
   return <TopPage />;

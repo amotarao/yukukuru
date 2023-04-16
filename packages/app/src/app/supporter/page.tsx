@@ -1,18 +1,19 @@
-import Head from 'next/head';
+import { Metadata } from 'next';
 import { BottomNav } from '../../components/organisms/BottomNav';
-import { SupporterPage } from '../../components/pages/SupporterPage';
+import { SupporterPage } from './SupporterPage';
 import Stripe from './stripe';
+
+export const metadata: Metadata = {
+  title: 'ゆくくるサポーター - ゆくくる',
+};
 
 const Page: React.FC = () => {
   return (
     <>
-      <Head>
-        <title>ゆくくるサポーター - ゆくくる</title>
-      </Head>
       <Stripe>
         <SupporterPage />
       </Stripe>
-      {<BottomNav active="supporter" scrollToTopOnActive />}
+      <BottomNav active="supporter" scrollToTopOnActive />
     </>
   );
 };

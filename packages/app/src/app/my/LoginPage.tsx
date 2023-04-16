@@ -10,9 +10,6 @@ const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
 
-/**
- * マイページ全体のコンポーネント
- */
 export const LoginPage: React.FC = () => {
   const { signIn } = useAuth();
 

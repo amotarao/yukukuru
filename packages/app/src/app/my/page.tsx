@@ -1,19 +1,16 @@
 'use client';
 
-import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { BottomNav } from '../../components/organisms/BottomNav';
-import { LoginPage } from '../../components/pages/LoginPage';
-import { MyPage } from '../../components/pages/MyPage';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { useRecords } from '../../hooks/useRecords';
 import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
 import { setLastViewing } from '../../modules/firestore/userStatuses';
+import { MyPage } from './MyPage';
 
 const Page: React.FC = () => {
-  const { isLoading: authIsLoading, signedIn, signingIn, uid: authUid } = useAuth();
+  const { isLoading: authIsLoading, uid: authUid } = useAuth();
 
   const [currentUid, setCurrentUid] = useState<string | null>(null);
   useEffect(() => {
@@ -42,31 +39,22 @@ const Page: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>マイページ - ゆくくる</title>
-      </Head>
-      {authIsLoading || signingIn ? (
-        <LoadingCircle />
-      ) : signedIn ? (
-        <MyPage
-          {...{
-            isLoading,
-            isNextLoading,
-            records,
-            hasNext,
-            hasToken,
-            lastRun,
-            currentAccount,
-            multiAccounts,
-            getNextRecords,
-            onChangeCurrentUid: (uid) => {
-              setCurrentUid(uid);
-            },
-          }}
-        />
-      ) : (
-        <LoginPage />
-      )}
+      <MyPage
+        {...{
+          isLoading,
+          isNextLoading,
+          records,
+          hasNext,
+          hasToken,
+          lastRun,
+          currentAccount,
+          multiAccounts,
+          getNextRecords,
+          onChangeCurrentUid: (uid) => {
+            setCurrentUid(uid);
+          },
+        }}
+      />
       <BottomNav active="my" scrollToTopOnActive />
     </>
   );
