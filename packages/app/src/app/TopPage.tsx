@@ -34,7 +34,7 @@ export const TopPage: React.FC = () => {
           </p>
         </div>
       </section>
-      <section className="mt-16 w-full pb-8 sm:max-w-[840px]">
+      <section className="mt-16 w-full pb-8 sm:max-w-[840px] sm:bg-[linear-gradient(to_bottom,_var(--back-2),_var(--back-2))] sm:bg-[length:2px_100%] sm:bg-center sm:bg-no-repeat">
         <p className="mx-auto my-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back">
           こんな感じで表示します
         </p>
