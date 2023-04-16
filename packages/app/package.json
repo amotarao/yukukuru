@@ -10,7 +10,7 @@
     "dev": "run-p dev:*",
     "dev:next": "next dev",
     "dev:path": "pathpida --watch",
-    "build": "pathpida && next build && next export && next-sitemap",
+    "build": "pathpida && next build && next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'"
