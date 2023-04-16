@@ -2,8 +2,8 @@
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useReducer } from 'react';
-import { AuthContext, authInitialState, authReducer } from '../../lib/auth/context';
-import { auth } from '../../lib/firebase';
+import { auth } from '../firebase';
+import { AuthContext, authInitialState, authReducer } from './context';
 
 export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, authInitialState);
@@ -13,7 +13,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ childre
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
-        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
+        dispatch({ type: 'SetUser', payload: { uid } });
       } else {
         dispatch({ type: 'ClearUser' });
       }

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
 import { pagesPath } from '../../lib/$path';
 import { Icon } from '../shared/Icon';
-import styles from './BottomNav.module.scss';
 
 export type NavType = 'my' | 'supporter' | 'settings';
 
@@ -62,7 +61,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, scrollToTopOnActiv
         {menuItems.map((item) => (
           <li key={item.type}>
             <Link
-              className={styles.button}
+              className="flex w-full cursor-pointer appearance-none flex-col items-center justify-center border-0 bg-none pb-[calc(0.4rem+var(--safe-bottom))] pt-[0.4rem] font-default text-[0.6rem] text-sub focus:bg-primary-bg focus:outline-none aria-current:text-primary"
               href={item.href}
               aria-current={active === item.type && 'page'}
               onClick={onClick(item.type)}

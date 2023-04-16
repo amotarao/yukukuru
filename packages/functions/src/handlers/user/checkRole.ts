@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { getStripeRole } from '../../modules/auth/claim';
+import { getStripeRole } from '../../modules/auth';
 import { getUserDocsByGroups, setRoleToUser } from '../../modules/firestore/users';
 import { getGroupFromTime } from '../../modules/group';
 import { publishMessages } from '../../modules/pubsub';

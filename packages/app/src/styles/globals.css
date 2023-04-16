@@ -15,6 +15,10 @@
   --yuku: #ffcdd2;
   --kuru: #bbdefb;
   --danger: #ef5350;
+
+  --safe-bottom: 0px;
+  --safe-bottom: constant(safe-area-inset-bottom);
+  --safe-bottom: env(safe-area-inset-bottom);
 }
 
 html[data-theme='dark'] {

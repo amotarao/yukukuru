@@ -8,3 +8,13 @@ export const getStripeRole = async (uid: string): Promise<StripeRole> => {
     .catch(() => null);
   return role;
 };
+
+export const deleteAuth = async (uid: string): Promise<void> => {
+  await auth.deleteUser(uid);
+};
+
+export const getCreatedDate = async (uid: string): Promise<Date> => {
+  const user = await auth.getUser(uid);
+  const date = new Date(user.metadata.creationTime);
+  return date;
+};
