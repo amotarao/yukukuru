@@ -11,15 +11,9 @@ import { pagesPath } from '../../../../lib/$path';
 import { useAuth } from '../../../../lib/auth/hooks';
 
 export const LinkAccountsPage: React.FC = () => {
-  const { isLoading: isLoadingAuth, uid, signIn } = useAuth();
-  const {
-    isLoading: isLoadingMultiAccounts,
-    accounts,
-    currentAccount,
-    linkAccountRequests,
-    addLinkAccountRequest,
-    updateLinkAccountRequest,
-  } = useMultiAccounts(uid, null);
+  const { uid, signIn } = useAuth();
+  const { isLoading, accounts, currentAccount, linkAccountRequests, addLinkAccountRequest, updateLinkAccountRequest } =
+    useMultiAccounts(uid, null);
 
   const comingRequests = useMemo(() => {
     return linkAccountRequests
@@ -34,10 +28,6 @@ export const LinkAccountsPage: React.FC = () => {
       .filter((request) => request.data.from.uid === uid);
   }, [linkAccountRequests, uid]);
 
-  if (isLoadingAuth || isLoadingMultiAccounts) {
-    return <LoadingCircle />;
-  }
-
   return (
     <div className="mx-auto max-w-md pb-40 sm:max-w-xl">
       <PageHeader backTo={pagesPath.my.settings.$url()}>アカウント連携</PageHeader>
@@ -45,136 +35,141 @@ export const LinkAccountsPage: React.FC = () => {
         <AccountSelector inactive currentAccount={currentAccount} multiAccounts={[]} />
         <p className="text-sm">でログイン中</p>
       </div>
-      <div className="grid gap-8">
-        {comingRequests.length > 0 && (
-          <Section head="リクエスト">
-            <ul>
-              {comingRequests.map((request) => (
-                <li key={request.id} className="border-t border-back-2">
-                  <div className="flex gap-2 px-4">
-                    <div className="shrink grow py-2">
-                      <p className="tracking-wide">@{request.data.from.screenName}</p>
-                      {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
-                    </div>
-                    <div className="flex shrink-0 grow-0 self-center">
-                      <button
-                        className="grid h-10 w-10 place-items-center"
-                        onClick={() => {
-                          const result = window.confirm('連携リクエストを却下しますか？');
-                          if (!result) return;
-                          updateLinkAccountRequest(request.id, 'reject');
-                        }}
-                      >
-                        <Icon className="h-6 w-6 text-danger" type="cross" />
-                      </button>
-                      <button
-                        className="grid h-10 w-10 place-items-center"
-                        onClick={() => {
-                          updateLinkAccountRequest(request.id, 'approve');
-                        }}
-                      >
-                        <Icon className="h-6 w-6 text-primary" type="check" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Section>
-        )}
-        {accounts.filter((account) => account.id !== uid).length > 0 && (
-          <Section head="連携済みアカウント">
-            <ul>
-              {accounts
-                .filter((account) => account.id !== uid)
-                .map((account) => (
-                  <li key={account.id} className="border-t border-back-2">
+      {isLoading ? (
+        <LoadingCircle />
+      ) : (
+        <div className="grid gap-8">
+          {comingRequests.length > 0 && (
+            <Section head="リクエスト">
+              <ul>
+                {comingRequests.map((request) => (
+                  <li key={request.id} className="border-t border-back-2">
                     <div className="flex gap-2 px-4">
                       <div className="shrink grow py-2">
-                        <p className="tracking-wide">@{account.twitter.screenName}</p>
+                        <p className="tracking-wide">@{request.data.from.screenName}</p>
+                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                      </div>
+                      <div className="flex shrink-0 grow-0 self-center">
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            const result = window.confirm('連携リクエストを却下しますか？');
+                            if (!result) return;
+                            updateLinkAccountRequest(request.id, 'reject');
+                          }}
+                        >
+                          <Icon className="h-6 w-6 text-danger" type="cross" />
+                        </button>
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            updateLinkAccountRequest(request.id, 'approve');
+                          }}
+                        >
+                          <Icon className="h-6 w-6 text-primary" type="check" />
+                        </button>
                       </div>
                     </div>
                   </li>
                 ))}
-            </ul>
-          </Section>
-        )}
-        {sendingRequests.length > 0 && (
-          <Section head="連携待ち">
-            <ul>
-              {sendingRequests.map((request) => (
-                <li key={request.id} className="border-t border-back-2">
-                  <div className="flex gap-2 px-4">
-                    <div className="shrink grow py-2">
-                      <p className="tracking-wide">@{request.data.to.screenName}</p>
-                      {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+              </ul>
+            </Section>
+          )}
+          {accounts.filter((account) => account.id !== uid).length > 0 && (
+            <Section head="連携済みアカウント">
+              <ul>
+                {accounts
+                  .filter((account) => account.id !== uid)
+                  .map((account) => (
+                    <li key={account.id} className="border-t border-back-2">
+                      <div className="flex gap-2 px-4">
+                        <div className="shrink grow py-2">
+                          <p className="tracking-wide">@{account.twitter.screenName}</p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </Section>
+          )}
+          {sendingRequests.length > 0 && (
+            <Section head="連携待ち">
+              <ul>
+                {sendingRequests.map((request) => (
+                  <li key={request.id} className="border-t border-back-2">
+                    <div className="flex gap-2 px-4">
+                      <div className="shrink grow py-2">
+                        <p className="tracking-wide">@{request.data.to.screenName}</p>
+                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                      </div>
+                      <div className="flex shrink-0 grow-0 self-center">
+                        <button
+                          className="grid h-10 w-10 place-items-center"
+                          onClick={() => {
+                            const result =
+                              !!request.data.error || window.confirm('連携リクエストをキャンセルしますか？');
+                            if (!result) return;
+                            updateLinkAccountRequest(request.id, 'cancel');
+                          }}
+                        >
+                          <Icon className="h-6 w-6 text-danger" type="cross" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 grow-0 self-center">
-                      <button
-                        className="grid h-10 w-10 place-items-center"
-                        onClick={() => {
-                          const result = !!request.data.error || window.confirm('連携リクエストをキャンセルしますか？');
-                          if (!result) return;
-                          updateLinkAccountRequest(request.id, 'cancel');
-                        }}
-                      >
-                        <Icon className="h-6 w-6 text-danger" type="cross" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+          <AddRequestSection
+            ignoreScreenNames={[
+              ...(currentAccount ? [{ type: 'own' as const, screenName: currentAccount.twitter.screenName }] : []),
+              ...accounts.map((account) => ({
+                type: 'already-linked' as const,
+                screenName: account.twitter.screenName,
+              })),
+              ...sendingRequests.map((request) => ({
+                type: 'already-requested' as const,
+                screenName: request.data.to.screenName,
+              })),
+            ]}
+            addLinkAccountRequest={addLinkAccountRequest}
+          />
+          <Section head="連携手順">
+            <p className="mx-4 text-sm">
+              アカウント連携をすることで、マイページのゆくくる表示を、再ログインすることなくアカウントを簡単に切り替えることができます。
+            </p>
+            <ol className="mx-4 mt-3 grid list-decimal gap-1 pl-4 text-sm">
+              <li>上のフォームからアカウント連携リクエストを送信</li>
+              <li>
+                <a className="text-primary underline" href="https://twitter.com/" target="_blank" rel="noreferrer">
+                  ブラウザ版Twitter
+                </a>
+                でアカウントを切り替え
+              </li>
+              <li>
+                ゆくくるに
+                <button
+                  className="inline text-primary underline"
+                  onClick={() => {
+                    signIn();
+                  }}
+                >
+                  再ログイン
+                </button>
+              </li>
+              <li>「設定 &gt; アカウント連携」からリクエスト承認</li>
+            </ol>
+            <p className="mx-4 mt-3 text-sm">
+              複数アカウント切り替えは
+              <Link className="text-primary underline" href={pagesPath.my.supporter.$url()}>
+                サポーター
+              </Link>
+              の機能です。
+            </p>
           </Section>
-        )}
-        <AddRequestSection
-          ignoreScreenNames={[
-            ...(currentAccount ? [{ type: 'own' as const, screenName: currentAccount.twitter.screenName }] : []),
-            ...accounts.map((account) => ({
-              type: 'already-linked' as const,
-              screenName: account.twitter.screenName,
-            })),
-            ...sendingRequests.map((request) => ({
-              type: 'already-requested' as const,
-              screenName: request.data.to.screenName,
-            })),
-          ]}
-          addLinkAccountRequest={addLinkAccountRequest}
-        />
-        <Section head="連携手順">
-          <p className="mx-4 text-sm">
-            アカウント連携をすることで、マイページのゆくくる表示を、再ログインすることなくアカウントを簡単に切り替えることができます。
-          </p>
-          <ol className="mx-4 mt-3 grid list-decimal gap-1 pl-4 text-sm">
-            <li>上のフォームからアカウント連携リクエストを送信</li>
-            <li>
-              <a className="text-primary underline" href="https://twitter.com/" target="_blank" rel="noreferrer">
-                ブラウザ版Twitter
-              </a>
-              でアカウントを切り替え
-            </li>
-            <li>
-              ゆくくるに
-              <button
-                className="inline text-primary underline"
-                onClick={() => {
-                  signIn();
-                }}
-              >
-                再ログイン
-              </button>
-            </li>
-            <li>「設定 &gt; アカウント連携」からリクエスト承認</li>
-          </ol>
-          <p className="mx-4 mt-3 text-sm">
-            複数アカウント切り替えは
-            <Link className="text-primary underline" href={pagesPath.my.supporter.$url()}>
-              サポーター
-            </Link>
-            の機能です。
-          </p>
-        </Section>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
