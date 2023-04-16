@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { DummyUserCard } from '../components/organisms/UserCard';
 import { pagesPath } from '../lib/$path';
-import styles from './TopPage.module.scss';
 import myPageStyles from './my/MyPage.module.scss';
 
 export const TopPage: React.FC = () => {
@@ -17,12 +16,7 @@ export const TopPage: React.FC = () => {
   }, []);
 
   return (
-    <div
-      className={classNames(
-        'flex h-screen min-h-max w-full flex-col items-center justify-center bg-top-bg py-6',
-        styles.wrapper
-      )}
-    >
+    <div className="flex h-screen min-h-[800px] w-full flex-col items-center justify-center bg-top-bg py-6 sm:min-h-[640px]">
       <section className="flex w-full flex-col items-center justify-center gap-4 bg-back-shadow p-8 text-center">
         <h1 className="text-3xl">ゆくくる</h1>
         <p className="whitespace-nowrap text-sm">
@@ -41,13 +35,8 @@ export const TopPage: React.FC = () => {
           </p>
         </div>
       </section>
-      <section className={classNames('mt-16 w-full pb-8', styles.example, myPageStyles.homeArea)}>
-        <p
-          className={classNames(
-            'mx-auto my-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back',
-            myPageStyles.recordHead
-          )}
-        >
+      <section className="mt-16 w-full pb-8 sm:max-w-[840px]">
+        <p className="mx-auto my-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back">
           こんな感じで表示します
         </p>
         <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userSection)} data-type="yuku">

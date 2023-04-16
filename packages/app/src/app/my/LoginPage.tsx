@@ -1,10 +1,8 @@
 'use client';
 
-import classNames from 'classnames';
 import Link from 'next/link';
 import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
-import styles from './LoginPage.module.scss';
 
 const isTouchDevice = () => {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -14,7 +12,7 @@ export const LoginPage: React.FC = () => {
   const { signIn } = useAuth();
 
   return (
-    <div className={classNames('text-center', styles.wrapper)}>
+    <div className="px-[calc(50%-240px)] pt-10 text-center sm:px-[calc(50%-480px)]">
       <h1 className="mb-4">
         <span className="mb-2 block text-3xl">ゆくくる</span>
         <span className="block">マイページログイン</span>
