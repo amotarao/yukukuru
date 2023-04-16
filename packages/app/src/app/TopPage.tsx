@@ -39,7 +39,7 @@ export const TopPage: React.FC = () => {
         <p className="mx-auto my-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back">
           こんな感じで表示します
         </p>
-        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userSection)} data-type="yuku">
+        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userCardWrapper)} data-type="yuku">
           <DummyUserCard
             className="w-11/12 max-w-[400px] self-start sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{
@@ -54,7 +54,7 @@ export const TopPage: React.FC = () => {
             }}
           />
         </section>
-        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userSection)} data-type="kuru">
+        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userCardWrapper)} data-type="kuru">
           <DummyUserCard
             className="w-11/12 max-w-[400px] self-end sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{

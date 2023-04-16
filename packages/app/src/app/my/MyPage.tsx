@@ -118,7 +118,7 @@ const ListView: React.FC<
                   {timeText}
                 </p>
               )}
-              <div className={classNames('mb-4 px-6 sm:px-4', styles.userSection)} data-type={data.type}>
+              <div className={classNames('mb-4 px-6 sm:px-4', styles.userCardWrapper)} data-type={data.type}>
                 <UserCard
                   className={classNames(
                     'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
