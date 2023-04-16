@@ -1,5 +1,6 @@
 import { chunk, uniq } from 'lodash';
 import { ApiResponseError, TwitterApiReadOnly, UserV2 } from 'twitter-api-v2';
+import { sleep } from '../../sleep';
 import { userFields } from '../constants';
 import { convertErrorUsers, toRequiredTwitterUser } from '../converter';
 import { twitterClientErrorHandler } from '../error';
@@ -39,7 +40,12 @@ export const getUsers = async (
   ids: string[]
 ): Promise<{ users: TwitterUser[]; errorUsers: TwitterErrorUser[] } | { error: ApiResponseError }> => {
   const chunkedIdsList = chunk(uniq(ids), 100);
-  const responseList = await Promise.all(chunkedIdsList.map((chunkedIds) => getUsersSingle(client, chunkedIds)));
+  const responseList = await Promise.all(
+    chunkedIdsList.map(async (chunkedIds, i) => {
+      await sleep(i * 200);
+      return getUsersSingle(client, chunkedIds);
+    })
+  );
 
   const users: TwitterUser[] = [];
   const errorUsers: TwitterErrorUser[] = [];

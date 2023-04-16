@@ -12,7 +12,7 @@ import { getClient } from '../../modules/twitter/client';
 export const checkRecords = functions
   .region('asia-northeast1')
   .runWith({
-    timeoutSeconds: 20,
+    timeoutSeconds: 30,
     memory: '256MB',
   })
   .pubsub.schedule('*/5 * * * *')
@@ -33,6 +33,12 @@ export const checkRecords = functions
     });
     const response = await getUsers(client, twitterIds);
     if ('error' in response) {
+      // 429
+      if (response.error.data.title === 'Too Many Requests') {
+        await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+        throw new Error('❗️ Too Many Requests.');
+      }
+
       throw new Error('❌ Failed to get twitter users.');
     }
 

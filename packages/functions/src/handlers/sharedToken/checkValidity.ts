@@ -83,25 +83,28 @@ export const run = functions
     if ('error' in response) {
       // 認証エラー
       if (response.error.isAuthError) {
-        console.log('❗️ Auth Error.');
         await deleteTokens(id);
-        return;
+        throw new Error('❗️ Auth Error.');
       }
 
       // サポート外のトークン
       // トークンが空欄の際に発生する
       if (response.error.hasErrorCode(EApiV2ErrorCode.UnsupportedAuthentication)) {
-        console.log('❗️ Unsupported Authentication.');
         await deleteTokens(id);
-        return;
+        throw new Error('❗️ Unsupported Authentication.');
       }
 
       // 403
       // アカウントが削除済み、一時的なロックが発生している場合に発生する
       if (response.error.data.title === 'Forbidden') {
-        console.log('❗️ Forbidden.');
         await deleteTokens(id);
-        return;
+        throw new Error('❗️ Forbidden.');
+      }
+
+      // 429
+      if (response.error.data.title === 'Too Many Requests') {
+        await updateLastUsedSharedToken(id, ['v2_getUser'], dayjs(now).add(6, 'hours').toDate());
+        throw new Error('❗️ Too Many Requests.');
       }
 
       throw new Error('❌ Failed to access Twitter API v2');
