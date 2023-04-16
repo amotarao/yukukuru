@@ -31,14 +31,3 @@ html[data-theme='dark'] {
   --kuru: #0d47a1;
   --danger: #e53935;
 }
-
-html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Yu Gothic', YuGothic, Verdana, Meiryo, 'M+ 1p',
-    sans-serif;
-}
-
-html,
-body {
-  background: var(--back);
-  color: var(--main);
-}

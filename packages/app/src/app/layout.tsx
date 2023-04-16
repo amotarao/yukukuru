@@ -32,13 +32,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children?: React.ReactNode }) {
   return (
-    <html lang="ja-jp">
+    <html lang="ja-jp" className="bg-back">
       <Script
         dangerouslySetInnerHTML={{
           __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'));`,
         }}
       />
-      <body>
+      <body className="font-default text-main">
         <FirebaseAnalytics />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
