@@ -11,8 +11,8 @@ import { usePlanPrice } from '../../hooks/usePlanPrice';
 import { useSubscription } from '../../hooks/useSubscription';
 import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
-import { addCheckoutSession } from '../../modules/firestore/stripe';
-import { getPortalLink } from '../../modules/functions/stripe';
+import { addCheckoutSession } from '../../lib/firestore/stripe';
+import { getPortalLink } from '../../lib/functions/stripe';
 
 export const SupporterPage: React.FC = () => {
   const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();

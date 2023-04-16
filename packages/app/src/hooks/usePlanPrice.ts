@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getActivePlanPrices, getActivePlans, getActiveTaxRates } from '../modules/firestore/stripe';
+import { getActivePlanPrices, getActivePlans, getActiveTaxRates } from '../lib/firestore/stripe';
 
 type PlanPrice = {
   id: string;

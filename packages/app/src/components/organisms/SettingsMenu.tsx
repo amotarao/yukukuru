@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Switch from 'react-switch';
 import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
-import { ThemeContainer } from '../../store/theme';
+import { ThemeContainer } from '../../lib/theme';
 import { TweetButton } from './TweetButton';
 
 export const SettingsMenu: React.FC = () => {

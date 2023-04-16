@@ -2,7 +2,7 @@
 
 import { UserInfo, onAuthStateChanged } from 'firebase/auth';
 import { createContext, useEffect, useReducer } from 'react';
-import { auth } from '../../modules/firebase';
+import { auth } from '../firebase';
 
 type State = {
   /** 読み込み中かどうか */

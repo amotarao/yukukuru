@@ -6,7 +6,7 @@ import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { useRecords } from '../../hooks/useRecords';
 import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
-import { setLastViewing } from '../../modules/firestore/userStatuses';
+import { setLastViewing } from '../../lib/firestore/userStatuses';
 import { MyPage } from './MyPage';
 
 const Page: React.FC = () => {

@@ -10,7 +10,7 @@ import { AccountSelector } from '../../components/organisms/AccountSelector';
 import { UserCard } from '../../components/organisms/UserCard';
 import { useRecords } from '../../hooks/useRecords';
 import { useAuth } from '../../lib/auth/hooks';
-import { dayjs } from '../../modules/dayjs';
+import { dayjs } from '../../lib/dayjs';
 import styles from './MyPage.module.scss';
 
 export type MyPageProps = {
