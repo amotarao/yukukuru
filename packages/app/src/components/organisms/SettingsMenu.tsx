@@ -3,15 +3,15 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Switch from 'react-switch';
+import { useTheme } from '../../hooks/useTheme';
 import { pagesPath } from '../../lib/$path';
 import { useAuth } from '../../lib/auth/hooks';
-import { ThemeContainer } from '../../lib/theme';
 import { TweetButton } from './TweetButton';
 
 export const SettingsMenu: React.FC = () => {
   const router = useRouter();
   const { signIn, signOut } = useAuth();
-  const { theme, setTheme } = ThemeContainer.useContainer();
+  const { theme, setTheme } = useTheme();
 
   return (
     <>

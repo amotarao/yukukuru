@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
-import Script from 'next/script';
 import { FirebaseAnalytics } from './FirebaseAnalytics';
-import { ThemeProvider } from './ThemeProvider';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -32,15 +30,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children?: React.ReactNode }) {
   return (
-    <html lang="ja-jp" className="bg-back">
-      <Script
-        dangerouslySetInnerHTML={{
-          __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'));`,
-        }}
-      />
+    <html lang="ja-jp" className="bg-back" data-theme="">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'));`,
+          }}
+        />
+      </head>
       <body className="font-default text-main">
         <FirebaseAnalytics />
-        <ThemeProvider>{children}</ThemeProvider>
+        <div>{children}</div>
       </body>
     </html>
   );
