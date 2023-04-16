@@ -1,7 +1,7 @@
 import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { getStripeRole } from '../../modules/auth/claim';
-import { deleteAuth } from '../../modules/auth/delete';
+import { getCreatedDate, getStripeRole } from '../../modules/auth';
+import { deleteAuth } from '../../modules/auth';
 import { getUserLastViewing } from '../../modules/firestore/userStatuses';
 import { getUserDocsByGroups } from '../../modules/firestore/users';
 import { checkJustPublished } from '../../modules/functions';
@@ -70,7 +70,13 @@ const checkCleanable = async (params: { uid: string; lastRun: string | Date; now
     return false;
   }
 
-  // actlastRun が 90日以上前
+  // 作成日時が 7日以内の場合は実行しない
+  const createdDate = await getCreatedDate(uid);
+  if (dayjs(now).diff(createdDate, 'day') <= 7) {
+    return false;
+  }
+
+  // lastRun が 90日以上前
   if (dayjs(now).diff(lastRun, 'day') >= 90) {
     return true;
   }
