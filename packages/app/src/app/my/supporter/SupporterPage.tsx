@@ -19,8 +19,8 @@ type SupporterPageProps = {
 };
 
 export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
-  const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();
-  const { isLoading: isLoadingSubscription, stripeRole } = useSubscription();
+  const { signedIn, uid } = useAuth();
+  const { isLoading, stripeRole } = useSubscription();
   const { currentAccount } = useMultiAccounts(uid, null);
 
   return (
@@ -49,7 +49,7 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
           ) : (
             <div className="h-[32px] sm:h-[40px]"></div>
           )}
-          {!withAuth ? null : isLoadingAuth || isLoadingSubscription || !signedIn ? null : !stripeRole ? (
+          {!withAuth ? null : isLoading || !signedIn ? null : !stripeRole ? (
             <p>フリー利用</p>
           ) : (
             <p className="flex items-center gap-2 text-primary">
@@ -100,7 +100,7 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
                     >
                       ログイン
                     </Link>
-                  ) : isLoadingAuth || isLoadingSubscription ? (
+                  ) : isLoading ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link
@@ -153,7 +153,7 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
                     >
                       ログイン
                     </Link>
-                  ) : isLoadingAuth || isLoadingSubscription ? (
+                  ) : isLoading ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link

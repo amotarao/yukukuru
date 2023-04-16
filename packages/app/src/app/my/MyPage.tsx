@@ -193,7 +193,7 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
  * マイページ全体のコンポーネント
  */
 export const MyPage: React.FC = () => {
-  const { isLoading: authIsLoading, uid: authUid } = useAuth();
+  const { uid: authUid } = useAuth();
 
   const [currentUid, setCurrentUid] = useState<string | null>(null);
   useEffect(() => {
@@ -202,15 +202,15 @@ export const MyPage: React.FC = () => {
 
   const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
     useRecords(currentUid);
-  const { isLoading: tokenIsLoading, hasToken } = useToken(currentUid);
+  const { isLoading: isLoadingToken, hasToken } = useToken(currentUid);
   const {
     isLoading: isLoadingMultiAccounts,
     accounts: multiAccounts,
     currentAccount,
   } = useMultiAccounts(authUid, currentUid);
 
-  const recordsIsLoading = isFirstLoading || !isFirstLoaded;
-  const isLoading = authIsLoading || recordsIsLoading || isLoadingLastRun || tokenIsLoading || isLoadingMultiAccounts;
+  const isLoadingRecords = isFirstLoading || !isFirstLoaded;
+  const isLoading = isLoadingRecords || isLoadingLastRun || isLoadingToken || isLoadingMultiAccounts;
 
   // lastViewing 送信
   useEffect(() => {
