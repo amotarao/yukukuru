@@ -1,6 +1,5 @@
 'use client';
 
-import { UserInfo } from 'firebase/auth';
 import { createContext } from 'react';
 
 export type AuthState = {
@@ -13,9 +12,6 @@ export type AuthState = {
   /** サインイン済みかどうか */
   signedIn: boolean;
 
-  /** ユーザーデータ */
-  user: Pick<UserInfo, 'uid'> | null;
-
   /** UID */
   uid: string | null;
 };
@@ -24,7 +20,6 @@ export const authInitialState: AuthState = {
   isLoading: true,
   signingIn: false,
   signedIn: false,
-  user: null,
   uid: null,
 };
 
@@ -32,7 +27,6 @@ export type AuthAction =
   | {
       type: 'SetUser';
       payload: {
-        user: AuthState['user'];
         uid: AuthState['uid'];
       };
     }
@@ -53,7 +47,6 @@ export const authReducer = (state: AuthState, action: AuthAction): AuthState => 
         ...state,
         isLoading: false,
         signedIn: true,
-        user: action.payload.user,
         uid: action.payload.uid,
       };
     }
@@ -62,7 +55,6 @@ export const authReducer = (state: AuthState, action: AuthAction): AuthState => 
         ...state,
         isLoading: false,
         signedIn: false,
-        user: null,
         uid: null,
       };
     }
