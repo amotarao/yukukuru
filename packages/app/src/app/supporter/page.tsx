@@ -1,6 +1,12 @@
-import { redirect } from 'next/navigation';
-import { pagesPath } from '../../lib/$path';
+import { Metadata } from 'next';
+import { SupporterPage } from '../my/supporter/SupporterPage';
 
-export default function Page() {
-  redirect(pagesPath.my.supporter.$url().pathname);
-}
+export const metadata: Metadata = {
+  title: 'ゆくくるサポーター - ゆくくる',
+};
+
+const Page: React.FC = () => {
+  return <SupporterPage withAuth={false} />;
+};
+
+export default Page;

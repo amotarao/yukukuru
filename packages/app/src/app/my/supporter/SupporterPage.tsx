@@ -14,7 +14,11 @@ import { useAuth } from '../../../lib/auth/hooks';
 import { addCheckoutSession } from '../../../lib/firestore/stripe';
 import { getPortalLink } from '../../../lib/functions/stripe';
 
-export const SupporterPage: React.FC = () => {
+type SupporterPageProps = {
+  withAuth: boolean;
+};
+
+export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
   const { isLoading: isLoadingAuth, signedIn, uid } = useAuth();
   const { isLoading: isLoadingSubscription, stripeRole } = useSubscription();
   const { currentAccount } = useMultiAccounts(uid, null);
@@ -40,12 +44,12 @@ export const SupporterPage: React.FC = () => {
       </header>
       <div className="mx-auto max-w-[480px] px-8 pb-40 sm:max-w-[800px]">
         <section className="flex items-center justify-center gap-4">
-          {!currentAccount ? (
-            <div className="h-[32px] sm:h-[40px]"></div>
-          ) : (
+          {!withAuth ? null : currentAccount ? (
             <AccountSelector inactive currentAccount={currentAccount} multiAccounts={[]} />
+          ) : (
+            <div className="h-[32px] sm:h-[40px]"></div>
           )}
-          {isLoadingAuth || isLoadingSubscription || !signedIn ? null : !stripeRole ? (
+          {!withAuth ? null : isLoadingAuth || isLoadingSubscription || !signedIn ? null : !stripeRole ? (
             <p>フリー利用</p>
           ) : (
             <p className="flex items-center gap-2 text-primary">
@@ -89,7 +93,14 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {!withAuth ? (
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.supporter.$url()}
+                    >
+                      ログイン
+                    </Link>
+                  ) : isLoadingAuth || isLoadingSubscription ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link
@@ -135,7 +146,14 @@ export const SupporterPage: React.FC = () => {
                   </li>
                 </ul>
                 <div className="mt-8">
-                  {isLoadingAuth || isLoadingSubscription ? (
+                  {!withAuth ? (
+                    <Link
+                      className="block rounded-md border border-current px-4 py-2 text-center text-lg"
+                      href={pagesPath.my.supporter.$url()}
+                    >
+                      ログイン
+                    </Link>
+                  ) : isLoadingAuth || isLoadingSubscription ? (
                     <p className="text-center text-lg sm:px-4 sm:py-2">読み込み中</p>
                   ) : !signedIn ? (
                     <Link

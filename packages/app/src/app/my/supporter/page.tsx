@@ -11,7 +11,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Stripe>
-        <SupporterPage />
+        <SupporterPage withAuth />
       </Stripe>
       <BottomNav active="supporter" scrollToTopOnActive />
     </>
