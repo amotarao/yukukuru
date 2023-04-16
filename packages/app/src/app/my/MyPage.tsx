@@ -59,9 +59,9 @@ const NoListView: React.FC<Pick<MyPageProps, 'lastRun'>> = ({ lastRun }) => {
  */
 const ListView: React.FC<
   Pick<MyPageProps, 'records' | 'lastRun'> & {
-    prefix?: React.ReactNode;
+    error?: React.ReactNode;
   }
-> = ({ prefix, records, lastRun }) => {
+> = ({ error, records, lastRun }) => {
   let currentDate = '';
   let currentTime = '';
 
@@ -77,9 +77,9 @@ const ListView: React.FC<
           </li>
         </ul>
       </nav>
-      {prefix}
+      {error}
       {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
-      <section className={classNames(styles.listWrapper, 'mt-8 sm:mt-12 sm:pb-12')}>
+      <section className="mt-8 sm:mt-12 sm:bg-[linear-gradient(to_bottom,_var(--back-2),_var(--back-2))] sm:bg-[length:2px_100%] sm:bg-center sm:bg-no-repeat sm:pb-12">
         {records.map((record, i) => {
           if ('text' in record) {
             return (
@@ -109,12 +109,7 @@ const ListView: React.FC<
           return (
             <Fragment key={record.id}>
               {isShownDate && (
-                <h2
-                  className={classNames(
-                    'mx-auto mt-16 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back first:mt-0 sm:mt-20 sm:-mb-8 sm:first:mt-0',
-                    styles.recordHead
-                  )}
-                >
+                <h2 className="mx-auto mt-16 mb-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back first:mt-0 sm:mt-20 sm:-mb-8 sm:first:mt-0">
                   {dateText}
                 </h2>
               )}
@@ -168,7 +163,7 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
   }, [hasToken, signIn]);
 
   if (records.length > 0) {
-    return <ListView prefix={error} records={records} lastRun={lastRun} />;
+    return <ListView error={error} records={records} lastRun={lastRun} />;
   }
 
   // lastRun が 0 の場合、watches 取得処理が1回も完了していない
@@ -221,7 +216,7 @@ export const MyPage: React.FC = () => {
   }, [currentUid]);
 
   return (
-    <div className={styles.wrapper}>
+    <div className="px-[calc(50%-240px)] sm:px-[calc(50%-480px)]">
       {currentAccount && (
         <AccountSelector
           className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
@@ -232,7 +227,7 @@ export const MyPage: React.FC = () => {
           }}
         />
       )}
-      <main className={styles.main}>
+      <main className="pb-[calc(80px+var(--safe-bottom))]">
         {isLoading ? (
           <LoadingCircle />
         ) : (
@@ -241,7 +236,7 @@ export const MyPage: React.FC = () => {
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button
-                className={styles.getNextButton}
+                className="mx-[16px] my-[40px] h-[48px] w-[calc(100%-32px)] cursor-pointer appearance-none rounded-[4px] border-0 bg-primary text-[1rem] text-back disabled:cursor-not-allowed disabled:opacity-70"
                 disabled={isNextLoading}
                 onClick={() => {
                   getNextRecords();
