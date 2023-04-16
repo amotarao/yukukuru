@@ -5,7 +5,7 @@ import { useAuth } from '../../lib/auth/hooks';
 import { LoginPage } from './LoginPage';
 
 export type AuthDispatcherPageProps = {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export const AuthDispatcherPage: React.FC<AuthDispatcherPageProps> = ({ children }) => {

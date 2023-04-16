@@ -168,7 +168,7 @@ export const LinkAccountsPage: React.FC = () => {
           </ol>
           <p className="mx-4 mt-3 text-sm">
             複数アカウント切り替えは
-            <Link className="text-primary underline" href={pagesPath.supporter.$url()}>
+            <Link className="text-primary underline" href={pagesPath.my.supporter.$url()}>
               サポーター
             </Link>
             の機能です。

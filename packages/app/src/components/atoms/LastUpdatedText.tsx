@@ -48,7 +48,7 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
       </p>
       {isLoading || stripeRole === 'supporter' ? null : (
         <p>
-          <Link className="font-bold text-primary underline" href={pagesPath.supporter.$url()}>
+          <Link className="font-bold text-primary underline" href={pagesPath.my.supporter.$url()}>
             {ad}
           </Link>
         </p>

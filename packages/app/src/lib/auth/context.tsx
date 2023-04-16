@@ -1,10 +1,9 @@
 'use client';
 
-import { UserInfo, onAuthStateChanged } from 'firebase/auth';
-import { createContext, useEffect, useReducer } from 'react';
-import { auth } from '../firebase';
+import { UserInfo } from 'firebase/auth';
+import { createContext } from 'react';
 
-type State = {
+export type AuthState = {
   /** 読み込み中かどうか */
   isLoading: boolean;
 
@@ -21,7 +20,7 @@ type State = {
   uid: string | null;
 };
 
-const initialState: State = {
+export const authInitialState: AuthState = {
   isLoading: true,
   signingIn: false,
   signedIn: false,
@@ -29,12 +28,12 @@ const initialState: State = {
   uid: null,
 };
 
-type DispatchAction =
+export type AuthAction =
   | {
       type: 'SetUser';
       payload: {
-        user: State['user'];
-        uid: State['uid'];
+        user: AuthState['user'];
+        uid: AuthState['uid'];
       };
     }
   | {
@@ -47,7 +46,7 @@ type DispatchAction =
       type: 'FinishSignIn';
     };
 
-const reducer = (state: State, action: DispatchAction): State => {
+export const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'SetUser': {
       return {
@@ -83,31 +82,9 @@ const reducer = (state: State, action: DispatchAction): State => {
 };
 
 export const AuthContext = createContext<{
-  state: State;
-  dispatch: React.Dispatch<DispatchAction>;
+  state: AuthState;
+  dispatch: React.Dispatch<AuthAction>;
 }>({
-  state: initialState,
+  state: authInitialState,
   dispatch: () => undefined,
 });
-
-export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  // ログイン状態の監視
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid } = user;
-        dispatch({ type: 'SetUser', payload: { user: { uid }, uid } });
-      } else {
-        dispatch({ type: 'ClearUser' });
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [dispatch]);
-
-  return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
-};

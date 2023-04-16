@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import Script from 'next/script';
-import { AuthProvider } from '../lib/auth/context';
 import { FirebaseAnalytics } from './FirebaseAnalytics';
 import { ThemeProvider } from './ThemeProvider';
 import '../styles/globals.css';
@@ -41,9 +40,7 @@ export default function RootLayout({ children }: { children?: React.ReactNode })
       />
       <body>
         <FirebaseAnalytics />
-        <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
