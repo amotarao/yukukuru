@@ -7,6 +7,7 @@ import {
   getSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   updateLastCheckedSharedToken,
+  updateLastUsedSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { checkExistsToken, deleteToken } from '../../modules/firestore/tokens';
 import { publishMessages } from '../../modules/pubsub';
@@ -112,6 +113,8 @@ export const run = functions
 
     const existsSharedToken = await checkExistsSharedToken(id);
     if (existsSharedToken) await updateLastCheckedSharedToken(id, now);
+
+    await updateLastUsedSharedToken(id, ['v2_getUser'], now);
   });
 
 const deleteTokens = async (id: string): Promise<void> => {

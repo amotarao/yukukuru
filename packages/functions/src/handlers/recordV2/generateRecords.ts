@@ -2,6 +2,7 @@ import { RecordV2, RecordV2Type, TwUser, WatchV2 } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
 import { difference } from 'lodash';
 import { addRecordsV2 } from '../../modules/firestore/recordsV2';
+import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { getTwUsersByIds, setTwUsers } from '../../modules/firestore/twUsers';
 import { getUser } from '../../modules/firestore/users';
@@ -21,6 +22,7 @@ export const generateRecords = functions
   })
   .firestore.document('users/{userId}/watchesV2/{watchId}')
   .onCreate(async (snapshot, context) => {
+    const now = new Date(context.timestamp);
     const data = snapshot.data() as WatchV2;
     const userId = context.params.userId;
 
@@ -59,6 +61,7 @@ export const generateRecords = functions
     ];
     await addRecordsV2(userId, records);
     await setTwUsers(twitterUsers);
+    await updateLastUsedSharedToken(userId, ['v2_getUsers'], now);
 
     console.log(`✔️ Completed generate records for [${userId}].`);
   });
