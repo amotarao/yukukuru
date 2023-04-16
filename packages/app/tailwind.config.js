@@ -1,7 +1,8 @@
 const plugin = require('tailwindcss/plugin');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     screens: {
       sm: '640px',
@@ -23,6 +24,19 @@ module.exports = {
       },
       backgroundImage: {
         'top-bg': 'var(--primary-gradient)',
+      },
+      fontFamily: {
+        default: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Helvetica Neue"',
+          '"Yu Gothic"',
+          'YuGothic',
+          'Verdana',
+          'Meiryo',
+          '"M+ 1p"',
+          'sans-serif',
+        ],
       },
     },
   },

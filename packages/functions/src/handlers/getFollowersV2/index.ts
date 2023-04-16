@@ -1,4 +1,4 @@
-import { User } from '@yukukuru/types';
+import { StripeRole, User } from '@yukukuru/types';
 import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
@@ -21,7 +21,7 @@ import { publishMessages } from '../../modules/pubsub';
 import { getDiffDays, getDiffMinutes } from '../../modules/time';
 import { convertTwitterUserToUserTwitter } from '../../modules/twitter-user-converter';
 import { getFollowers, getFollowersMaxResultsMax } from '../../modules/twitter/api/followers';
-import { getUser, getUsers } from '../../modules/twitter/api/users';
+import { getUser } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
 import { TwitterUser } from '../../modules/twitter/types';
 import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
@@ -39,7 +39,7 @@ type Message = {
   twitterProtected: boolean;
 
   /** ロール */
-  role: 'supporter' | null;
+  role: StripeRole;
 
   /** カーソル */
   paginationToken: string | null;
@@ -210,15 +210,14 @@ export const run = functions
         twitterId,
         paginationToken
       );
-      const savingTwitterUsers = await ignoreMaybeDeletedOrSuspendedStep(sharedClient, uid, users);
       await saveDocsStep(
         now,
         uid,
-        savingTwitterUsers.map((user) => user.id),
+        users.map((user) => user.id),
         nextToken,
         [sharedClient, ownClient]
       );
-      await saveTwUsersStep(now, uid, new Date(lastSetTwUsers), role, savingTwitterUsers, nextToken === null);
+      await saveTwUsersStep(now, uid, new Date(lastSetTwUsers), role, users, nextToken === null);
 
       console.log(`✔️ Completed get followers of [${uid}].`);
     } catch (e) {
@@ -333,30 +332,6 @@ const getFollowersIdsStep = async (
 };
 
 /**
- * 凍結ユーザーの除外
- * レスポンスに入るが、実際には凍結されているユーザーがいるため、その対応
- * ただし、取得上限を迎えた場合、すべての凍結等ユーザーを網羅できない場合がある
- */
-const ignoreMaybeDeletedOrSuspendedStep = async (
-  { client }: TwitterClientWithToken,
-  uid: string,
-  followers: TwitterUser[]
-): Promise<TwitterUser[]> => {
-  const followersIds = followers.map((follower) => follower.id);
-  const response = await getUsers(client, followersIds);
-
-  if ('error' in response) {
-    const message = `❗️Failed to get users from Twitter of [${uid}].`;
-    console.error(message);
-    return followers;
-  }
-  const errorIds = response.errorUsers.map((errorUser) => errorUser.id);
-  const ignoredFollowers = followers.filter((follower) => !errorIds.includes(follower.id));
-  console.log(`⏳ There are ${errorIds.length} error users from Twitter.`);
-  return ignoredFollowers;
-};
-
-/**
  * 結果をドキュメント保存
  */
 const saveDocsStep = async (
@@ -403,7 +378,7 @@ const saveTwUsersStep = async (
   now: Date,
   uid: string,
   lastSetTwUsers: Date,
-  role: 'supporter' | null,
+  role: StripeRole,
   twitterUsers: TwitterUser[],
   ended: boolean
 ) => {

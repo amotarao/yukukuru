@@ -1,3 +1,5 @@
+'use client';
+
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
@@ -35,7 +37,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, scrollToTopOnActiv
       },
       {
         type: 'supporter' as const,
-        href: pagesPath.supporter.$url(),
+        href: pagesPath.my.supporter.$url(),
         title: 'サポーター',
         icon: 'membership' as const,
       },

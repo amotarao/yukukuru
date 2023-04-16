@@ -1,18 +1,17 @@
+'use client';
+
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Switch from 'react-switch';
+import { useTheme } from '../../hooks/useTheme';
 import { pagesPath } from '../../lib/$path';
-import { ThemeContainer } from '../../store/theme';
+import { useAuth } from '../../lib/auth/hooks';
 import { TweetButton } from './TweetButton';
 
-type SettingsMenuProps = {
-  signIn: () => void;
-  signOut: () => void | Promise<void>;
-};
-
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) => {
+export const SettingsMenu: React.FC = () => {
   const router = useRouter();
-  const { theme, setTheme } = ThemeContainer.useContainer();
+  const { signIn, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   return (
     <>
@@ -54,7 +53,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
             onClick={async (e) => {
               e.preventDefault();
               await signOut();
-              router.push(pagesPath.$url());
+              router.push(pagesPath.$url().pathname);
             }}
           >
             <p>ログアウト</p>
@@ -67,7 +66,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ signIn, signOut }) =
             onClick={async (e) => {
               e.preventDefault();
               await signIn();
-              router.push(pagesPath.my.$url());
+              router.push(pagesPath.my.$url().pathname);
             }}
           >
             <p>

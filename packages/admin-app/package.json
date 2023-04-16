@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/admin-app",
-  "version": "1.9.7",
+  "version": "1.10.0",
   "engines": {
     "node": "16"
   },
@@ -15,7 +15,7 @@
     "chart.js": "^4.1.2",
     "classnames": "^2.3.2",
     "firebase": "^9.17.2",
-    "next": "13.1.1",
+    "next": "13.3.0",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "^5.48.1",
     "autoprefixer": "^10.4.13",
     "eslint": "^8.31.0",
-    "eslint-config-next": "13.1.1",
+    "eslint-config-next": "13.3.0",
     "eslint-config-prettier": "^8.6.0",
     "prettier": "^2.8.2",
     "prettier-plugin-tailwindcss": "^0.2.1",

@@ -1,6 +1,5 @@
+import { StripeRole } from '@yukukuru/types';
 import { auth } from '../firebase';
-
-export type StripeRole = 'supporter' | null;
 
 export const getStripeRole = async (uid: string): Promise<StripeRole> => {
   const role = await auth

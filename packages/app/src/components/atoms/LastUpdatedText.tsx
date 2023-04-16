@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { useSubscription } from '../../hooks/useSubscription';
 import { pagesPath } from '../../lib/$path';
-import { dayjs } from '../../modules/dayjs';
+import { dayjs } from '../../lib/dayjs';
 
 const ads = ['月額99円で最短5分おきに更新', '月額99円で複数アカウント切り替え'];
 
@@ -16,7 +16,7 @@ export type LastUpdatedTextProps = {
  * 最終取得日時
  */
 export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, date }) => {
-  const { isLoading, isSupporter } = useSubscription();
+  const { isLoading, stripeRole } = useSubscription();
 
   const text = useMemo(() => {
     const now = dayjs();
@@ -46,9 +46,9 @@ export const LastUpdatedText: React.FC<LastUpdatedTextProps> = ({ className, dat
         <wbr />
         {text}
       </p>
-      {isLoading || isSupporter ? null : (
+      {isLoading || stripeRole === 'supporter' ? null : (
         <p>
-          <Link className="font-bold text-primary underline" href={pagesPath.supporter.$url()}>
+          <Link className="font-bold text-primary underline" href={pagesPath.my.supporter.$url()}>
             {ad}
           </Link>
         </p>
