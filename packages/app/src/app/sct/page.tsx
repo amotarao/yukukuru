@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '特定商取引法に基づく表記 - ゆくくる',
+  alternates: { canonical: process.env.NEXT_PUBLIC_PUBLIC_URL + '/sct' },
 };
 
 export default function Page() {

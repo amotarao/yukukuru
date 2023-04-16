@@ -3,14 +3,17 @@
 import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { LastUpdatedText } from '../../components/atoms/LastUpdatedText';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { AccountSelector } from '../../components/organisms/AccountSelector';
 import { UserCard } from '../../components/organisms/UserCard';
+import { useMultiAccounts } from '../../hooks/useMultiAccounts';
 import { useRecords } from '../../hooks/useRecords';
+import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
 import { dayjs } from '../../lib/dayjs';
+import { setLastViewing } from '../../lib/firestore/userStatuses';
 import styles from './MyPage.module.scss';
 
 export type MyPageProps = {
@@ -189,18 +192,34 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
 /**
  * マイページ全体のコンポーネント
  */
-export const MyPage: React.FC<MyPageProps> = ({
-  isLoading,
-  isNextLoading,
-  records,
-  hasNext,
-  hasToken,
-  lastRun,
-  currentAccount,
-  multiAccounts,
-  getNextRecords,
-  onChangeCurrentUid,
-}) => {
+export const MyPage: React.FC = () => {
+  const { isLoading: authIsLoading, uid: authUid } = useAuth();
+
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
+  useEffect(() => {
+    setCurrentUid(authUid);
+  }, [authUid]);
+
+  const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
+    useRecords(currentUid);
+  const { isLoading: tokenIsLoading, hasToken } = useToken(currentUid);
+  const {
+    isLoading: isLoadingMultiAccounts,
+    accounts: multiAccounts,
+    currentAccount,
+  } = useMultiAccounts(authUid, currentUid);
+
+  const recordsIsLoading = isFirstLoading || !isFirstLoaded;
+  const isLoading = authIsLoading || recordsIsLoading || isLoadingLastRun || tokenIsLoading || isLoadingMultiAccounts;
+
+  // lastViewing 送信
+  useEffect(() => {
+    if (!currentUid) {
+      return;
+    }
+    setLastViewing(currentUid);
+  }, [currentUid]);
+
   return (
     <div className={styles.wrapper}>
       {currentAccount && (
@@ -208,7 +227,9 @@ export const MyPage: React.FC<MyPageProps> = ({
           className="sticky top-0 z-30 h-12 py-2 sm:h-16 sm:py-3"
           currentAccount={currentAccount}
           multiAccounts={multiAccounts}
-          onChange={onChangeCurrentUid}
+          onChange={(uid) => {
+            setCurrentUid(uid);
+          }}
         />
       )}
       <main className={styles.main}>

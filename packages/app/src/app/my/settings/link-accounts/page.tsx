@@ -6,13 +6,11 @@ export const metadata: Metadata = {
   title: 'アカウント連携 - ゆくくる',
 };
 
-const Page: React.FC = () => {
+export default function Page() {
   return (
     <>
       <LinkAccountsPage />
       <BottomNav active="settings" />
     </>
   );
-};
-
-export default Page;
+}

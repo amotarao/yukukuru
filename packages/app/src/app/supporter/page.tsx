@@ -3,6 +3,7 @@ import { SupporterPage } from '../my/supporter/SupporterPage';
 
 export const metadata: Metadata = {
   title: 'ゆくくるサポーター - ゆくくる',
+  alternates: { canonical: process.env.NEXT_PUBLIC_PUBLIC_URL + '/supporter' },
 };
 
 const Page: React.FC = () => {

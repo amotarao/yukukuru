@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'ゆくくるサポーター - ゆくくる',
 };
 
-const Page: React.FC = () => {
+export default function Page() {
   return (
     <>
       <Stripe>
@@ -16,6 +16,4 @@ const Page: React.FC = () => {
       <BottomNav active="supporter" scrollToTopOnActive />
     </>
   );
-};
-
-export default Page;
+}
