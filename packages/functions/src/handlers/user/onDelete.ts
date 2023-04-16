@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { getStripeRole } from '../../modules/auth/claim';
+import { getStripeRole } from '../../modules/auth';
 import { setDeletedUser } from '../../modules/firestore/deletedUsers';
 import { deleteUser, getUser } from '../../modules/firestore/users';
 import { existsUser } from '../../modules/firestore/users/exists';
