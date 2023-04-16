@@ -1,11 +1,10 @@
 'use client';
 
-import classNames from 'classnames';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { UserCardWrapper } from '../components/UserCardWrapper';
 import { DummyUserCard } from '../components/organisms/UserCard';
 import { pagesPath } from '../lib/$path';
-import myPageStyles from './my/MyPage.module.scss';
 
 export const TopPage: React.FC = () => {
   useEffect(() => {
@@ -39,7 +38,7 @@ export const TopPage: React.FC = () => {
         <p className="mx-auto my-4 w-fit rounded-full bg-primary px-4 py-1 text-center text-xs tracking-widest text-back">
           こんな感じで表示します
         </p>
-        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userCardWrapper)} data-type="yuku">
+        <UserCardWrapper className="mb-4 sm:mb-6" type="yuku">
           <DummyUserCard
             className="w-11/12 max-w-[400px] self-start sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{
@@ -53,8 +52,8 @@ export const TopPage: React.FC = () => {
               durationEnd: '12:34',
             }}
           />
-        </section>
-        <section className={classNames('mb-4 px-4 sm:mb-6', myPageStyles.userCardWrapper)} data-type="kuru">
+        </UserCardWrapper>
+        <UserCardWrapper className="mb-4 sm:mb-6" type="kuru">
           <DummyUserCard
             className="w-11/12 max-w-[400px] self-end sm:w-[400px] sm:max-w-[calc(50%-40px)]"
             {...{
@@ -68,7 +67,7 @@ export const TopPage: React.FC = () => {
               durationEnd: '11:11',
             }}
           />
-        </section>
+        </UserCardWrapper>
       </section>
     </div>
   );

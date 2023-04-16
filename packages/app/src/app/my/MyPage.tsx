@@ -4,6 +4,7 @@ import { Record, RecordV2, UserTwitter } from '@yukukuru/types';
 import classNames from 'classnames';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { UserCardWrapper } from '../../components/UserCardWrapper';
 import { LastUpdatedText } from '../../components/atoms/LastUpdatedText';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
 import { AccountSelector } from '../../components/organisms/AccountSelector';
@@ -14,7 +15,6 @@ import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
 import { dayjs } from '../../lib/dayjs';
 import { setLastViewing } from '../../lib/firestore/userStatuses';
-import styles from './MyPage.module.scss';
 
 export type MyPageProps = {
   isLoading: boolean;
@@ -118,7 +118,7 @@ const ListView: React.FC<
                   {timeText}
                 </p>
               )}
-              <div className={classNames('mb-4 px-6 sm:px-4', styles.userCardWrapper)} data-type={data.type}>
+              <UserCardWrapper className="mb-4 sm:mb-6" type={data.type}>
                 <UserCard
                   className={classNames(
                     'w-11/12 max-w-[400px] sm:w-[400px] sm:max-w-[calc(50%-40px)]',
@@ -126,7 +126,7 @@ const ListView: React.FC<
                   )}
                   record={data}
                 />
-              </div>
+              </UserCardWrapper>
             </Fragment>
           );
         })}
