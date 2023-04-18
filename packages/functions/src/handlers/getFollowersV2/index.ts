@@ -8,6 +8,7 @@ import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups, updateTokenStatusOfUser, updateTwiterStatusOfUser } from '../../modules/firestore/users';
+import { existsUser } from '../../modules/firestore/users/exists';
 import {
   setUserTwitter,
   setUserTwitterProtected,
@@ -253,10 +254,14 @@ const getTwitterClientWithIdSetStep = async (
     }),
     token: sharedToken,
   };
-  await updateTokenStatusOfUser(sharedToken.id, {
-    lastChecked: now,
-    status: 'valid',
-  });
+
+  const exists = await existsUser(sharedToken.id);
+  if (exists) {
+    await updateTokenStatusOfUser(sharedToken.id, {
+      lastChecked: now,
+      status: 'valid',
+    });
+  }
 
   if (!twitterProtected) {
     return [shared, null];
