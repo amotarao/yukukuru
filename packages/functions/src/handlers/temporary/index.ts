@@ -10,7 +10,7 @@ export const addNotExistsSharedTokens = functions
     timeoutSeconds: 20,
     memory: '256MB',
   })
-  .pubsub.schedule('* * * * *')
+  .pubsub.schedule('* 0-12 * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
