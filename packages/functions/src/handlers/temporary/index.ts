@@ -23,7 +23,8 @@ export const addNotExistsSharedTokens = functions
 
         if (!token.twitterAccessToken || !token.twitterAccessTokenSecret) {
           await deleteToken(id);
-          throw new Error(`${id}'s token data is undefined.`);
+          console.error(`${id}'s token data is undefined.`);
+          return;
         }
 
         const existsSharedToken = await checkExistsSharedToken(id);
