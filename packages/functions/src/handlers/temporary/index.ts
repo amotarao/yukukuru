@@ -10,11 +10,11 @@ export const addNotExistsSharedTokens = functions
     timeoutSeconds: 20,
     memory: '256MB',
   })
-  .pubsub.schedule('* 0-12 * * *')
+  .pubsub.schedule('*/12 * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
-    const group = getGroupFromTime(1, now);
+    const group = getGroupFromTime(12, now);
     const tokens = (await getTokens()).filter((token) => getGroupIndex(token.id) === group);
 
     const r = await Promise.all(
