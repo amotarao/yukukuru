@@ -29,6 +29,11 @@ export const getToken = async (id: string): Promise<Token | null> => {
   return { twitterAccessToken, twitterAccessTokenSecret };
 };
 
+export const getTokens = async (): Promise<({ id: string } & Token)[]> => {
+  const snapshot = await tokensCollectionRef.get();
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};
+
 export const deleteToken = async (id: string): Promise<void> => {
   await tokensCollectionRef.doc(id).delete();
 };

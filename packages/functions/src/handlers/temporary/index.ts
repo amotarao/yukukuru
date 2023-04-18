@@ -1,8 +1,7 @@
 import * as functions from 'firebase-functions';
 import { checkExistsSharedToken, initializeSharedToken } from '../../modules/firestore/sharedToken';
-import { getToken } from '../../modules/firestore/tokens';
-import { getUserDocsByGroups } from '../../modules/firestore/users';
-import { getGroupFromTime } from '../../modules/group';
+import { getTokens } from '../../modules/firestore/tokens';
+import { getGroupFromTime, getGroupIndex } from '../../modules/group';
 import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
 
 export const addNotExistsSharedTokens = functions
@@ -11,21 +10,16 @@ export const addNotExistsSharedTokens = functions
     timeoutSeconds: 20,
     memory: '256MB',
   })
-  .pubsub.schedule('* * * * *')
+  .pubsub.schedule('* 0-12 * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
     const now = new Date(context.timestamp);
-
-    // 対象ユーザーの取得
-    const groups = [getGroupFromTime(1, now)];
-    const docs = await getUserDocsByGroups(groups);
+    const group = getGroupFromTime(1, now);
+    const tokens = (await getTokens()).filter((token) => getGroupIndex(token.id) === group);
 
     const r = await Promise.all(
-      docs.map(async (doc) => {
-        const id = doc.id;
-
-        const token = await getToken(id);
-        if (!token) return false;
+      tokens.map(async (token) => {
+        const id = token.id;
 
         const existsSharedToken = await checkExistsSharedToken(id);
         if (existsSharedToken) return false;
