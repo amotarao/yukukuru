@@ -152,7 +152,7 @@ const filterExecutable =
     // undefined チェックはあとで削除する
     if (
       _tokenStatus !== undefined &&
-      !_tokenStatus.valid &&
+      _tokenStatus.status !== 'valid' &&
       getDiffMinutes(now, _twitterStatus.lastChecked.toDate()) < 60
     ) {
       return false;
@@ -255,7 +255,7 @@ const getTwitterClientWithIdSetStep = async (
   };
   await updateTokenStatusOfUser(sharedToken.id, {
     lastChecked: now,
-    valid: true,
+    status: 'valid',
   });
 
   if (!twitterProtected) {
@@ -265,7 +265,7 @@ const getTwitterClientWithIdSetStep = async (
   const token = await getToken(uid);
   await updateTokenStatusOfUser(uid, {
     lastChecked: now,
-    valid: token !== null,
+    status: token !== null ? 'valid' : 'invalid',
   });
 
   if (!token) {

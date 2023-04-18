@@ -15,6 +15,10 @@ export const initializeUser = async (id: string, twitter: UserTwitter): Promise<
       lastChecked: new Date(0),
       status: 'active',
     },
+    _tokenStatus: {
+      lastChecked: new Date(0),
+      status: 'valid',
+    },
     _getFollowersV2Status: {
       lastRun: new Date(0),
       nextToken: null,
