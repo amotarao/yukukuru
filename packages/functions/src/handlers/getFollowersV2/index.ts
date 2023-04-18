@@ -7,7 +7,7 @@ import { checkExistsSharedToken, getSharedTokensForGetFollowersV2 } from '../../
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
-import { getUserDocsByGroups, updateTwiterStatusOfUser } from '../../modules/firestore/users';
+import { getUserDocsByGroups, updateTokenStatusOfUser, updateTwiterStatusOfUser } from '../../modules/firestore/users';
 import {
   setUserTwitter,
   setUserTwitterProtected,
@@ -130,19 +130,9 @@ export const publish = functions
 const filterExecutable =
   (now: Date) =>
   (snapshot: QueryDocumentSnapshot<User>): boolean => {
-    const { role, twitter, _twitterStatus, _getFollowersV2Status } = snapshot.data();
+    const { role, twitter, _twitterStatus, _tokenStatus, _getFollowersV2Status } = snapshot.data();
 
     const minutes = getDiffMinutes(now, _getFollowersV2Status.lastRun.toDate());
-
-    // Twitter が削除等のエラーが発生している場合、1日間隔を空ける
-    // undefined チェックはあとで削除する
-    if (
-      _twitterStatus !== undefined &&
-      _twitterStatus.status !== 'active' &&
-      getDiffMinutes(now, _twitterStatus.lastChecked.toDate()) < 60 * 24
-    ) {
-      return false;
-    }
 
     // 公開アカウントでは 3分の間隔を開ける
     if (!twitter.protected && minutes < 3) {
@@ -150,6 +140,21 @@ const filterExecutable =
     }
     // 非公開アカウントでは 15分の間隔を開ける
     if (twitter.protected && minutes < 15) {
+      return false;
+    }
+
+    // Twitter が削除等のエラーが発生している場合、6時間間隔を空ける
+    if (_twitterStatus.status !== 'active' && getDiffMinutes(now, _twitterStatus.lastChecked.toDate()) < 60 * 6) {
+      return false;
+    }
+
+    // Token がない場合、6時間間隔を空ける
+    // undefined チェックはあとで削除する
+    if (
+      _tokenStatus !== undefined &&
+      _tokenStatus.status !== 'valid' &&
+      getDiffMinutes(now, _twitterStatus.lastChecked.toDate()) < 60
+    ) {
       return false;
     }
 
@@ -202,7 +207,7 @@ export const run = functions
       }
       console.log(`⚙️ Starting get followers of [${uid}]. Shared token is ${sharedToken?.id ?? 'not available'}.`);
 
-      const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(uid, sharedToken, twitterProtected);
+      const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(now, uid, sharedToken, twitterProtected);
       await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
       const { users, nextToken } = await getFollowersIdsStep(
         now,
@@ -236,6 +241,7 @@ type TwitterClientWithToken = {
 };
 
 const getTwitterClientWithIdSetStep = async (
+  now: Date,
   uid: string,
   sharedToken: Message['sharedToken'],
   twitterProtected: Message['twitterProtected']
@@ -247,12 +253,21 @@ const getTwitterClientWithIdSetStep = async (
     }),
     token: sharedToken,
   };
+  await updateTokenStatusOfUser(sharedToken.id, {
+    lastChecked: now,
+    status: 'valid',
+  });
 
   if (!twitterProtected) {
     return [shared, null];
   }
 
   const token = await getToken(uid);
+  await updateTokenStatusOfUser(uid, {
+    lastChecked: now,
+    status: token !== null ? 'valid' : 'invalid',
+  });
+
   if (!token) {
     console.error('❗️No token.');
     return [shared, null];
