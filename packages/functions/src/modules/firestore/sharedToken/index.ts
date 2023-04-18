@@ -1,6 +1,7 @@
 import { FirestoreDateLike, SharedToken } from '@yukukuru/types';
 import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
+import { bulkWriterErrorHandler } from '../error';
 
 const collectionId = 'sharedTokens';
 export const sharedTokensCollectionRef = firestore.collection(collectionId) as CollectionReference<
@@ -60,6 +61,15 @@ export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date
 
 export const deleteSharedToken = async (id: string): Promise<void> => {
   await sharedTokensCollectionRef.doc(id).delete();
+};
+
+export const deleteSharedTokens = async (ids: string[]): Promise<void> => {
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+  ids.forEach((id) => {
+    bulkWriter.delete(sharedTokensCollectionRef.doc(id));
+  });
+  await bulkWriter.close();
 };
 
 export const getSharedTokensForGetFollowersV2 = async (
