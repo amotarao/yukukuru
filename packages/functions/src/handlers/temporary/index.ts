@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { checkExistsSharedToken, initializeSharedToken } from '../../modules/firestore/sharedToken';
-import { getTokens } from '../../modules/firestore/tokens';
+import { deleteToken, getTokens } from '../../modules/firestore/tokens';
 import { getGroupFromTime, getGroupIndex } from '../../modules/group';
 import { publishCheckValiditySharedToken } from '../sharedToken/checkValidity';
 
@@ -20,6 +20,11 @@ export const addNotExistsSharedTokens = functions
     const r = await Promise.all(
       tokens.map(async (token) => {
         const id = token.id;
+
+        if (!token.twitterAccessToken || !token.twitterAccessTokenSecret) {
+          await deleteToken(id);
+          throw new Error(`${id}'s token data is undefined.`);
+        }
 
         const existsSharedToken = await checkExistsSharedToken(id);
         if (existsSharedToken) return false;
