@@ -4,6 +4,7 @@ import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   checkExistsSharedToken,
   deleteSharedToken,
+  deleteSharedTokens,
   getSharedTokenDocsOrderByLastChecked,
   getSharedTokensByAccessToken,
   updateLastCheckedSharedToken,
@@ -112,7 +113,7 @@ export const run = functions
 
     // 同じアクセストークンを持つドキュメントを削除
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
-    await Promise.all(sameAccessTokens.map((doc) => deleteSharedToken(doc.id)));
+    await deleteSharedTokens(sameAccessTokens.map((token) => token.id));
 
     const existsSharedToken = await checkExistsSharedToken(id);
     if (existsSharedToken) await updateLastCheckedSharedToken(id, now);

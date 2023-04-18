@@ -8,3 +8,4 @@ export * as sharedToken from './handlers/sharedToken';
 export * as subscription from './handlers/subscription';
 export * as twUser from './handlers/twUser';
 export * as linkAccountRequest from './handlers/linkAccountRequest';
+export * as temporary from './handlers/temporary';
