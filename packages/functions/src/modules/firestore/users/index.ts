@@ -51,3 +51,9 @@ export const updateTwiterStatusOfUser = async (id: string, status: User<Date>['_
     _twitterStatus: status,
   });
 };
+
+export const updateTokenStatusOfUser = async (id: string, status: User<Date>['_tokenStatus']): Promise<void> => {
+  await usersCollectionRef.doc(id).update({
+    _tokenStatus: status,
+  });
+};

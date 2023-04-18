@@ -20,6 +20,12 @@ export type User<T extends FirestoreDateLike = Timestamp> = {
     status: 'active' | 'deleted' | 'suspended' | 'unknown';
   };
 
+  /** トークンの状態 */
+  _tokenStatus: {
+    lastChecked: T;
+    valid: boolean;
+  };
+
   /** getFollowersV2 の状態保存 */
   _getFollowersV2Status: {
     lastRun: T;
