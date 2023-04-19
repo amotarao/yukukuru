@@ -37,7 +37,7 @@ export const updateSharedToken = async (
     ...inputData,
     _lastChecked: inputData._lastUpdated,
   };
-  sharedTokensCollectionRef.doc(id).update(data);
+  sharedTokensCollectionRef.doc(id).update(data, { exists: true });
 };
 
 export const getSharedTokenDocsOrderByLastChecked = async (
@@ -56,18 +56,18 @@ export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date
   const data: Pick<SharedToken<Date>, '_lastChecked'> = {
     _lastChecked: lastChecked,
   };
-  await sharedTokensCollectionRef.doc(id).update(data);
+  await sharedTokensCollectionRef.doc(id).update(data, { exists: true });
 };
 
 export const deleteSharedToken = async (id: string): Promise<void> => {
-  await sharedTokensCollectionRef.doc(id).delete();
+  await sharedTokensCollectionRef.doc(id).delete({ exists: true });
 };
 
 export const deleteSharedTokens = async (ids: string[]): Promise<void> => {
   const bulkWriter = firestore.bulkWriter();
   bulkWriter.onWriteError(bulkWriterErrorHandler);
   ids.forEach((id) => {
-    bulkWriter.delete(sharedTokensCollectionRef.doc(id));
+    bulkWriter.delete(sharedTokensCollectionRef.doc(id), { exists: true });
   });
   await bulkWriter.close();
 };
@@ -105,7 +105,7 @@ export const updateLastUsedSharedToken = async (
   targetApis.forEach((api) => {
     data[`_lastUsed.${api}`] = now;
   });
-  await sharedTokensCollectionRef.doc(id).update(data);
+  await sharedTokensCollectionRef.doc(id).update(data, { exists: true });
 };
 
 export const getSharedTokensByAccessToken = async (
