@@ -353,6 +353,7 @@ const getFollowersIdsStep = async (
     // 429
     if (response.error.data.title === 'Too Many Requests') {
       await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+      if (token.id === uid) await updateTokenStatusOfUser(uid, { lastChecked: now, status: '429' });
       throw new Error('❗️ Too Many Requests.');
     }
 
@@ -424,5 +425,5 @@ const saveTwUsersStep = async (
   }
 
   await setTwUsers(twitterUsers);
-  ended && (await setUserGetFollowersV2LastSetTwUsers(uid, now));
+  if (ended) await setUserGetFollowersV2LastSetTwUsers(uid, now);
 };
