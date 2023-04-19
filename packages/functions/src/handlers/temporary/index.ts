@@ -40,9 +40,9 @@ export const addNotExistsSharedTokens = functions
           accessToken: token.twitterAccessToken,
           accessTokenSecret: token.twitterAccessTokenSecret,
         });
-        return true;
+        return id;
       })
     );
 
-    console.log(`✔️ ${r.filter((r) => r).length} added.`);
+    console.log(`✔️ ${r.filter((r) => r).length} docs added. ${r.filter((r) => r).join(', ')}.`);
   });
