@@ -47,19 +47,13 @@ export const deleteUser = async (id: string): Promise<void> => {
 };
 
 export const updateTwiterStatusOfUser = async (id: string, status: User<Date>['_twitterStatus']): Promise<void> => {
-  await usersCollectionRef.doc(id).update(
-    {
-      _twitterStatus: status,
-    },
-    { exists: true }
-  );
+  await usersCollectionRef.doc(id).update({
+    _twitterStatus: status,
+  });
 };
 
 export const updateTokenStatusOfUser = async (id: string, status: User<Date>['_tokenStatus']): Promise<void> => {
-  await usersCollectionRef.doc(id).update(
-    {
-      _tokenStatus: status,
-    },
-    { exists: true }
-  );
+  await usersCollectionRef.doc(id).update({
+    _tokenStatus: status,
+  });
 };
