@@ -8,6 +8,7 @@ import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups, updateTokenStatusOfUser, updateTwiterStatusOfUser } from '../../modules/firestore/users';
+import { existsUser } from '../../modules/firestore/users/exists';
 import {
   setUserTwitter,
   setUserTwitterProtected,
@@ -253,10 +254,14 @@ const getTwitterClientWithIdSetStep = async (
     }),
     token: sharedToken,
   };
-  await updateTokenStatusOfUser(sharedToken.id, {
-    lastChecked: now,
-    status: 'valid',
-  });
+
+  const exists = await existsUser(sharedToken.id);
+  if (exists) {
+    await updateTokenStatusOfUser(sharedToken.id, {
+      lastChecked: now,
+      status: 'valid',
+    });
+  }
 
   if (!twitterProtected) {
     return [shared, null];
@@ -348,6 +353,7 @@ const getFollowersIdsStep = async (
     // 429
     if (response.error.data.title === 'Too Many Requests') {
       await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+      if (token.id === uid) await updateTokenStatusOfUser(uid, { lastChecked: now, status: '429' });
       throw new Error('❗️ Too Many Requests.');
     }
 
@@ -419,5 +425,5 @@ const saveTwUsersStep = async (
   }
 
   await setTwUsers(twitterUsers);
-  ended && (await setUserGetFollowersV2LastSetTwUsers(uid, now));
+  if (ended) await setUserGetFollowersV2LastSetTwUsers(uid, now);
 };
