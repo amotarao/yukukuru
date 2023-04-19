@@ -31,7 +31,14 @@ export const onWriteToken = functions
     const exists = await checkExistsSharedToken(docId);
 
     switch (writeType) {
-      case 'create':
+      case 'create': {
+        await initializeSharedToken(docId, {
+          accessToken,
+          accessTokenSecret,
+          _lastUpdated: now,
+        });
+        return;
+      }
       case 'update': {
         if (exists) {
           await updateSharedToken(docId, {

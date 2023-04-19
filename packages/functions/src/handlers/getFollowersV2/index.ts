@@ -3,11 +3,12 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
+import { checkExistsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
 import { getUserDocsByGroups, updateTokenStatusOfUser, updateTwiterStatusOfUser } from '../../modules/firestore/users';
+import { existsUser } from '../../modules/firestore/users/exists';
 import {
   setUserTwitter,
   setUserTwitterProtected,
@@ -253,10 +254,14 @@ const getTwitterClientWithIdSetStep = async (
     }),
     token: sharedToken,
   };
-  await updateTokenStatusOfUser(sharedToken.id, {
-    lastChecked: now,
-    status: 'valid',
-  });
+
+  const exists = await existsUser(sharedToken.id);
+  if (exists) {
+    await updateTokenStatusOfUser(sharedToken.id, {
+      lastChecked: now,
+      status: 'valid',
+    });
+  }
 
   if (!twitterProtected) {
     return [shared, null];
@@ -375,10 +380,18 @@ const saveDocsStep = async (
 
   const updatingTokens = ownClient
     ? [
-        updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now),
-        updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUser'], now),
+        checkExistsSharedToken(ownClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now);
+        }),
+        checkExistsSharedToken(sharedClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUser'], now);
+        }),
       ]
-    : [updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUserFollowers', 'v2_getUser'], now)];
+    : [
+        checkExistsSharedToken(sharedClient.token.id).then(async () => {
+          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUserFollowers', 'v2_getUser'], now);
+        }),
+      ];
 
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),

@@ -35,5 +35,5 @@ export const getTokens = async (): Promise<({ id: string } & Token)[]> => {
 };
 
 export const deleteToken = async (id: string): Promise<void> => {
-  await tokensCollectionRef.doc(id).delete({ exists: true });
+  await tokensCollectionRef.doc(id).delete();
 };
