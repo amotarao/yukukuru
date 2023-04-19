@@ -21,6 +21,8 @@ export const onWriteToken = functions
       throw new Error('Unknown write type');
     }
 
+    console.log(`ℹ️ Token [${docId}] is ${writeType}d.`);
+
     const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } =
       writeType === 'delete'
         ? { twitterAccessToken: '', twitterAccessTokenSecret: '' }
