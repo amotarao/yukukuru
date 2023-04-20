@@ -3,7 +3,7 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { checkExistsSharedToken, getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
+import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
@@ -380,18 +380,10 @@ const saveDocsStep = async (
 
   const updatingTokens = ownClient
     ? [
-        checkExistsSharedToken(ownClient.token.id).then(async () => {
-          await updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now);
-        }),
-        checkExistsSharedToken(sharedClient.token.id).then(async () => {
-          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUser'], now);
-        }),
+        updateLastUsedSharedToken(ownClient.token.id, ['v2_getUserFollowers'], now),
+        updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUser'], now),
       ]
-    : [
-        checkExistsSharedToken(sharedClient.token.id).then(async () => {
-          await updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUserFollowers', 'v2_getUser'], now);
-        }),
-      ];
+    : [updateLastUsedSharedToken(sharedClient.token.id, ['v2_getUserFollowers', 'v2_getUser'], now)];
 
   await Promise.all([
     setWatchV2(uid, followersIds, now, ended),

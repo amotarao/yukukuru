@@ -2,7 +2,6 @@ import * as dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
-  checkExistsSharedToken,
   deleteSharedToken,
   deleteSharedTokens,
   getSharedTokenDocsOrderByLastChecked,
@@ -10,7 +9,7 @@ import {
   updateLastCheckedSharedToken,
   updateLastUsedSharedToken,
 } from '../../modules/firestore/sharedToken';
-import { checkExistsToken, deleteToken } from '../../modules/firestore/tokens';
+import { deleteToken } from '../../modules/firestore/tokens';
 import { publishMessages } from '../../modules/pubsub';
 import { getUser } from '../../modules/twitter/api/users';
 import { getClient } from '../../modules/twitter/client';
@@ -115,19 +114,10 @@ export const run = functions
     const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
     await deleteSharedTokens(sameAccessTokens.map((token) => token.id));
 
-    const existsSharedToken = await checkExistsSharedToken(id);
-    if (existsSharedToken) await updateLastCheckedSharedToken(id, now);
-
+    await updateLastCheckedSharedToken(id, now);
     await updateLastUsedSharedToken(id, ['v2_getUser'], now);
   });
 
 const deleteTokens = async (id: string): Promise<void> => {
-  await Promise.all([
-    checkExistsSharedToken(id).then(async (exists) => {
-      if (exists) await deleteSharedToken(id);
-    }),
-    checkExistsToken(id).then(async (exists) => {
-      if (exists) await deleteToken(id);
-    }),
-  ]);
+  await Promise.all([deleteSharedToken(id), deleteToken(id)]);
 };
