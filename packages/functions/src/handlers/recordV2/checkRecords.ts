@@ -35,7 +35,7 @@ export const checkRecords = functions
     if ('error' in response) {
       // 429
       if (response.error.data.title === 'Too Many Requests') {
-        await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+        await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate(), true);
         throw new Error('❗️ Too Many Requests.');
       }
 
@@ -55,6 +55,6 @@ export const checkRecords = functions
       .filter((item): item is Item => item !== null);
     await setRecordsV2TwitterUser(items);
     await setTwUsers(response.users);
-    await updateLastUsedSharedToken(token.id, ['v2_getUsers'], now);
+    await updateLastUsedSharedToken(token.id, ['v2_getUsers'], now, true);
     console.log(`updated ${items.length} items.`);
   });

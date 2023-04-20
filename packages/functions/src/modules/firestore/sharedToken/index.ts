@@ -59,7 +59,12 @@ export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date
   await sharedTokensCollectionRef.doc(id).update(data);
 };
 
-export const deleteSharedToken = async (id: string): Promise<void> => {
+export const deleteSharedToken = async (id: string, checkExists = true): Promise<void> => {
+  if (checkExists) {
+    const exists = await checkExistsSharedToken(id);
+    if (!exists) return;
+  }
+
   await sharedTokensCollectionRef.doc(id).delete();
 };
 
@@ -99,8 +104,14 @@ export const getSharedTokensForGetUsers = async (
 export const updateLastUsedSharedToken = async (
   id: string,
   targetApis: (keyof SharedToken['_lastUsed'])[],
-  now: Date
+  now: Date,
+  skipCheckExists = false
 ): Promise<void> => {
+  if (!skipCheckExists) {
+    const exists = await checkExistsSharedToken(id);
+    if (!exists) return;
+  }
+
   const data: Partial<{ [key in `_lastUsed.${keyof SharedToken['_lastUsed']}`]: Date }> = {};
   targetApis.forEach((api) => {
     data[`_lastUsed.${api}`] = now;

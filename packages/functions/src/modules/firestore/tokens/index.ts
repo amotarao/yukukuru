@@ -34,6 +34,11 @@ export const getTokens = async (): Promise<({ id: string } & Token)[]> => {
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
-export const deleteToken = async (id: string): Promise<void> => {
+export const deleteToken = async (id: string, skipCheckExists = false): Promise<void> => {
+  if (!skipCheckExists) {
+    const exists = await checkExistsToken(id);
+    if (!exists) return;
+  }
+
   await tokensCollectionRef.doc(id).delete();
 };
