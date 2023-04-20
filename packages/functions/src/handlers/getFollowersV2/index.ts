@@ -303,7 +303,7 @@ const checkOwnUserStatusStep = async (
   if ('error' in response) {
     // 429
     if (response.error.data.title === 'Too Many Requests') {
-      await updateLastUsedSharedToken(token.id, ['v2_getUserFollowers'], dayjs(now).add(6, 'hours').toDate());
+      await updateLastUsedSharedToken(token.id, ['v2_getUser'], dayjs(now).add(6, 'hours').toDate());
       throw new Error('❗️ Too Many Requests.');
     }
 
@@ -347,7 +347,7 @@ const getFollowersIdsStep = async (
   if ('error' in response) {
     // 429
     if (response.error.data.title === 'Too Many Requests') {
-      await updateLastUsedSharedToken(token.id, ['v2_getUsers'], dayjs(now).add(6, 'hours').toDate());
+      await updateLastUsedSharedToken(token.id, ['v2_getUserFollowers'], dayjs(now).add(6, 'hours').toDate());
       if (token.id === uid) await updateTokenStatusOfUser(uid, { lastChecked: now, status: '429' });
       throw new Error('❗️ Too Many Requests.');
     }
