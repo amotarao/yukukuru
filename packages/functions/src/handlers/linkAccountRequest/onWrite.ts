@@ -35,7 +35,7 @@ export const onWriteRequest = functions
         if (!user) {
           await after.ref.update({
             step: 'error',
-            error: 'not-found',
+            errorCode: 'not-found',
           });
           return;
         }
@@ -72,7 +72,7 @@ export const onWriteRequest = functions
         const [from] = data.canView;
         await after.ref.update({
           step: 'error',
-          error: 'rejected',
+          errorCode: 'rejected',
           canView: [from],
         });
         return;
