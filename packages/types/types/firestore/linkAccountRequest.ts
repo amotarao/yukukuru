@@ -12,12 +12,14 @@ type RequestUserUnknown = {
   twitter: null;
 };
 
+export type LinkAccountRequestErrorCode = 'not-found' | 'rejected';
+
 export type LinkAccountRequest =
   | {
       // 招待直後
       // from の操作
       step: 'create';
-      error: null;
+      errorCode: null;
       canView: [string];
       from: RequestUser;
       to: RequestUserUnknown;
@@ -25,7 +27,7 @@ export type LinkAccountRequest =
   | {
       // 招待先の情報を取得完了
       step: 'created';
-      error: null;
+      errorCode: null;
       canView: [string, string];
       from: RequestUser;
       to: RequestUser;
@@ -34,7 +36,7 @@ export type LinkAccountRequest =
       // キャンセル直後
       // from の操作
       step: 'cancel';
-      error: null;
+      errorCode: null;
       canView: [string] | [string, string];
       from: RequestUser;
       to: RequestUser | RequestUserUnknown;
@@ -42,7 +44,7 @@ export type LinkAccountRequest =
   | {
       // キャンセル処理完了
       step: 'canceled';
-      error: null;
+      errorCode: null;
       canView: [string] | [string, string];
       from: RequestUser;
       to: RequestUser | RequestUserUnknown;
@@ -51,7 +53,7 @@ export type LinkAccountRequest =
       // 承認直後
       // to の操作
       step: 'approve';
-      error: null;
+      errorCode: null;
       canView: [string, string];
       from: RequestUser;
       to: RequestUser;
@@ -59,7 +61,7 @@ export type LinkAccountRequest =
   | {
       // 承認処理完了
       step: 'approved';
-      error: null;
+      errorCode: null;
       canView: [string, string];
       from: RequestUser;
       to: RequestUser;
@@ -68,23 +70,15 @@ export type LinkAccountRequest =
       // 拒否直後
       // to の操作
       step: 'reject';
-      error: null;
+      errorCode: null;
       canView: [string, string];
-      from: RequestUser;
-      to: RequestUser;
-    }
-  | {
-      // 拒否処理完了
-      step: 'rejected';
-      error: null;
-      canView: [string];
       from: RequestUser;
       to: RequestUser;
     }
   | {
       // エラー発生
       step: 'error';
-      error: string;
+      errorCode: LinkAccountRequestErrorCode;
       canView: [string] | [string, string];
       from: RequestUser;
       to: RequestUser | RequestUserUnknown;
