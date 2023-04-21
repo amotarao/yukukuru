@@ -1,6 +1,7 @@
 import { FirestoreDateLike, SharedToken } from '@yukukuru/types';
 import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
+import { getTwitterIdFromAccessToken } from '../../twitter-id-access-token';
 import { bulkWriterErrorHandler } from '../error';
 
 const collectionId = 'sharedTokens';
@@ -52,15 +53,24 @@ export const getSharedTokenDocsOrderByLastChecked = async (
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
-export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+export const updateLastCheckedSharedToken = async (
+  id: string,
+  lastChecked: Date,
+  skipCheckExists = false
+): Promise<void> => {
+  if (!skipCheckExists) {
+    const exists = await checkExistsSharedToken(id);
+    if (!exists) return;
+  }
+
   const data: Pick<SharedToken<Date>, '_lastChecked'> = {
     _lastChecked: lastChecked,
   };
   await sharedTokensCollectionRef.doc(id).update(data);
 };
 
-export const deleteSharedToken = async (id: string, checkExists = true): Promise<void> => {
-  if (checkExists) {
+export const deleteSharedToken = async (id: string, skipCheckExists = false): Promise<void> => {
+  if (!skipCheckExists) {
     const exists = await checkExistsSharedToken(id);
     if (!exists) return;
   }
@@ -122,6 +132,10 @@ export const updateLastUsedSharedToken = async (
 export const getSharedTokensByAccessToken = async (
   accessToken: string
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await sharedTokensCollectionRef.where('accessToken', '==', accessToken).get();
+  const twitterId = getTwitterIdFromAccessToken(accessToken);
+  const snapshot = await sharedTokensCollectionRef
+    .where('accessToken', '>=', `${twitterId}-`) // - charCode 45
+    .where('accessToken', '<', `${twitterId}.`) // . charCode 46
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };

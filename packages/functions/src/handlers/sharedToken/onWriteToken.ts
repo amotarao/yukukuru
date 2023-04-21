@@ -1,7 +1,14 @@
 import { Token } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { deleteSharedToken, initializeSharedToken, updateSharedToken } from '../../modules/firestore/sharedToken';
+import {
+  deleteSharedToken,
+  deleteSharedTokens,
+  getSharedTokensByAccessToken,
+  initializeSharedToken,
+  updateSharedToken,
+} from '../../modules/firestore/sharedToken';
 import { checkExistsSharedToken } from '../../modules/firestore/sharedToken/index';
+import { deleteTokens, getTokensByAccessToken } from '../../modules/firestore/tokens';
 import { getWriteType } from '../../modules/functions/firestore';
 
 /** Firestore: トークンが更新されたときの処理 */
@@ -23,22 +30,13 @@ export const onWriteToken = functions
 
     console.log(`ℹ️ Token [${docId}] is ${writeType}d.`);
 
-    const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } =
-      writeType === 'delete'
-        ? { twitterAccessToken: '', twitterAccessTokenSecret: '' }
-        : (change.after.data() as Token);
+    const data = (change.after.data() as Token | undefined) || { twitterAccessToken: '', twitterAccessTokenSecret: '' };
+    const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } = data;
 
     const exists = await checkExistsSharedToken(docId);
 
     switch (writeType) {
-      case 'create': {
-        await initializeSharedToken(docId, {
-          accessToken,
-          accessTokenSecret,
-          _lastUpdated: now,
-        });
-        return;
-      }
+      case 'create':
       case 'update': {
         if (exists) {
           await updateSharedToken(docId, {
@@ -46,19 +44,38 @@ export const onWriteToken = functions
             accessTokenSecret,
             _lastUpdated: now,
           });
-          return;
+        } else {
+          await initializeSharedToken(docId, {
+            accessToken,
+            accessTokenSecret,
+            _lastUpdated: now,
+          });
         }
-        await initializeSharedToken(docId, {
-          accessToken,
-          accessTokenSecret,
-          _lastUpdated: now,
-        });
-        return;
+
+        // 同じアクセストークンを持つドキュメントを削除
+        await Promise.all([
+          getTokensByAccessToken(accessToken)
+            .then((docs) => docs.filter((doc) => doc.id !== docId).map((doc) => doc.id))
+            .then((ids) => {
+              console.log(`Same token(s): ${ids.map((id) => `[${id}]`).join(', ')}.`);
+              return ids;
+            })
+            .then((ids) => deleteTokens(ids)),
+          getSharedTokensByAccessToken(accessToken)
+            .then((docs) => docs.filter((doc) => doc.id !== docId).map((doc) => doc.id))
+            .then((ids) => {
+              console.log(`Same shared token(s): ${ids.map((id) => `[${id}]`).join(', ')}.`);
+              return ids;
+            })
+            .then((ids) => deleteSharedTokens(ids)),
+        ]);
+        break;
       }
       case 'delete': {
         if (exists) {
           await deleteSharedToken(docId);
         }
+        break;
       }
     }
   });
