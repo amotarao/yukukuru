@@ -8,6 +8,7 @@ import {
   updateSharedToken,
 } from '../../modules/firestore/sharedToken';
 import { checkExistsSharedToken } from '../../modules/firestore/sharedToken/index';
+import { deleteTokens, getTokensByAccessToken } from '../../modules/firestore/tokens';
 import { getWriteType } from '../../modules/functions/firestore';
 
 /** Firestore: トークンが更新されたときの処理 */
@@ -52,8 +53,22 @@ export const onWriteToken = functions
         }
 
         // 同じアクセストークンを持つドキュメントを削除
-        const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== docId);
-        await deleteSharedTokens(sameAccessTokens.map((token) => token.id));
+        await Promise.all([
+          getTokensByAccessToken(accessToken)
+            .then((docs) => docs.filter((doc) => doc.id !== docId).map((doc) => doc.id))
+            .then((ids) => {
+              console.log(`Same token(s): ${ids.map((id) => `[${id}]`).join(', ')}.`);
+              return ids;
+            })
+            .then((ids) => deleteTokens(ids)),
+          getSharedTokensByAccessToken(accessToken)
+            .then((docs) => docs.filter((doc) => doc.id !== docId).map((doc) => doc.id))
+            .then((ids) => {
+              console.log(`Same shared token(s): ${ids.map((id) => `[${id}]`).join(', ')}.`);
+              return ids;
+            })
+            .then((ids) => deleteSharedTokens(ids)),
+        ]);
         break;
       }
       case 'delete': {

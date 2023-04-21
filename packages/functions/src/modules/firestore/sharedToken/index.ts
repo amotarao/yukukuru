@@ -1,6 +1,7 @@
 import { FirestoreDateLike, SharedToken } from '@yukukuru/types';
 import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
+import { getTwitterIdFromAccessToken } from '../../twitter-id-access-token';
 import { bulkWriterErrorHandler } from '../error';
 
 const collectionId = 'sharedTokens';
@@ -122,6 +123,10 @@ export const updateLastUsedSharedToken = async (
 export const getSharedTokensByAccessToken = async (
   accessToken: string
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
-  const snapshot = await sharedTokensCollectionRef.where('accessToken', '==', accessToken).get();
+  const twitterId = getTwitterIdFromAccessToken(accessToken);
+  const snapshot = await sharedTokensCollectionRef
+    .where('accessToken', '>=', `${twitterId}-`) // - charCode 45
+    .where('accessToken', '<', `${twitterId}.`) // . charCode 46
+    .get();
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
