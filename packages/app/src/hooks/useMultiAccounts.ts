@@ -221,7 +221,7 @@ export const useMultiAccounts = (authUid: string | null, currentUid: string | nu
 
       const data: LinkAccountRequest = {
         step: 'create',
-        error: null,
+        errorCode: null,
         canView: [authUid],
         from: {
           uid: authUid,
