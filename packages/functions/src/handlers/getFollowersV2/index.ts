@@ -210,7 +210,7 @@ export const run = functions
 
       const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(now, uid, sharedToken, twitterProtected);
       await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
-      const { users, nextToken } = await getFollowersIdsStep(
+      const { users, nextToken } = await getFollowersStep(
         now,
         ownClient || sharedClient,
         uid,
@@ -328,9 +328,9 @@ const checkOwnUserStatusStep = async (
 };
 
 /**
- * フォロワーIDリストの取得
+ * フォロワーリストの取得
  */
-const getFollowersIdsStep = async (
+const getFollowersStep = async (
   now: Date,
   { client, token }: TwitterClientWithToken,
   uid: string,
