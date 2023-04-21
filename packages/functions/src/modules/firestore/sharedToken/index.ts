@@ -52,15 +52,24 @@ export const getSharedTokenDocsOrderByLastChecked = async (
   return snapshot.docs as QueryDocumentSnapshot<SharedToken>[];
 };
 
-export const updateLastCheckedSharedToken = async (id: string, lastChecked: Date): Promise<void> => {
+export const updateLastCheckedSharedToken = async (
+  id: string,
+  lastChecked: Date,
+  skipCheckExists = false
+): Promise<void> => {
+  if (!skipCheckExists) {
+    const exists = await checkExistsSharedToken(id);
+    if (!exists) return;
+  }
+
   const data: Pick<SharedToken<Date>, '_lastChecked'> = {
     _lastChecked: lastChecked,
   };
   await sharedTokensCollectionRef.doc(id).update(data);
 };
 
-export const deleteSharedToken = async (id: string, checkExists = true): Promise<void> => {
-  if (checkExists) {
+export const deleteSharedToken = async (id: string, skipCheckExists = false): Promise<void> => {
+  if (!skipCheckExists) {
     const exists = await checkExistsSharedToken(id);
     if (!exists) return;
   }
