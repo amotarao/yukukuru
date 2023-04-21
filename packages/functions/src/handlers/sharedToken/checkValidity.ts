@@ -3,9 +3,7 @@ import * as functions from 'firebase-functions';
 import { EApiV2ErrorCode } from 'twitter-api-v2';
 import {
   deleteSharedToken,
-  deleteSharedTokens,
   getSharedTokenDocsOrderByLastChecked,
-  getSharedTokensByAccessToken,
   updateLastCheckedSharedToken,
   updateLastUsedSharedToken,
 } from '../../modules/firestore/sharedToken';
@@ -109,10 +107,6 @@ export const run = functions
 
       throw new Error('❌ Failed to access Twitter API v2');
     }
-
-    // 同じアクセストークンを持つドキュメントを削除
-    const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== id);
-    await deleteSharedTokens(sameAccessTokens.map((token) => token.id));
 
     await updateLastCheckedSharedToken(id, now);
     await updateLastUsedSharedToken(id, ['v2_getUser'], now);

@@ -1,6 +1,8 @@
 import { Token } from '@yukukuru/types';
-import { CollectionReference } from 'firebase-admin/firestore';
+import { CollectionReference, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { firestore } from '../../firebase';
+import { getTwitterIdFromAccessToken } from '../../twitter-id-access-token';
+import { bulkWriterErrorHandler } from '../error';
 
 const collectionId = 'tokens';
 export const tokensCollectionRef = firestore.collection(collectionId) as CollectionReference<Token>;
@@ -41,4 +43,24 @@ export const deleteToken = async (id: string, skipCheckExists = false): Promise<
   }
 
   await tokensCollectionRef.doc(id).delete();
+};
+
+export const deleteTokens = async (ids: string[]): Promise<void> => {
+  if (ids.length === 0) return;
+
+  const bulkWriter = firestore.bulkWriter();
+  bulkWriter.onWriteError(bulkWriterErrorHandler);
+  ids.forEach((id) => {
+    bulkWriter.delete(tokensCollectionRef.doc(id));
+  });
+  await bulkWriter.close();
+};
+
+export const getTokensByAccessToken = async (accessToken: string): Promise<QueryDocumentSnapshot<Token>[]> => {
+  const twitterId = getTwitterIdFromAccessToken(accessToken);
+  const snapshot = await tokensCollectionRef
+    .where('twitterAccessToken', '>=', `${twitterId}-`) // - charCode 45
+    .where('twitterAccessToken', '<', `${twitterId}.`) // . charCode 46
+    .get();
+  return snapshot.docs as QueryDocumentSnapshot<Token>[];
 };
