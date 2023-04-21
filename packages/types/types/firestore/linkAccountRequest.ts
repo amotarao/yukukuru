@@ -12,7 +12,7 @@ type RequestUserUnknown = {
   twitter: null;
 };
 
-export type LinkAccountRequestErrorCode = 'not-found';
+export type LinkAccountRequestErrorCode = 'not-found' | 'rejected';
 
 export type LinkAccountRequest =
   | {
@@ -72,14 +72,6 @@ export type LinkAccountRequest =
       step: 'reject';
       error: null;
       canView: [string, string];
-      from: RequestUser;
-      to: RequestUser;
-    }
-  | {
-      // 拒否処理完了
-      step: 'rejected';
-      error: null;
-      canView: [string];
       from: RequestUser;
       to: RequestUser;
     }

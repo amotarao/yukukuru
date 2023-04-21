@@ -15,7 +15,10 @@ const convertErrorMessage = (errorCode: LinkAccountRequestErrorCode): string => 
   switch (errorCode) {
     case 'not-found': {
       return `ゆくくるに登録されているユーザーではないようです。
-ユーザー名が正しいか、ゆくくるに登録済みかどうかご確認ください。`;
+ユーザー名が正しいか、ゆくくるに登録済みかどうかご確認の上、再度お試しください。`;
+    }
+    case 'rejected': {
+      return `連携が拒否されました。`;
     }
   }
 };

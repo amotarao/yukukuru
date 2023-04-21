@@ -71,7 +71,8 @@ export const onWriteRequest = functions
       case 'reject': {
         const [from] = data.canView;
         await after.ref.update({
-          step: 'rejected',
+          step: 'error',
+          error: 'rejected',
           canView: [from],
         });
         return;
