@@ -1,6 +1,12 @@
 import { Token } from '@yukukuru/types';
 import * as functions from 'firebase-functions';
-import { deleteSharedToken, initializeSharedToken, updateSharedToken } from '../../modules/firestore/sharedToken';
+import {
+  deleteSharedToken,
+  deleteSharedTokens,
+  getSharedTokensByAccessToken,
+  initializeSharedToken,
+  updateSharedToken,
+} from '../../modules/firestore/sharedToken';
 import { checkExistsSharedToken } from '../../modules/firestore/sharedToken/index';
 import { getWriteType } from '../../modules/functions/firestore';
 
@@ -23,22 +29,13 @@ export const onWriteToken = functions
 
     console.log(`ℹ️ Token [${docId}] is ${writeType}d.`);
 
-    const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } =
-      writeType === 'delete'
-        ? { twitterAccessToken: '', twitterAccessTokenSecret: '' }
-        : (change.after.data() as Token);
+    const data = (change.after.data() as Token | undefined) || { twitterAccessToken: '', twitterAccessTokenSecret: '' };
+    const { twitterAccessToken: accessToken, twitterAccessTokenSecret: accessTokenSecret } = data;
 
     const exists = await checkExistsSharedToken(docId);
 
     switch (writeType) {
-      case 'create': {
-        await initializeSharedToken(docId, {
-          accessToken,
-          accessTokenSecret,
-          _lastUpdated: now,
-        });
-        return;
-      }
+      case 'create':
       case 'update': {
         if (exists) {
           await updateSharedToken(docId, {
@@ -46,19 +43,24 @@ export const onWriteToken = functions
             accessTokenSecret,
             _lastUpdated: now,
           });
-          return;
+        } else {
+          await initializeSharedToken(docId, {
+            accessToken,
+            accessTokenSecret,
+            _lastUpdated: now,
+          });
         }
-        await initializeSharedToken(docId, {
-          accessToken,
-          accessTokenSecret,
-          _lastUpdated: now,
-        });
-        return;
+
+        // 同じアクセストークンを持つドキュメントを削除
+        const sameAccessTokens = (await getSharedTokensByAccessToken(accessToken)).filter((doc) => doc.id !== docId);
+        await deleteSharedTokens(sameAccessTokens.map((token) => token.id));
+        break;
       }
       case 'delete': {
         if (exists) {
           await deleteSharedToken(docId);
         }
+        break;
       }
     }
   });
