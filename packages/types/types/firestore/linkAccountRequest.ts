@@ -12,6 +12,8 @@ type RequestUserUnknown = {
   twitter: null;
 };
 
+export type LinkAccountRequestErrorCode = 'not-found';
+
 export type LinkAccountRequest =
   | {
       // 招待直後
@@ -84,7 +86,7 @@ export type LinkAccountRequest =
   | {
       // エラー発生
       step: 'error';
-      error: string;
+      error: LinkAccountRequestErrorCode;
       canView: [string] | [string, string];
       from: RequestUser;
       to: RequestUser | RequestUserUnknown;

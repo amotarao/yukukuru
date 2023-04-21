@@ -35,8 +35,7 @@ export const onWriteRequest = functions
         if (!user) {
           await after.ref.update({
             step: 'error',
-            error: `ユーザーが見つかりません。
-ユーザー名が正しいか、ゆくくるに登録済みかどうかご確認ください。`,
+            error: 'not-found',
           });
           return;
         }
