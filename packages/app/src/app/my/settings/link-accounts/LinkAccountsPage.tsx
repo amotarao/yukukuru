@@ -1,5 +1,6 @@
 'use client';
 
+import { LinkAccountRequestErrorCode } from '@yukukuru/types';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
@@ -9,6 +10,18 @@ import { Icon } from '../../../../components/shared/Icon';
 import { useMultiAccounts } from '../../../../hooks/useMultiAccounts';
 import { pagesPath } from '../../../../lib/$path';
 import { useAuth } from '../../../../lib/auth/hooks';
+
+const convertErrorMessageFromCode = (errorCode: LinkAccountRequestErrorCode): string => {
+  switch (errorCode) {
+    case 'not-found': {
+      return `ゆくくるに登録されているユーザーではないようです。
+ユーザー名が正しいか、ゆくくるに登録済みかどうかご確認の上、再度お試しください。`;
+    }
+    case 'rejected': {
+      return `連携が拒否されました。`;
+    }
+  }
+};
 
 export const LinkAccountsPage: React.FC = () => {
   const { uid, signIn } = useAuth();
@@ -47,7 +60,9 @@ export const LinkAccountsPage: React.FC = () => {
                     <div className="flex gap-2 px-4">
                       <div className="shrink grow py-2">
                         <p className="tracking-wide">@{request.data.from.screenName}</p>
-                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                        {request.data.errorCode && (
+                          <p className="mt-1 text-xs">{convertErrorMessageFromCode(request.data.errorCode)}</p>
+                        )}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
                         <button
@@ -100,14 +115,16 @@ export const LinkAccountsPage: React.FC = () => {
                     <div className="flex gap-2 px-4">
                       <div className="shrink grow py-2">
                         <p className="tracking-wide">@{request.data.to.screenName}</p>
-                        {request.data.error && <p className="mt-1 text-xs">{request.data.error}</p>}
+                        {request.data.errorCode && (
+                          <p className="mt-1 text-xs">{convertErrorMessageFromCode(request.data.errorCode)}</p>
+                        )}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
                         <button
                           className="grid h-10 w-10 place-items-center"
                           onClick={() => {
                             const result =
-                              !!request.data.error || window.confirm('連携リクエストをキャンセルしますか？');
+                              !!request.data.errorCode || window.confirm('連携リクエストをキャンセルしますか？');
                             if (!result) return;
                             updateLinkAccountRequest(request.id, 'cancel');
                           }}

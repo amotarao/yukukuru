@@ -3,7 +3,7 @@ import * as dayjs from 'dayjs';
 import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
 import { TwitterApiReadOnly } from 'twitter-api-v2';
-import { getSharedTokensForGetFollowersV2 } from '../../modules/firestore/sharedToken';
+import { getSharedTokensForGetFollowers } from '../../modules/firestore/sharedToken';
 import { updateLastUsedSharedToken } from '../../modules/firestore/sharedToken';
 import { getToken } from '../../modules/firestore/tokens';
 import { setTwUsers } from '../../modules/firestore/twUsers';
@@ -89,10 +89,23 @@ export const publish = functions
     ];
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
-    const sharedTokens = await getSharedTokensForGetFollowersV2(
+
+    // _lastUsed.v2_getUser が 429 の場合があるため、余分に件数を取得する
+    const originalSharedTokens = await getSharedTokensForGetFollowers(
       now.subtract(15, 'minutes').toDate(),
-      targetDocs.length
+      targetDocs.length + 5
     );
+    // _lastUsed.v2_getUser が過去のもののみ利用
+    // User と Shared Token が同じセットになることが多いため、シャッフルする
+    const sharedTokens = originalSharedTokens
+      .filter((sharedToken) => {
+        // Firestore は where クエリを複数利用できないため、ここで判定している
+        const getUserIsOld = sharedToken.data()._lastUsed.v2_getUser.toDate() < now.subtract(15, 'minutes').toDate();
+        if (!getUserIsOld) console.log(`❗️ Shared token [${sharedToken.id}] is not old.`);
+        return getUserIsOld;
+      })
+      .slice(0, targetDocs.length)
+      .sort(() => 0.5 - Math.random());
 
     // publish データ作成・送信
     const messages: Message[] = targetDocs
@@ -210,7 +223,7 @@ export const run = functions
 
       const [sharedClient, ownClient] = await getTwitterClientWithIdSetStep(now, uid, sharedToken, twitterProtected);
       await checkOwnUserStatusStep(now, sharedClient, uid, twitterId);
-      const { users, nextToken } = await getFollowersIdsStep(
+      const { users, nextToken } = await getFollowersStep(
         now,
         ownClient || sharedClient,
         uid,
@@ -328,9 +341,9 @@ const checkOwnUserStatusStep = async (
 };
 
 /**
- * フォロワーIDリストの取得
+ * フォロワーリストの取得
  */
-const getFollowersIdsStep = async (
+const getFollowersStep = async (
   now: Date,
   { client, token }: TwitterClientWithToken,
   uid: string,

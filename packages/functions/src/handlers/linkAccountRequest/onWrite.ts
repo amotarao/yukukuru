@@ -35,8 +35,7 @@ export const onWriteRequest = functions
         if (!user) {
           await after.ref.update({
             step: 'error',
-            error: `ユーザーが見つかりません。
-ユーザー名が正しいか、ゆくくるに登録済みかどうかご確認ください。`,
+            errorCode: 'not-found',
           });
           return;
         }
@@ -72,7 +71,8 @@ export const onWriteRequest = functions
       case 'reject': {
         const [from] = data.canView;
         await after.ref.update({
-          step: 'rejected',
+          step: 'error',
+          errorCode: 'rejected',
           canView: [from],
         });
         return;
