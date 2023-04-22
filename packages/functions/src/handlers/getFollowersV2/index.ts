@@ -104,8 +104,8 @@ export const publish = functions
         if (!getUserIsOld) console.log(`❗️ Shared token [${sharedToken.id}] is not old.`);
         return getUserIsOld;
       })
-      .sort(() => 0.5 - Math.random())
-      .slice(0, targetDocs.length);
+      .slice(0, targetDocs.length)
+      .sort(() => 0.5 - Math.random());
 
     // publish データ作成・送信
     const messages: Message[] = targetDocs
