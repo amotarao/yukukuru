@@ -87,7 +87,7 @@ export const deleteSharedTokens = async (ids: string[]): Promise<void> => {
   await bulkWriter.close();
 };
 
-export const getSharedTokensForGetFollowersV2 = async (
+export const getSharedTokensForGetFollowers = async (
   beforeDate: Date,
   limit: number
 ): Promise<QueryDocumentSnapshot<SharedToken>[]> => {
