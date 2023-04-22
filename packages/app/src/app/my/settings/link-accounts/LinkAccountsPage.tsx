@@ -61,7 +61,9 @@ export const LinkAccountsPage: React.FC = () => {
                       <div className="shrink grow py-2">
                         <p className="tracking-wide">@{request.data.from.screenName}</p>
                         {request.data.errorCode && (
-                          <p className="mt-1 text-xs">{convertErrorMessageFromCode(request.data.errorCode)}</p>
+                          <p className="mt-1 whitespace-pre-wrap text-xs">
+                            {convertErrorMessageFromCode(request.data.errorCode)}
+                          </p>
                         )}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
@@ -116,7 +118,9 @@ export const LinkAccountsPage: React.FC = () => {
                       <div className="shrink grow py-2">
                         <p className="tracking-wide">@{request.data.to.screenName}</p>
                         {request.data.errorCode && (
-                          <p className="mt-1 text-xs">{convertErrorMessageFromCode(request.data.errorCode)}</p>
+                          <p className="mt-1 whitespace-pre-wrap text-xs">
+                            {convertErrorMessageFromCode(request.data.errorCode)}
+                          </p>
                         )}
                       </div>
                       <div className="flex shrink-0 grow-0 self-center">
