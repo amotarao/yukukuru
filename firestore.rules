@@ -81,11 +81,11 @@ service cloud.firestore {
     match /linkAccountRequests/{requestID} {
       function typeCheck(rsrc) {
         return rsrc.data.size() == 5
-               && rsrc.data.keys().hasAll(['step', 'error', 'canView', 'from', 'to'])
-               && rsrc.data.keys().hasOnly(['step', 'error', 'canView', 'from', 'to'])
+               && rsrc.data.keys().hasAll(['step', 'errorCode', 'canView', 'from', 'to'])
+               && rsrc.data.keys().hasOnly(['step', 'errorCode', 'canView', 'from', 'to'])
                && rsrc.data.step is string
                && rsrc.data.step in ['create', 'cancel', 'approve', 'reject']
-               && rsrc.data.error == null || rsrc.data.error is string
+               && rsrc.data.errorCode == null || rsrc.data.errorCode is string
                && rsrc.data.canView is list
                && rsrc.data.canView.size() in [1, 2]
                && rsrc.data.from is map
