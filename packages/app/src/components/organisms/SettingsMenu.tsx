@@ -92,7 +92,7 @@ export const SettingsMenu: React.FC = () => {
             </p>
           </li>
           <li>
-            <p className="mb-1 text-xs font-bold">不具合報告・お問い合わせ</p>
+            <p className="mb-1 text-xs font-bold">ご意見・不具合報告・お問い合わせ</p>
             <p>
               <a
                 className="text-primary no-underline"
@@ -104,24 +104,14 @@ export const SettingsMenu: React.FC = () => {
               </a>
             </p>
           </li>
-          <li>
-            <p className="mb-1 text-xs font-bold">ご意見</p>
-            <p>
-              <a
-                className="text-primary no-underline"
-                href="https://odaibako.net/u/yukukuruapp"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                お題箱
-              </a>
-            </p>
-            <ul className="mt-1 grid gap-1 text-xs">
-              <p>※お題箱への書き込みは公開されます</p>
-              <p>※投稿者が分からないため、不具合の調査はできません</p>
-            </ul>
-          </li>
         </ul>
+        <p className="mt-4 text-sm">
+          ※
+          <a className="underline" href="https://odaibako.net/" target="_blank" rel="noopener noreferrer">
+            「お題箱」
+          </a>
+          のページは閉鎖いたしました。
+        </p>
         <TweetButton className="mt-4" size="large" />
       </section>
     </>
