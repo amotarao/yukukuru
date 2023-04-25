@@ -1,4 +1,5 @@
-import { Record, RecordV2, Timestamp } from '@yukukuru/types';
+import { Record, RecordV2, StripeRole, Timestamp, User } from '@yukukuru/types';
+import dayjs from 'dayjs';
 import { QueryDocumentSnapshot, doc, getDoc } from 'firebase/firestore';
 import { useEffect, useCallback, useReducer } from 'react';
 import { firestore } from '../lib/firebase';
@@ -14,8 +15,8 @@ type State = {
   /** 読み込みが完了しているかどうか */
   isFirstLoaded: boolean;
 
-  /** lastRun が読み込み中かどうか */
-  isLoadingLastRun: boolean;
+  /** UpdateStatus が読み込み中かどうか */
+  isLoadingUpdateStatus: boolean;
 
   /** 記録リスト */
   records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
@@ -23,8 +24,11 @@ type State = {
   /** 続きデータがあるかどうか */
   hasNext: boolean;
 
-  /** lastRun */
-  lastRun: Date | null;
+  /** lastUpdated */
+  lastUpdated: Date | null;
+
+  /** nextUpdate */
+  nextUpdate: Date | null;
 
   /** 初期状態かどうか */
   _initialized: boolean;
@@ -43,10 +47,11 @@ const initialState: State = {
   isFirstLoading: false,
   isNextLoading: false,
   isFirstLoaded: false,
-  isLoadingLastRun: true,
+  isLoadingUpdateStatus: true,
   records: [],
   hasNext: true,
-  lastRun: null,
+  lastUpdated: null,
+  nextUpdate: null,
   _initialized: false,
   _isCompletedFetchV2: false,
   _cursor: null,
@@ -90,9 +95,10 @@ type DispatchAction =
       type: 'Initialize';
     }
   | {
-      type: 'SetLastRun';
+      type: 'SetUpdateStatus';
       payload: {
-        lastRun: State['lastRun'];
+        lastUpdated: State['lastUpdated'];
+        nextUpdate: State['nextUpdate'];
       };
     }
   | {
@@ -158,17 +164,18 @@ const reducer = (state: State, action: DispatchAction): State => {
     case 'Initialize': {
       return initialState;
     }
-    case 'SetLastRun': {
+    case 'SetUpdateStatus': {
       return {
         ...state,
-        isLoadingLastRun: false,
-        lastRun: action.payload.lastRun,
+        isLoadingUpdateStatus: false,
+        lastUpdated: action.payload.lastUpdated,
+        nextUpdate: action.payload.nextUpdate,
       };
     }
     case 'StartLoadingLastRun': {
       return {
         ...state,
-        isLoadingLastRun: true,
+        isLoadingUpdateStatus: true,
       };
     }
   }
@@ -254,7 +261,7 @@ export const useRecords = (uid: string | null) => {
     getRecords();
   };
 
-  // lastRun を取得する
+  // UpdateStatus を取得する
   useEffect(() => {
     if (!uid) return;
 
@@ -263,16 +270,21 @@ export const useRecords = (uid: string | null) => {
     getDoc(doc(firestore, 'users', uid)).then((doc) => {
       if (!doc.exists()) {
         dispatch({
-          type: 'SetLastRun',
-          payload: { lastRun: null },
+          type: 'SetUpdateStatus',
+          payload: { lastUpdated: null, nextUpdate: null },
         });
         return;
       }
 
-      const lastRun = (doc.get('_getFollowersV2Status.lastRun') as Timestamp).toDate();
+      const data = doc.data() as User<Timestamp>;
+      const lastUpdated = lastUpdatedDate(data._getFollowersV2Status.lastRun.toDate());
+
       dispatch({
-        type: 'SetLastRun',
-        payload: { lastRun: lastRun > new Date(0) ? lastRun : null },
+        type: 'SetUpdateStatus',
+        payload: {
+          lastUpdated: lastUpdated,
+          nextUpdate: calcNextUpdateDate(lastUpdated, data.role, data.twitter.protected, data.twitter.followersCount),
+        },
       });
     });
   }, [uid]);
@@ -281,4 +293,38 @@ export const useRecords = (uid: string | null) => {
     ...state,
     getNextRecords,
   };
+};
+
+const lastUpdatedDate = (lastUpdated: Date): Date | null => {
+  return lastUpdated > new Date(0) ? lastUpdated : null;
+};
+
+/**
+ * サポーター・公開アカウントは、3分(+3分/1万)以内
+ * サポーター・非公開アカウントは、15分(+15分/1万)以内
+ * 通常・公開アカウントは、72時間(+3分/1万)以内
+ * 通常・非公開アカウントは、72時間(+15分/1万)以内
+ * 初回の場合は、ベースタイムなし
+ */
+const calcNextUpdateDate = (
+  lastUpdated: Date | null,
+  role: StripeRole,
+  twitterProtected: boolean,
+  followersCount: number
+): Date | null => {
+  if (!lastUpdated) return null;
+
+  const baseMinutes = role === 'supporter' ? (twitterProtected ? 15 : 3) : 72 * 60;
+
+  const additionalUnit = twitterProtected ? 15 : 3;
+  const additionalCount = Math.ceil(followersCount / 10000) - 1;
+  const additionalMinutes = additionalUnit * additionalCount;
+
+  if (lastUpdated === null) {
+    return dayjs().add(additionalMinutes, 'minute').toDate();
+  }
+
+  return dayjs(lastUpdated)
+    .add(baseMinutes + additionalMinutes, 'minute')
+    .toDate();
 };
