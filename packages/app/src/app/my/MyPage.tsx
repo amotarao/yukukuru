@@ -5,8 +5,8 @@ import classNames from 'classnames';
 import { QueryDocumentSnapshot } from 'firebase/firestore';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserCardWrapper } from '../../components/UserCardWrapper';
-import { LastUpdatedText } from '../../components/atoms/LastUpdatedText';
 import { LoadingCircle } from '../../components/atoms/LoadingCircle';
+import { UpdateStatus } from '../../components/atoms/UpdateStatus';
 import { AccountSelector } from '../../components/organisms/AccountSelector';
 import { UserCard } from '../../components/organisms/UserCard';
 import { useMultiAccounts } from '../../hooks/useMultiAccounts';
@@ -22,7 +22,8 @@ export type MyPageProps = {
   records: (QueryDocumentSnapshot<Record | RecordV2> | { text: string })[];
   hasNext: boolean;
   hasToken: boolean;
-  lastRun: Date | null;
+  lastUpdated: Date | null;
+  nextUpdate: Date | null;
   currentAccount: { id: string; twitter: UserTwitter } | null;
   multiAccounts: { id: string; twitter: UserTwitter }[];
   getNextRecords: ReturnType<typeof useRecords>['getNextRecords'];
@@ -43,13 +44,15 @@ const JustRegisteredView: React.FC = () => {
 /**
  * 取得はできているが、表示するデータがないことを表示するコンポーネント
  */
-const NoListView: React.FC<Pick<MyPageProps, 'lastRun'>> = ({ lastRun }) => {
+const NoListView: React.FC<{
+  updateStatus?: React.ReactNode;
+}> = ({ updateStatus }) => {
   return (
     <div>
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
-      {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
+      <div className="my-3">{updateStatus}</div>
     </div>
   );
 };
@@ -58,10 +61,11 @@ const NoListView: React.FC<Pick<MyPageProps, 'lastRun'>> = ({ lastRun }) => {
  * リストコンポーネント
  */
 const ListView: React.FC<
-  Pick<MyPageProps, 'records' | 'lastRun'> & {
+  Pick<MyPageProps, 'records'> & {
     error?: React.ReactNode;
+    updateStatus?: React.ReactNode;
   }
-> = ({ error, records, lastRun }) => {
+> = ({ error, updateStatus, records }) => {
   let currentDate = '';
   let currentTime = '';
 
@@ -78,7 +82,7 @@ const ListView: React.FC<
         </ul>
       </nav>
       {error}
-      {lastRun && <LastUpdatedText className="my-3 px-4 text-center text-xs text-sub sm:my-4" date={lastRun} />}
+      <div className="my-3">{updateStatus}</div>
       <section className="mt-8 sm:mt-12 sm:bg-[linear-gradient(to_bottom,_var(--back-2),_var(--back-2))] sm:bg-[length:2px_100%] sm:bg-center sm:bg-no-repeat sm:pb-12">
         {records.map((record, i) => {
           if ('text' in record) {
@@ -138,13 +142,16 @@ const ListView: React.FC<
 /**
  * メインエリア
  */
-const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({ hasToken, records, lastRun }) => {
+const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastUpdated' | 'nextUpdate'>> = ({
+  hasToken,
+  records,
+  lastUpdated,
+  nextUpdate,
+}) => {
   const { signIn } = useAuth();
 
   const error = useMemo(() => {
-    if (hasToken) {
-      return null;
-    }
+    if (hasToken) return null;
 
     return (
       <div className="mx-[1rem] mt-[1rem] mb-[1.5rem]">
@@ -162,12 +169,24 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
     );
   }, [hasToken, signIn]);
 
+  const updateStatus = useMemo(() => {
+    if (!lastUpdated) return null;
+
+    return (
+      <UpdateStatus
+        className="px-4 text-center text-xs text-sub sm:my-4"
+        lastUpdated={lastUpdated}
+        nextUpdate={nextUpdate}
+      />
+    );
+  }, [lastUpdated, nextUpdate]);
+
   if (records.length > 0) {
-    return <ListView error={error} records={records} lastRun={lastRun} />;
+    return <ListView error={error} records={records} updateStatus={updateStatus} />;
   }
 
-  // lastRun が 0 の場合、watches 取得処理が1回も完了していない
-  if (lastRun === null || lastRun.getTime() === 0) {
+  // lastUpdated が 0 の場合、watches 取得処理が1回も完了していない
+  if (lastUpdated === null || lastUpdated.getTime() === 0) {
     return (
       <>
         <JustRegisteredView />
@@ -178,7 +197,7 @@ const Home: React.FC<Pick<MyPageProps, 'hasToken' | 'records' | 'lastRun'>> = ({
 
   return (
     <>
-      <NoListView lastRun={lastRun} />
+      <NoListView updateStatus={updateStatus} />
       {error}
     </>
   );
@@ -195,8 +214,17 @@ export const MyPage: React.FC = () => {
     setCurrentUid(authUid);
   }, [authUid]);
 
-  const { isFirstLoading, isFirstLoaded, isNextLoading, isLoadingLastRun, records, hasNext, lastRun, getNextRecords } =
-    useRecords(currentUid);
+  const {
+    isFirstLoading,
+    isFirstLoaded,
+    isNextLoading,
+    isLoadingUpdateStatus,
+    records,
+    hasNext,
+    lastUpdated,
+    nextUpdate,
+    getNextRecords,
+  } = useRecords(currentUid);
   const { isLoading: isLoadingToken, hasToken } = useToken(currentUid);
   const {
     isLoading: isLoadingMultiAccounts,
@@ -205,7 +233,7 @@ export const MyPage: React.FC = () => {
   } = useMultiAccounts(authUid, currentUid);
 
   const isLoadingRecords = isFirstLoading || !isFirstLoaded;
-  const isLoading = isLoadingRecords || isLoadingLastRun || isLoadingToken || isLoadingMultiAccounts;
+  const isLoading = isLoadingRecords || isLoadingUpdateStatus || isLoadingToken || isLoadingMultiAccounts;
 
   // lastViewing 送信
   useEffect(() => {
@@ -232,7 +260,7 @@ export const MyPage: React.FC = () => {
           <LoadingCircle />
         ) : (
           <>
-            <Home hasToken={hasToken} records={records} lastRun={lastRun} />
+            <Home hasToken={hasToken} records={records} lastUpdated={lastUpdated} nextUpdate={nextUpdate} />
             {!isLoading && isNextLoading && <LoadingCircle />}
             {!isLoading && hasNext && (
               <button
