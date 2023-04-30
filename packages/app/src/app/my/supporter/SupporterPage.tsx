@@ -75,7 +75,6 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
                     <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
                       <li>フォロワー1万人ごとに +3分</li>
                       <li>非公開アカウントでは15分おき</li>
-                      <li>※Twitterの仕様変更のため調整中</li>
                     </ul>
                   </li>
                   <li className="">
@@ -132,7 +131,6 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
                     <ul className="mt-2 grid gap-1 pl-7 text-xs text-sub">
                       <li>フォロワー1万人ごとに +3分</li>
                       <li>非公開アカウントでは15分おき</li>
-                      <li>※Twitterの仕様変更のため調整中</li>
                     </ul>
                   </li>
                   <li className="">
