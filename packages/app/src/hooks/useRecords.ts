@@ -181,6 +181,14 @@ const reducer = (state: State, action: DispatchAction): State => {
   }
 };
 
+// iOS 14 対応
+const arrayAt = <T>(array: T[], at: number): T | undefined => {
+  if (at < 0) {
+    return array[array.length + at];
+  }
+  return array[at];
+};
+
 export const useRecords = (uid: string | null) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -200,7 +208,7 @@ export const useRecords = (uid: string | null) => {
           payload: {
             docs,
             ended: docs.length < 50,
-            cursor: docs.at(-1) ?? null,
+            cursor: arrayAt(docs, -1) ?? null,
           },
         });
       });
@@ -212,8 +220,8 @@ export const useRecords = (uid: string | null) => {
     if (!uid) return;
     await fetchRecordsV2(uid, 50, state._cursorV2).then(({ docs }) => {
       const ended = docs.length < 50;
-      const cursor = docs.at(-1)?.data().date.toDate() ?? null;
-      const cursorV2 = docs.at(-1) ?? null;
+      const cursor = arrayAt(docs, -1)?.data().date.toDate() ?? null;
+      const cursorV2 = arrayAt(docs, -1) ?? null;
 
       dispatch({
         type: 'AddItemsV2',
