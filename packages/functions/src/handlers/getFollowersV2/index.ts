@@ -77,6 +77,7 @@ export const publish = functions
   .pubsub.schedule('* * * * *')
   .timeZone('Asia/Tokyo')
   .onRun(async (context) => {
+    console.log(JSON.stringify({ context, timestamp: context.timestamp }));
     const now = dayjs(context.timestamp);
 
     // 対象ユーザーの取得
