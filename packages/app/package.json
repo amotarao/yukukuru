@@ -1,6 +1,6 @@
 {
   "name": "@yukukuru/app",
-  "version": "1.10.20",
+  "version": "1.11.0",
   "homepage": "https://yukukuru.app",
   "license": "UNLICENSED",
   "engines": {
@@ -21,6 +21,7 @@
     "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
     "firebase": "^9.17.2",
+    "microcms-js-sdk": "^2.5.0",
     "next": "13.3.0",
     "next-sitemap": "^3.1.45",
     "react": "18.2.0",
