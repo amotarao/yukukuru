@@ -15,6 +15,7 @@ import { useToken } from '../../hooks/useToken';
 import { useAuth } from '../../lib/auth/hooks';
 import { dayjs } from '../../lib/dayjs';
 import { setLastViewing } from '../../lib/firestore/userStatuses';
+import { MicrocmsNotice } from './MicrocmsNotice';
 
 export type MyPageProps = {
   isLoading: boolean;
@@ -36,6 +37,7 @@ export type MyPageProps = {
 const JustRegisteredView: React.FC = () => {
   return (
     <div>
+      <MicrocmsNotice className="my-3 mx-6" />
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">最初のデータ取得までしばらくお待ちください。</p>
     </div>
   );
@@ -49,6 +51,7 @@ const NoListView: React.FC<{
 }> = ({ updateStatus }) => {
   return (
     <div>
+      <MicrocmsNotice className="my-3 mx-6" />
       <p className="my-3 px-4 text-center text-xs text-sub sm:my-4">
         データの取得は完了していますが、今のところフォロワーの増減がありません。
       </p>
@@ -81,6 +84,7 @@ const ListView: React.FC<
           </li>
         </ul>
       </nav>
+      <MicrocmsNotice className="my-3 mx-6" />
       {error}
       <div className="my-3">{updateStatus}</div>
       <section className="mt-8 sm:mt-12 sm:bg-[linear-gradient(to_bottom,_var(--back-2),_var(--back-2))] sm:bg-[length:2px_100%] sm:bg-center sm:bg-no-repeat sm:pb-12">
