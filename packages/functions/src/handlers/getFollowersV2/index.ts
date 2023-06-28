@@ -90,10 +90,10 @@ export const publish = functions
     const docs = await getUserDocsByGroups(groups);
     const targetDocs = docs.filter(filterExecutable(now.toDate()));
 
-    // _lastUsed.v2_getUser が 429 の場合があるため、余分に件数を取得する
+    // _lastUsed.v2_getUser が 429 の場合や、すべての _lastUsed.v2_getUser が最新の可能性があるため、余分に件数を取得する
     const originalSharedTokens = await getSharedTokensForGetFollowers(
       now.subtract(15, 'minutes').toDate(),
-      targetDocs.length + 5
+      targetDocs.length * 3
     );
     // _lastUsed.v2_getUser が過去のもののみ利用
     // User と Shared Token が同じセットになることが多いため、シャッフルする
