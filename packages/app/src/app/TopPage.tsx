@@ -23,6 +23,18 @@ export const TopPage: React.FC = () => {
           <wbr />
           いなくなったかを記録します
         </p>
+        <div className="my-4">
+          <p className="text-sm font-bold">
+            <a
+              className="underline"
+              href="https://twitter.com/yukukuruapp/status/1674011622279622657"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              サービス提供を無期限停止します (2023.6.28)
+            </a>
+          </p>
+        </div>
         <Link className="rounded border border-primary px-4 py-1 text-primary" href={pagesPath.my.$url()}>
           マイページ・ログイン
         </Link>
