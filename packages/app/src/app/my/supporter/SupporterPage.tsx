@@ -109,7 +109,10 @@ export const SupporterPage: React.FC<SupporterPageProps> = ({ withAuth }) => {
                       ログイン
                     </Link>
                   ) : !stripeRole ? (
-                    <CheckoutButton>登録</CheckoutButton>
+                    <>
+                      <p className="text-center text-lg sm:px-4 sm:py-2">登録はできません</p>
+                      {/* <CheckoutButton>登録</CheckoutButton> */}
+                    </>
                   ) : (
                     <ConfirmButton>登録内容 確認・変更・解約</ConfirmButton>
                   )}
