@@ -37,12 +37,12 @@ export function Notice({ className }: Props) {
   if (items.length === 0) return null;
 
   return (
-    <section className={classNames('rounded-lg border border-sub p-2', className)}>
+    <section className={classNames('rounded-lg border p-2', className)}>
       <ul className="grid gap-2">
         {[...defaultItems, ...items].map((item) => (
           <li key={item.id}>
             <div
-              className="text-center text-xs leading-5 text-sub [&_a]:underline"
+              className="text-center text-xs leading-5 [&_a]:underline"
               dangerouslySetInnerHTML={{ __html: item.html }}
             ></div>
           </li>
