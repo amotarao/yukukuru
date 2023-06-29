@@ -39,7 +39,7 @@ export function Notice({ className }: Props) {
   if (items.length === 0) return null;
 
   return (
-    <section className={classNames('rounded-lg border p-2', className)}>
+    <section className={classNames('rounded-lg border border-current p-2', className)}>
       <ul className="grid gap-2">
         {items.map((item) => (
           <li key={item.id}>
