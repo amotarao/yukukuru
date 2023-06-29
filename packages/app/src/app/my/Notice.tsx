@@ -16,7 +16,13 @@ type Props = {
   className?: string;
 };
 
-export function MicrocmsNotice({ className }: Props) {
+export function Notice({ className }: Props) {
+  const defaultItems: Notice[] = [
+    {
+      id: '1',
+      html: '<p>残念ながら再開の兆しがないため、ゆくくるは無期限休止とします<br><a href="https://twitter.com/yukukuruapp/status/1674011622279622657" target="_blank" rel="noopener noreferrer nofollow">詳細、サポータープラン課金・返金の案内はこちら</a></p>',
+    },
+  ];
   const [items, setItems] = useState<Notice[]>([]);
 
   useEffect(() => {
@@ -33,7 +39,7 @@ export function MicrocmsNotice({ className }: Props) {
   return (
     <section className={classNames('rounded-lg border border-sub p-2', className)}>
       <ul className="grid gap-2">
-        {items.map((item) => (
+        {[...defaultItems, ...items].map((item) => (
           <li key={item.id}>
             <div
               className="text-center text-xs leading-5 text-sub [&_a]:underline"
